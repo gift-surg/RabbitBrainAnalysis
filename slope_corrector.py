@@ -89,7 +89,7 @@ def main():
 
     ''' CORE '''
 
-    slopes = np.loadtxt(args.input_scaling_factors)
+    slopes = np.loadtxt(args.input_scaling_factors).astype(np.float64)
     im_input = nib.load(args.input_image)
     im_data = im_input.get_data().astype(np.float64)
     num_directions = len(slopes)
