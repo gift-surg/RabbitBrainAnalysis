@@ -34,10 +34,10 @@ def squeeze_image(path_input_image, path_output_image):
 
     if 1 in list(im.shape):
         new_im = set_new_data(im, np.squeeze(im.get_data()[:]))
-        nib.save(new_im, path_new_image)
-        print('New image dimensions: ' + new_im.shape + ', saved in ' + str(path_output_image))
+        nib.save(new_im, path_output_image)
+        print('New image dimensions: ' + str(new_im.shape) + ', saved in ' + str(path_output_image))
     else:
-    	print('No need to squeeze the input image.')
+        print('No need to squeeze the input image.')
 
 
 def label_selector(path_input_image, path_output_image, labels_to_keep, binarize=True):
