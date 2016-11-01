@@ -5,7 +5,7 @@ import os
 
 def set_new_data(image, new_data):
     """
-    From an image and a numpy array it creates a new image with
+    From a nibabel image and a numpy array it creates a new image with
     the same header of the image and the new_data as its data.
     :param image: nibabel image
     :param new_data: numpy array 
@@ -47,11 +47,61 @@ def label_selector(path_input_image, path_output_image, labels_to_keep, binarize
                     else:
                         new_data[i,j,k] = im_data[i,j,k]
 
-    
     new_im = set_new_data(im, new_data)
     nib.save(new_im, path_output_image)
     print('Output image saved in ' + str(path_output_image))
 
+
+def compare_two_nib(im1, im2):
+    """
+    :param im1:
+    :param im2:
+    :return:
+    """
+
+    im1_name = 'First argument'
+    im2_name = 'Second argument'
+
+    hd1 = im1.header
+    hd2 = im1.header
+
+    # compare nifty version:
+    if not hd1['sizeof_hdr'] == hd2['sizeof_hdr']:
+
+        if hd1['sizeof_hdr'] == 348:
+            msg = im1_name + ' is nifty1\n' + im2_name + ' is nifty2.'
+        else:
+            msg = im1_name + ' is nifty2\n' + im2_name + ' is nifty1.'
+        print msg
+
+    # Compare headers:
+
+    for k in hd1.keys():
+        if k == 'dim':
+            print "stop here!\n "
+            print hd1[k]
+            print
+        elif k == 'pixdim':
+            pass
+        elif k == 'srow_x':
+            pass
+        elif k == 'srow_y':
+            pass
+        elif k == 'srow_z':
+            pass
+        elif np.isnan(hd1['scl_slope']) or np.isnan(hd1['scl_slope']):
+            pass
+        elif np.isnan(hd1['scl_inter']) or np.isnan(hd1['scl_inter']):
+            pass
+        else:
+
+            if not hd1[k] == hd2[k]:
+                pass
+
+    # Compare data:
+
+
+    # Compare data-type:
 
 def compare_two_nifti(path_img_1, path_img_2):
     """
@@ -60,9 +110,8 @@ def compare_two_nifti(path_img_1, path_img_2):
     :param path_img_2:
     :return:
     """
+    im1 = nib.load(path_img_1)
+    im2 = nib.load(path_img_2)
 
-
-    pass
-
-
+    compare_two_nib(im1, im2)
 
