@@ -13,3 +13,4 @@ The command
     $ python2 parser_brukert_txt.py 0104_DWI.txt -o path_to_a_folder
 
 saves the required files in the specified folder if exists. 
+
