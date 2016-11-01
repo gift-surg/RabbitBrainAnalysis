@@ -5,10 +5,28 @@ import argparse
 import textwrap
 import os
 
+from tools.parsers.parse_brukert_txt import parse_brukert_txt
+
+"""
+Module to parse the .txt bruker data into b_values and b_vectors.
+"""
+
 
 def main():
 
-    ''' Parser '''
+    """
+    Parser from terminal
+    The command:
+
+    $ python2 parser_brukert_txt.py 0104_DWI.txt
+
+    saves the required files in the same folder of the input file.
+
+    With the command
+
+    $ python2 parser_brukert_txt.py 0104_DWI.txt -o path_to_a_folder
+
+    """
 
     parser = argparse.ArgumentParser(version=0.0)
 
@@ -60,39 +78,13 @@ def main():
     output_type = np.float
     file_to_save = ['DwDir=', 'DwEffBval=', 'DwGradVec=', 'VisuCoreDataSlope=']
     num_col_to_reshape = [1, 1, 3, 1]
-    
-    for line in open(args.input_path_txt, 'r'):
-        for j in range(len(file_to_save)):
 
-            msg = ''
-            if line.startswith(file_to_save[j]):
-                in_array_as_string = line.replace(']', '[').split('[')[1]
-                in_array = np.array(map(float, in_array_as_string.split(' ')),dtype=np.float)
-                len_array = np.prod(in_array.shape)
-                
-                # reshape according to num_col_to_reshape
-                if len_array % num_col_to_reshape[j] == 0:
-                    new_shape = [len_array/num_col_to_reshape[j], num_col_to_reshape[j]]
-                    in_array = in_array.reshape(new_shape)
-                    
-                    # normalise if we are dealing with non-empty b-vectors: 
-                    if file_to_save[j] == 'DwGradVec=':
-                        row_sums = in_array.sum(axis=1)
-                        # comment next line if you want nan when the mean is zero instead of zero
-                        row_sums[row_sums == 0.0] = 1.0
-                        in_array = in_array / row_sums[:, np.newaxis]
-
-                        #in_array = np.nan_to_num(in_array)
-                        #print row_sums[:, np.newaxis]
-                        msg = ' (Normalized)'
-                else:
-                    raise IOError('Not compatible num_col_to_reshape in input.')
-                
-                filename_path = os.path.join(file_path, file_to_save[j][:-1] + '.txt')
-                np.savetxt(filename_path, in_array, fmt='%.14f')
-                
-                msg = 'Array ' + file_to_save[j][:-1] + ' saved in ' + filename_path + msg
-                print(msg)
+    parse_brukert_txt(args.input_path_txt, file_path,
+                      output_type=output_type,
+                      file_to_save=file_to_save,
+                      num_col_to_reshape=num_col_to_reshape)
 
 if __name__ == "__main__":
     main()
+
+
