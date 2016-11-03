@@ -1,5 +1,6 @@
 import os
-
+import nibabel as nib
+import numpy as np
 
 root_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -12,3 +13,7 @@ path_data_examples = os.path.join(root_path_data, 'z_examples')
 
 
 path_a_case = os.path.join(path_data_examples, 'test_bias_field', '1305_3D_manually_aligned.nii.gz')
+
+root_ex_vivo_template = os.path.join(root_path_data, 'pipelines', 'ex_vivo_template')
+
+root_ex_vivo_dwi = os.path.join(root_path_data, 'pipelines', 'ex_vivo_DWI')

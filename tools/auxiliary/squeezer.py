@@ -12,11 +12,11 @@ def squeeze_image(path_input_image, path_output_image):
     :param path_output_image:
     """
     im = nib.load(path_input_image)
-    print('Input image dimensions: ' + str(im.shape))
+    print('Input image dimensions: {0}.'.format(str(im.shape)))
 
     if 1 in list(im.shape):
         new_im = set_new_data(im, np.squeeze(im.get_data()[:]))
         nib.save(new_im, path_output_image)
-        print('New image dimensions: ' + str(new_im.shape) + ', saved in ' + str(path_output_image))
+        print('New image dimensions: {0}, saved in {1}'.format(str(new_im.shape), str(path_output_image)))
     else:
         print('No need to squeeze the input image.')

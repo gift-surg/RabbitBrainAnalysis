@@ -14,7 +14,8 @@ def bias_field_correction(pfi_input, pfi_output=None, pfi_mask=None, prefix='',
                           wienerFilterNoise=0.01,
                           numberOfHistogramBins=200,
                           numberOfControlPoints=(4, 4, 4),
-                          splineOrder=3):
+                          splineOrder=3,
+                          print_only=False):
     """
     Bias field correction with N4BFC.
     Does what he can to not overwrite the input files.
@@ -29,6 +30,7 @@ def bias_field_correction(pfi_input, pfi_output=None, pfi_mask=None, prefix='',
     :param numberOfHistogramBins:
     :param numberOfControlPoints:
     :param splineOrder:
+    :param print_only: only print the command to console instead of executing it
     :return:
     """
 
@@ -49,7 +51,8 @@ def bias_field_correction(pfi_input, pfi_output=None, pfi_mask=None, prefix='',
     n4b.SetNumberOfControlPoints(numberOfControlPoints)
     n4b.SetSplineOrder(splineOrder)
 
-    print 'Proposed output image name: ' + pfi_output + '\n'
+    print 'input image name: ' + pfi_input + '\n'
+    print 'Output image name: ' + pfi_output + '\n'
 
     print 'ConvergenceThreshold             : ' + str(n4b.GetConvergenceThreshold())
     print 'MaximumNumberOfIterations        : ' + str(n4b.GetMaximumNumberOfIterations())
@@ -67,18 +70,20 @@ def bias_field_correction(pfi_input, pfi_output=None, pfi_mask=None, prefix='',
             img_mask = bth.Execute(img)
             img_mask = -1 * (img_mask - 1)
         else:
-          img_mask = sitk.ReadImage(pfi_mask)
+            img_mask = sitk.ReadImage(pfi_mask)
 
-        print '\nComputations started ...'
-        t0 = time.clock()
+        if not print_only:
 
-        img_no_bias = n4b.Execute(img, img_mask)
+            print '\nComputations started ...'
+            t0 = time.clock()
 
-        t1 = time.clock()
-        print 'Computations terminated in ' + str(t1 - t0) + ' sec.'
+            img_no_bias = n4b.Execute(img, img_mask)
 
-        sitk.WriteImage(img_no_bias, pfi_output)
-        print 'Image saved in ' + pfi_output
+            t1 = time.clock()
+            print 'Computations terminated in ' + str(t1 - t0) + ' sec.'
+
+            sitk.WriteImage(img_no_bias, pfi_output)
+            print 'Image saved in ' + pfi_output
 
     else:
         raise IOError('input image must be in .nii or .nii.gz format.')
@@ -100,6 +105,8 @@ def bias_field_correction_list(list_pfi_input, list_pfi_mask=None, prefix='_bfc_
     for j in range(len(list_pfi_input)):
         if list_pfi_mask is not None:
             mask_path = list_pfi_mask[j]
+        else:
+            mask_path = None
 
         print '\n----------------------'
         print 'Element of the list ' + str(j+1) + ' / ' + str(len(list_pfi_input))

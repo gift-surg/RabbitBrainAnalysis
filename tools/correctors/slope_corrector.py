@@ -6,15 +6,13 @@ import nibabel as nib
 from tools.auxiliary.utils import set_new_data
 
 
-
-def slope_corrector(slopes_txt_file, im_input, im_output):
+def slope_corrector(slopes, im_input):
     """
-    Core of the slope correction.
-    :param slopes_file:
+    Correct from the slopes from the slope array and the image.
+    :param slopes:
     :param im_input:
     :return:
     """
-    slopes = np.loadtxt(slopes_txt_file)
     im_data = im_input.get_data().astype(np.float64)
     num_directions = len(slopes)
 
@@ -23,9 +21,26 @@ def slope_corrector(slopes_txt_file, im_input, im_output):
         raise IOError(err_msg)
 
     for j in range(num_directions):
-        im_data[...,j] *=  slopes[j]
+        im_data[..., j] *= slopes[j]
 
-    nib.save(set_new_data(im_input, im_data), im_output)
+    im_output = set_new_data(im_input, im_data)
+    return im_output
 
-    msg = 'Scaled image saved in ' + im_output
+
+def slope_corrector_path(slopes_txt_path, path_im_input, path_im_output):
+    """
+    Correct for the slope from the path of the elements
+    :param slopes_txt_path:
+    :param path_im_input:
+    :param path_im_output:
+    :return:
+    """
+    im_input = nib.load(path_im_input)
+    slopes = np.loadtxt(slopes_txt_path)
+
+    im_output = slope_corrector(slopes, im_input)
+
+    nib.save(im_output, path_im_output)
+
+    msg = 'Scaled image saved in ' + path_im_output
     print(msg)

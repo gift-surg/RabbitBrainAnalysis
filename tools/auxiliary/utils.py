@@ -52,11 +52,12 @@ def label_selector(path_input_image, path_output_image, labels_to_keep, binarize
     print('Output image saved in ' + str(path_output_image))
 
 
-def compare_two_nib(im1, im2):
+def compare_two_nib(im1, im2, toll=1e-3):
     """
-    :param im1:
-    :param im2:
-    :return:
+    :param im1: one nibabel image
+    :param im2: another nibabel image
+    :param toll: tolerance to the dissimilarity in the data - if headers are different images are different.
+    :return: true false and plot to console if the images are the same or not (up to a tollerance in the data)
     """
 
     im1_name = 'First argument'
@@ -65,47 +66,56 @@ def compare_two_nib(im1, im2):
     hd1 = im1.header
     hd2 = im1.header
 
+    images_are_equals = True
+
     # compare nifty version:
     if not hd1['sizeof_hdr'] == hd2['sizeof_hdr']:
 
         if hd1['sizeof_hdr'] == 348:
-            msg = im1_name + ' is nifty1\n' + im2_name + ' is nifty2.'
+            msg = '{0} is nifty1\n{1} is nifty2.'.format(im1_name, im2_name)
         else:
-            msg = im1_name + ' is nifty2\n' + im2_name + ' is nifty1.'
+            msg = '{0} is nifty2\n{1} is nifty1.'.format(im1_name, im2_name)
         print msg
+
+        images_are_equals = False
 
     # Compare headers:
 
     for k in hd1.keys():
-        if k == 'dim':
-            print "stop here!\n "
-            print hd1[k]
-            print
-        elif k == 'pixdim':
-            pass
-        elif k == 'srow_x':
-            pass
-        elif k == 'srow_y':
-            pass
-        elif k == 'srow_z':
-            pass
-        elif np.isnan(hd1['scl_slope']) or np.isnan(hd1['scl_slope']):
-            pass
-        elif np.isnan(hd1['scl_inter']) or np.isnan(hd1['scl_inter']):
-            pass
-        else:
+        if k not in ['scl_slope', 'scl_inter']:
+            val1, val2 = hd1[k], hd2[k]
+            are_different = val1 != val2
+            if isinstance(val1, np.ndarray):
+                are_different = are_different.any()
 
-            if not hd1[k] == hd2[k]:
-                pass
+            if are_different:
+                images_are_equals = False
+                print(k, hd1[k])
 
-    # Compare data:
+        elif not np.isnan(hd1[k]) and np.isnan(hd2[k]):
+            images_are_equals = False
+            print(k, hd1[k])
 
+    '''
+    # Compare values and type:
 
-    # Compare data-type:
+    im1_data = im1.get_data()
+    im2_data = im2.get_data()
+
+    if not im1_data.dtype == im2_data.dtype:
+        images_are_equals = False
+
+    # Compare values
+    if np.max(im1_data - im2_data) > toll:
+        images_are_equals = False
+    '''
+
+    return images_are_equals
+
 
 def compare_two_nifti(path_img_1, path_img_2):
     """
-
+    ... assuming nibabel take into account all the information in the nifty header properly!
     :param path_img_1:
     :param path_img_2:
     :return:
@@ -113,5 +123,4 @@ def compare_two_nifti(path_img_1, path_img_2):
     im1 = nib.load(path_img_1)
     im2 = nib.load(path_img_2)
 
-    compare_two_nib(im1, im2)
-
+    return compare_two_nib(im1, im2)
