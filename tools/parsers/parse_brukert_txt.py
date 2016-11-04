@@ -2,11 +2,11 @@ import numpy as np
 import os
 
 
-def parse_brukert_txt(input_path_txt,
-                      output_folder,
-                      output_type=np.float,
-                      file_to_save=('DwDir=', 'DwEffBval=', 'DwGradVec=', 'VisuCoreDataSlope='),
-                      num_col_to_reshape=(1, 1, 3, 1)):
+def parse_brukert_dwi_txt(input_path_txt,
+                          output_folder,
+                          output_type=np.float,
+                          file_to_save=('DwDir=', 'DwEffBval=', 'DwGradVec=', 'VisuCoreDataSlope='),
+                          num_col_to_reshape=(1, 1, 3, 1)):
 
     for line in open(input_path_txt, 'r'):
         for j in range(len(file_to_save)):

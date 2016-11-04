@@ -1,6 +1,7 @@
 import numpy as np
 import nibabel as nib
-import os 
+import os
+import copy
 
 
 def set_new_data(image, new_data):
@@ -124,3 +125,42 @@ def compare_two_nifti(path_img_1, path_img_2):
     im2 = nib.load(path_img_2)
 
     return compare_two_nib(im1, im2)
+
+
+def reproduce_slice_fourth_dimension(nib_image, num_slices=10):
+    # can be optimised...!
+
+    im_sh = nib_image.shape
+    if not (len(im_sh) == 2 or len(im_sh) == 3):
+        raise IOError('Methods can be used only for 2 or 3 dim images. No conflicts with existing multi, slices')
+    im_hd = nib_image.get_header()
+
+    new_data = np.zeros(list(im_sh) + [num_slices], dtype=im_hd['datatype'].dtype)
+    a_slice = copy.deepcopy(nib_image.get_data())
+
+    for d in range(num_slices):
+        new_data[..., d] = a_slice
+
+    im_output = set_new_data(nib_image, new_data)
+    print im_output.shape
+
+    output_im = set_new_data(nib_image, new_data)
+
+    return output_im
+
+
+def reproduce_slice_fourth_dimension_path(pfi_input_image, pfi_output_image, num_slices=10):
+    old_im = nib.load(pfi_input_image)
+    new_im = reproduce_slice_fourth_dimension(old_im, num_slices)
+    nib.save(new_im, pfi_output_image)
+    return 'copied!'
+
+
+'''
+tmp_path = '/Users/sebastiano/Documents/UCL/a_data/bunnies/pipelines/ex_vivo_DWI/zz_test'
+test_obj = os.path.join(tmp_path, 'ciccione_1305_on_1201_3D_mask_affine.nii.gz')
+test_obj_output = os.path.join(tmp_path, 'ciccione_1305_on_1201_3D_mask_affine_output.nii.gz')
+
+d = 12
+copy_and_paste_on_slice_path(test_obj, test_obj_output, d)
+'''

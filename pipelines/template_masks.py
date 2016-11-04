@@ -17,13 +17,13 @@ path_subj_1305_templ         = os.path.join(root_ex_vivo_template, 'templates', 
 path_subj_1305_mask_ciccione = os.path.join(root_ex_vivo_template, 'templates', '1305_3D_mask_fin_dil5.nii.gz')
 
 # Controller
-step_reorient              = True  # not idemp.
-step_thr                   = True
-step_register_masks        = False
-step_cut_masks             = False
-step_bfc                   = False
-step_lesion_masks_creation = False
-step_co_register           = False
+step_reorient              = False  # not idemp.
+step_thr                   = False
+step_register_masks        = True
+step_cut_masks             = True
+step_bfc                   = True
+step_lesion_masks_creation = True
+step_co_register           = True
 
 safety_on = False
 
@@ -146,21 +146,22 @@ if step_bfc:
 
         print '\nBias field correction: execution for subject {0}.\n'.format(sj)
 
-        bias_field_correction(path_3d_nii_input, path_3d_nii_output,
-                              pfi_mask=None,
-                              prefix='',
-                              convergenceThreshold=convergenceThreshold,
-                              maximumNumberOfIterations=maximumNumberOfIterations,
-                              biasFieldFullWidthAtHalfMaximum=biasFieldFullWidthAtHalfMaximum,
-                              wienerFilterNoise=wienerFilterNoise,
-                              numberOfHistogramBins=numberOfHistogramBins,
-                              numberOfControlPoints=numberOfControlPoints,
-                              splineOrder=splineOrder,
-                              print_only=safety_on)
+        if not safety_on:
+            bias_field_correction(path_3d_nii_input, path_3d_nii_output,
+                                  pfi_mask=None,
+                                  prefix='',
+                                  convergenceThreshold=convergenceThreshold,
+                                  maximumNumberOfIterations=maximumNumberOfIterations,
+                                  biasFieldFullWidthAtHalfMaximum=biasFieldFullWidthAtHalfMaximum,
+                                  wienerFilterNoise=wienerFilterNoise,
+                                  numberOfHistogramBins=numberOfHistogramBins,
+                                  numberOfControlPoints=numberOfControlPoints,
+                                  splineOrder=splineOrder,
+                                  print_only=safety_on)
 
 
 """ EXTRACT LESIONS MASKS """
-# TO Think about !
+# Do THINK about it!
 
 """ CO-REGISTER """
 if step_co_register:

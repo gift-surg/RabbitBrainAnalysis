@@ -5,7 +5,7 @@ import os
 from tools.auxiliary.utils import set_new_data
 
 
-def squeeze_image(path_input_image, path_output_image):
+def squeeze_image_from_path(path_input_image, path_output_image):
     """
     copy the image in a new one with the dimension of the data squeezed.
     :param path_input_image: 
@@ -20,3 +20,5 @@ def squeeze_image(path_input_image, path_output_image):
         print('New image dimensions: {0}, saved in {1}'.format(str(new_im.shape), str(path_output_image)))
     else:
         print('No need to squeeze the input image.')
+
+    return '{0} is squeezed!'.format(str(path_output_image))
