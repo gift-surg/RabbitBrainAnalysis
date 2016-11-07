@@ -18,7 +18,7 @@ path_subj_1305_mask_ciccione = os.path.join(root_ex_vivo_template, 'templates', 
 
 # Controller
 step_reorient              = False  # not idemp.
-step_thr                   = False
+step_thr                   = True
 step_register_masks        = True
 step_cut_masks             = True
 step_bfc                   = True
@@ -28,9 +28,11 @@ step_co_register           = True
 safety_on = False
 
 # Parameters
-subjects = ['1702', '1805']  # ['1201', '1203', '1305', '1404', '1507', '1510']
+subjects = ['2002']  # ['1702', '1805']  # ['1201', '1203', '1305', '1404', '1507', '1510']
 
 thr = 300
+
+# Registration parameters:
 
 rigid_only_reg_mask = False
 
@@ -41,6 +43,7 @@ else:
     suffix_reg_mask = '_affine'
     suffix_command_reg_mask = ''
 
+# Bias field correction parameters:
 
 bfc_tag = '_bfc_default_'
 
