@@ -6,7 +6,8 @@ def parse_brukert_dwi_txt(input_path_txt,
                           output_folder,
                           output_type=np.float,
                           file_to_save=('DwDir=', 'DwEffBval=', 'DwGradVec=', 'VisuCoreDataSlope='),
-                          num_col_to_reshape=(1, 1, 3, 1)):
+                          num_col_to_reshape=(1, 1, 3, 1),
+                          prefix=''):
 
     for line in open(input_path_txt, 'r'):
         for j in range(len(file_to_save)):
@@ -35,7 +36,7 @@ def parse_brukert_dwi_txt(input_path_txt,
                 else:
                     raise IOError('Not compatible num_col_to_reshape in input.')
 
-                filename_path = os.path.join(output_folder, file_to_save[j][:-1] + '.txt')
+                filename_path = os.path.join(output_folder, prefix + file_to_save[j][:-1] + '.txt')
                 np.savetxt(filename_path, in_array, fmt='%.14f')
 
                 msg = 'Array ' + file_to_save[j][:-1] + ' saved in ' + filename_path + msg

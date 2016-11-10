@@ -164,3 +164,27 @@ test_obj_output = os.path.join(tmp_path, 'ciccione_1305_on_1201_3D_mask_affine_o
 d = 12
 copy_and_paste_on_slice_path(test_obj, test_obj_output, d)
 '''
+
+
+def cut_dwi_image_from_first_slice_mask(input_dwi, input_mask):
+
+    data_dwi  = input_dwi.get_data()
+    data_mask = input_mask.get_data()
+
+    data_masked_dw = np.zeros_like(data_dwi)
+
+    for t in range(input_dwi.shape[-1]):
+        data_masked_dw[..., t] = np.multiply(data_mask, data_dwi[..., t])
+
+    # image with header of the dwi and values under the mask for each slice:
+    return set_new_data(input_dwi, data_masked_dw)
+
+
+def cut_dwi_image_from_first_slice_mask_path(path_input_dwi, path_input_mask, path_output_masked_dwi):
+
+    im_dwi = nib.load(path_input_dwi)
+    im_mask = nib.load(path_input_mask)
+
+    im_masked = cut_dwi_image_from_first_slice_mask(im_dwi, im_mask)
+
+    nib.save(im_masked, path_output_masked_dwi)
