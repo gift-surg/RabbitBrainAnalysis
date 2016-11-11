@@ -188,3 +188,12 @@ def cut_dwi_image_from_first_slice_mask_path(path_input_dwi, path_input_mask, pa
     im_masked = cut_dwi_image_from_first_slice_mask(im_dwi, im_mask)
 
     nib.save(im_masked, path_output_masked_dwi)
+
+
+def eliminates_consecutive_duplicates(input_list):
+    output_list = [input_list[0],]
+    for i in range(1,len(input_list)):
+        if not input_list[i] == input_list[i-1]:
+            output_list.append(input_list[i])
+
+    return output_list

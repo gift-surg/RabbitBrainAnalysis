@@ -26,6 +26,7 @@ step_lesion_masks_creation = True
 step_co_register           = True
 
 safety_on = False
+verbose_on = True
 
 # Parameters
 subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '2002']
@@ -61,16 +62,18 @@ if step_reorient:
 
     for sj in subjects:
 
-        path_3d_nii_original = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_original.nii.gz')
-        path_3d_nii_oriented = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D.nii.gz')
-
-        print '\nReorient: execution for subject {0}.\n'.format(sj)
+        path_3d_nii_original = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D.nii.gz')
+        path_3d_nii_oriented = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_oriented.nii.gz')
 
         cmd = ''' cp {0} {1};
                   fslorient -deleteorient {1};
                   fslswapdim {1} -z -y -x {1};
                   fslorient -setqformcode 1 {1};'''.format(path_3d_nii_original, path_3d_nii_oriented)
-        print cmd
+
+        if verbose_on:
+            print '\nReorient: execution for subject {0}.\n'.format(sj)
+            print cmd
+
         if not safety_on:
             os.system(cmd)
 
@@ -79,13 +82,15 @@ if step_thr:
 
     for sj in subjects:
 
-        path_3d_nii_input = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D.nii.gz')
-        path_3d_nii_output = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_thr' + str(thr) + '.nii.gz')
-
-        print '\nThreshold: execution for subject {0}.\n'.format(sj)
+        path_3d_nii_input = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_oriented.nii.gz')
+        path_3d_nii_output = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_oriented_thr' + str(thr) + '.nii.gz')
 
         cmd = 'seg_maths {0} -thr {1} {2}'.format(path_3d_nii_input, thr, path_3d_nii_output)
-        print cmd
+
+        if verbose_on:
+            print '\nThreshold: execution for subject {0}.\n'.format(sj)
+            print cmd
+
         if not safety_on:
             os.system(cmd)
 
@@ -94,15 +99,13 @@ if step_register_masks:
 
     for sj in subjects:
 
-        path_3d_nii_fixed = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_thr' + str(thr) + '.nii.gz')
+        path_3d_nii_fixed = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_oriented_thr' + str(thr) + '.nii.gz')
         path_affine_transformation_output = os.path.join(root_ex_vivo_template, sj, 'transformations',
                                                          '1305_on_' + sj + '_3D' + suffix_reg_mask + '.txt')
 
         path_3d_warped_output = os.path.join(root_ex_vivo_template, 'zz_trash', '1305_on_' + sj + '_3D.nii.gz')
         path_resampled_mask_output = os.path.join(root_ex_vivo_template, sj, 'masks',
                                                   'ciccione_1305_on_' + sj + '_3D_mask' + suffix_reg_mask + '.nii.gz')
-
-        print '\nRegistration ciccione mask: execution for subject {0}.\n'.format(sj)
 
         cmd_1 = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} {4} ; '.format(path_3d_nii_fixed,
                                                                                path_subj_1305_templ,
@@ -113,7 +116,10 @@ if step_register_masks:
                                                                                       path_subj_1305_mask_ciccione,
                                                                                       path_affine_transformation_output,
                                                                                       path_resampled_mask_output)
-        print cmd_1 + cmd_2
+        if verbose_on:
+            print '\nRegistration ciccione mask: execution for subject {0}.\n'.format(sj)
+            print cmd_1 + cmd_2
+
         if not safety_on:
             os.system(cmd_1 + cmd_2)
 
@@ -122,17 +128,18 @@ if step_cut_masks:
 
     for sj in subjects:
 
-        path_3d_nii_input = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_thr' + str(thr) + '.nii.gz')
+        path_3d_nii_input = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_oriented_thr' + str(thr) + '.nii.gz')
         path_3d_nii_mask  = os.path.join(root_ex_vivo_template, sj, 'masks',
                                          'ciccione_1305_on_' + sj + '_3D_mask' + suffix_reg_mask + '.nii.gz')
         path_3d_cropped_roi_result = os.path.join(root_ex_vivo_template, sj, '3D',
                                                   sj + '_3D_thr' + str(thr) + '_masked.nii.gz')
 
-        print '\nCutting newly-created ciccione mask on the subject: execution for subject {0}.\n'.format(sj)
-
         cmd = 'seg_maths {0} -mul {1} {2}'.format(path_3d_nii_input, path_3d_nii_mask, path_3d_cropped_roi_result)
 
-        print cmd
+        if verbose_on:
+            print '\nCutting newly-created ciccione mask on the subject: execution for subject {0}.\n'.format(sj)
+            print cmd
+
         if not safety_on:
             os.system(cmd)
 
@@ -147,7 +154,8 @@ if step_bfc:
         path_3d_nii_output = os.path.join(root_ex_vivo_template, sj, '3D',
                                           sj + '_3D_thr' + str(thr) + '_masked' + bfc_tag + '.nii.gz')
 
-        print '\nBias field correction: execution for subject {0}.\n'.format(sj)
+        if verbose_on:
+            print '\nBias field correction: execution for subject {0}.\n'.format(sj)
 
         if not safety_on:
             bias_field_correction(path_3d_nii_input, path_3d_nii_output,

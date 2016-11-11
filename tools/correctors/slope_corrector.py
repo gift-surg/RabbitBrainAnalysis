@@ -1,22 +1,24 @@
 import numpy as np
-import argparse
-import textwrap
-import os
 import nibabel as nib
-from tools.auxiliary.utils import set_new_data
+
+from tools.auxiliary.utils import set_new_data, eliminates_consecutive_duplicates
 
 
-def slope_corrector(slopes, im_input):
+def slope_corrector(slopes, im_input, eliminate_consec_duplicates=False):
     """
     Correct from the slopes from the slope array and the image.
     :param slopes:
     :param im_input:
     :return:
     """
+
+    if eliminate_consec_duplicates:
+        slopes = eliminates_consecutive_duplicates(list(np.loadtxt(slopes)))
+
     im_data = im_input.get_data().astype(np.float64)
     num_directions = len(slopes)
 
-    if not (im_data.shape[3] == num_directions or im_data.shape[4] == num_directions):
+    if not (im_data.shape[3] == num_directions):  #  or im_data.shape[4] == num_directions
         err_msg = 'ERROR: Dimension of the given image scale not coherent with the given image.'
         raise IOError(err_msg)
 
@@ -27,7 +29,7 @@ def slope_corrector(slopes, im_input):
     return im_output
 
 
-def slope_corrector_path(slopes_txt_path, path_im_input, path_im_output):
+def slope_corrector_path(slopes_txt_path, path_im_input, path_im_output, eliminate_consec_duplicates=False):
     """
     Correct for the slope from the path of the elements
     :param slopes_txt_path:
@@ -37,8 +39,7 @@ def slope_corrector_path(slopes_txt_path, path_im_input, path_im_output):
     """
     im_input = nib.load(path_im_input)
     slopes = np.loadtxt(slopes_txt_path)
-
-    im_output = slope_corrector(slopes, im_input)
+    im_output = slope_corrector(slopes, im_input, eliminate_consec_duplicates=eliminate_consec_duplicates)
 
     nib.save(im_output, path_im_output)
 

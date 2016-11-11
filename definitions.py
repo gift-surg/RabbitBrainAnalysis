@@ -17,3 +17,5 @@ path_a_case = os.path.join(path_data_examples, 'test_bias_field', '1305_3D_manua
 root_ex_vivo_template = os.path.join(root_path_data, 'pipelines', 'ex_vivo_template')
 
 root_ex_vivo_dwi = os.path.join(root_path_data, 'pipelines', 'ex_vivo_DWI')
+
+root_in_vivo_dwi = os.path.join(root_path_data, 'pipelines', 'in_vivo_DWI')
