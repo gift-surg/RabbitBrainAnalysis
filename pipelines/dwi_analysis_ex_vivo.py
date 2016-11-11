@@ -10,6 +10,7 @@ from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, set_new_data
 from tools.parsers.parse_brukert_txt import parse_brukert_dwi_txt
 from tools.correctors.slope_corrector import slope_corrector_path
+from tools.parsers.separate_shells import separate_shells_txt_path, separate_shells_dwi_path
 
 # paths
 
@@ -22,12 +23,13 @@ step_dilate_mask                = False
 step_cut_to_mask_dwi            = False
 step_correct_the_slope          = False
 
-step_dwi_analysis_nifty_fit     = True
-step_reorient_nifty_fit         = True
+step_dwi_analysis_nifty_fit     = False
+step_reorient_nifty_fit         = False
 
 step_extract_bval_bvect_by_shells             = False
+step_divide_dwi_image_by_shells               = False
 step_dwi_analysis_nifty_fit_divided_by_shells = False
-step_dwi_reorient_fit_divided_by_shells       = False
+step_dwi_reorient_fit_divided_by_shells       = True
 
 step_dwi_analysis_fsl           = False
 step_reorient_fsl               = False
@@ -194,7 +196,6 @@ if step_correct_the_slope:
             slope_corrector_path(path_slopes_txt_input, path_3d_cropped_roi, path_3d_sloped_cropped_result)
 
 
-
 ###################
 # DO THE ANALYSIS #
 ###################
@@ -273,26 +274,117 @@ if step_reorient_nifty_fit:
             if not safety_on:
                 os.system(cmd)
 
-####################################
-# DO THE ANALYSIS DIVIDED BY CELLS #
-####################################
+#####################################
+# DO THE ANALYSIS DIVIDED BY SHELLS #
+#####################################
 
 if step_extract_bval_bvect_by_shells:
+
     for sj in subjects:
-        pass
+
+        path_b_vals = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwEffBval.txt')
+        path_b_vects = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwGradVec.txt')
+
+        print 'Separate b-vals and b-vect by shells: execution for subject {0}'.format(sj)
+
+        if not safety_on:
+            separate_shells_txt_path(path_b_vals, path_b_vects, prefix=sj, num_initial_dir_to_skip=1, num_shells=3)
+
+if step_divide_dwi_image_by_shells:
+
+    for sj in subjects:
+        path_to_dwi = path_input_dwi    = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DWI_cropped_and_slope_corrected.nii.gz')
+
+        print 'Separate dwi by shells: execution for subject {0}'.format(sj)
+
+        if not safety_on:
+            separate_shells_dwi_path(path_to_dwi, prefix=sj, suffix='_DWI_shell_',
+                                     num_initial_dir_to_skip=1, num_shells=3)
 
 if step_dwi_analysis_nifty_fit_divided_by_shells:
+
     for sj in subjects:
-        pass
+        num_shells = 3
+
+        for sh in range(num_shells):
+
+            # Analysis for each shell:
+
+            path_input_dwi    = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DWI_shell_' + str(sh) + '.nii.gz')
+
+            path_input_bval   = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwEffBval_shell' + str(sh) + '.txt')
+            path_input_bvect  = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwGradVec_shell' + str(sh) + '.txt')
+            path_input_mask   = os.path.join(root_ex_vivo_dwi, sj, 'masks', sj +'_ciccione_roi_mask.nii.gz')
+
+            path_output_folder = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fit_divided_by_shells')
+            path_output_dti    = os.path.join(path_output_folder, sj + '_v1map_shell' + str(sh) + '.nii.gz')
+            path_output_rgb_map = os.path.join(path_output_folder, sj + '_rgbmap_shell' + str(sh) + '.nii.gz')
+            path_output_adc_map = os.path.join(path_output_folder, sj + '_adcmap_shell' + str(sh) + '.nii.gz')
+            path_output_fa_map = os.path.join(path_output_folder, sj + '_famap_shell' + str(sh) + '.nii.gz')
+
+            # create the folder analysis_fit if nor present:
+            cmd_0 = 'mkdir -p {0}'.format(path_output_folder)
+
+            cmd = 'fit_dwi -source {0} -bval {1} -bvec {2}  -mask {3} ' \
+                  '-v1map {4} -rgbmap {5} -mdmap {6} -famap {7}'.format(path_input_dwi,
+                                                             path_input_bval,
+                                                             path_input_bvect,
+                                                             path_input_mask,
+                                                             path_output_dti,
+                                                             path_output_rgb_map,
+                                                             path_output_adc_map,
+                                                             path_output_fa_map)
+
+            print '\nPerform DWI analysis by shells: execution for subject {0} and for shell {1}\n'.format(sj, sh)
+
+            print cmd
+
+            if not safety_on:
+                os.system(cmd_0)
+                os.system(cmd)
+
 
 if step_dwi_reorient_fit_divided_by_shells:
+
+    num_shells = 3
     for sj in subjects:
-        pass
+
+        for sh in range(num_shells):
+            # copy the output for some new image!
+
+            path_images_folder = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fit_divided_by_shells')
+
+            path_analysis_folder = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fit_divided_by_shells')
+            path_dti    = os.path.join(path_analysis_folder, sj + '_v1map_shell' + str(sh) + '.nii.gz')
+            path_rgb_map = os.path.join(path_analysis_folder, sj + '_rgbmap_shell' + str(sh) + '.nii.gz')
+            path_adc_map = os.path.join(path_analysis_folder, sj + '_adcmap_shell' + str(sh) + '.nii.gz')
+            path_fa_map = os.path.join(path_analysis_folder, sj + '_famap_shell' + str(sh) + '.nii.gz')
+
+            path_analysis_folder_new  = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fit_divided_by_shells')
+            path_dti_new     = os.path.join(path_analysis_folder_new, sj + '_reoriented_v1map_shell' + str(sh) + '.nii.gz')
+            path_rgb_map_new = os.path.join(path_analysis_folder_new, sj + '_reoriented_rgbmap_shell' + str(sh) + '.nii.gz')
+            path_adc_map_new = os.path.join(path_analysis_folder_new, sj + '_reoriented_adcmap_shell' + str(sh) + '.nii.gz')
+            path_fa_map_new  = os.path.join(path_analysis_folder_new, sj + '_reoriented_famap_shell' + str(sh) + '.nii.gz')
+
+            list_paths = [path_dti, path_rgb_map, path_adc_map, path_fa_map]
+
+            list_paths_new = [path_dti_new, path_rgb_map_new, path_adc_map_new, path_fa_map_new]
+
+            print '\nReorient: execution for subject {0}.\n'.format(sj)
+
+            for im, im_new in zip(list_paths, list_paths_new):
+                cmd = ''' cp {0} {1};
+                          fslorient -deleteorient {1};
+                          fslswapdim {1} -z -y -x {1};
+                          fslorient -setqformcode 1 {1};'''.format(im, im_new)
+                print cmd
+                if not safety_on:
+                    os.system(cmd)
 
 
-###########################
-# CLEANING
-###########################
+################
+# DRY CLEANERS #
+################
 
 
 """ Erase un-useful things """
