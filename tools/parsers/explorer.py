@@ -2,7 +2,7 @@ import os
 from tabulate import tabulate
 import nibabel as nib
 import numpy as np
-from squeezer import squeeze_image
+from tools.auxiliary.squeezer import squeeze_image_from_path
 
 
 squeeze_as_well = False
@@ -26,8 +26,8 @@ for (dirpath, dirnames, filenames) in os.walk(dir_path):
                 isotropic = False
 
             if squeeze_as_well:
-                print '\nImage' + '/'.join(dirpath.split('/')[-3:]) + ' ' +filename
-                squeeze_image(os.path.join(dirpath, filename), os.path.join(dirpath, filename))
+                print '\nImage' + '/'.join(dirpath.split('/')[-3:]) + ' ' + filename
+                squeeze_image_from_path(os.path.join(dirpath, filename), os.path.join(dirpath, filename))
 
             one_info = [filename[:4], '/'.join(dirpath.split('/')[-3:]), filename, img.shape, resolution, isotropic]
             list_of_infos += [one_info]

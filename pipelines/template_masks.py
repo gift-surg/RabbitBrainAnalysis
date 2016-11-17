@@ -57,10 +57,10 @@ numberOfControlPoints = (4, 4, 4)
 splineOrder = 3
 
 
-""" REORIENT """
-if step_reorient:
+for sj in subjects:
 
-    for sj in subjects:
+    """ REORIENT """
+    if step_reorient:
 
         path_3d_nii_original = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D.nii.gz')
         path_3d_nii_oriented = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_oriented.nii.gz')
@@ -77,10 +77,8 @@ if step_reorient:
         if not safety_on:
             os.system(cmd)
 
-""" THRESHOLD """
-if step_thr:
-
-    for sj in subjects:
+    """ THRESHOLD """
+    if step_thr:
 
         path_3d_nii_input = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_oriented.nii.gz')
         path_3d_nii_output = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_oriented_thr' + str(thr) + '.nii.gz')
@@ -94,10 +92,8 @@ if step_thr:
         if not safety_on:
             os.system(cmd)
 
-""" REGISTER MASKS """
-if step_register_masks:
-
-    for sj in subjects:
+    """ REGISTER MASKS """
+    if step_register_masks:
 
         path_3d_nii_fixed = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_oriented_thr' + str(thr) + '.nii.gz')
         path_affine_transformation_output = os.path.join(root_ex_vivo_template, sj, 'transformations',
@@ -123,10 +119,8 @@ if step_register_masks:
         if not safety_on:
             os.system(cmd_1 + cmd_2)
 
-""" CUT MASKS """
-if step_cut_masks:
-
-    for sj in subjects:
+    """ CUT MASKS """
+    if step_cut_masks:
 
         path_3d_nii_input = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_oriented_thr' + str(thr) + '.nii.gz')
         path_3d_nii_mask  = os.path.join(root_ex_vivo_template, sj, 'masks',
@@ -143,10 +137,8 @@ if step_cut_masks:
         if not safety_on:
             os.system(cmd)
 
-""" BIAS FIELD CORRECTION """
-if step_bfc:
-
-    for sj in subjects:
+    """ BIAS FIELD CORRECTION """
+    if step_bfc:
 
         path_3d_nii_input = os.path.join(root_ex_vivo_template, sj, '3D',
                                          sj + '_3D_thr' + str(thr) + '_masked.nii.gz')
@@ -171,8 +163,10 @@ if step_bfc:
                                   print_only=safety_on)
 
 
-""" EXTRACT LESIONS MASKS """
-# Do THINK about it!
+    """ EXTRACT LESIONS MASKS """
+    # Do THINK about it!
+
+
 
 """ CO-REGISTER """
 if step_co_register:
@@ -180,4 +174,4 @@ if step_co_register:
 
 
 
-""""  Compute average with masks"""
+    """"  Compute average with masks"""

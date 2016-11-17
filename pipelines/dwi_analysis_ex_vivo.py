@@ -29,13 +29,12 @@ step_reorient_nifty_fit         = False
 step_extract_bval_bvect_by_shells             = False
 step_divide_dwi_image_by_shells               = False
 step_dwi_analysis_nifty_fit_divided_by_shells = False
-step_dwi_reorient_fit_divided_by_shells       = True
+step_dwi_reorient_fit_divided_by_shells       = False
 
 step_dwi_analysis_fsl           = False
-step_reorient_fsl               = False
+step_reorient_fsl               = True
 
 # only at the end of the process!
-step_reorient                   = False
 step_erase_unuseful_things      = False
 
 # safety, if on, plot only the command at terminal
@@ -44,8 +43,11 @@ verbose_on = True
 
 
 # Parameters
-subjects = ['1201']  # , '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002']
+subjects = ['1201'] #, '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002']
 dil_mask_factor = 5
+
+# Shells:
+num_shells = 3
 
 
 ######################
@@ -53,10 +55,10 @@ dil_mask_factor = 5
 ######################
 
 
-""" SQUEEZE """
-if step_squeeze:
+for sj in subjects:
 
-    for sj in subjects:
+    """ SQUEEZE """
+    if step_squeeze:
 
         path_dwi_nii_squeezed = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DWI.nii.gz')
 
@@ -66,11 +68,8 @@ if step_squeeze:
         if not safety_on:
             squeeze_image_from_path(path_dwi_nii_squeezed, path_dwi_nii_squeezed)
 
-
-""" step_extract_bval_b_vect_slope """
-if step_extract_bval_bvect_slope:
-
-    for sj in subjects:
+    """ step_extract_bval_b_vect_slope """
+    if step_extract_bval_bvect_slope:
 
         path_dwi_txt_input = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DWI.txt')
 
@@ -82,9 +81,8 @@ if step_extract_bval_bvect_slope:
                                   output_folder=os.path.dirname(path_dwi_txt_input),
                                   prefix=sj + '_')
 
-"""  Extract first slice of the DWI as a stand-alone image """
-if step_extract_first_slice:
-    for sj in subjects:
+    """  Extract first slice of the DWI as a stand-alone image """
+    if step_extract_first_slice:
 
         # create the folder masks:
         cmd_0 = 'mkdir -p {0}'.format(os.path.join(root_ex_vivo_dwi, sj, 'masks'))
@@ -106,11 +104,8 @@ if step_extract_first_slice:
             nib_first_slice_dwi = set_new_data(nib.load(path_dwi), nib_dwi_first_slice_data)
             nib.save(nib_first_slice_dwi, path_first_slice_dwi_extracted)
 
-
-""" Create the 1-time dimension DWI mask """
-if step_create_1d_layer_mask:
-
-    for sj in subjects:
+    """ Create the 1-time dimension DWI mask """
+    if step_create_1d_layer_mask:
 
         cmd_0 = 'mkdir -p {0}'.format(os.path.join(root_ex_vivo_dwi, sj, 'transformations'))
 
@@ -145,10 +140,8 @@ if step_create_1d_layer_mask:
             # same header of the 3d image.
             os.system(cmd_1 + cmd_2)
 
-""" dilate the newly created mask for safety reasons. """
-if step_dilate_mask:
-
-    for sj in subjects:
+    """ dilate the newly created mask for safety reasons. """
+    if step_dilate_mask:
 
         path_mask = os.path.join(root_ex_vivo_dwi, sj, 'masks',  sj +'_ciccione_roi_mask.nii.gz')
         cmd = 'seg_maths {0} -dil {1} {0}'.format(path_mask, dil_mask_factor)
@@ -159,11 +152,8 @@ if step_dilate_mask:
         if not safety_on:
             os.system(cmd)
 
-
-""" cut the mask from the anatomical images - this will reduce the size of the DWI significantly """
-if step_cut_to_mask_dwi:
-
-    for sj in subjects:
+    """ cut the mask from the anatomical images - this will reduce the size of the DWI significantly """
+    if step_cut_to_mask_dwi:
 
         path_dwi_nii_input = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DWI.nii.gz')
         path_3d_nii_mask_for_dwi = os.path.join(root_ex_vivo_dwi, sj, 'masks', sj + '_ciccione_roi_mask.nii.gz')
@@ -174,14 +164,11 @@ if step_cut_to_mask_dwi:
 
         if not safety_on:
             cut_dwi_image_from_first_slice_mask_path(path_dwi_nii_input,
-                                                 path_3d_nii_mask_for_dwi,
-                                                 path_dwi_cropped_roi_result)
+                                                     path_3d_nii_mask_for_dwi,
+                                                     path_dwi_cropped_roi_result)
 
-
-""" Correct for the slopes on the trimmed images """
-if step_correct_the_slope:
-
-    for sj in subjects:
+    """ Correct for the slopes on the trimmed images """
+    if step_correct_the_slope:
 
         path_slopes_txt_input = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_VisuCoreDataSlope.txt')
 
@@ -195,16 +182,12 @@ if step_correct_the_slope:
         if not safety_on:
             slope_corrector_path(path_slopes_txt_input, path_3d_cropped_roi, path_3d_sloped_cropped_result)
 
+    ###############################
+    # DO THE ANALYSIS # NIFTY FIT #
+    ###############################
 
-###################
-# DO THE ANALYSIS #
-###################
-
-
-""" Perform the DWI analysi - nifty_fit """
-if step_dwi_analysis_nifty_fit:
-
-    for sj in subjects:
+    """ Perform the DWI analysi - nifty_fit """
+    if step_dwi_analysis_nifty_fit:
 
         path_input_dwi    = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DWI_cropped_and_slope_corrected.nii.gz')
         path_input_bval   = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwEffBval.txt')
@@ -237,11 +220,8 @@ if step_dwi_analysis_nifty_fit:
             os.system(cmd_0)
             os.system(cmd)
 
-
-""" REORIENT output - only after all the analysis!!! """
-if step_reorient_nifty_fit:
-
-    for sj in subjects:
+    """ REORIENT output - only after all the analysis!!! """
+    if step_reorient_nifty_fit:
 
         # copy the output for some new image! It is not idempotent!
 
@@ -274,13 +254,70 @@ if step_reorient_nifty_fit:
             if not safety_on:
                 os.system(cmd)
 
-#####################################
-# DO THE ANALYSIS DIVIDED BY SHELLS #
-#####################################
 
-if step_extract_bval_bvect_by_shells:
+    #########################
+    # DO THE ANALYSIS # FSL #
+    #########################
 
-    for sj in subjects:
+    """ Perform the DWI analysi - FSL """
+    # dtifit -k ScaledData.nii.gz -b DwEffBval.txt -m Brain_mask.nii.gz -r bvecs.txt -w --save_tensor -o DTI/DT
+    if step_dwi_analysis_fsl:
+
+        path_input_dwi    = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DWI_cropped_and_slope_corrected.nii.gz')
+        path_input_bval   = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwEffBval.txt')
+        path_input_bvect  = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwGradVec.txt')
+        path_input_mask   = os.path.join(root_ex_vivo_dwi, sj, 'masks',  sj +'_ciccione_roi_mask.nii.gz')
+
+        path_output_folder = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fit')
+        path_output_dti    = os.path.join(root_ex_vivo_dwi, sj + '_dti_')
+
+        # create the folder analysis_fit if nor present:
+        cmd_0 = 'mkdir -p {0}'.format(os.path.join(root_ex_vivo_dwi, sj, 'analysis_fsl'))
+
+        cmd = 'dtifit -k {0} -b {1} -r {2} -m {3} ' \
+              '-w --save_tensor -o {4}'.format(path_input_dwi,
+                                               path_input_bval,
+                                               path_input_bvect,
+                                               path_input_mask,
+                                               path_output_dti)
+
+        print cmd
+
+        if not safety_on:
+            os.system(cmd_0)
+            os.system(cmd)
+
+    """ REORIENT output - only after all the analysis!!! """
+    if step_reorient_fsl:
+
+        # copy the output for some new image! It is not idempotent!
+
+        path_images_folder = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fsl')
+
+        print '\nReorient: execution for subject {0}.\n'.format(sj)
+
+        for (dirpath, dirnames, filenames) in os.walk(path_images_folder):
+            for filename in filenames:
+                if filename.endswith('.nii.gz') or filename.endswith('.nii'):
+                    im = os.path.join(dirpath, filename)
+                    im_name_reoriented = 'reoriented_' + filename.split('.')[0] + '.nii.gz'
+                    im_new = os.path.join(dirpath, im_name_reoriented)
+
+                    cmd = ''' cp {0} {1};
+                              fslorient -deleteorient {1};
+                              fslswapdim {1} -z -y -x {1};
+                              fslorient -setqformcode 1 {1};'''.format(im, im_new)
+                    print cmd
+
+                    if not safety_on:
+                        os.system(cmd)
+
+
+    #####################################
+    # DO THE ANALYSIS DIVIDED BY SHELLS #
+    #####################################
+
+    if step_extract_bval_bvect_by_shells:
 
         path_b_vals = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwEffBval.txt')
         path_b_vects = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwGradVec.txt')
@@ -288,23 +325,20 @@ if step_extract_bval_bvect_by_shells:
         print 'Separate b-vals and b-vect by shells: execution for subject {0}'.format(sj)
 
         if not safety_on:
-            separate_shells_txt_path(path_b_vals, path_b_vects, prefix=sj, num_initial_dir_to_skip=1, num_shells=3)
+            separate_shells_txt_path(path_b_vals, path_b_vects, prefix=sj,
+                                     num_initial_dir_to_skip=1, num_shells=num_shells)
 
-if step_divide_dwi_image_by_shells:
+    if step_divide_dwi_image_by_shells:
 
-    for sj in subjects:
         path_to_dwi = path_input_dwi    = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DWI_cropped_and_slope_corrected.nii.gz')
 
         print 'Separate dwi by shells: execution for subject {0}'.format(sj)
 
         if not safety_on:
             separate_shells_dwi_path(path_to_dwi, prefix=sj, suffix='_DWI_shell_',
-                                     num_initial_dir_to_skip=1, num_shells=3)
+                                     num_initial_dir_to_skip=1, num_shells=num_shells)
 
-if step_dwi_analysis_nifty_fit_divided_by_shells:
-
-    for sj in subjects:
-        num_shells = 3
+    if step_dwi_analysis_nifty_fit_divided_by_shells:
 
         for sh in range(num_shells):
 
@@ -343,11 +377,7 @@ if step_dwi_analysis_nifty_fit_divided_by_shells:
                 os.system(cmd_0)
                 os.system(cmd)
 
-
-if step_dwi_reorient_fit_divided_by_shells:
-
-    num_shells = 3
-    for sj in subjects:
+    if step_dwi_reorient_fit_divided_by_shells:
 
         for sh in range(num_shells):
             # copy the output for some new image!
@@ -355,16 +385,16 @@ if step_dwi_reorient_fit_divided_by_shells:
             path_images_folder = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fit_divided_by_shells')
 
             path_analysis_folder = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fit_divided_by_shells')
+
             path_dti    = os.path.join(path_analysis_folder, sj + '_v1map_shell' + str(sh) + '.nii.gz')
             path_rgb_map = os.path.join(path_analysis_folder, sj + '_rgbmap_shell' + str(sh) + '.nii.gz')
             path_adc_map = os.path.join(path_analysis_folder, sj + '_adcmap_shell' + str(sh) + '.nii.gz')
             path_fa_map = os.path.join(path_analysis_folder, sj + '_famap_shell' + str(sh) + '.nii.gz')
 
-            path_analysis_folder_new  = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fit_divided_by_shells')
-            path_dti_new     = os.path.join(path_analysis_folder_new, sj + '_reoriented_v1map_shell' + str(sh) + '.nii.gz')
-            path_rgb_map_new = os.path.join(path_analysis_folder_new, sj + '_reoriented_rgbmap_shell' + str(sh) + '.nii.gz')
-            path_adc_map_new = os.path.join(path_analysis_folder_new, sj + '_reoriented_adcmap_shell' + str(sh) + '.nii.gz')
-            path_fa_map_new  = os.path.join(path_analysis_folder_new, sj + '_reoriented_famap_shell' + str(sh) + '.nii.gz')
+            path_dti_new     = os.path.join(path_analysis_folder, sj + '_reoriented_v1map_shell' + str(sh) + '.nii.gz')
+            path_rgb_map_new = os.path.join(path_analysis_folder, sj + '_reoriented_rgbmap_shell' + str(sh) + '.nii.gz')
+            path_adc_map_new = os.path.join(path_analysis_folder, sj + '_reoriented_adcmap_shell' + str(sh) + '.nii.gz')
+            path_fa_map_new  = os.path.join(path_analysis_folder, sj + '_reoriented_famap_shell' + str(sh) + '.nii.gz')
 
             list_paths = [path_dti, path_rgb_map, path_adc_map, path_fa_map]
 
@@ -381,18 +411,14 @@ if step_dwi_reorient_fit_divided_by_shells:
                 if not safety_on:
                     os.system(cmd)
 
+    ################
+    # DRY CLEANERS #
+    ################
 
-################
-# DRY CLEANERS #
-################
+    """ Erase un-useful things """
+    if step_erase_unuseful_things:
 
-
-""" Erase un-useful things """
-if step_erase_unuseful_things:
-
-    # list images to be erased:
-    for sj in subjects:
-
+        # list images to be erased:
         path_first_slice_dwi_extracted = os.path.join(root_ex_vivo_dwi, sj, 'masks', sj + '_first_slice_DWI.nii.gz')
         path_not_sloped_corrected = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DWI_cropped.nii.gz')
 
@@ -403,6 +429,16 @@ if step_erase_unuseful_things:
         path_adc_map = os.path.join(path_images_folder, sj + '_adcmap.nii.gz')
         path_fa_map = os.path.join(path_images_folder, sj + '_famap.nii.gz')
         #path_noddi = os.path.join(path_images_folder, sj + '_noddi.nii.gz')
+
+        # not reoriented analysis, divided by shells:
+        path_analysis_folder_divided_shells = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fit_divided_by_shells')
+
+        for sh in range(num_shells):
+
+            path_dti    = os.path.join(path_analysis_folder, sj + '_v1map_shell' + str(sh) + '.nii.gz')
+            path_rgb_map = os.path.join(path_analysis_folder, sj + '_rgbmap_shell' + str(sh) + '.nii.gz')
+            path_adc_map = os.path.join(path_analysis_folder, sj + '_adcmap_shell' + str(sh) + '.nii.gz')
+            path_fa_map = os.path.join(path_analysis_folder, sj + '_famap_shell' + str(sh) + '.nii.gz')
 
         # not reoriented analysis outcomes for fsl results:
 
