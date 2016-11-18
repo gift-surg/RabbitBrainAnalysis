@@ -45,7 +45,7 @@ class Neighbour:
         return nn
 
 
-class ConnectedComponentTools:
+class ConnectedComponentsTools:
 
     def __init__(self, data_input, data_output, data_foreground=None):
 
