@@ -14,14 +14,14 @@ def matrix_per_list_of_arrays(in_matrix, in_array):
     return np.array([in_matrix.dot(in_array[i,:]) for i in range(in_array.shape[0])])
 
 
-def parse_brukert_dwi_txt(input_path_txt,
-                          output_folder,
-                          output_type=np.float,
-                          file_to_save=('DwDir=', 'DwEffBval=', 'DwGradVec=', 'VisuCoreDataSlope='),
-                          num_col_to_reshape=(1, 1, 3, 1),
-                          prefix='',
-                          rotation=None,
-                          normalize=True):
+def parse_bruker_dwi_txt(input_path_txt,
+                         output_folder,
+                         output_type=np.float,
+                         file_to_save=('DwDir=', 'DwEffBval=', 'DwGradVec=', 'VisuCoreDataSlope='),
+                         num_col_to_reshape=(1, 1, 3, 1),
+                         prefix='',
+                         rotation=None,
+                         normalize=True):
 
     for line in open(input_path_txt, 'r'):
         for j in range(len(file_to_save)):

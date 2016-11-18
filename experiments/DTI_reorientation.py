@@ -13,7 +13,7 @@ from definitions import root_ex_vivo_dwi
 
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, set_new_data
-from tools.parsers.parse_brukert_txt import parse_brukert_dwi_txt
+from tools.parsers.parse_bruker_txt import parse_bruker_dwi_txt
 from tools.correctors.slope_corrector import slope_corrector_path
 from tools.parsers.separate_shells import separate_shells_txt_path, separate_shells_dwi_path
 
@@ -157,10 +157,10 @@ if step_extract_b_values:
     print 'matrix = {0}'.format(rotation_matrix)
 
     if not safety_on:
-        parse_brukert_dwi_txt(dwi_txt,
-                              output_folder=root_test,
-                              prefix='txt_',
-                              rotation=rotation_matrix)
+        parse_bruker_dwi_txt(dwi_txt,
+                             output_folder=root_test,
+                             prefix='txt_',
+                             rotation=rotation_matrix)
 
 # Correct for the slope:
 

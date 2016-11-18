@@ -1,6 +1,6 @@
 import numpy as np
 
-from tools.parsers.parse_brukert_txt import matrix_per_list_of_arrays
+from tools.parsers.parse_bruker_txt import matrix_per_list_of_arrays
 
 
 def test_matrix_per_list_of_arrays():

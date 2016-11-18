@@ -18,7 +18,7 @@ def main():
     To have the actual float value obtained at the acquisition, each DWI slice
     (5th dimensional index for nifti-format) must be multiplied for a number
     (called image scale or data slope) stored in a txt file (VisuCoreDataSlope.txt
-    in Brukert after parsing).
+    in Bruker after parsing).
 
     This script take as input the DWI image, the file that should accompanies each DWI image and
     provides the DWI with the actual DWI with the float values.

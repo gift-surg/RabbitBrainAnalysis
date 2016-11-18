@@ -5,7 +5,7 @@ import argparse
 import textwrap
 import os
 
-from tools.parsers.parse_brukert_txt import parse_brukert_txt
+from tools.parsers.parse_bruker_txt import parse_bruker_dwi_txt
 
 """
 Module to parse the .txt bruker data into b_values and b_vectors.
@@ -18,13 +18,13 @@ def main():
     Parser from terminal
     The command:
 
-    $ python2 parser_brukert_txt.py 0104_DWI.txt
+    $ python2 parser_bruker_txt.py 0104_DWI.txt
 
     saves the required files in the same folder of the input file.
 
     With the command
 
-    $ python2 parser_brukert_txt.py 0104_DWI.txt -o path_to_a_folder
+    $ python2 parser_bruker_txt.py 0104_DWI.txt -o path_to_a_folder
 
     """
 
@@ -79,7 +79,7 @@ def main():
     file_to_save = ['DwDir=', 'DwEffBval=', 'DwGradVec=', 'VisuCoreDataSlope=']
     num_col_to_reshape = [1, 1, 3, 1]
 
-    parse_brukert_txt(args.input_path_txt, file_path,
+    parse_bruker_dwi_txt(args.input_path_txt, file_path,
                       output_type=output_type,
                       file_to_save=file_to_save,
                       num_col_to_reshape=num_col_to_reshape)

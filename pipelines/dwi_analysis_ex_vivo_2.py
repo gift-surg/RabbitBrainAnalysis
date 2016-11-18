@@ -8,7 +8,7 @@ import nibabel as nib
 from definitions import root_ex_vivo_dwi, root_ex_vivo_template
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, set_new_data
-from tools.parsers.parse_brukert_txt import parse_brukert_dwi_txt
+from tools.parsers.parse_bruker_txt import parse_bruker_dwi_txt
 from tools.correctors.slope_corrector import slope_corrector_path
 from tools.parsers.separate_shells import separate_shells_txt_path, separate_shells_dwi_path
 
@@ -84,9 +84,9 @@ for sj in subjects:
             print '\nParse the txt data files b-val b-vect and slopes: execution for subject {0}.\n'.format(sj)
 
         if not safety_on:
-            parse_brukert_dwi_txt(path_dwi_txt_input,
-                                  output_folder=os.path.dirname(path_dwi_txt_input),
-                                  prefix=sj + '_')
+            parse_bruker_dwi_txt(path_dwi_txt_input,
+                                 output_folder=os.path.dirname(path_dwi_txt_input),
+                                 prefix=sj + '_')
 
     """  Extract first slice of the DWI as a stand-alone image """
     if step_extract_first_slice:
