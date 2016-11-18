@@ -51,7 +51,7 @@ class ConnectedComponentTools:
 
         self.data_input = data_input
         self.data_output = data_output
-        self.data_foreground = data_foreground
+        self.data_foreground = data_foreground  # Mask of the region of interest.
         # nn = Neighbour()
         # self.neighbour = nn.return_neighbour()
         self.neighbour = [(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1), (-1, 0, 0), (0, -1, 0), (0, 0, -1)]
@@ -72,17 +72,23 @@ class ConnectedComponentTools:
                     for k in range(dim_z):
                         pass
 
-    def filter_the_biggest_connected_component(self, save=False):
+    def take_the_biggest_connected_component(self, save=False):
         pass
 
-    def filter_the_smallest_connected_component(self, save=False):
+    def take_the_smallest_connected_component(self, save=False):
         pass
 
     def take_the_biggest_connected_component_connected_to_the_background(self, save=False):
         pass
 
-    def filter_components_by_radius(self, save=False):
+    def take_components_by_radius(self, save=False):
         pass
 
-    def filter_non_convex_components(self, save=False):
+    def take_non_convex_components(self, save=False):
+        pass
+
+    def dilate_components(self):
+        pass
+
+    def erode_components(self):
         pass

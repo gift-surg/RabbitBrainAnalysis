@@ -18,6 +18,8 @@ axis 2: perpendicular to the face [[0,1],[5,4]] (top-bottom)
 ----------
 Note: the command m[:, ::-1, :].swapaxes(0, 1)[::-1, :, :].swapaxes(0, 2) rotates the cube m
 around the diagonal axis 0-7.
+----------
+Note: avoid reorienting the data if you can reorient the header instead.
 """
 
 
@@ -32,9 +34,9 @@ def basic_rot_ax(m, ax=0):
     if ax == 0:
         return np.rot90(m[:, ::-1, :].swapaxes(0, 1)[::-1, :, :].swapaxes(0, 2), 3)
     if ax == 1:
-        return np.rot90(m, 1)
-    if ax == 2:
         return m.swapaxes(0, 2)[::-1, :, :]
+    if ax == 2:
+        return np.rot90(m, 1)
 
 
 def axial_rotations(m, rot=1, ax=2):

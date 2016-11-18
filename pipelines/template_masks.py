@@ -162,9 +162,11 @@ for sj in subjects:
                                   splineOrder=splineOrder,
                                   print_only=safety_on)
 
+    """ REMOVE HIGH INENSITY AREAS """
+
 
     """ EXTRACT LESIONS MASKS """
-    # Do THINK about it!
+
 
 
 
