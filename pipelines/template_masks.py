@@ -7,28 +7,40 @@ import numpy as np
 
 from definitions import root_ex_vivo_template
 from tools.correctors.bias_field_corrector4 import bias_field_correction
+from tools.auxiliary.lesion_mask_extractor import simple_lesion_mask_extractor_path
 
 """
 Preliminary template for the selected ex-vivo subject.
 """
 
-# paths templates:
-path_subj_1305_templ         = os.path.join(root_ex_vivo_template, 'templates', '1305_3D.nii.gz')
-path_subj_1305_mask_ciccione = os.path.join(root_ex_vivo_template, 'templates', '1305_3D_mask_fin_dil5.nii.gz')
+####################
+# paths templates: #
+####################
 
-# Controller
-step_reorient              = False  # not idemp.
+path_subj_1305_templ         = os.path.join(root_ex_vivo_template, 'templates', '1305_3D.nii.gz')
+path_subj_1305_mask_ciccione = os.path.join(root_ex_vivo_template, 'templates', '1305_3D_roi_mask_2.nii.gz')
+
+####################
+# Controller:      #
+####################
+
+step_reorient              = True
 step_thr                   = True
 step_register_masks        = True
 step_cut_masks             = True
 step_bfc                   = True
-step_lesion_masks_creation = True
-step_co_register           = True
+step_compute_lesion_masks  = False
+step_compute_registration_masks = False
+
 
 safety_on = False
 verbose_on = True
 
-# Parameters
+####################
+# Parameters:      #
+####################
+
+
 subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '2002']
 
 thr = 300
@@ -55,6 +67,11 @@ wienerFilterNoise = 0.01
 numberOfHistogramBins = 200
 numberOfControlPoints = (4, 4, 4)
 splineOrder = 3
+
+
+##################
+# PIPELINE:      #
+##################
 
 
 for sj in subjects:
@@ -162,18 +179,40 @@ for sj in subjects:
                                   splineOrder=splineOrder,
                                   print_only=safety_on)
 
-    """ REMOVE HIGH INENSITY AREAS """
+    """ CREATE LESION MASKS AND REGISTRATION MASKS FOR THE CO-REGISTRATION """
+
+    """ COMPUTE LESIONS MASKS """
+
+    # compute lesion masks
+    if step_compute_lesion_masks:
+
+        source = os.path.join(root_ex_vivo_template, sj, '3D',
+                              sj + '_3D_thr' + str(thr) + '_masked' + bfc_tag + '.nii.gz')
+        source_ciccione = os.path.join(root_ex_vivo_template, sj, 'masks', 'ciccione_1305_on_' + sj +'_3D_mask_affine.nii')
+        target_lesion_mask = os.path.join(root_ex_vivo_template, sj, 'masks', sj + '_lesion_mask.nii.gz')
+
+        print "Lesions masks extractor for subject {} \n".format(sj)
+
+        simple_lesion_mask_extractor_path(source, target_lesion_mask, source_ciccione, safety_on=safety_on)
+
+    """ COMPUTE REGISTRATION MASKS """
+
+    # compute registration masks from lesions masks
+    if step_compute_registration_masks:
+
+            source_ciccione = os.path.join(root_ex_vivo_template, sj, 'masks', 'ciccione_1305_on_' + sj +'_3D_mask_affine.nii')
+            source_lesion_masks = os.path.join(root_ex_vivo_template, sj, 'masks', sj + '_lesion_mask.nii.gz')
+            target_registration_masks = os.path.join(root_ex_vivo_template, sj, 'masks', sj + '_registration_mask.nii.gz')
+
+            print "Create registration mask for subject {} \n".format(sj)
+
+            cmd = '''seg_maths {0} -sub {1} {2} '''.format(source_ciccione, source_lesion_masks, target_registration_masks)
+            print cmd
+
+            if not safety_on:
+                os.system(cmd)
 
 
-    """ EXTRACT LESIONS MASKS """
 
 
 
-
-""" CO-REGISTER """
-if step_co_register:
-    pass
-
-
-
-    """"  Compute average with masks"""

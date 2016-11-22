@@ -4,3 +4,4 @@ __pycache__
 .idea
 *.npy
 *_old.py
+output

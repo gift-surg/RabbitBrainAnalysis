@@ -42,6 +42,8 @@ step_open_and_see      = False
 safety_on = False
 
 
+# TODO: use this one to update the pipeline!
+
 
 # Reorient DWI
 if step_reorient:
@@ -177,6 +179,9 @@ if step_correct_slope:
             slope_corrector_path(path_slopes_txt_input,
                                  path_input_dwi,
                                  path_output_dwi_slope_corrected)
+
+
+
 
 # Perform DTI:
 

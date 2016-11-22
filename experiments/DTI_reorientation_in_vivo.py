@@ -42,6 +42,8 @@ step_open_and_see      = True
 safety_on = False
 
 
+# TODO: use this one to update the pipeline!
+
 
 # Reorient DWI
 if step_reorient:
