@@ -5,3 +5,4 @@ __pycache__
 *.npy
 *_old.py
 output
+z_*

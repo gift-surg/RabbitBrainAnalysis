@@ -27,9 +27,9 @@ def filter_connected_components_by_volume(im_input, num_cc_to_filter=10):
 
     dim_x, dim_y, dim_z = list(im_data.shape)
 
-    for i in range(dim_x):
-        for j in range(dim_y):
-            for k in range(dim_z):
+    for i in xrange(dim_x):
+        for j in xrange(dim_y):
+            for k in xrange(dim_z):
                 if im_data[i, j, k] > 0:
                     volumes_per_label[im_data[i, j, k] - 1] += 1
 
@@ -49,9 +49,9 @@ def filter_connected_components_by_volume(im_input, num_cc_to_filter=10):
         print m
         print list_volumes_copy
 
-    for i in range(dim_x):
-        for j in range(dim_y):
-            for k in range(dim_z):
+    for i in xrange(dim_x):
+        for j in xrange(dim_y):
+            for k in xrange(dim_z):
                 if im_data[i, j, k] in max_labels:
                     new_data[i, j, k] = max_labels.index(im_data[i, j, k]) + 1
 

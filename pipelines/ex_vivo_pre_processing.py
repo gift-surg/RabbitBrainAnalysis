@@ -26,23 +26,28 @@ path_subj_1305_mask_ciccione = os.path.join(root_ex_vivo_template, 'templates', 
 
 step_reorient              = False
 step_thr                   = False
-step_register_masks        = True
-step_cut_masks             = True
-step_bfc                   = True
-step_compute_lesion_masks  = False
-step_compute_registration_masks = False
-
+step_register_masks        = False
+step_cut_masks             = False
+step_bfc                   = False
+step_compute_lesion_masks  = True
+step_compute_registration_masks = True
 
 safety_on = False
 verbose_on = True
+
+# AUTOMATIC DELETION - DANGER ZONE
+
+delete_all_results = False
+are_you_sure_you_want_to_delete_all_results = False
+
 
 ####################
 # Parameters:      #
 ####################
 
 
-subjects = ['0802_t1' ] #,
-
+# subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '2002']
+subjects = ['1404', '1507', '1510', '2002']
 thr = 300
 
 # Registration parameters:
@@ -135,7 +140,12 @@ for sj in subjects:
             print '\nRegistration ciccione mask: execution for subject {0}.\n'.format(sj)
             print cmd_1 + cmd_2
 
+        cmd_0a = 'mkdir -p {0}'.format(os.path.join(root_ex_vivo_template, sj, 'transformations'))
+        cmd_0b = 'mkdir -p {0}'.format(os.path.join(root_ex_vivo_template, sj, 'masks'))
+
         if not safety_on:
+            os.system(cmd_0a)
+            os.system(cmd_0b)
             os.system(cmd_1 + cmd_2)
 
     """ CUT MASKS """
@@ -153,7 +163,10 @@ for sj in subjects:
             print '\nCutting newly-created ciccione mask on the subject: execution for subject {0}.\n'.format(sj)
             print cmd
 
+        cmd_0 = 'mkdir -p {0}'.format(os.path.join(root_ex_vivo_template, sj, 'masks'))
+
         if not safety_on:
+            os.system(cmd_0)
             os.system(cmd)
 
     """ BIAS FIELD CORRECTION """
@@ -215,6 +228,21 @@ for sj in subjects:
                 os.system(cmd)
 
 
+if delete_all_results and are_you_sure_you_want_to_delete_all_results:
+    for sj in subjects:
+        path_3d_nii_oriented = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_oriented.nii.gz')
+        path_3d_nii_oriented_thr = os.path.join(root_ex_vivo_template, sj, '3D', sj + '_3D_oriented_thr*.nii.gz')
+        path_3d_cropped_and_bfc = os.path.join(root_ex_vivo_template, sj, '3D',
+                                                  sj + '_3D_thr*.nii.gz')
+        cmd_0a = 'rm -r {0}'.format(os.path.join(root_ex_vivo_template, sj, 'transformations'))
+        cmd_0b = 'rm -r {0}'.format(os.path.join(root_ex_vivo_template, sj, 'masks'))
+        cmd_1 = 'rm -r {0}'.format(path_3d_nii_oriented)
+        cmd_2 = 'rm -r {0}'.format(path_3d_nii_oriented_thr)
+        cmd_3 = 'rm -r {0}'.format(path_3d_cropped_and_bfc)
 
-
-
+        if not safety_on:
+            os.system(cmd_0a)
+            os.system(cmd_0b)
+            os.system(cmd_1)
+            os.system(cmd_2)
+            os.system(cmd_3)

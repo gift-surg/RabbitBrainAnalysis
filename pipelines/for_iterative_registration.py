@@ -9,8 +9,8 @@ from definitions import root_ex_vivo_template
 # controller: #
 ###############
 
-step_create_image_alias              = True
-step_create_registration_masks_alias = True
+step_create_image_alias              = False
+step_create_registration_masks_alias = False
 step_run_iterative_registration      = True
 
 safety_on = False
@@ -28,7 +28,7 @@ list_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '2002']
 root_iterative_registration = os.path.join(root_ex_vivo_template, 'co_registration')
 reg_images_folder_path = os.path.join(root_iterative_registration, 'input_images')
 reg_masks_folder_path = os.path.join(root_iterative_registration, 'input_masks')
-reg_results_folder_path = os.path.join(root_iterative_registration, 'results')
+reg_results_folder_path = os.path.join(root_iterative_registration, 'results_10')
 
 ###############
 # Pipeline: #

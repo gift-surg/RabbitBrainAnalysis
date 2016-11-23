@@ -32,15 +32,15 @@ def test_lesion_masks_extractor_for_simple_input():
         im_data = np.concatenate((im_data, slice), axis=2)
 
     im = nib.Nifti1Image(im_data, np.eye(4))
-    #nib.save(im, 'output/test.nii.gz')
-    #os.system('open {}'.format('output/test.nii.gz'))
+    nib.save(im, os.path.join(root_dir, 'output/test.nii.gz'))
+    #os.system('open {}'.format(os.path.join(root_dir, 'output/test.nii.gz')))
 
     #
     im_filtered = filter_connected_components_by_volume(im, num_cc_to_filter=3)
 
     # for the moment visual assessment test!
-    nib.save(im_filtered, 'output/test_fil.nii.gz')
-    os.system('open {}'.format('output/test_fil.nii.gz'))
+    nib.save(im_filtered, os.path.join(root_dir, 'output/test_fil.nii.gz'))
+    os.system('open {}'.format(os.path.join(root_dir, 'output/test_fil.nii.gz')))
 
     #cmd = 'rm -r {0}'.format(os.path.join(root_dir, 'output'))
     #os.system(cmd)
