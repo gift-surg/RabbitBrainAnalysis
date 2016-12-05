@@ -1,4 +1,5 @@
 """
+Preliminary template for the selected ex-vivo subject.
 Based on nifty_reg, nifty_seg and freesurfer, should all be installed on the system before running the program.
 """
 
@@ -9,9 +10,6 @@ from definitions import root_ex_vivo_template
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.auxiliary.lesion_mask_extractor import simple_lesion_mask_extractor_path
 
-"""
-Preliminary template for the selected ex-vivo subject.
-"""
 
 ####################
 # paths templates: #
@@ -24,13 +22,13 @@ path_subj_1305_mask_ciccione = os.path.join(root_ex_vivo_template, 'templates', 
 # Controller:      #
 ####################
 
-step_reorient              = False
-step_thr                   = False
-step_register_masks        = False
-step_cut_masks             = False
-step_bfc                   = False
-step_compute_lesion_masks  = True
-step_compute_registration_masks = True
+step_reorient              = True
+step_thr                   = True
+step_register_masks        = True
+step_cut_masks             = True
+step_bfc                   = True
+step_compute_lesion_masks  = False
+step_compute_registration_masks = False
 
 safety_on = False
 verbose_on = True
@@ -47,7 +45,7 @@ are_you_sure_you_want_to_delete_all_results = False
 
 
 # subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '2002']
-subjects = ['1404', '1507', '1510', '2002']
+subjects = ['1702']
 thr = 300
 
 # Registration parameters:

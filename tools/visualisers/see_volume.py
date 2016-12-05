@@ -1,15 +1,15 @@
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider, Button, RadioButtons
+from matplotlib.widgets import Slider, Button, RadioButtons, CheckButtons
 import SimpleITK as sitk
+
 
 def see_array(in_array, extra_image=None, scale=None, num_fig=1):
 
     fig = plt.figure(num_fig, figsize=(6, 7.5), dpi=100)
     ax = fig.add_subplot(111)
     ax.set_position([0.1, 0.29, 0.8, 0.7])
-    #fig, ax = plt.subplots(figsize=(6, 7.5), dpi=100)
-    #plt.subplots_adjust(left=0.1, bottom=0.29)
-    #fig.canvas.set_window_title('Image in matrix coordinates, C convention.')
+
+    fig.canvas.set_window_title('Image in matrix coordinates, C convention.')
 
     dims = in_array.shape  # (i,j,k,t,d)
     dims_mean = [int(d / 2) for d in dims]
@@ -17,8 +17,15 @@ def see_array(in_array, extra_image=None, scale=None, num_fig=1):
     init_ax = 0
     axcolor = '#ababab'
 
+    global l
     l = ax.imshow(in_array.take(dims_mean[init_ax], axis=init_ax), aspect='equal', origin='lower', interpolation='nearest', cmap='gray')
     #dot = ax.plot(dims_mean[1], dims_mean[2], 'r+')
+
+    global cursor_on
+    global cursor_coord
+
+    cursor_on = True
+    cursor_coord = dims_mean[:]
 
     i_slider_plot = plt.axes([0.25, 0.2, 0.65, 0.03], axisbg='r')
     i_slider = Slider(i_slider_plot, 'i', 0, dims[0] - 1, valinit=dims_mean[0], valfmt='%1i')
@@ -46,7 +53,6 @@ def see_array(in_array, extra_image=None, scale=None, num_fig=1):
             ax.set_ylim([0, dims[1]])
             #l.set_array(in_array.take(new_i, axis=0))
 
-
         if label == 'ik':
             new_j = int(j_slider.val)
             l = ax.imshow(in_array.take(new_j, axis=1), aspect='equal', origin='lower', interpolation='nearest', cmap='gray')
@@ -55,7 +61,6 @@ def see_array(in_array, extra_image=None, scale=None, num_fig=1):
             ax.set_ylim([0, dims[0]])
             #l.set_array(in_array.take(new_j, axis=1))
 
-
         if label == 'ij':
             new_k = int(k_slider.val)
             l = ax.imshow(in_array.take(new_k, axis=2), aspect='equal', origin='lower', interpolation='nearest', cmap='gray')
@@ -63,21 +68,25 @@ def see_array(in_array, extra_image=None, scale=None, num_fig=1):
             ax.set_ylim([0, dims[0]])
             #l.set_array(in_array.take(new_k, axis=2))
 
-
         fig.canvas.draw()
 
     def update_slides(val):
 
         global l
+        global cursor_coord
 
         new_i = int(i_slider.val)
         new_j = int(j_slider.val)
         new_k = int(k_slider.val)
 
+        cursor_coord = [new_i, new_j, new_k]
+
         if axis_selector.value_selected == 'jk':
             l.set_array(in_array.take(new_i, axis=0))
+
         if axis_selector.value_selected == 'ik':
             l.set_array(in_array.take(new_j, axis=1))
+
         if axis_selector.value_selected == 'ij':
             l.set_array(in_array.take(new_k, axis=2))
 
@@ -95,6 +104,24 @@ def see_array(in_array, extra_image=None, scale=None, num_fig=1):
     k_slider.on_changed(update_slides)
 
     center_image_button.on_clicked(reset_slides)
+
+
+
+    axis_select_cursor = plt.axes([0.05, 0.4, 0.1, 0.15])
+    check = CheckButtons(axis_select_cursor, ('Cursor', ), (cursor_on, ))
+
+    def func(label):
+        global cursor_on
+        global cursor_coord
+
+        if label == 'Cursor':
+            cursor_on = bool((cursor_on + 1) % 2)
+            print cursor_on
+            print cursor_coord
+
+        plt.draw()
+    check.on_clicked(func)
+
 
     '''
     def onclick(event):

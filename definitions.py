@@ -21,3 +21,6 @@ root_in_vivo_template = os.path.join(root_path_data, 'pipelines', 'in_vivo_templ
 root_ex_vivo_dwi = os.path.join(root_path_data, 'pipelines', 'ex_vivo_DWI')
 
 root_in_vivo_dwi = os.path.join(root_path_data, 'pipelines', 'in_vivo_DWI')
+
+root_2_subjects_study = os.path.join(root_path_data, 'pipelines', '2_subjects_study')
+root_2_subjects_study_2 = os.path.join(root_path_data, 'pipelines', '2_subjects_study_2')

@@ -47,7 +47,7 @@ def main():
 
     # first argument
     if not os.path.isfile(args.input_path_txt):
-        err_msg = 'ERROR: input file is not specified or do not exists.'
+        err_msg = 'ERROR: input file is not specified or does not exists.'
         raise IOError(err_msg) 
 
     # first argument extention
@@ -66,7 +66,7 @@ def main():
 
     else:
         if not os.path.isdir(args.input_folder_where_to_save_the_output):
-            err_msg = 'ERROR: optional input is not a folder or do not exists.'
+            err_msg = 'ERROR: optional input is not a folder or does not exists.'
             raise IOError(err_msg)
 
     ''' 

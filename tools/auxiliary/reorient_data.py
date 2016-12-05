@@ -59,3 +59,13 @@ def axial_rotations(m, rot=1, ax=2):
         m = basic_rot_ax(m, ax=ax)
 
     return m
+
+
+def simmetryes_data():
+    # TODO
+    pass
+
+
+def simmetryes_image_path():
+    # TODO
+    pass
