@@ -2,6 +2,7 @@ import os
 import copy
 import numpy as np
 import nibabel as nib
+
 from tools.auxiliary.utils import set_new_data
 
 
@@ -106,8 +107,8 @@ def split_labels_path(input_im_path, output_im_path, remove_gaps=True):
 
 def merge_labels(in_data):
     """
-    Inverse function of split label.
-    from labels splitted in the 4d dimension, it reconstruct the
+    Can be the inverse function of split label.
+    From labels splitted in the 4d dimension, it reconstruct the
     original label volume from the masks in each time-point.
     The label index corresponds to the number of the slice (starting from 1).
     :param in_data: 4d volume
@@ -146,4 +147,60 @@ def merge_labels_path(input_im_path, output_im_path):
     data_relabelled = merge_labels(data_labels)
 
     im_relabelled = set_new_data(im_labels, data_relabelled)
+    nib.save(im_relabelled, output_im_path)
+
+
+def keep_only_one_label(in_data, labels_to_keep):
+    """
+    From a segmentation keeps only the values in the list labels_to_keep.
+    :param in_data: labels (only positive labels allowed).
+    :param labels_to_keep: list of the labels that will be kept.
+    :return:
+    """
+    in_data_shape = in_data.shape
+
+    msg = 'Input array must be 3-dimensional.'
+    assert len(in_data.shape) == 3, msg
+
+    msg = 'labels_to_keep must be a list of labels'
+    assert len(labels_to_keep) > 0, msg
+
+    list_labels = list(set(in_data.flat))
+    list_labels.sort()
+
+    msg = 'labels_to_keep {} in not delineated in the image'
+    for j in labels_to_keep:
+        assert j in list_labels, msg.format(j)
+
+    out_data_mask = np.zeros_like(in_data).astype(bool)
+
+    # refactor with true false masks.
+
+    for l in labels_to_keep:
+        out_data_mask = np.logical_or(out_data_mask, np.equal(in_data, l))
+
+
+    '''
+    for i in xrange(in_data_shape[0]):
+        for j in xrange(in_data_shape[1]):
+            for k in xrange(in_data_shape[2]):
+                if in_data[i, j, k] in labels_to_keep:
+                    out_data[i, j, k] = in_data[i, j, k]
+    '''
+
+    return out_data_mask * in_data
+
+
+
+def keep_only_one_label_path(input_im_path, output_im_path, labels_to_keep):
+
+    # check parameters
+    if not os.path.isfile(input_im_path):
+        raise IOError('input image file does not exist.')
+
+    im_labels = nib.load(input_im_path)
+    data_labels = im_labels.get_data()
+    data_selected_labels = keep_only_one_label(data_labels, labels_to_keep=labels_to_keep)
+
+    im_relabelled = set_new_data(im_labels, data_selected_labels)
     nib.save(im_relabelled, output_im_path)

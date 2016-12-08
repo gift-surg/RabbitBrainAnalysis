@@ -3,13 +3,14 @@ from matplotlib.widgets import Slider, Button, RadioButtons, CheckButtons
 import SimpleITK as sitk
 
 
-def see_array(in_array, extra_image=None, scale=None, num_fig=1):
+def see_array(in_array, extra_image=None, scale=None, num_fig=1, block=False,
+              title='Image in matrix coordinates, C convention.'):
 
     fig = plt.figure(num_fig, figsize=(6, 7.5), dpi=100)
     ax = fig.add_subplot(111)
     ax.set_position([0.1, 0.29, 0.8, 0.7])
 
-    fig.canvas.set_window_title('Image in matrix coordinates, C convention.')
+    fig.canvas.set_window_title(title)
 
     dims = in_array.shape  # (i,j,k,t,d)
     dims_mean = [int(d / 2) for d in dims]
@@ -143,5 +144,5 @@ def see_array(in_array, extra_image=None, scale=None, num_fig=1):
 
         t_slider.on_changed(update_t)
 
-    plt.show()
+    plt.show(block=block)
 
