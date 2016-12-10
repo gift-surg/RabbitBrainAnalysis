@@ -9,6 +9,7 @@ Manipulate markers to create the initial segmentation.
 
 import numpy as np
 import os
+from time import time
 
 import nibabel as nib
 from scipy import ndimage as ndi
@@ -27,13 +28,20 @@ from tools.visualisers.see_volume import see_array
 # Controller #
 ##############
 
+# Visualise the results at each step
 visualize = False
+# delete unused variables during the code. Put false only for debugging
 cleaner = True
+# removes all but results (segmentation and gradient).
+cleaner_files = False
 
-step_markers              = True
-step_gradient             = True
-step_markers_assessment   = True
-step_markers_manipulation = True
+# Select the step to be performed
+step_mask                   = False
+step_markers                = False
+step_gradient               = False
+step_markers_pre_processing = False
+step_markers_assessment     = True
+step_markers_manipulation   = True
 
 
 ################
@@ -44,6 +52,7 @@ main_path = os.path.join(root_path_data, 'pipelines', 'zz_visual_assessment', 'e
 
 input_image_path = os.path.join(main_path, 'subj_1305.nii.gz')
 
+output_mask_path = os.path.join(main_path, 'out_1305_mask.nii.gz')
 output_denoised_path = os.path.join(main_path, 'out_1305_denoised.nii.gz')
 output_markers_path = os.path.join(main_path, 'out_1305_markers.nii.gz')
 output_gradient_path = os.path.join(main_path, 'out_1305_gradient.nii.gz')
@@ -52,6 +61,20 @@ output_robert_path = os.path.join(main_path, 'out_1305_robert.nii.gz')
 
 output_labels_from_markers_path = os.path.join(main_path, 'out_1305_labels_from_markers.nii.gz')
 output_labels_path = os.path.join(main_path, 'out_1305_RESULT.nii.gz')
+
+# start timer:
+
+t0 = time()
+
+########################
+# Create and save mask #
+########################
+
+if step_mask:
+
+    cmd = 'seg_maths {0} -bin  {1}'.format(input_image_path, output_mask_path)
+    os.system(cmd)
+
 
 ###########################
 # Create and save markers #
@@ -67,20 +90,17 @@ if step_markers:
 
     im_data = img_as_ubyte(im_data.astype('uint8'))
 
-    # if visualize:
-    #    see_array(im_data, block=True, title='initial image')
-
     # get a denoised image
     denoised = np.zeros_like(im_data)
 
     for pln, image in enumerate(im_data):
-        denoised[pln] = rank.median(image, disk(2))
+        denoised[pln] = rank.median(image, disk(2), mask=image)
 
     # get markers
     markers = np.zeros_like(denoised)
 
     for pln, image in enumerate(denoised):
-        markers[pln] = rank.gradient(image, disk(5)) < 11
+        markers[pln] = rank.gradient(image, disk(5), mask=image) < 17
 
     markers = ndi.label(markers)[0]
 
@@ -116,17 +136,15 @@ if step_gradient:
     edges_data_r = np.zeros_like(im_data)
 
     for pln, image in enumerate(denoised):
-        gradient[pln] = rank.gradient(image, disk(2))
-        edges_data_s[pln] = sobel(image)
-        edges_data_r[pln] = roberts(image)
+        gradient[pln] = rank.gradient(image, disk(2), mask=image)
 
     # sobel and robert filter needs to work with original data:
 
     im_data = im.get_data().astype('float64')
 
     for pln, image in enumerate(im_data):
-        edges_data_s[pln] = sobel(image)
-        edges_data_r[pln] = roberts(image)
+        edges_data_s[pln] = sobel(image, mask=image)
+        edges_data_r[pln] = roberts(image, mask=image)
 
     if visualize:
         see_array(gradient, block=True, title='image gradient, gradient')
@@ -148,7 +166,22 @@ if step_gradient:
         del im_roberts
         del im_data
         del denoised
-        del im_denoised
+
+###########################
+# pre-process the markers #
+###########################
+
+if step_markers_pre_processing:
+
+    # Multiply the markers image for the mask, to avoid the background block:
+    print 'Remove background... '
+    cmd = 'seg_maths {0} -mul {1} {0} '.format(output_markers_path, output_mask_path)
+    os.system(cmd)
+
+    # Separate the connected components, to avoid noise around stuff.
+    print 'Separate connected components... (long!)'
+    cmd = 'seg_maths {0} -concomp26 {0} '.format(output_markers_path)
+    os.system(cmd)
 
 ###############################################
 # ask for the labels to keep from the markers #
@@ -157,9 +190,11 @@ if step_gradient:
 if step_markers_assessment:
 
     if not step_gradient or not step_markers:
+
         im = nib.load(input_image_path)
 
     # Open gradient and markers as mask of the gradient
+    print 'Opening ITK-SNAP... '
     cmd = 'itksnap -g {0} -s {1} '.format(output_gradient_path, output_markers_path)
     os.system(cmd)
 
@@ -171,9 +206,11 @@ if step_markers_assessment:
     labels_data = im_labels.get_data()
 
     labels_to_keep = labels_to_keep.split(' ')
-    labels_to_keep = [int(j) for j in labels_to_keep]
-    relevant_labels = keep_only_one_label(labels_data, labels_to_keep)
-
+    if len(labels_to_keep) > 1:
+        labels_to_keep = [int(j) for j in labels_to_keep]
+        relevant_labels = keep_only_one_label(labels_data, labels_to_keep)
+    else:
+        relevant_labels = keep_only_one_label(labels_data, [int(labels_to_keep[0]), ])
     # save
     relevant_labels_im = set_new_data(im, relevant_labels)
     nib.save(relevant_labels_im, output_labels_from_markers_path)
@@ -201,18 +238,34 @@ if step_markers_manipulation:
 
     # put all the labels to 1:
     print 'Binarisation...'
-    cmd = 'seg_maths {0} -bin {1} '.format(output_labels_path, output_labels_path)
+    cmd = 'seg_maths {0} -bin {0} '.format(output_labels_path)
     os.system(cmd)
 
     # dilate
     print 'Dilation...'
-    cmd = 'seg_maths {0} -dil 1 {1} '.format(output_labels_path, output_labels_path)
+    cmd = 'seg_maths {0} -dil 1 {0} '.format(output_labels_path)
     os.system(cmd)
 
-    # smooth
+    # Fill holes:
+    print 'Holes filling...'
+    cmd = 'seg_maths {0} -fill {0} '.format(output_labels_path)
+    os.system(cmd)
+
+    # Smoothing
     print 'Smoothing...'
     cmd = 'seg_maths {0} -smol 1.1 {1} '.format(output_labels_path, output_labels_path)
     os.system(cmd)
 
     if visualize:
         cmd = 'itksnap -g {0} -s {1} '.format(output_gradient_path, output_labels_path)
+
+if cleaner_files:
+
+    paths_to_clean = [output_mask_path, output_denoised_path, output_markers_path,
+                      output_sobel_path, output_robert_path, output_labels_from_markers_path]
+
+    for ph in paths_to_clean:
+        cmd = 'rm {0}'.format(ph)
+
+t1 = time()
+print 'Pipeline terminated in time {0} sec.'.format(t1 - t0)

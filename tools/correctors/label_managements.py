@@ -10,7 +10,8 @@ def relabeller(data, list_old_labels, list_new_labels):
     """
     From an np.array of labels (int values in reasonably small number)
     and a list of current labels and new labels, substitute them with the
-    new list of labels. In the given order (first old with first new, second old with second new...)!
+    new list of labels. In the given order (first old with first new, second
+    old with second new...)!
     :param data:
     :param list_old_labels:
     :param list_new_labels:
@@ -174,22 +175,10 @@ def keep_only_one_label(in_data, labels_to_keep):
 
     out_data_mask = np.zeros_like(in_data).astype(bool)
 
-    # refactor with true false masks.
-
     for l in labels_to_keep:
         out_data_mask = np.logical_or(out_data_mask, np.equal(in_data, l))
 
-
-    '''
-    for i in xrange(in_data_shape[0]):
-        for j in xrange(in_data_shape[1]):
-            for k in xrange(in_data_shape[2]):
-                if in_data[i, j, k] in labels_to_keep:
-                    out_data[i, j, k] = in_data[i, j, k]
-    '''
-
     return out_data_mask * in_data
-
 
 
 def keep_only_one_label_path(input_im_path, output_im_path, labels_to_keep):
@@ -200,7 +189,39 @@ def keep_only_one_label_path(input_im_path, output_im_path, labels_to_keep):
 
     im_labels = nib.load(input_im_path)
     data_labels = im_labels.get_data()
-    data_selected_labels = keep_only_one_label(data_labels, labels_to_keep=labels_to_keep)
+    data_selected_labels = keep_only_one_label(data_labels,
+                                               labels_to_keep=labels_to_keep)
 
     im_relabelled = set_new_data(im_labels, data_selected_labels)
     nib.save(im_relabelled, output_im_path)
+
+
+def label_merger(in_data, labels_to_merge, leading_label=None):
+    """
+    from an array of labels it merges the labels in the list to the new_label.
+    If new_label is None then it takes as the new label the first of the list.
+    If new_label is not None it must be one of the label in the list
+    labels_to_merge or must not be in the image (safety reason).
+    :param in_data: 2d 3d array of integers
+    :param labels_to_merge: list of labels in im_data
+    :param leading_label: value assigned to the merged labels. First of
+    labels_to_merge if None
+    :return: input array with selected labels merged in the new label or in the
+    first label of the labels_to_merge
+    lists.
+    """
+
+    list_labels = list(set(in_data.astype('uint64').flat))
+    list_labels.sort()
+
+    # sanity tests:
+
+
+    # raise warning if labels to merge are not in the image:
+    if new_label is not None:
+        new_label = labels_to_merge[0]
+    return 0
+
+
+def label_merger_path(im_data_path, out_data_path, labels_to_merge, new_label=None):
+    pass
