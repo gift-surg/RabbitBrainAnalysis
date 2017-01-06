@@ -72,7 +72,7 @@ def label_merger(in_data, labels_to_merge, leading_label=None):
     list_labels.sort()
 
     # sanity tests:
-
+    
 
     # raise warning if labels to merge are not in the image:
     if new_label is not None:

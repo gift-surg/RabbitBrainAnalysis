@@ -43,8 +43,8 @@ verbose_on = True
 
 
 # Parameters
-subjects = ['1201'] #, '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002']
-dil_mask_factor = 5
+subjects = ['1305'] #, '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002']
+dil_mask_factor = 1
 
 # Shells:
 num_shells = 3
@@ -87,9 +87,6 @@ for sj in subjects:
         # create the folder masks:
         cmd_0 = 'mkdir -p {0}'.format(os.path.join(root_ex_vivo_dwi, sj, 'masks'))
 
-        path_oriented_as_dwi_1305_3d_template = os.path.join(root_ex_vivo_dwi, 'templates', '1305_3D.nii.gz')
-        path_oriented_as_dwi_1305_3d_ciccione = os.path.join(root_ex_vivo_dwi, 'templates', '1305_3D_mask_fin_dil5.nii.gz')
-
         path_dwi = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DWI.nii.gz')
         path_first_slice_dwi_extracted = os.path.join(root_ex_vivo_dwi, sj, 'masks', sj + '_first_slice_DWI.nii.gz')
 
@@ -109,8 +106,10 @@ for sj in subjects:
 
         cmd_0 = 'mkdir -p {0}'.format(os.path.join(root_ex_vivo_dwi, sj, 'transformations'))
 
+        path_first_slice_dwi_extracted = os.path.join(root_ex_vivo_dwi, sj, 'masks', sj + '_first_slice_DWI.nii.gz')
+
         path_oriented_as_dwi_1305_3d_template = os.path.join(root_ex_vivo_dwi, 'templates', '1305_3D.nii.gz')
-        path_oriented_as_dwi_1305_3d_ciccione = os.path.join(root_ex_vivo_dwi, 'templates', '1305_3D_mask_fin_dil5.nii.gz')
+        path_oriented_as_dwi_1305_3d_ciccione = os.path.join(root_ex_vivo_dwi, 'templates', '1305_3D_roi_mask_4.nii.gz')
 
         path_affine_transformation_output = os.path.join(root_ex_vivo_dwi, sj, 'transformations',
                                                          sj + '_on_unoriented_1305.txt')
@@ -268,10 +267,10 @@ for sj in subjects:
         path_input_bvect  = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwGradVec.txt')
         path_input_mask   = os.path.join(root_ex_vivo_dwi, sj, 'masks',  sj +'_ciccione_roi_mask.nii.gz')
 
-        path_output_folder = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fit')
+        path_output_folder = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fsl')
         path_output_dti    = os.path.join(root_ex_vivo_dwi, sj + '_dti_')
 
-        # create the folder analysis_fit if nor present:
+        # create the folder analysis_fsl if nor present:
         cmd_0 = 'mkdir -p {0}'.format(os.path.join(root_ex_vivo_dwi, sj, 'analysis_fsl'))
 
         cmd = 'dtifit -k {0} -b {1} -r {2} -m {3} ' \
