@@ -15,23 +15,23 @@ from tools.parsers.separate_shells import separate_shells_txt_path, separate_she
 # paths
 
 # Controller
-step_squeeze                    = False
-step_extract_bval_bvect_slope   = False
-step_extract_first_slice        = False
-step_create_1d_layer_mask       = False
-step_dilate_mask                = False
-step_cut_to_mask_dwi            = False
-step_correct_the_slope          = False
+step_squeeze                    = True
+step_extract_bval_bvect_slope   = True
+step_extract_first_slice        = True
+step_create_1d_layer_mask       = True
+step_dilate_mask                = True
+step_cut_to_mask_dwi            = True
+step_correct_the_slope          = True
 
 step_dwi_analysis_nifty_fit     = False
 step_reorient_nifty_fit         = False
 
-step_extract_bval_bvect_by_shells             = False
-step_divide_dwi_image_by_shells               = False
-step_dwi_analysis_nifty_fit_divided_by_shells = False
-step_dwi_reorient_fit_divided_by_shells       = False
+step_extract_bval_bvect_by_shells             = True
+step_divide_dwi_image_by_shells               = True
+step_dwi_analysis_nifty_fit_divided_by_shells = True
+step_dwi_reorient_fit_divided_by_shells       = True
 
-step_dwi_analysis_fsl           = False
+step_dwi_analysis_fsl           = True
 step_reorient_fsl               = True
 
 # only at the end of the process!

@@ -1,10 +1,62 @@
 import os
-from os.path import isfile, join
-import argparse
-import textwrap
+import numpy as np
 import time
 
 import SimpleITK as sitk
+
+
+def bias_field_correction_slicewise(volume_input,
+                                    convergenceThreshold=0.001,
+                                      maximumNumberOfIterations=(50,50,50,50),
+                                      biasFieldFullWidthAtHalfMaximum=0.15,
+                                      wienerFilterNoise=0.01,
+                                      numberOfHistogramBins=200,
+                                      numberOfControlPoints=(4, 4, 4),
+                                      splineOrder=3,
+                                      print_only=False):
+
+    four_d_volume_output = np.zeros_like(volume_input[:])
+
+    n4b = sitk.N4BiasFieldCorrectionImageFilter()
+    bth = sitk.BinaryThresholdImageFilter()
+
+    # parameters selection:
+    n4b.SetConvergenceThreshold(convergenceThreshold)
+    n4b.SetMaximumNumberOfIterations(maximumNumberOfIterations)
+    n4b.SetBiasFieldFullWidthAtHalfMaximum(biasFieldFullWidthAtHalfMaximum)
+    n4b.SetWienerFilterNoise(wienerFilterNoise)
+    n4b.SetNumberOfHistogramBins(numberOfHistogramBins)
+    n4b.SetNumberOfControlPoints(numberOfControlPoints)
+    n4b.SetSplineOrder(splineOrder)
+
+    print 'ConvergenceThreshold             : ' + str(n4b.GetConvergenceThreshold())
+    print 'MaximumNumberOfIterations        : ' + str(n4b.GetMaximumNumberOfIterations())
+    print 'BiasFieldFullWidthAtHalfMaximum  : ' + str(n4b.GetBiasFieldFullWidthAtHalfMaximum())
+    print 'WienerFilterNoise                : ' + str(n4b.GetWienerFilterNoise())
+    print 'NumberOfHistogramBins            : ' + str(n4b.GetNumberOfHistogramBins())
+    print 'NumberOfControlPoints            : ' + str(n4b.GetNumberOfControlPoints())
+    print 'SplineOrder                      : ' + str(n4b.GetSplineOrder())
+
+    # compute BFC slicewise (with a silly chain of conversions and re-conversions...):
+
+    four_dims = volume_input.shape[3]
+
+    for t in xrange(four_dims):
+
+        a_slice_of_input = volume_input[..., t]
+        a_slice_of_input_img = sitk.GetImageFromArray(a_slice_of_input)
+
+        a_slice_of_input_img = sitk.Cast(a_slice_of_input_img, sitk.sitkFloat32)
+
+        a_slice_of_mask_img = bth.Execute(a_slice_of_input_img)
+        a_slice_of_mask_img = -1 * (a_slice_of_mask_img - 1)
+
+        print 'bfc started for slice t = ' + str(t)
+        img_no_bias = n4b.Execute(a_slice_of_input_img, a_slice_of_mask_img)
+
+        four_d_volume_output[..., t] = sitk.GetArrayFromImage(img_no_bias)
+
+    return four_d_volume_output
 
 
 def bias_field_correction(pfi_input, pfi_output=None, pfi_mask=None, prefix='',

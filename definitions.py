@@ -22,5 +22,13 @@ root_ex_vivo_dwi = os.path.join(root_path_data, 'pipelines', 'ex_vivo_DWI')
 
 root_in_vivo_dwi = os.path.join(root_path_data, 'pipelines', 'in_vivo_DWI')
 
+root_ex_vivo_MSME = os.path.join(root_path_data, 'pipelines', 'ex_vivo_MSME_T2')
+
 root_2_subjects_study = os.path.join(root_path_data, 'pipelines', '2_subjects_study')
 root_2_subjects_study_2 = os.path.join(root_path_data, 'pipelines', '2_subjects_study_2')
+
+
+# TODO - Folder structure ULTRA Refactoring! - Drive the folders subdivision by subjects not by modality.
+# one main_folder / subjects / modalities / results - segmentations_propagation
+# main_folder / preliminary_templates
+# main_folder
