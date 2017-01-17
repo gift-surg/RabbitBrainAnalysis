@@ -131,9 +131,9 @@ for sj in subjects:
                                                                              path_3d_warped_output)
 
         cmd_2 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(path_first_slice_dwi_extracted,
-                                                                                     path_oriented_as_dwi_1305_3d_ciccione,
-                                                                                     path_affine_transformation_output,
-                                                                                     path_mask_output)
+                                                                                 path_oriented_as_dwi_1305_3d_ciccione,
+                                                                                 path_affine_transformation_output,
+                                                                                 path_mask_output)
 
         if verbose_on:
             print '\n Register and propagate ciccione to first slice and save the registered ciccione:' \
@@ -150,7 +150,7 @@ for sj in subjects:
     """ dilate the newly created mask for safety reasons. """
     if step_dilate_mask:
 
-        path_mask = os.path.join(root_ex_vivo_dwi, sj, 'masks',  sj +'_ciccione_roi_mask.nii.gz')
+        path_mask = os.path.join(root_ex_vivo_dwi, sj, 'masks', sj + '_ciccione_roi_mask.nii.gz')
         cmd = 'seg_maths {0} -dil {1} {0}'.format(path_mask, dil_mask_factor)
 
         if verbose_on:
@@ -199,14 +199,14 @@ for sj in subjects:
         path_input_dwi    = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DWI_cropped_and_slope_corrected.nii.gz')
         path_input_bval   = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwEffBval.txt')
         path_input_bvect  = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwGradVec.txt')
-        path_input_mask   = os.path.join(root_ex_vivo_dwi, sj, 'masks',  sj +'_ciccione_roi_mask.nii.gz')
+        path_input_mask   = os.path.join(root_ex_vivo_dwi, sj, 'masks', sj + '_ciccione_roi_mask.nii.gz')
 
         path_output_folder = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fit')
         path_output_dti    = os.path.join(path_output_folder, sj + '_v1map.nii.gz')
         path_output_rgb_map = os.path.join(path_output_folder, sj + '_rgbmap.nii.gz')
         path_output_adc_map = os.path.join(path_output_folder, sj + '_adcmap.nii.gz')
         path_output_fa_map = os.path.join(path_output_folder, sj + '_famap.nii.gz')
-        #path_output_noddi = os.path.join(path_output_folder, sj + '_noddi.nii.gz')
+        # path_output_noddi = os.path.join(path_output_folder, sj + '_noddi.nii.gz')
 
         # create the folder analysis_fit if nor present:
         cmd_0 = 'mkdir -p {0}'.format(os.path.join(root_ex_vivo_dwi, sj, 'analysis_fit'))
@@ -238,13 +238,13 @@ for sj in subjects:
         path_rgb_map = os.path.join(path_images_folder, sj + '_rgbmap.nii.gz')
         path_adc_map = os.path.join(path_images_folder, sj + '_adcmap.nii.gz')
         path_fa_map = os.path.join(path_images_folder, sj + '_famap.nii.gz')
-        #path_noddi = os.path.join(path_images_folder, sj + '_noddi.nii.gz')
+        # path_noddi = os.path.join(path_images_folder, sj + '_noddi.nii.gz')
 
         path_dti_new    = os.path.join(path_images_folder, sj + '_reoriented_v1map.nii.gz')
         path_rgb_map_new = os.path.join(path_images_folder, sj + '_reoriented_rgbmap.nii.gz')
         path_adc_map_new = os.path.join(path_images_folder, sj + '_reoriented_adcmap.nii.gz')
         path_fa_map_new = os.path.join(path_images_folder, sj + '_reoriented_famap.nii.gz')
-        #path_noddi_new = os.path.join(path_images_folder, sj + '_reoriented_noddi.nii.gz')
+        # path_noddi_new = os.path.join(path_images_folder, sj + '_reoriented_noddi.nii.gz')
 
         list_paths = [path_dti, path_rgb_map, path_adc_map, path_fa_map]
 
@@ -261,7 +261,6 @@ for sj in subjects:
             if not safety_on:
                 os.system(cmd)
 
-
     #########################
     # DO THE ANALYSIS # FSL #
     #########################
@@ -273,7 +272,7 @@ for sj in subjects:
         path_input_dwi    = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DWI_cropped_and_slope_corrected.nii.gz')
         path_input_bval   = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwEffBval.txt')
         path_input_bvect  = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwGradVec.txt')
-        path_input_mask   = os.path.join(root_ex_vivo_dwi, sj, 'masks',  sj +'_ciccione_roi_mask.nii.gz')
+        path_input_mask   = os.path.join(root_ex_vivo_dwi, sj, 'masks', sj + '_ciccione_roi_mask.nii.gz')
 
         path_output_folder = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fsl')
         path_output_dti    = os.path.join(root_ex_vivo_dwi, sj + '_dti_')
@@ -319,7 +318,6 @@ for sj in subjects:
                     if not safety_on:
                         os.system(cmd)
 
-
     #####################################
     # DO THE ANALYSIS DIVIDED BY SHELLS #
     #####################################
@@ -337,7 +335,8 @@ for sj in subjects:
 
     if step_divide_dwi_image_by_shells:
 
-        path_to_dwi = path_input_dwi    = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DWI_cropped_and_slope_corrected.nii.gz')
+        path_to_dwi = path_input_dwi    = os.path.join(root_ex_vivo_dwi, sj, 'DWI',
+                                                       sj + '_DWI_cropped_and_slope_corrected.nii.gz')
 
         print 'Separate dwi by shells: execution for subject {0}'.format(sj)
 
@@ -355,7 +354,7 @@ for sj in subjects:
 
             path_input_bval   = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwEffBval_shell' + str(sh) + '.txt')
             path_input_bvect  = os.path.join(root_ex_vivo_dwi, sj, 'DWI', sj + '_DwGradVec_shell' + str(sh) + '.txt')
-            path_input_mask   = os.path.join(root_ex_vivo_dwi, sj, 'masks', sj +'_ciccione_roi_mask.nii.gz')
+            path_input_mask   = os.path.join(root_ex_vivo_dwi, sj, 'masks', sj + '_ciccione_roi_mask.nii.gz')
 
             path_output_folder = os.path.join(root_ex_vivo_dwi, sj, 'analysis_fit_divided_by_shells')
             path_output_dti    = os.path.join(path_output_folder, sj + '_v1map_shell' + str(sh) + '.nii.gz')

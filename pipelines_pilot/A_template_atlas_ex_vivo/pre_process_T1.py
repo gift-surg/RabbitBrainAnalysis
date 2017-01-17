@@ -1,37 +1,31 @@
 """
-Align in histological orientation
-
-
+Align T1 in histological orientation after standard pre-processing.
 """
-
 import os
 from os.path import join as jph
 
 from definitions import root_pilot_study
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.auxiliary.lesion_mask_extractor import simple_lesion_mask_extractor_path
-from tools.correctors.normalisation import median_normalisation
 
 
 def process_T1(sj, delete_intermediate_steps=True):
 
-    ####################
+    #################
     # paths manager #
-    ####################
+    #################
 
     root = jph(root_pilot_study, 'A_template_atlas_ex_vivo')
 
-    # subject with region of interest (brain + skull) masks:
+    # subject 1305 with region of interest (brain + skull) masks:
 
-    subject_with_roi = jph(root, 'Utils', 'brain_and_skull_mask_T1', '1305_T1.nii.gz')
-    subject_with_roi_brain_mask = jph(root, 'Utils', 'brain_and_skull_mask_T1', '1305_T1_roi_mask.nii.gz')
-    subject_with_roi_brain_mask_eroded = jph(root, 'Utils', 'brain_and_skull_mask_T1', '1305_T1_roi_mask_eroded.nii.gz')
+    s_1305_with_roi = jph(root, 'Utils', 'brain_and_skull_mask_T1', '1305_T1.nii.gz')
+    s_1305_with_roi_brain_mask = jph(root, 'Utils', 'brain_and_skull_mask_T1', '1305_T1_roi_mask.nii.gz')
 
-    # subject manually oriented in histological coordinates
+    # subject 1305 manually oriented in histological coordinates
 
-    subject_in_histological_coordinates = jph(root, 'Utils', '1305_histological_orientation', '1305_T1.nii.gz')
-    subject_in_histological_coordinates_brain_mask = jph(root, 'Utils', '1305_histological_orientation', '1305_T1_brain.nii.gz')
-
+    s_1305_in_histological_coordinates = jph(root, 'Utils', '1305_histological_orientation', '1305_T1.nii.gz')
+    s_1305_in_histological_coordinates_brain_mask = jph(root, 'Utils', '1305_histological_orientation', '1305_T1_roi_mask.nii.gz')
 
     ####################
     # Controller:      #
@@ -68,7 +62,7 @@ def process_T1(sj, delete_intermediate_steps=True):
     # --------- # Cut the roi extracted:
     step_cut_masks             = True
 
-    path_3d_cropped_roi_result = os.path.join(outputs_folder,  sj + '_brain_skull_only.nii.gz')
+    path_3d_cropped_roi_result = os.path.join(outputs_folder, sj + '_brain_skull_only.nii.gz')
 
     # --------- # Correct for the bias field
     step_bfc                   = True
@@ -83,16 +77,17 @@ def process_T1(sj, delete_intermediate_steps=True):
     numberOfControlPoints = (4, 4, 4)
     splineOrder = 3
 
-    path_3d_bias_field_corrected = jph(outputs_folder,  sj + '_bias_field_corrected' + bfc_tag + '.nii.gz')
+    path_3d_bias_field_corrected = jph(outputs_folder, sj + '_bias_field_corrected' + bfc_tag + '.nii.gz')
 
     # --------- # orient in histological orientation
     step_orient_histological   = True
 
     suffix_command_reg_histological_coord = ''
 
-    path_3d_nii_histological = jph(outputs_folder,  sj + '_histological_coordinates.nii.gz')
-    path_roi_mask_histological = jph(outputs_folder,  sj + 'roi_mask_histological_coordinates.nii.gz')
-    path_affine_transformation_to_histological = jph(outputs_folder,  sj + 'transformation_to_histological_coordinates.nii.gz')
+    path_3d_nii_histological = jph(outputs_folder, sj + '_histological_coordinates.nii.gz')
+    path_roi_mask_histological = jph(outputs_folder, sj + 'roi_mask_histological_coordinates.nii.gz')
+    path_affine_transformation_to_histological = jph(outputs_folder,  sj + 'transformation_to_histological_coordinates.txt')
+    path_resampled_histological_mask_output = os.path.join(outputs_folder, 'brain_skull_mask_1305_on_' + sj + '_histological.nii.gz')
 
     # --------- #  mask of the lesion, to increase robustness registration.
     step_compute_lesion_masks  = True
@@ -102,19 +97,26 @@ def process_T1(sj, delete_intermediate_steps=True):
     # --------- # registration mask is the roi maks minus the lesion masks.
     step_compute_registration_masks = True
 
-    path_registration_mask = jph(outputs_folder,  sj + '_registration_mask.nii.gz')
+    path_registration_mask = jph(outputs_folder, sj + '_registration_mask.nii.gz')
 
     # --------- # Copy results in the appropriate place in the folder structure
-    step_save_results = False
+    step_save_results = True
 
-    path_to_T1_final = jph(root, 'A_template_atlas_ex_vivo', sj, 'all_modalities', sj + '_T1.nii.gz')
-    path_to_roi_mask_final = jph(root, 'A_template_atlas_ex_vivo', sj, 'masks', sj + '_roi_mask.nii.gz')
-    path_to_lesion_masks_final = jph(root, 'A_template_atlas_ex_vivo', sj, 'masks', sj + '_roi_registration_mask.nii.gz')
-    path_to_registration_masks_final = jph(root, 'A_template_atlas_ex_vivo', sj, 'masks', sj + '_roi_registration_mask.nii.gz')
+    path_to_T1_final = jph(root, sj, 'all_modalities', sj + '_T1.nii.gz')
+    path_to_roi_mask_final = jph(root, sj, 'masks', sj + '_roi_mask.nii.gz')
+    path_to_lesion_masks_final = jph(root, sj, 'masks', sj + '_roi_lesion_mask.nii.gz')
+    path_to_registration_masks_final = jph(root, sj, 'masks', sj + '_roi_registration_mask.nii.gz')
+
+    # --------- # Save processing in bicommissural orientation, with no resampling errors,
+    # will be used for DWI processing.
+    step_save_bicommissural = True
+
+    path_to_bicommissural_folder = jph(root, sj, 'bicommissural')
+    path_to_T1_bicommissural_final = jph(path_to_bicommissural_folder, sj + '_T1_bicommissural.nii.gz')
+    path_to_T1_bicommissural_final_roi_mask = jph(path_to_bicommissural_folder, sj + '_T1_bicommissural_brain_skull_mask.nii.gz')
 
     # --------- # erase the intermediate results folder
     step_erase_intemediate_results_folder = delete_intermediate_steps
-
 
     ##################
     # PIPELINE:      #
@@ -158,16 +160,18 @@ def process_T1(sj, delete_intermediate_steps=True):
     if step_register_masks:
 
         cmd_1 = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} {4} ; '.format(path_3d_nii_thr,
-                                                                               subject_with_roi,
+                                                                               s_1305_with_roi,
                                                                                path_affine_transformation_output,
                                                                                path_3d_warped_output,
                                                                                suffix_command_reg_mask)
         cmd_2 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(path_3d_nii_thr,
-                                                                                      subject_with_roi_brain_mask,
+                                                                                      s_1305_with_roi_brain_mask,
                                                                                       path_affine_transformation_output,
                                                                                       path_resampled_mask_output)
         if verbose_on:
             print '\nRegistration ciccione mask: execution for subject {0}.\n'.format(sj)
+            print cmd_1
+            print cmd_2
 
         if not safety_on:
             os.system(cmd_1 + cmd_2)
@@ -189,7 +193,6 @@ def process_T1(sj, delete_intermediate_steps=True):
 
     if step_bfc:
 
-
         if verbose_on:
             print '\nBias field correction: execution for subject {0}.\n'.format(sj)
 
@@ -210,16 +213,17 @@ def process_T1(sj, delete_intermediate_steps=True):
 
     if step_orient_histological:
 
-        cmd0 = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} {4} ; '.format(subject_in_histological_coordinates,
-                                                                             path_3d_bias_field_corrected,
-                                                                             path_affine_transformation_to_histological,
-                                                                             path_3d_nii_histological,
-                                                                             suffix_command_reg_histological_coord)
+        cmd0 = 'reg_aladin -ref {0} -flo {1} -rmask {2} -fmask {3} -aff {4} -res {5} -rigOnly ; '.format(s_1305_in_histological_coordinates,
+                                                                         path_3d_bias_field_corrected,
+                                                                         s_1305_in_histological_coordinates_brain_mask,
+                                                                         path_resampled_histological_mask_output,
+                                                                         path_affine_transformation_to_histological,
+                                                                         path_3d_nii_histological)
 
-        cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(subject_in_histological_coordinates,
-                                                                                    path_resampled_mask_output,
-                                                                                    path_affine_transformation_to_histological,
-                                                                                    path_roi_mask_histological)
+        cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(s_1305_in_histological_coordinates,
+                                                                            path_resampled_histological_mask_output,
+                                                                            path_affine_transformation_to_histological,
+                                                                            path_roi_mask_histological)
 
         if verbose_on:
             print 'Alignment in histological coordinates.'
@@ -227,13 +231,22 @@ def process_T1(sj, delete_intermediate_steps=True):
         if not safety_on:
             os.system(cmd0 + cmd1)
 
+        if verbose_on:
+            print 'Adjust the warped with a threshold: '
+
+        if not safety_on:
+            pass  # path_3d_nii_histological
+
     if step_compute_lesion_masks:
 
         if verbose_on:
             print "Lesions masks extractor for subject {} \n".format(sj)
 
         if not safety_on:
-            simple_lesion_mask_extractor_path(path_3d_nii_histological, path_mask_lesions, path_roi_mask_histological, safety_on=safety_on)
+            simple_lesion_mask_extractor_path(im_input_path=path_3d_nii_histological,
+                                              im_output_path=path_mask_lesions,
+                                              im_mask_foreground_path=path_roi_mask_histological,
+                                              safety_on=safety_on)
 
     if step_compute_registration_masks:
 
@@ -245,11 +258,50 @@ def process_T1(sj, delete_intermediate_steps=True):
             if not safety_on:
                 os.system(cmd)
 
+    if step_save_results:
 
-        # input path_3d_nii_histological
-        # output path_3d_nii_normalised
-        # mask subject_with_roi_brain_mask_eroded
+        cmd0 = 'cp {0} {1}'.format(path_3d_nii_histological, path_to_T1_final)
+        cmd1 = 'cp {0} {1}'.format(path_roi_mask_histological, path_to_roi_mask_final)
+        cmd2 = 'cp {0} {1}'.format(path_mask_lesions, path_to_lesion_masks_final)
+        cmd3 = 'cp {0} {1}'.format(path_registration_mask, path_to_registration_masks_final)
 
-        # extract the median from the eroded segmentation mask and divide the new image for it
+        if verbose_on:
+            print 'Saving results'
+            print cmd0
+            print cmd1
+            print cmd2
+            print cmd3
 
+        if not safety_on:
+            os.system(cmd0)
+            os.system(cmd1)
+            os.system(cmd2)
+            os.system(cmd3)
 
+    if step_save_bicommissural:
+
+        cmd = 'mkdir -p {0}'.format(path_to_bicommissural_folder)
+        cmd0 = 'cp {0} {1}'.format(path_3d_bias_field_corrected, path_to_T1_bicommissural_final)
+        cmd1 = 'cp {0} {1}'.format(path_resampled_mask_output, path_to_T1_bicommissural_final_roi_mask)
+
+        if verbose_on:
+            print 'Saving results bicommissural'
+            print cmd
+            print cmd0
+            print cmd1
+
+        if not safety_on:
+            os.system(cmd)
+            os.system(cmd0)
+            os.system(cmd1)
+
+    if step_erase_intemediate_results_folder:
+
+        cmd = 'rm -r {0} '.format(outputs_folder)
+
+        if verbose_on:
+            print 'Erase pre_process_T1_folder for subject {}.'.format(sj)
+            print cmd
+
+        if not safety_on:
+            os.system(cmd)
