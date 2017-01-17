@@ -4,6 +4,9 @@ import numpy as np
 
 root_dir = os.path.abspath(os.path.dirname(__file__))
 
+
+# Before refactoring:
+
 root_path_data = '/Users/sebastiano/Documents/UCL/a_data/bunnies'  # only path to be modified!
 
 path_data_nifti = os.path.join(root_path_data, 'from_leuven', 'nifti_converted')
@@ -28,7 +31,12 @@ root_2_subjects_study = os.path.join(root_path_data, 'pipelines', '2_subjects_st
 root_2_subjects_study_2 = os.path.join(root_path_data, 'pipelines', '2_subjects_study_2')
 
 
-# TODO - Folder structure ULTRA Refactoring! - Drive the folders subdivision by subjects not by modality.
-# one main_folder / subjects / modalities / results - segmentations_propagation
-# main_folder / preliminary_templates
-# main_folder
+# after refactoring
+
+root_pilot_study = '/Users/sebastiano/Documents/UCL/a_data/bunnies/pilot_study'
+
+
+
+
+# TODO - Ultra folder structure refactoring
+
