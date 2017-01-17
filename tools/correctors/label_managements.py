@@ -6,6 +6,8 @@ import nibabel as nib
 from tools.auxiliary.utils import set_new_data
 
 
+'''
+
 def relabeller(data, list_old_labels, list_new_labels):
     """
     From an np.array of labels (int values in reasonably small number)
@@ -217,11 +219,9 @@ def label_merger(in_data, labels_to_merge, leading_label=None):
     # sanity tests:
 
 
-    # raise warning if labels to merge are not in the image:
-    if new_label is not None:
-        new_label = labels_to_merge[0]
-    return 0
 
 
 def label_merger_path(im_data_path, out_data_path, labels_to_merge, new_label=None):
     pass
+
+'''

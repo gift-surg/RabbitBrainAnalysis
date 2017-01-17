@@ -39,8 +39,6 @@ def relabeller_path(input_im_path, output_im_path, list_old_labels, list_new_lab
     # check parameters
     if not os.path.isfile(input_im_path):
         raise IOError('input image file does not exist.')
-    if not os.path.isfile(output_im_path):
-        raise IOError('input image file does not exist.')
 
     im_labels = nib.load(input_im_path)
     data_labels = im_labels.get_data()
@@ -57,3 +55,28 @@ def label_permutator():
     # prima splitta in una 4D. Poi cambia le etichette separatamente dove vanno
     # cambiate. infine ripacchetta la fingura.
     # TODO
+
+
+def assign_all_other_labels_the_same_value(data_in, labels_to_keep, same_value_label=255):
+    """
+    All the labels that are not in the list labels_to_keep will be given the value same_value_label
+    :param im_data:
+    :param labels_to_keep:
+    :param same_value_label:
+    :return:
+    """
+
+    list_labels = list(set(data_in.astype('uint64').flat))
+    list_labels.sort()
+
+    labels_that_will_have_the_same_value = list(set(list_labels) - set(labels_to_keep) - {0})
+
+    places = np.zeros_like(data_in).astype(bool)
+    new_data = copy.deepcopy(data_in)
+
+    for k in labels_that_will_have_the_same_value:
+        places += new_data == k
+
+    np.place(new_data, places, same_value_label)
+
+    return new_data
