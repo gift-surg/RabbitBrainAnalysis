@@ -18,10 +18,12 @@ Dlways process T1 before DWI.
 """
 
 from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_T1 import process_T1
+from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_DWI import process_DWI
 
-subjects = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002']
-# subjects = ['1201']
+#subjects = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002']
+subjects = [ '1505', '1507', '1510', '1702', '1805', '2002']
 
 for sj in subjects:
     process_T1(sj, delete_intermediate_steps=False)
 
+    #process_DWI(sj, delete_intermediate_steps=False)

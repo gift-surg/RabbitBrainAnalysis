@@ -22,7 +22,7 @@ def slope_corrector(slopes, im_input, eliminate_consec_duplicates=False):
         err_msg = 'ERROR: Dimension of the given image scale not coherent with the given image.'
         raise IOError(err_msg)
 
-    for j in range(num_directions):
+    for j in xrange(num_directions):
         im_data[..., j] *= slopes[j]
 
     im_output = set_new_data(im_input, im_data)

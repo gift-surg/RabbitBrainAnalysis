@@ -87,7 +87,7 @@ def bias_field_correction(pfi_input, pfi_output=None, pfi_mask=None, prefix='',
     """
 
     if pfi_input == pfi_output or pfi_output is None:
-        prefix='_bf_correct'
+        prefix=''
         pfi_output = os.path.join(os.path.dirname(pfi_input),
                                   os.path.basename(pfi_input).split('.')[0] + prefix + '.nii.gz')
 
@@ -116,6 +116,8 @@ def bias_field_correction(pfi_input, pfi_output=None, pfi_mask=None, prefix='',
 
     if pfi_input.endswith('.nii') or pfi_input.endswith('.nii.gz'):
         img = sitk.ReadImage(pfi_input)
+
+        img = sitk.Cast(img, sitk.sitkFloat32)
 
         # re-create bin if the mask is not defined
         if pfi_mask is None:
