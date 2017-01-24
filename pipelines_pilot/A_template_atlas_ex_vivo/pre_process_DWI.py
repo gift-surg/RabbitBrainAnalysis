@@ -413,10 +413,8 @@ def process_DWI(sj, delete_intermediate_steps=True):
 
     """ *** PHASE 6 - DUPLICATE RESULTS IN THE FOLDER STRUCTURE *** """
 
-    """ *** PHASE 7 - DUPLICATE RESULTS BICOMMISSURAL ORIENTATION AS WELL *** """
-    # not needed for the moment.
 
-    """ *** PHASE 8 - ERASE THE INTERMEDIATE RESULTS *** """
+    """ *** PHASE 7 - ERASE THE INTERMEDIATE RESULTS *** """
 
 
 

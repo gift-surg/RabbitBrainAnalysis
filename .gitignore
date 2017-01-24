@@ -5,4 +5,6 @@ __pycache__
 *.npy
 *_old.py
 output
+experiments
+pipelines_draft
 z_*
