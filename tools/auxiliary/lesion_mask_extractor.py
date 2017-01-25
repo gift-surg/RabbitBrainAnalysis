@@ -58,3 +58,5 @@ def lesion_masks_extractor_cc_based_path(im_input_path, im_output_path, im_mask_
     if not safety_on:
         os.system(cmd2)
     pass
+
+# TODO lesion masks based on a fractal dimension + Otsu threshold approach.

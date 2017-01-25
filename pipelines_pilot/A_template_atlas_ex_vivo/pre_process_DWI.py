@@ -86,6 +86,16 @@ def process_DWI(sj, delete_intermediate_steps=True):
     path_slopes_txt_file = jph(outputs_folder, sj + '_VisuCoreDataSlope.txt')
     path_dwi_slope_corrected = jph(outputs_folder, sj + '_DWI_slope_corrected.nii.gz')
 
+
+
+
+
+
+
+
+
+
+
     # ----- # FIT analysis
     step_dwi_analysis_with_nifty_fit   = False
 
@@ -111,7 +121,7 @@ def process_DWI(sj, delete_intermediate_steps=True):
     # ----- # FSL analysis
     step_dwi_analysis_with_nifty_fsl     = True
 
-    path_folder_analysis_fsl = jph(outputs_folder, 'analysis_fsl')
+    name_for_analysis_fsl = 'analysis_fsl_'
 
     # ----- # FSL reorientation
     step_reorient_output_of_fsl = True
@@ -133,8 +143,13 @@ def process_DWI(sj, delete_intermediate_steps=True):
     # ----- # reorient outcome of the analysis divided by shells:
     step_dwi_reorient_fit_divided_by_shells = False
 
+
+
+    # ----- # reorient outcome of the analysis divided by shells:
+    step_orient_histological = False
+
     # --------- # Copy results in the appropriate place in the folder structure
-    step_save_results = False
+    step_save_results_histological = False
 
     path_to_T1_final = jph(root, sj, 'all_modalities', sj + '_T1.nii.gz')
 
@@ -143,7 +158,7 @@ def process_DWI(sj, delete_intermediate_steps=True):
 
     # --------- # Save processing in bicommissural orientation, with no resampling errors,
     # will be used for DWI processing.  TODO, not needed for the moment.
-    step_save_bicommissural = False
+    step_save_results_bicommissural = False
 
     # --------- # erase the intermediate results folder
     step_erase_intemediate_results_folder = delete_intermediate_steps
@@ -200,14 +215,14 @@ def process_DWI(sj, delete_intermediate_steps=True):
         # mask to be propagated is: s_1305_with_roi_brain_skull_mask
 
         cmd_1 = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} {4} ; '.format(path_dwi_b0,
-                                                                               s_1305_with_roi,
-                                                                               path_affine_transformation_1305_bicom_on_b0,
-                                                                               path_warped_1305_bicom_on_b0,
-                                                                               suffix_command_reg_1305_bicom_on_b0)
+                                                                       s_1305_with_roi,
+                                                                       path_affine_transformation_1305_bicom_on_b0,
+                                                                       path_warped_1305_bicom_on_b0,
+                                                                       suffix_command_reg_1305_bicom_on_b0)
         cmd_2 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(path_dwi_b0,
-                                                                                      s_1305_with_roi_brain_skull_mask,
-                                                                                      path_affine_transformation_1305_bicom_on_b0,
-                                                                                      path_roi_mask)
+                                                                          s_1305_with_roi_brain_skull_mask,
+                                                                          path_affine_transformation_1305_bicom_on_b0,
+                                                                          path_roi_mask)
 
         if verbose_on:
             print '\nRegistration ROI mask (skull+brain): execution for subject {0}.\n'.format(sj)
@@ -294,14 +309,12 @@ def process_DWI(sj, delete_intermediate_steps=True):
 
         # dtifit -k ScaledData.nii.gz -b DwEffBval.txt -m Brain_mask.nii.gz -r bvecs.txt -w --save_tensor -o DTI/DT
 
-        cmd_0 = 'mkdir -p {0}'.format(path_folder_analysis_fsl)
-
         cmd = 'dtifit -k {0} -b {1} -r {2} -m {3} ' \
               '-w --save_tensor -o {4}'.format(path_dwi_slope_corrected,
                                                path_dwi_bvals,
                                                path_dwi_bvects,
                                                path_roi_mask_dilated,
-                                               path_folder_analysis_fsl)
+                                               name_for_analysis_fsl + str(sj))
 
         print cmd
 
@@ -313,9 +326,11 @@ def process_DWI(sj, delete_intermediate_steps=True):
 
         print '\nReorient: execution for subject {0}.\n'.format(sj)
 
-        for (dirpath, dirnames, filenames) in os.walk(path_folder_analysis_fsl):
+        for (dirpath, dirnames, filenames) in os.walk(outputs_folder):
             for filename in filenames:
-                if filename.endswith('.nii.gz') or filename.endswith('.nii'):
+                if (filename.endswith('.nii.gz') or filename.endswith('.nii')) \
+                        and filename.startswith(name_for_analysis_fsl):
+
                     im = os.path.join(dirpath, filename)
                     im_name_reoriented = 'reoriented_' + filename.split('.')[0] + '.nii.gz'
                     im_new = os.path.join(dirpath, im_name_reoriented)
@@ -364,10 +379,7 @@ def process_DWI(sj, delete_intermediate_steps=True):
         for sh in range(num_shells):
 
             # Analysis for each shell:
-            path_folder_shell_sh_data = jph(path_folder_analysis_fsl_divided_by_shells, 'shell_' + str(sh))
-
-            # create the folder analysis_fit if nor present:
-            cmd_0 = 'mkdir -p {0}'.format(path_folder_shell_sh_data)
+            name_shell_sh = 'shell_' + str(sh) + '_analysis_fsl_'
 
             path_input_dwi_shell_sh   = jph(path_folder_analysis_fsl_divided_by_shells,
                                             sj + '_DWI_shell_' + str(sh) + 'nii.gz')
@@ -379,7 +391,7 @@ def process_DWI(sj, delete_intermediate_steps=True):
             cmd = 'dtifit -k {0} -b {1} -r {2} -o {4}'.format(path_input_dwi_shell_sh,
                                                               path_input_bval_shell_sh,
                                                               path_input_bvect_shell_sh,
-                                                              path_folder_shell_sh_data)
+                                                              name_shell_sh)
 
             print '\nPerform DWI analysis by shells: execution for subject {0} and for shell {1}\n'.format(sj, sh)
 
@@ -410,11 +422,51 @@ def process_DWI(sj, delete_intermediate_steps=True):
                         os.system(cmd)
 
     """ *** PHASE 5 - ORIENT RESULTS IN HISTOLOGICAL COORDINATES *** """
+    if step_orient_histological:
+
+        # selected images:
+        list_img_to_keep = ['FA', 'MD', 'V1', 'tensor', 'S0']
+        pfi_list_img_to_keep = [name_for_analysis_fsl + sj + pref + '.nii.gz' for pref in list_img_to_keep]
+
+
+
+
+
+
 
     """ *** PHASE 6 - DUPLICATE RESULTS IN THE FOLDER STRUCTURE *** """
+    if step_save_results_histological:
+        pass
+
+
+
+
+
+
+
+
+    """ *** PHASE 6bis - SAVE RESULTS IN THE BICOMMISSURAL AS WELL *** """
+    if step_save_results_bicommissural:
+        pass
+
+
+
+
+
 
 
     """ *** PHASE 7 - ERASE THE INTERMEDIATE RESULTS *** """
+
+    if step_erase_intemediate_results_folder:
+
+        cmd = 'rm -r {0} '.format(outputs_folder)
+
+        if verbose_on:
+            print 'Eraseing pre_process_DWI folder for subject {}.'.format(sj)
+            print cmd
+
+        if not safety_on:
+            os.system(cmd)
 
 
 
