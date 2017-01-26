@@ -197,3 +197,22 @@ def eliminates_consecutive_duplicates(input_list):
             output_list.append(input_list[i])
 
     return output_list
+
+
+def print_and_run(cmd, msg=None, safety_on=True):
+    """
+    run the command to console and print the message.
+    if msg is None print the command itself.
+    :param cmd: command for the terminal
+    :param msg: message to show before running the command
+    on the top of the command itself.
+    :param safety_on: safety, in case you want to see the messages at a first run.
+    :return:
+    """
+
+    if msg is not None:
+        print '\n' + msg + '\n'
+
+    print cmd + '\n'
+    if not safety_on:
+        os.system(cmd)

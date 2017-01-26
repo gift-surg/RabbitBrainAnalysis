@@ -1,5 +1,5 @@
 """
-Process and align DWI in histological orientation.
+Process and align DWI in histological orientation.  https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/eddy/UsersGuide
 """
 import os
 from os.path import join as jph
@@ -8,15 +8,16 @@ import nibabel as nib
 from definitions import root_pilot_study
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, set_new_data
+from tools.auxiliary.utils import print_and_run
 from tools.parsers.parse_bruker_txt import parse_bruker_dwi_txt
 from tools.correctors.slope_corrector import slope_corrector_path
 
 
-def process_DWI_fsl(sj, delete_intermediate_steps=True):
+def process_DWI_fsl(sj, control=None):
 
-    #################
-    # paths manager #
-    #################
+    print ' --- Pre process DWI FSL {} --- \n'.format(sj)
+
+    # --- paths manager, general --- #
 
     root = jph(root_pilot_study, 'A_template_atlas_ex_vivo')
 
@@ -25,156 +26,114 @@ def process_DWI_fsl(sj, delete_intermediate_steps=True):
     pfi_dwi_original = jph(root_pilot_study, '0_original_data', 'ex_vivo', sj, 'DWI', sj + '_DWI.nii.gz')
     pfi_dwi_txt_data_original = jph(root_pilot_study, '0_original_data', 'ex_vivo', sj, 'DWI', sj + '_DWI.txt')
 
+    if not os.path.isfile(pfi_dwi_original):
+        msg = 'Input file subject {} does not exists'.format(sj)
+        raise IOError(msg)
+
+    if not os.path.isfile(pfi_dwi_txt_data_original):
+        msg = 'Input data dfile subject {} does not exists'.format(sj)
+        raise IOError(msg)
+
     # subject 1305 with region of interest (brain + skull) masks:
 
     s_1305_with_roi = jph(root, 'Utils', '1305_brain_and_skull_mask_T1_dwi_oriented', '1305_T1.nii.gz')
-    s_1305_with_roi_brain_skull_mask = jph(root, 'Utils', '1305_brain_and_skull_mask_T1_dwi_oriented', '1305_T1_roi_mask.nii.gz')
+    s_1305_with_roi_brain_skull_mask = jph(root, 'Utils', '1305_brain_and_skull_mask_T1_dwi_oriented',
+                                           '1305_T1_roi_mask.nii.gz')
 
     # subject 1305 manually oriented in histological coordinates
 
     s_1305_in_histological_coordinates = jph(root, 'Utils', '1305_histological_orientation', '1305_T1.nii.gz')
-    s_1305_in_histological_coordinates_brain_mask = jph(root, 'Utils', '1305_histological_orientation', '1305_T1_roi_mask.nii.gz')
+    s_1305_in_histological_coordinates_brain_mask = jph(root, 'Utils', '1305_histological_orientation',
+                                                        '1305_T1_roi_mask.nii.gz')
 
-    ####################
-    # Controller:      #
-    ####################
+    # --- Paths per step:  --- #
 
-    safety_on = False
-    verbose_on = True
-
-    # --------- #
-    step_generate_output_folder = False
-
+    # generate_output_folder
     outputs_folder = jph(root, sj, 'all_modalities', 'pre_process_DWI_fsl')
 
-    # ----- # in case the timepoints are in the 5th rather than the fourth dim
-    step_squeeze                    = False
-
+    # step_squeeze  in case the timepoints are in the 5th rather than the fourth dim
     pfi_dwi_squeezed = jph(outputs_folder, sj + '_DWI_squeezed.nii.gz')
 
-    # ----- # Output filenames (fn) are the default: 'DwDir.txt', 'DwEffBval.txt', 'DwGradVec.txt', 'VisuCoreDataSlope.txt'
-    step_extract_bval_bvect_slope   = False
-
+    # step_extract_bval_bvect_slope
+    # Output filenames (fn) are the default: 'DwDir.txt', 'DwEffBval.txt', 'DwGradVec.txt', 'VisuCoreDataSlope.txt'
     pfi_input_bvals   = os.path.join(outputs_folder, sj + '_DwEffBval.txt')
     pfi_input_bvects  = os.path.join(outputs_folder, sj + '_DwGradVec.txt')
     pfi_slopes_txt_file = jph(outputs_folder, sj + '_VisuCoreDataSlope.txt')
 
-    # ----- #
-    step_extract_first_timepoint       = False
-
+    # step_extract_first_timepoint
     pfi_dwi_b0 = jph(outputs_folder, sj + '_DWI_first_timepoint.nii.gz')
 
-    # ----- #
-    step_grab_the_roi_mask         = False
-
+    # step_grab_the_roi_mask
     pfi_affine_transformation_1305_bicom_on_b0 = jph(outputs_folder, sj + '_affine_transf_1305_bicom_on_b0.txt')
     pfi_warped_1305_bicom_on_b0 = jph(outputs_folder, sj + '_warped_1305_bicom_on_b0.nii.gz')
     suffix_command_reg_1305_bicom_on_b0 = ''
     pfi_roi_mask = jph(outputs_folder, sj + '_roi_mask.nii.gz')
 
-    # ----- #
-    step_dilate_mask             = False
-
+    # step_dilate_mask
     dil_factor = 0
     pfi_roi_mask_dilated = jph(outputs_folder, sj + '_roi_mask_dilated.nii.gz')
 
-    # ----- #
-    step_cut_to_mask_dwi        = False
-
+    # step_cut_to_mask_dwi
     pfi_dwi_cropped_to_roi = jph(outputs_folder, sj + '_DWI_roi_cropped.nii.gz')
 
-    # ----- #
-    step_correct_the_slope    = False
-
+    # step_correct_the_slope
     pfi_dwi_slope_corrected = jph(outputs_folder, sj + '_DWI_slope_corrected.nii.gz')
 
-    # ----- # FSL Eddy currents correction:
-    step_eddy_current_corrections     = True
-
-    prefix_dwi_eddy_corrected = 'fsl_eddy_corrected_'
+    # step_eddy_current_corrections
+    prefix_dwi_eddy_corrected = sj + '_DWI_fsl_eddy_corrected'
     pfi_dwi_eddy_corrected    = jph(outputs_folder, prefix_dwi_eddy_corrected + '.nii.gz')
 
-    # ----- # FSL analysis
-    step_dwi_analysis_with_fsl     = False
-
-    name_for_analysis_fsl = 'fsl_dtifit_'
+    # step_dwi_analysis_with_fsl
+    name_for_analysis_fsl = 'fsl_dtifit_' + sj
+    pfi_analysis_fsl = jph(outputs_folder, name_for_analysis_fsl)
 
     suffix_results_to_keep = ['FA', 'MD', 'V1', 'tensor', 'S0']
-    fn_results_to_keep = [name_for_analysis_fsl + sj + pref + '.nii.gz' for pref in suffix_results_to_keep]
+    fn_results_to_keep = [name_for_analysis_fsl + '_' + pref + '.nii.gz' for pref in suffix_results_to_keep]
 
-    # ----- # FSL reorientation
-    step_provide_correct_orientation_labels = False
-
+    # step_orient_directions  FSL reorientation
     pfi_mask_reoriented = jph(outputs_folder, sj + '_roi_mask_dilated_oriented.nii.gz')
 
-
-    # ----- # reorient outcome of the analysis divided by shells:
-    step_orient_histological = False
-
+    # step_orient_histological
     pfi_affine_transformation_to_histological = jph(outputs_folder, sj + '_transf_to_histological.txt')
     pfi_DWI_histological = jph(outputs_folder, sj + '_DWI_in_histological.nii.gz')
     pfi_mask_histological = jph(outputs_folder, sj + '_DWI_mask_in_histological.nii.gz')
 
-    # --------- # Copy results in the appropriate place in the folder structure
-    step_save_results_histological = False
-
+    # step_save_results_histological
     pfo_masks_final = jph(root, sj, 'masks')
     pfi_roi_mask_final = jph(pfo_masks_final, sj + '_roi_mask.nii.gz')
 
-
-    # --------- # erase the intermediate results folder
-    step_erase_intemediate_results_folder = delete_intermediate_steps
-
-    ##################
-    # PIPELINE:      #
-    ##################
-
     """ *** PHASE 1 - DWI PRE-PROCESSING IN BICOMMISSURAL COORDINATES *** """
 
-    if step_generate_output_folder:
+    if control['step_generate_output_folder']:
 
         cmd = 'mkdir -p ' + outputs_folder
-        if verbose_on:
-            print cmd
-        if not safety_on:
-            os.system(cmd)
+        print_and_run(cmd, msg='Generate output folder', safety_on=control['safety_on'])
 
-    if step_squeeze:
+    if control['step_squeeze']:
 
-        if verbose_on:
-            print '\n Squeeze for DWI images: execution for subject {0}.\n'.format(sj)
-
-        if not safety_on:
+        print '\n Squeeze for DWI images: execution for subject {0}.\n'.format(sj)
+        if not control['safety_on']:
             squeeze_image_from_path(pfi_dwi_original, pfi_dwi_squeezed, copy_anyway=True)
 
-    if step_extract_bval_bvect_slope:
+    if control['step_extract_bval_bvect_slope']:
 
-        if verbose_on:
-            print '\nParse the txt data files b-val b-vect and slopes: execution for subject {0}.\n'.format(sj)
-
-        if not safety_on:
+        print '\nParse the txt data files b-val b-vect and slopes: execution for subject {0}.\n'.format(sj)
+        if not control['safety_on']:
             parse_bruker_dwi_txt(pfi_dwi_txt_data_original,
                                  output_folder=outputs_folder,
                                  prefix=sj + '_')
 
-    if step_extract_first_timepoint:
+    if control['step_extract_first_timepoint']:
 
-        if verbose_on:
-            print '\n Extraction first layer DWI: execution for subject {0}.\n'.format(sj)
+        print '\n Extraction first layer DWI: execution for subject {0}.\n'.format(sj)
 
-        if not safety_on:
-
+        if not control['safety_on']:
             nib_dwi = nib.load(pfi_dwi_squeezed)
-            # Extract first slice and save as the fixed image - Keep the same header.
             nib_dwi_first_slice_data = nib_dwi.get_data()[..., 0]
             nib_first_slice_dwi = set_new_data(nib_dwi, nib_dwi_first_slice_data)
             nib.save(nib_first_slice_dwi, pfi_dwi_b0)
 
-    if step_grab_the_roi_mask:
-
-        # reference is the b0: path_dwi_b0
-        # floating is the reference T1 in bicommissural: s_1305_with_roi
-        # mask to be propagated is: s_1305_with_roi_brain_skull_mask
+    if control['step_grab_the_roi_mask']:
 
         cmd_1 = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} {4} ; '.format(pfi_dwi_b0,
                                                                        s_1305_with_roi,
@@ -186,77 +145,56 @@ def process_DWI_fsl(sj, delete_intermediate_steps=True):
                                                                           pfi_affine_transformation_1305_bicom_on_b0,
                                                                           pfi_roi_mask)
 
-        if verbose_on:
-            print '\nRegistration ROI mask (skull+brain): execution for subject {0}.\n'.format(sj)
-            print cmd_1
-            print cmd_2
+        print '\nRegistration ROI mask (skull+brain): execution for subject {0}.\n'.format(sj)
+        print_and_run(cmd_1, safety_on=control['safety_on'])
+        print_and_run(cmd_2, safety_on=control['safety_on'])
 
-        if not safety_on:
-            os.system(cmd_1 + cmd_2)
-
-    if step_dilate_mask:
+    if control['step_dilate_mask']:
 
         cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_roi_mask, dil_factor, pfi_roi_mask_dilated)
+        print_and_run(cmd, msg='Dilate mask ' + sj, safety_on=control['safety_on'])
 
-        if verbose_on:
-            print cmd
+    if control['step_cut_to_mask_dwi']:
 
-        if not safety_on:
-            os.system(cmd)
-
-    if step_cut_to_mask_dwi:
-
-        if verbose_on:
-            print '\nCutting newly-created ROI mask on the subject: execution for subject {0}.\n'.format(sj)
-
-        if not safety_on:
+        print '\nCutting newly-created ROI mask on the subject: execution for subject {0}.\n'.format(sj)
+        if not control['safety_on']:
             cut_dwi_image_from_first_slice_mask_path(pfi_dwi_squeezed,
                                                      pfi_roi_mask_dilated,
                                                      pfi_dwi_cropped_to_roi)
 
-    if step_correct_the_slope:
+    if control['step_correct_the_slope']:
 
-        if verbose_on:
-            print '\ncorrect for the slope: execution for subject {0}.\n'.format(sj)
-
-        if not safety_on:
+        print '\ncorrect for the slope: execution for subject {0}.\n'.format(sj)
+        if not control['safety_on']:
             slope_corrector_path(pfi_slopes_txt_file, pfi_dwi_cropped_to_roi, pfi_dwi_slope_corrected)
 
     """ *** PHASE 2 - EDDY CURRENTS CORRECTION and analysis *** """
-    # https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/eddy/UsersGuide
 
-    if step_eddy_current_corrections:
+    if control['step_eddy_current_corrections']:
 
         cmd = 'eddy_correct {0} {1} 0 '.format(pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected)
+        print_and_run(cmd, msg='\n Eddy currents correction: subject {}.\n'.format(sj), safety_on=control['safety_on'])
 
-        if verbose_on:
-            print '\n Eddy currents correction: subject {}.\n'.format(sj)
-            print cmd
+    if control['step_dwi_analysis_with_fsl']:
 
-        if not safety_on:
-            os.system(cmd)
+        here = os.getcwd()
 
-    if step_dwi_analysis_with_fsl:
-
-        if os.path.isfile(pfi_dwi_eddy_corrected):
-            pfi_last_dwi = pfi_dwi_eddy_corrected
-        else:
-            pfi_last_dwi = pfi_dwi_slope_corrected
-
-        cmd = 'dtifit -k {0} -b {1} -r {2} -m {3} ' \
-              '-w --save_tensor -o {4}'.format(pfi_last_dwi,
+        cmd0 = 'cd {}'.format(outputs_folder)
+        cmd1 = 'dtifit -k {0} -b {1} -r {2} -m {3} ' \
+              '-w --save_tensor -o {4}'.format(pfi_dwi_slope_corrected,
                                                pfi_input_bvals,
                                                pfi_input_bvects,
                                                pfi_roi_mask_dilated,
-                                               name_for_analysis_fsl)
+                                               pfi_analysis_fsl)
+        cmd2 = 'cd {}'.format(here)
+
+        print_and_run(cmd0, safety_on=control['safety_on'])
+        print_and_run(cmd1, msg='DWI analysis: subject ' + sj, safety_on=control['safety_on'])
+        print_and_run(cmd2, safety_on=control['safety_on'])
 
     """ *** PHASE 2bis - POST-PROCESSING *** """
 
-    if step_provide_correct_orientation_labels:
-
-        # copy the output for some new image! It is not idempotent!
-
-        print '\nReorient: execution for subject {0}.\n'.format(sj)
+    if control['step_orient_directions']:
 
         for fn in fn_results_to_keep:
 
@@ -268,63 +206,56 @@ def process_DWI_fsl(sj, delete_intermediate_steps=True):
                       fslorient -deleteorient {1};
                       fslswapdim {1} -z -y -x {1};
                       fslorient -setqformcode 1 {1};'''.format(pfi_im, pfi_im_new)
-            print cmd
 
-            if not safety_on:
-                os.system(cmd)
-
-        print '\nReorient mask: subject {}.\n'.format(sj)
+            print_and_run(cmd, msg='Reorient ' + sj, safety_on=control['safety_on'])
 
         cmd = ''' cp {0} {1};
                       fslorient -deleteorient {1};
                       fslswapdim {1} -z -y -x {1};
                       fslorient -setqformcode 1 {1};'''.format(pfi_roi_mask_dilated, pfi_mask_reoriented)
 
-        if not safety_on:
-                os.system(cmd)
+        print_and_run(cmd, msg='Reorient mask ' + sj, safety_on=control['safety_on'])
 
     """ *** PHASE 3 - ORIENT RESULTS IN HISTOLOGICAL COORDINATES *** """
-    if step_orient_histological:
+
+    if control['step_orient_histo']:
 
         for fn in fn_results_to_keep:
 
             name_input = 'reoriented_' + fn.split('.')[0] + '.nii.gz'
             pfi_input = jph(outputs_folder, name_input)
 
-            cmd0 = 'reg_aladin -ref {0} -flo {1} -rmask {2} -fmask {3} -aff {4} -res {5} -rigOnly ; '.format(s_1305_in_histological_coordinates,
-                                                                         pfi_input,
-                                                                         s_1305_in_histological_coordinates_brain_mask,
-                                                                         pfi_mask_reoriented,
-                                                                         pfi_affine_transformation_to_histological,
-                                                                         pfi_DWI_histological)
+            cmd0 = 'reg_aladin -ref {0} -flo {1} -rmask {2} -fmask {3} -aff {4} -res {5} -rigOnly ; '.format(
+                    s_1305_in_histological_coordinates,
+                    pfi_input,
+                    s_1305_in_histological_coordinates_brain_mask,
+                    pfi_mask_reoriented,
+                    pfi_affine_transformation_to_histological,
+                    pfi_DWI_histological)
 
-            cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(s_1305_in_histological_coordinates,
-                                                                            pfi_mask_reoriented,
-                                                                            pfi_affine_transformation_to_histological,
-                                                                            pfi_mask_histological)
+            cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+                    s_1305_in_histological_coordinates,
+                    pfi_mask_reoriented,
+                    pfi_affine_transformation_to_histological,
+                    pfi_mask_histological)
 
-            if verbose_on:
-                print '\n Alignment in histological coordinates, subject {}.\n'.format(sj)
-
-            if not safety_on:
-                os.system(cmd0 + cmd1)
+            print '\n Alignment in histological coordinates, subject {}.\n'.format(sj)
+            print_and_run(cmd0, safety_on=control['safety_on'])
+            print_and_run(cmd1, safety_on=control['safety_on'])
 
             if name_input.split('.')[0].endswith('FA') \
                     or name_input.split('.')[0].endswith('MD') \
                     or name_input.split('.')[0].endswith('S0'):
 
-                if verbose_on:
-                    print '\n Adjust the warped with a threshold to avoid negative: ' \
-                          'subj {0}, file {1}.\n'.format(sj, fn)
+                print '\n Adjust the warped with a threshold to avoid negative: ' \
+                      'subj {0}, file {1}.\n'.format(sj, fn)
 
-                    cmd = 'seg_maths {0} -thr 0 {0}'.format(pfi_input)
-
-                    if not safety_on:
-                        os.system(cmd)
+                cmd = 'seg_maths {0} -thr 0 {0}'.format(pfi_input)
+                print_and_run(cmd, safety_on=control['safety_on'])
 
     """ *** PHASE 4 - MOVE RESULTS IN THE APPROPRIATE FOLDER OF THE FOLDER STRUCTURE *** """
 
-    if step_save_results_histological:
+    if control['step_save_results_histo']:
 
         for fn in fn_results_to_keep:
 
@@ -336,26 +267,17 @@ def process_DWI_fsl(sj, delete_intermediate_steps=True):
 
             cmd = 'mv {0} {1} '.format(pfi_original, pfi_moved)
 
-            if verbose_on:
-                print 'Moving from original in the output folder to the new folder '
+            print_and_run(cmd, msg = 'Moving from original in the output folder to the new folder',
+                          safety_on=control['safety_on'])
 
-            if not safety_on:
-                os.system(cmd)
+        # Move the mask:
+        cmd = 'mv {0} {1} '.format(pfi_mask_reoriented, pfi_roi_mask_final)
+        print_and_run(cmd, safety_on=control['safety_on'])
 
     """ *** PHASE 5 - ERASE THE INTERMEDIATE RESULTS *** """
 
-    if step_erase_intemediate_results_folder:
+    if control['delete_intermediate_steps']:
 
         cmd = 'rm -r {0} '.format(outputs_folder)
-
-        if verbose_on:
-            print 'Eraseing pre_process_DWI folder for subject {}.'.format(sj)
-            print cmd
-
-        if not safety_on:
-            os.system(cmd)
-
-
-
-
-
+        print_and_run(cmd, msg='Erasing pre_process_DWI folder for subject {}.'.format(sj),
+                      safety_on=control['safety_on'])
