@@ -21,8 +21,8 @@ from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_T1 import process_T1
 from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_DWI_fsl import process_DWI_fsl
 
 
-#subjects = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002']
-subjects = ['1201']
+subjects = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002']
+#subjects = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '1702']
 
 controller_process_T1 = {'safety_on':                     False,
                          'step_generate_output_folder':   True,
@@ -39,24 +39,25 @@ controller_process_T1 = {'safety_on':                     False,
                          'delete_intermediate_steps':     False}
 
 controller_process_DWI = {'safety_on':                     False,
-                          'step_generate_output_folder':   False,
-                          'step_squeeze':                  False,
-                          'step_extract_bval_bvect_slope': False,
-                          'step_extract_first_timepoint':  False,
-                          'step_grab_the_roi_mask':        False,
-                          'step_dilate_mask':              False,
-                          'step_cut_to_mask_dwi':          False,
-                          'step_correct_the_slope':        False,
-                          'step_eddy_current_corrections': False,
-                          'step_dwi_analysis_with_fsl':    False,
+                          'step_generate_output_folder':   True,
+                          'step_squeeze':                  True,
+                          'step_extract_bval_bvect_slope': True,
+                          'step_extract_first_timepoint':  True,
+                          'step_grab_the_roi_mask':        True,
+                          'step_dilate_mask':              True,
+                          'step_cut_to_mask_dwi':          True,
+                          'step_correct_the_slope':        True,
+                          'step_eddy_current_corrections': True,
+                          'step_dwi_analysis_with_fsl':    True,
                           'step_orient_directions':        True,
                           'step_orient_histo':             True,
+                          'step_bfc_b0':                   True,
                           'step_save_results_histo':       True,
                           'delete_intermediate_steps':     False
                           }
 
-print 'Pipelines for subjects \n {}\n'.format(subjects)
+print '#### \nPipelines for subjects \n {} \n#### \n'.format(subjects)
 
 for sj in subjects:
-    #process_T1(sj, control=controller_process_T1)
+    process_T1(sj, control=controller_process_T1)
     process_DWI_fsl(sj, control=controller_process_DWI)

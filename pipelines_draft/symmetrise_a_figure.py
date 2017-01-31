@@ -11,9 +11,9 @@ img_half_mask_pfi = os.path.join(root_data, '0802_t1_intrac_vol_half.nii.gz')
 
 coord = 'z'
 
-all_left_labels = list(range(1, 50, 2)) + list(range(61, 70, 2)) + [99, 101]
-all_center_labels = list(range(51, 61)) + list(range(71, 76)) + [103, 105, 106]
-all_right_labels = list(range(2, 51, 2)) + list(range(62, 71, 2)) + [100, 102]
+all_left_labels = list(range(1, 50, 2)) + list(range(61, 70, 2)) + [77, 101, 103]
+all_center_labels = list(range(51, 61)) + list(range(71, 77)) + [100, 110, 150]
+all_right_labels = list(range(2, 51, 2)) + list(range(62, 71, 2)) + [78, 102, 104]
 all_extra_labels = []
 
 in_img_anatomy_path = jph(root_data, '1305_T1_Female_285_oriented.nii.gz')

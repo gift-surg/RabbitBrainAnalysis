@@ -7,7 +7,9 @@ import nibabel as nib
 
 from definitions import root_pilot_study
 from tools.auxiliary.squeezer import squeeze_image_from_path
-from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, set_new_data
+from tools.correctors.bias_field_corrector4 import bias_field_correction
+from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, set_new_data, \
+    reproduce_slice_fourth_dimension_path
 from tools.auxiliary.utils import print_and_run
 from tools.parsers.parse_bruker_txt import parse_bruker_dwi_txt
 from tools.correctors.slope_corrector import slope_corrector_path
@@ -34,22 +36,20 @@ def process_DWI_fsl(sj, control=None):
         msg = 'Input data dfile subject {} does not exists'.format(sj)
         raise IOError(msg)
 
-    # subject 1305 with region of interest (brain + skull) masks:
+    # subject 1305 with region of interest (brain + skull) masks - to extract the regions of interests:
 
     s_1305_with_roi = jph(root, 'Utils', '1305_brain_and_skull_mask_T1_dwi_oriented', '1305_T1.nii.gz')
     s_1305_with_roi_brain_skull_mask = jph(root, 'Utils', '1305_brain_and_skull_mask_T1_dwi_oriented',
                                            '1305_T1_roi_mask.nii.gz')
 
-    # subject 1305 manually oriented in histological coordinates
-
-    s_1305_in_histological_coordinates = jph(root, 'Utils', '1305_histological_orientation', '1305_T1.nii.gz')
-    s_1305_in_histological_coordinates_brain_mask = jph(root, 'Utils', '1305_histological_orientation',
-                                                        '1305_T1_roi_mask.nii.gz')
-
     # --- Paths per step:  --- #
 
+    # Paths to T1 images and roi mask of the same subject in histological coordinates:
+    T1_in_histological_coordinates = jph(root, sj, 'all_modalities', sj + '_T1.nii.gz')
+    T1_in_histological_coordinates_brain_mask = jph(root, sj, 'masks', sj + '_roi_mask.nii.gz')
+
     # generate_output_folder
-    outputs_folder = jph(root, sj, 'all_modalities', 'pre_process_DWI_fsl')
+    outputs_folder = jph(root, sj, 'all_modalities', 'z_pre_process_DWI_fsl')
 
     # step_squeeze  in case the timepoints are in the 5th rather than the fourth dim
     pfi_dwi_squeezed = jph(outputs_folder, sj + '_DWI_squeezed.nii.gz')
@@ -84,23 +84,31 @@ def process_DWI_fsl(sj, control=None):
     pfi_dwi_eddy_corrected    = jph(outputs_folder, prefix_dwi_eddy_corrected + '.nii.gz')
 
     # step_dwi_analysis_with_fsl
-    name_for_analysis_fsl = 'fsl_dtifit_' + sj
+    prefix_fsl_output = 'fsl_dtifit_'
+    name_for_analysis_fsl = prefix_fsl_output + sj
     pfi_analysis_fsl = jph(outputs_folder, name_for_analysis_fsl)
 
-    suffix_results_to_keep = ['FA', 'MD', 'V1', 'tensor', 'S0']
+    suffix_results_to_keep = ['FA', 'MD', 'V1', 'S0']
     fn_results_to_keep = [name_for_analysis_fsl + '_' + pref + '.nii.gz' for pref in suffix_results_to_keep]
 
     # step_orient_directions  FSL reorientation
     pfi_mask_reoriented = jph(outputs_folder, sj + '_roi_mask_dilated_oriented.nii.gz')
+    pfi_mask_reoriented_V1 = jph(outputs_folder, sj + '_roi_mask_dilated_oriented_V1.nii.gz')
+    pfi_mask_reoriented_tensor = jph(outputs_folder, sj + '_roi_mask_dilated_oriented_tensor.nii.gz')
 
     # step_orient_histological
     pfi_affine_transformation_to_histological = jph(outputs_folder, sj + '_transf_to_histological.txt')
-    pfi_DWI_histological = jph(outputs_folder, sj + '_DWI_in_histological.nii.gz')
-    pfi_mask_histological = jph(outputs_folder, sj + '_DWI_mask_in_histological.nii.gz')
+    pfi_mask_histological = jph(outputs_folder, 'histo_' + sj + '_DWI_mask.nii.gz')
+    prefix_histo = 'histo_'
 
-    # step_save_results_histological
-    pfo_masks_final = jph(root, sj, 'masks')
-    pfi_roi_mask_final = jph(pfo_masks_final, sj + '_roi_mask.nii.gz')
+    # step_bfc_b0
+    convergenceThreshold = 0.001
+    maximumNumberOfIterations = (50, 50, 50, 50)
+    biasFieldFullWidthAtHalfMaximum = 0.15
+    wienerFilterNoise = 0.01
+    numberOfHistogramBins = 200
+    numberOfControlPoints = (4, 4, 4)
+    splineOrder = 3
 
     """ *** PHASE 1 - DWI PRE-PROCESSING IN BICOMMISSURAL COORDINATES *** """
 
@@ -207,7 +215,7 @@ def process_DWI_fsl(sj, control=None):
                       fslswapdim {1} -z -y -x {1};
                       fslorient -setqformcode 1 {1};'''.format(pfi_im, pfi_im_new)
 
-            print_and_run(cmd, msg='Reorient ' + sj, safety_on=control['safety_on'])
+            print_and_run(cmd, msg='Reorient ' + sj + ' ' + fn, safety_on=control['safety_on'])
 
         cmd = ''' cp {0} {1};
                       fslorient -deleteorient {1};
@@ -216,42 +224,92 @@ def process_DWI_fsl(sj, control=None):
 
         print_and_run(cmd, msg='Reorient mask ' + sj, safety_on=control['safety_on'])
 
-    """ *** PHASE 3 - ORIENT RESULTS IN HISTOLOGICAL COORDINATES *** """
+    """ *** PHASE 3 - ORIENT RESULTS IN HISTOLOGICAL COORDINATES *** """  # Usare T1 invece!!!!
 
     if control['step_orient_histo']:
 
+        # take the absolute values of V1
+        pfi_V1 = jph(outputs_folder, 'reoriented_fsl_dtifit_' + sj + '_V1.nii.gz')
+        cmd = 'seg_maths {0} -abs {0}'.format(pfi_V1)
+        print_and_run(cmd, safety_on=control['safety_on'])
+
         for fn in fn_results_to_keep:
 
-            name_input = 'reoriented_' + fn.split('.')[0] + '.nii.gz'
+            name_input = 'reoriented_' + fn
             pfi_input = jph(outputs_folder, name_input)
+            pfi_output = jph(outputs_folder, prefix_histo + fn.split('.')[0] + '.nii.gz')
 
-            cmd0 = 'reg_aladin -ref {0} -flo {1} -rmask {2} -fmask {3} -aff {4} -res {5} -rigOnly ; '.format(
-                    s_1305_in_histological_coordinates,
-                    pfi_input,
-                    s_1305_in_histological_coordinates_brain_mask,
-                    pfi_mask_reoriented,
-                    pfi_affine_transformation_to_histological,
-                    pfi_DWI_histological)
+            if fn.split('.')[0].endswith('V1'):
 
-            cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-                    s_1305_in_histological_coordinates,
-                    pfi_mask_reoriented,
-                    pfi_affine_transformation_to_histological,
-                    pfi_mask_histological)
+                reproduce_slice_fourth_dimension_path(pfi_mask_reoriented, pfi_mask_reoriented_V1, num_slices=3)
 
-            print '\n Alignment in histological coordinates, subject {}.\n'.format(sj)
-            print_and_run(cmd0, safety_on=control['safety_on'])
-            print_and_run(cmd1, safety_on=control['safety_on'])
 
-            if name_input.split('.')[0].endswith('FA') \
-                    or name_input.split('.')[0].endswith('MD') \
-                    or name_input.split('.')[0].endswith('S0'):
+
+
+
+                cmd = 'reg_aladin -ref {0} -flo {1} -rmask {2} -fmask {3} -aff {4} -res {5} -rigOnly ; '.format(
+                        T1_in_histological_coordinates,
+                        pfi_input,
+                        T1_in_histological_coordinates_brain_mask,
+                        pfi_mask_reoriented_V1,
+                        pfi_affine_transformation_to_histological,
+                        pfi_output)
+
+                print '\n Alignment in histological coordinates, subject {0}, {1}.\n'.format(sj, fn)
+                print_and_run(cmd, safety_on=control['safety_on'])
+
+            elif fn.split('.')[0].endswith('or'):
+
+                reproduce_slice_fourth_dimension_path(pfi_mask_reoriented, pfi_mask_reoriented_tensor, num_slices=6)
+
+                cmd = 'reg_aladin -ref {0} -flo {1} -rmask {2} -fmask {3} -aff {4} -res {5} -rigOnly ; '.format(
+                        T1_in_histological_coordinates,
+                        pfi_input,
+                        T1_in_histological_coordinates_brain_mask,
+                        pfi_mask_reoriented_V1,
+                        pfi_affine_transformation_to_histological,
+                        pfi_output)
+
+                print '\n Alignment in histological coordinates, subject {0}, {1}.\n'.format(sj, fn)
+                print_and_run(cmd, safety_on=control['safety_on'])
+
+            else:
+
+                cmd = 'reg_aladin -ref {0} -flo {1} -rmask {2} -fmask {3} -aff {4} -res {5} -rigOnly ; '.format(
+                        T1_in_histological_coordinates,
+                        pfi_input,
+                        T1_in_histological_coordinates_brain_mask,
+                        pfi_mask_reoriented,
+                        pfi_affine_transformation_to_histological,
+                        pfi_output)
+
+                print '\n Alignment in histological coordinates, subject {0}, {1}.\n'.format(sj, fn)
+                print_and_run(cmd, safety_on=control['safety_on'])
 
                 print '\n Adjust the warped with a threshold to avoid negative: ' \
                       'subj {0}, file {1}.\n'.format(sj, fn)
 
-                cmd = 'seg_maths {0} -thr 0 {0}'.format(pfi_input)
+                cmd = 'seg_maths {0} -thr 0 {0}'.format(pfi_output)
                 print_and_run(cmd, safety_on=control['safety_on'])
+
+    if control['step_bfc_b0']:
+
+        pfi_S0 = jph(outputs_folder, prefix_histo + prefix_fsl_output + sj + '_S0.nii.gz')
+
+        print '\nBias field correction: subject {}.\n'.format(sj)
+
+        if not control['safety_on']:
+            bias_field_correction(pfi_S0, pfi_S0,
+                                  pfi_mask=None,
+                                  prefix='',
+                                  convergenceThreshold=convergenceThreshold,
+                                  maximumNumberOfIterations=maximumNumberOfIterations,
+                                  biasFieldFullWidthAtHalfMaximum=biasFieldFullWidthAtHalfMaximum,
+                                  wienerFilterNoise=wienerFilterNoise,
+                                  numberOfHistogramBins=numberOfHistogramBins,
+                                  numberOfControlPoints=numberOfControlPoints,
+                                  splineOrder=splineOrder,
+                                  print_only=control['safety_on'])
 
     """ *** PHASE 4 - MOVE RESULTS IN THE APPROPRIATE FOLDER OF THE FOLDER STRUCTURE *** """
 
@@ -259,20 +317,16 @@ def process_DWI_fsl(sj, control=None):
 
         for fn in fn_results_to_keep:
 
-            name_original = 'reoriented_' + fn.split('.')[0] + '.nii.gz'
+            name_original = 'histo_' + fn.split('.')[0] + '.nii.gz'
             pfi_original = jph(outputs_folder, name_original)
 
-            name_moved = sj + '_' + fn.split('.')[0][-2] + '.nii.gz'
+            name_moved = sj + '_' + fn.split('.')[0][-2:] + '.nii.gz'
             pfi_moved = jph(root, sj, 'all_modalities', name_moved)
 
-            cmd = 'mv {0} {1} '.format(pfi_original, pfi_moved)
+            cmd = 'cp {0} {1} '.format(pfi_original, pfi_moved)
 
-            print_and_run(cmd, msg = 'Moving from original in the output folder to the new folder',
+            print_and_run(cmd, msg='Moving from original in the output folder to the new folder',
                           safety_on=control['safety_on'])
-
-        # Move the mask:
-        cmd = 'mv {0} {1} '.format(pfi_mask_reoriented, pfi_roi_mask_final)
-        print_and_run(cmd, safety_on=control['safety_on'])
 
     """ *** PHASE 5 - ERASE THE INTERMEDIATE RESULTS *** """
 
