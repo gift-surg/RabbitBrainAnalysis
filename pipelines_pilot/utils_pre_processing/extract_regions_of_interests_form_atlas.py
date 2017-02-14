@@ -6,18 +6,27 @@ from tools.auxiliary.utils import set_new_data
 from tools.label_manager.relabeller import assign_all_other_labels_the_same_value
 
 
-
 # load data:
-root_data = '/Users/sebastiano/Desktop/test_preliminary_template_atlas'
-path_atlas = os.path.join(root_data, 'barcelona_atlas_on_1305_170119_SYM_trimmed.nii.gz')
-path_atlas_new = os.path.join(root_data, 'selected_labels_out.nii.gz')
+root_data = '/Users/sebastiano/Desktop/preliminary_template_construction'
+path_atlas = os.path.join(root_data, '1305_seg_half.nii.gz')
+path_atlas_new = os.path.join(root_data, '1305_seg_half_ROI.nii.gz')
 
 input_atlas_nib = nib.load(path_atlas)
 data_atlas = input_atlas_nib.get_data()
 
 # set parameters
 # corpus callosum, hippocampi, sibiculi, periventricular white matter, thalami
-labels_to_keep = [49, 50, 25, 26, 31, 32, 35, 36, 21, 22, 51, 103]
+labels_to_keep = [277,  # 278,  # caudate nuclei
+                  305,  # 306,  # Cerbellar hemispheres
+                  281,  # thalamus
+                  309,  # hypothalamus
+                  287,  # Hippocampi
+                  257,  # Frontal cortex
+                  291,  # internal capsule
+                  307,  # corpus callosum
+                  295,  # Fimbria of hippocampi
+                  308   # anterior commissure
+                  ]
 same_value_label = 255
 
 # apply function

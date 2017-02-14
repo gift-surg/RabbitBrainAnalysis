@@ -34,7 +34,7 @@ def relabeller(data, list_old_labels, list_new_labels):
     return new_data
 
 
-def relabeller_path(input_im_path, output_im_path, list_old_labels, list_new_labels):
+def relabeller_path(input_im_path, output_im_path, list_old_labels, list_new_labels, new_dtype=None):
 
     # check parameters
     if not os.path.isfile(input_im_path):
@@ -44,7 +44,7 @@ def relabeller_path(input_im_path, output_im_path, list_old_labels, list_new_lab
     data_labels = im_labels.get_data()
     data_relabelled = relabeller(data_labels, list_old_labels=list_old_labels, list_new_labels=list_new_labels)
 
-    im_relabelled = set_new_data(im_labels, data_relabelled)
+    im_relabelled = set_new_data(im_labels, data_relabelled, new_dtype=new_dtype)
     nib.save(im_relabelled, output_im_path)
 
 

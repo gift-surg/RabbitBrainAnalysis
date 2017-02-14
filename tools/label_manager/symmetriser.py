@@ -119,7 +119,7 @@ def sym_labels(in_img_anatomy_path,
 
     symmetrised_data = np.zeros_like(data_side_A)
 
-    # vectorise later!
+    # vectorize later!
     dims = data_side_A.shape
 
     print('Pointwise symmetrisation started!')

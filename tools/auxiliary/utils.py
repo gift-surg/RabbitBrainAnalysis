@@ -4,12 +4,12 @@ import os
 import copy
 
 
-def set_new_data(image, new_data):
+def set_new_data(image, new_data, new_dtype=None):
     """
     From a nibabel image and a numpy array it creates a new image with
     the same header of the image and the new_data as its data.
     :param image: nibabel image
-    :param new_data: numpy array 
+    :param new_data: numpy array
     :return: nibabel image
     """
     # if nifty1
@@ -21,8 +21,10 @@ def set_new_data(image, new_data):
     else:
         raise IOError('input_image_problem')
     # update data type:
-    new_image.set_data_dtype(new_data.dtype)
-
+    if new_dtype is None:
+        new_image.set_data_dtype(new_data.dtype)
+    else:
+        new_image.set_data_dtype(new_dtype)
     return new_image
 
 
@@ -30,10 +32,10 @@ def label_selector(path_input_image, path_output_image, labels_to_keep, binarize
     """
     Given an label of image and a list of labels to keep, a new image with only the labels to keep will be created.
     New image can still have the original labels, or can binarize them.
-    :param path_input_image: 
+    :param path_input_image:
     :param path_output_image:
     :param labels to keep: list of labels
-    :param binarize: True if you want the output to be a binary images. Original labels are otherwise kept.  
+    :param binarize: True if you want the output to be a binary images. Original labels are otherwise kept.
     """
     im = nib.load(path_input_image)
     im_data = im.get_data()[:]
@@ -41,7 +43,7 @@ def label_selector(path_input_image, path_output_image, labels_to_keep, binarize
 
     for i in range(im_data.shape[0]):
         for j in range(im_data.shape[1]):
-            for k in range(im_data.shape[2]):   
+            for k in range(im_data.shape[2]):
                 if im_data[i,j,k] in labels_to_keep:
                     if binarize:
                         new_data[i,j,k] = 1
@@ -127,44 +129,23 @@ def compare_two_nifti(path_img_1, path_img_2):
     return compare_two_nib(im1, im2)
 
 
-def reproduce_slice_fourth_dimension(nib_image, num_slices=10):
-    # can be optimised...!
+def reproduce_slice_fourth_dimension(nib_image, num_slices=10, repetition_axis=3):
 
     im_sh = nib_image.shape
     if not (len(im_sh) == 2 or len(im_sh) == 3):
         raise IOError('Methods can be used only for 2 or 3 dim images. No conflicts with existing multi, slices')
-    im_hd = nib_image.get_header()
 
-    new_data = np.zeros(list(im_sh) + [num_slices], dtype=im_hd['datatype'].dtype)
-    a_slice = copy.deepcopy(nib_image.get_data())
-
-    for d in range(num_slices):
-        new_data[..., d] = a_slice
-
-    im_output = set_new_data(nib_image, new_data)
-    print im_output.shape
-
+    new_data = np.stack([nib_image.get_data(), ] * num_slices, axis=repetition_axis)
     output_im = set_new_data(nib_image, new_data)
 
     return output_im
 
 
-def reproduce_slice_fourth_dimension_path(pfi_input_image, pfi_output_image, num_slices=10):
+def reproduce_slice_fourth_dimension_path(pfi_input_image, pfi_output_image, num_slices=10, repetition_axis=3):
     old_im = nib.load(pfi_input_image)
-    new_im = reproduce_slice_fourth_dimension(old_im, num_slices)
+    new_im = reproduce_slice_fourth_dimension(old_im, num_slices=num_slices, repetition_axis=repetition_axis)
     nib.save(new_im, pfi_output_image)
-    return 'copied!'
-
-
-'''
-tmp_path = '/Users/sebastiano/Documents/UCL/a_data/bunnies/pipelines/ex_vivo_DWI/zz_test'
-test_obj = os.path.join(tmp_path, 'ciccione_1305_on_1201_3D_mask_affine.nii.gz')
-test_obj_output = os.path.join(tmp_path, 'ciccione_1305_on_1201_3D_mask_affine_output.nii.gz')
-
-d = 12
-copy_and_paste_on_slice_path(test_obj, test_obj_output, d)
-'''
-
+    print 'New image created and saved in {0}'.format(pfi_output_image)
 
 def cut_dwi_image_from_first_slice_mask(input_dwi, input_mask):
 
@@ -198,6 +179,13 @@ def eliminates_consecutive_duplicates(input_list):
 
     return output_list
 
+def scan_and_remove_path(msg):
+    """
+    Take a string with paths and removes all the paths.
+    """
+    a = [os.path.basename(p) for p in msg.split(' ')]
+    return ' '.join(a)
+
 
 def print_and_run(cmd, msg=None, safety_on=True):
     """
@@ -210,9 +198,11 @@ def print_and_run(cmd, msg=None, safety_on=True):
     :return:
     """
 
+    path_free_cmd = scan_and_remove_path(cmd)
     if msg is not None:
         print '\n' + msg + '\n'
+    else:
+        print '\n' + path_free_cmd + '\n'
 
-    print cmd + '\n'
     if not safety_on:
         os.system(cmd)
