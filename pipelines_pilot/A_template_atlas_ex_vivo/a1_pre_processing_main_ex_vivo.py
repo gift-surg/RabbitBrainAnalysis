@@ -17,8 +17,8 @@ Dlways process T1 before DWI.
 
 """
 
-from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_T1 import process_T1
-from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_DWI_fsl import process_DWI_fsl
+from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_T1_ex_vivo import process_T1
+from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_DWI_fsl_ex_vivo import process_DWI_fsl
 
 
 subjects = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002']
@@ -59,5 +59,6 @@ controller_process_DWI = {'safety_on':                     False,
 print '#### \nPipelines for subjects \n {} \n#### \n'.format(subjects)
 
 for sj in subjects:
-    process_T1(sj, control=controller_process_T1)
-    process_DWI_fsl(sj, control=controller_process_DWI)
+    # process_T1(sj, control=controller_process_T1)
+    # process_DWI_fsl(sj, control=controller_process_DWI)
+    pass

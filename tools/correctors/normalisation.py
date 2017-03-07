@@ -4,7 +4,7 @@ import numpy as np
 from tools.auxiliary.utils import set_new_data
 
 
-def normalise_image_for_the_median(pfi_in_image, pfi_out_iamge,
+def normalise_image_for_the_median(pfi_in_image, pfi_out_image,
                                    exclude_zeros=False,
                                    exclude_zeros_and_negatives=True):
 
@@ -21,7 +21,7 @@ def normalise_image_for_the_median(pfi_in_image, pfi_out_iamge,
         median = np.median(im_data.flatten())
 
     print median
-    normalised_data = (1 / float(median)) * im_data
+    normalised_data = (1 / float(median)) * im_data.astype(np.float64)
 
     out_im = set_new_data(im, normalised_data)
-    nib.save(out_im, pfi_out_iamge)
+    nib.save(out_im, pfi_out_image)

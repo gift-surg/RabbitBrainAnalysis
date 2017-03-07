@@ -29,7 +29,7 @@ def process_DWI_fsl(sj, control=None):
     pfi_dwi_txt_data_original = jph(root_pilot_study, '0_original_data', 'ex_vivo', sj, 'DWI', sj + '_DWI.txt')
 
     if not os.path.isfile(pfi_dwi_original):
-        msg = 'Input file subject {} does not exists'.format(sj)
+        msg = 'Input file subject {0} does not exists: \n{1}'.format(sj, pfi_dwi_original)
         raise IOError(msg)
 
     if not os.path.isfile(pfi_dwi_txt_data_original):
@@ -242,10 +242,6 @@ def process_DWI_fsl(sj, control=None):
             if fn.split('.')[0].endswith('V1'):
 
                 reproduce_slice_fourth_dimension_path(pfi_mask_reoriented, pfi_mask_reoriented_V1, num_slices=3)
-
-
-
-
 
                 cmd = 'reg_aladin -ref {0} -flo {1} -rmask {2} -fmask {3} -aff {4} -res {5} -rigOnly ; '.format(
                         T1_in_histological_coordinates,

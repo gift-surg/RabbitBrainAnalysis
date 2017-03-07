@@ -1,19 +1,22 @@
+import os
 import numpy as np
 import nibabel as nib
 
 from tools.auxiliary.utils import set_new_data
 
 
-def corrector_MSME_T2_path(im_input_path, im_output_path):
+def corrector_MSME_T2_path(pfi_input, pfi_output, modality=None, swap_dim=None):
     """
     Remapping of the MSME T2 from paravision to a nifty format where
     (x,y,z,e) are the x,y,z, coordinates of the volume and e are the echo coordinates.
-
+    --------
+    ex_vivo:
+    --------
     The input files presents with 2 consecutive slices with echoes in the same z slice.
 
     As it is       | as we like it to be
     ----------------------------------
-    (x,y,0:15,0)   | (x,y,00:15)
+    (x,y,0:15,0)   | (x,y,0,0:15)
     (x,y,16:32,0)  | (x,y,1,0:15)
     (x,y,0:15,1)   | (x,y,2,0:15)
     (x,y,16:32,1)  | (x,y,3,0:15)
@@ -25,23 +28,65 @@ def corrector_MSME_T2_path(im_input_path, im_output_path):
 
     In addition, it will reorient the image in a proper way!
 
-    :param subj_path:
+    :param:
     :return:
     """
-    im = nib.load(im_input_path)
+    im = nib.load(pfi_input)
     im_data = im.get_data()
 
-    msg = 'method customised for a selected shape: recustomise the method according to the shape.'
-    assert im_data.shape == (240, 240, 32, 16), msg
+    # Reslice:
+    sh = im_data.shape
 
+    stack_data = np.zeros((sh[0], sh[1], sh[2] * sh[3]), dtype=np.float64)
     new_data = np.zeros_like(im_data)
 
-    for t in xrange(16):
-        new_data[:, :, 2 * t, 0:16] = im_data[:, :, 0:16, t]
-        new_data[:, :, 2 * t + 1, 0:16] = im_data[:, :, 16:32, t]
+    for t in xrange(sh[3]):
+        m = sh[2] * t
+        M = sh[2] * t + sh[2]
+        stack_data[:, :, m:M] = im_data[..., t]
+
+    for z in xrange(sh[2]):
+        m = sh[3] * z
+        M = sh[3] * z + sh[3]
+        new_data[:, :, z, :] = stack_data[:, :, m:M]
 
     im_new = set_new_data(im, new_data)
+    nib.save(im_new, pfi_output)
 
-    nib.save(im_new, im_output_path)
-    print 'image saved in ' + im_output_path
+    if modality == 'ex_vivo':
+        swap_dim = 'x z -y'
 
+    elif modality == 'in_vivo':
+        swap_dim = 'x z -y'
+
+    # swap dimension according to swap_dim or modality.
+    if swap_dim is not None:
+
+        print('Reorienting directions according to {} .'.format(swap_dim))
+
+        cmd = 'fslorient -deleteorient {0}; ' \
+              'fslswapdim {0} {1} {0}; ' \
+              'fslorient -setqformcode 1 {0}; '.format(pfi_output, swap_dim)
+        os.system(cmd)
+
+
+'''
+OLD: custom for ex_vivo. Test the current version before erasing following lines:
+
+        msg = 'method customised for a selected shape: recustomise the method according to the shape ' \
+              'or use modality=None.'
+
+        assert im_data.shape == (240, 240, 32, 16), msg
+
+        new_data = np.zeros_like(im_data)
+
+        for t in xrange(16):
+            new_data[:, :, 2 * t, 0:16] = im_data[:, :, 0:16, t]
+            new_data[:, :, 2 * t + 1, 0:16] = im_data[:, :, 16:32, t]
+
+        im_new = set_new_data(im, new_data)
+
+        nib.save(im_new, pfi_output)
+        print 'image saved in ' + pfi_output
+
+'''

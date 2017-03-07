@@ -12,6 +12,9 @@ def set_new_data(image, new_data, new_dtype=None):
     :param new_data: numpy array
     :return: nibabel image
     """
+    if new_dtype is not None:
+        new_data = new_data.astype(new_dtype)
+
     # if nifty1
     if image.header['sizeof_hdr'] == 348:
         new_image = nib.Nifti1Image(new_data, image.affine, header=image.header)
@@ -21,10 +24,7 @@ def set_new_data(image, new_data, new_dtype=None):
     else:
         raise IOError('input_image_problem')
     # update data type:
-    if new_dtype is None:
-        new_image.set_data_dtype(new_data.dtype)
-    else:
-        new_image.set_data_dtype(new_dtype)
+
     return new_image
 
 
@@ -147,6 +147,7 @@ def reproduce_slice_fourth_dimension_path(pfi_input_image, pfi_output_image, num
     nib.save(new_im, pfi_output_image)
     print 'New image created and saved in {0}'.format(pfi_output_image)
 
+
 def cut_dwi_image_from_first_slice_mask(input_dwi, input_mask):
 
     data_dwi  = input_dwi.get_data()
@@ -178,6 +179,7 @@ def eliminates_consecutive_duplicates(input_list):
             output_list.append(input_list[i])
 
     return output_list
+
 
 def scan_and_remove_path(msg):
     """

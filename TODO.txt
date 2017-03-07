@@ -1,0 +1,45 @@
+in vivo study:
+
+* DONE:
+Embed initialised transformation of the header from bicommissural to histological coordinates (experiment folder).
+
+Add "openers" for quick visualisation of all the subjects or for all visualisation
+of all modalities for the same subjects.
+
+Experiment template propagation on the 0802 in vivo subject to have the preliminary template (experiment folder).
+
+Do the DTI analysis on the in vivo (using embedded initialised transformations - proper coding).
+
+Propagate the preliminary template rigid/non rigid  (proper coding).
+
+Compute statistics in_vivo (proper coding).
+
+Write Hannes the stats.
+
+PROGRESSING:
+
+
+
+* TO DO:
+
+Change template first subject. Do not use the 0802 since cerbellar hemispheres are chopped.
+Strip the skull based on the preliminary propagation for all modalities in separate folder + correct V1 for FA (proper coding).
+
+
+- After stats.
+
+Learn sofa and do some tutorials and book reading!
+
+Change template first subject. Do not use the 0802 since cerbellar hemispheres are chopped.
+Strip the skull based on the preliminary propagation for all modalities in separate folder + correct V1 for FA (proper coding).
+
+Phrenological assessment from the transformation from the template (new basic folder Z_intracranial assessment).
+
+Code cleaning - remove double code for the stats analysis and the visualiser.
+Meaning move forward with label manager and
+
+Conditional random field for the label fusion.
+GIT for rabbit.
+
+
+

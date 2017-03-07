@@ -165,7 +165,7 @@ def process_T1(sj, control=None):
 
     """ *** PHASE 2 - WE MOVE IN HISTOLOGICAL COORDINATES *** """
 
-    if control['step_orient_histological']:  # TODO debug what append to the mask!
+    if control['step_orient_histological']:
 
         cmd0 = 'reg_aladin -ref {0} -flo {1} -rmask {2} -fmask {3} -aff {4} -res {5} -rigOnly ; '.format(
                  pfi_1305_in_histological_coordinates,

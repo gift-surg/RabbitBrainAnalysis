@@ -17,21 +17,29 @@ from tools.auxiliary.utils import set_new_data, print_and_run
 subjects = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002']
 
 sj_starting = '1305'
-sj_destination = '1702'
+sj_destination = '1805'
 
 # input
 pfo_sj_starting = jph(root_pilot_study, 'A_template_atlas_ex_vivo', sj_starting)
 pfi_starting_subject = jph(pfo_sj_starting, 'all_modalities', sj_starting + '_T1.nii.gz')
-pfi_starting_atlas = jph(pfo_sj_starting, 'segmentations', 'manual', 'final_before_propagation', sj_starting + '_manual_segmentationV2.nii.gz')
-pfi_starting_mask = jph(pfo_sj_starting, 'masks', sj_starting + '_roi_mask.nii.gz')
+pfi_starting_atlas = jph(pfo_sj_starting, 'segmentations', 'approved', sj_starting + '_propagate_me.nii.gz')
+pfi_starting_mask_aff = jph(pfo_sj_starting, 'masks', sj_starting + '_roi_registration_mask.nii.gz')
+pfi_starting_mask_nrig = jph(pfo_sj_starting, 'masks', sj_starting + '_mask_special.nii.gz')
+
+pfi_to_be_tested = [pfo_sj_starting, pfi_starting_subject, pfi_starting_atlas, pfi_starting_mask_aff, pfi_starting_mask_nrig]
+
+for path in pfi_to_be_tested:
+    if not os.path.exists(path):
+        raise IOError('Input file {} does not exist.'.format(path))
 
 pfo_sj_destination = jph(root_pilot_study, 'A_template_atlas_ex_vivo', sj_destination)
 pfi_destination_subject = jph(pfo_sj_destination, 'all_modalities', sj_destination + '_T1.nii.gz')
-pfi_destination_mask = jph(pfo_sj_destination, 'masks', sj_destination + '_roi_mask.nii.gz')
-pfi_destination_registration_masks = jph(pfo_sj_destination, 'masks', sj_destination + '_roi_registration_mask.nii.gz')
+pfi_destination_mask_aff = jph(pfo_sj_destination, 'masks', sj_destination + '_roi_registration_mask.nii.gz')
+pfi_destination_masks_nrig = jph(pfo_sj_destination, 'masks', sj_destination + '_mask_special.nii.gz')
+
 
 # output:
-test_tag = '_t1'
+test_tag = '_from_' + sj_starting + '_t6'
 pfi_propagated_segmentation = jph(pfo_sj_destination, 'segmentations', 'automatic', sj_destination + '_prop_segm' + test_tag + '.nii.gz')
 
 # intermediate passages
@@ -54,7 +62,6 @@ safety_on = False
 
 steps_map = {'Aff alignment'                  : True,
              'Propagate to template aff'      : True,
-             'Manipulate registration mask'   : True,
              'Get differential BFC'           : True,
              'N-rig alignment of BFC'         : True,
              'Propagate to template n-rig'    : True}
@@ -72,9 +79,9 @@ os.system(cmd)
 
 if steps_map['Aff alignment']:
 
-    cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} '.format(
-           pfi_destination_subject, pfi_destination_mask,
-           pfi_starting_subject, pfi_starting_mask,
+    cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5}'.format(
+           pfi_destination_subject, pfi_destination_mask_aff,
+           pfi_starting_subject, pfi_starting_mask_aff,
            pfi_affine_transf, pfi_affine_res)
 
     print_and_run(cmd, safety_on=safety_on)
@@ -86,22 +93,19 @@ if steps_map['Propagate to template aff']:
 
     print_and_run(cmd, safety_on=safety_on)
 
-if steps_map['Manipulate registration mask']:
-    pass
-
 if steps_map['Get differential BFC']:
 
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc '
     cmd = bfc_corrector_cmd + ' {0} {1} {2} {3} {4} {5} '.format(
-    pfi_affine_res,           pfi_destination_mask,               pfi_diff_bfc_starting,
-    pfi_destination_subject,  pfi_destination_registration_masks, pfi_diff_bfc_destination)
+    pfi_affine_res,           pfi_starting_mask_nrig,               pfi_diff_bfc_starting,
+    pfi_destination_subject,  pfi_destination_masks_nrig, pfi_diff_bfc_destination)
 
     print_and_run(cmd, safety_on=safety_on)
 
 if steps_map['N-rig alignment of BFC']:
 
-    cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -cpp {4} -res {5} -be 0.8 -ln 2 -maxit 250'.format(
-        pfi_diff_bfc_destination, pfi_destination_mask, pfi_diff_bfc_starting, pfi_destination_mask,
+    cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -cpp {4} -res {5} -vel'.format(
+        pfi_diff_bfc_destination, pfi_destination_masks_nrig, pfi_diff_bfc_starting, pfi_starting_mask_nrig,
         pfi_diff_bfc_n_rig_cpp, pfi_diff_bfc_n_rig_res)
 
     print_and_run(cmd, safety_on=safety_on)
@@ -119,3 +123,12 @@ print 'Pipeline terminated: propagation from ' + sj_starting + ' to ' + sj_desti
 print '\n######################\n\n\n'
 
 # print_and_run
+'''
+t1 only roi_registration_mask : not compensating enough for the non-rigid deformations. (aff default, nrig -be 0.8 -ln 2 -maxit 250)
+t2 xxx only special mask, failed aff (aff default, nrig -be 0.8 -ln 2 -maxit 250)
+t3 XXX only special mask, failed aff (aff -ln 2 -lp 1, nrig -be 0.8 -ln 2 -maxit 250)
+------
+t4 aff mask + nrig mask special (aff -ln 2 -lp 1, nrig -be 0.8 -ln 2 -maxit 250)
+t5 aff mask + nrig mask special (aff default, nrig -be 0.8 -ln 2 -maxit 250)
+t6 aff mask + nrig mask special (aff default, nrig -vel)
+'''
