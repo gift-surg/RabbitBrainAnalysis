@@ -59,6 +59,6 @@ controller_process_DWI = {'safety_on':                     False,
 print '#### \nPipelines for subjects \n {} \n#### \n'.format(subjects)
 
 for sj in subjects:
-    # process_T1(sj, control=controller_process_T1)
-    # process_DWI_fsl(sj, control=controller_process_DWI)
+    process_T1(sj, control=controller_process_T1)
+    process_DWI_fsl(sj, control=controller_process_DWI)
     pass

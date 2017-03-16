@@ -102,7 +102,7 @@ class SegmentationAnalyzer(object):
 
         assert data_scalar.shape == data_segmentation.shape
 
-        all_places = np.zeros_like(data_segmentation ,dtype=np.bool)
+        all_places = np.zeros_like(data_segmentation, dtype=np.bool)
         for sl in selected_labels:
             assert sl in self.list_labels
             all_places += data_segmentation == sl

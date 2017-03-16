@@ -5,8 +5,7 @@ Generate preliminary results from subject 1305.
 import os
 
 from definitions import root_pilot_study
-from tools.label_manager.symmetriser import sym_labels
-
+from labels_manager.tools.manipulations.symmetrizer import sym_labels
 
 # Path manager:
 
@@ -41,12 +40,13 @@ if step_symmetrise:
 
     print 'Symmetrise one side of the segmentation on the other.'
 
-    sym_labels(in_img_anatomy_path=path_template,
-               in_img_labels_path=path_half_atlas,
-               labels_input=all_left_labels+all_center_labels,
-               result_img_path=path_result_sym,
-               results_folder=path_results_folder,
-               labels_transformed=all_right_labels+all_center_labels,
+    sym_labels(pfi_anatomy=path_template,
+               pfi_segmentation=path_half_atlas,
+               pfo_results=path_results_folder,
+               pfi_result_segmentation=path_result_sym,
+               list_labels_input=all_left_labels+all_center_labels,
+               list_labels_transformed=all_right_labels+all_center_labels,
+               reuse_registration=False,
                coord='z')
 
 ############################

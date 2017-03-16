@@ -68,25 +68,3 @@ def corrector_MSME_T2_path(pfi_input, pfi_output, modality=None, swap_dim=None):
               'fslswapdim {0} {1} {0}; ' \
               'fslorient -setqformcode 1 {0}; '.format(pfi_output, swap_dim)
         os.system(cmd)
-
-
-'''
-OLD: custom for ex_vivo. Test the current version before erasing following lines:
-
-        msg = 'method customised for a selected shape: recustomise the method according to the shape ' \
-              'or use modality=None.'
-
-        assert im_data.shape == (240, 240, 32, 16), msg
-
-        new_data = np.zeros_like(im_data)
-
-        for t in xrange(16):
-            new_data[:, :, 2 * t, 0:16] = im_data[:, :, 0:16, t]
-            new_data[:, :, 2 * t + 1, 0:16] = im_data[:, :, 16:32, t]
-
-        im_new = set_new_data(im, new_data)
-
-        nib.save(im_new, pfi_output)
-        print 'image saved in ' + pfi_output
-
-'''

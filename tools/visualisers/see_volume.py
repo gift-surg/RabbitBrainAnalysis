@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons, CheckButtons
-import SimpleITK as sitk
 
 
 def see_array(in_array, extra_image=None, scale=None, num_fig=1, block=False,

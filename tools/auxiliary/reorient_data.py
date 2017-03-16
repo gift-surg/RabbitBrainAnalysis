@@ -68,6 +68,7 @@ def flip_data():
     # TODO
     pass
 
+
 def symmetrise_data(in_data, axis='x', plane_intercept=10, side_to_copy='below', keep_in_data_dimensions=True):
     """
     Symmetrise the input_array according to the axial plane

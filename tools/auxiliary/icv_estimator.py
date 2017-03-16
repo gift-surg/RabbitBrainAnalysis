@@ -3,7 +3,7 @@ import os
 from os.path import join as jph
 from scipy.linalg import expm, logm
 
-from tools.label_manager.caliber import volume_from_binary_segmentation_path
+from tools.label_management.caliber import SegmentationAnalyzer
 from scipy.optimize import minimize
 
 from tools.auxiliary.utils import print_and_run

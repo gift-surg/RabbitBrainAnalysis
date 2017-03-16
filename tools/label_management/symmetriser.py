@@ -4,7 +4,7 @@ import numpy as np
 import nibabel as nib
 
 from tools.auxiliary.utils import set_new_data
-from tools.label_manager.relabeller import relabeller_path
+from tools.label_management.relabeller import relabeller_path
 
 
 def flip_data(in_data, axis='x'):

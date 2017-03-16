@@ -1,5 +1,4 @@
 import os
-import copy
 import numpy as np
 import nibabel as nib
 
@@ -45,41 +44,7 @@ def merge_labels_from_4d_path(input_im_path, output_im_path):
 
     im_labels = nib.load(input_im_path)
     data_labels = im_labels.get_data()
-    data_relabelled = merge_labels(data_labels)
+    data_relabelled = merge_labels_from_4d(data_labels)
 
     im_relabelled = set_new_data(im_labels, data_relabelled)
     nib.save(im_relabelled, output_im_path)
-
-
-
-def label_merger(in_data, labels_to_merge, leading_label=None):
-    """
-    from an array of labels it merges (in the same dimension) the labels in the
-    list to the new_label. If new_label is None then it takes as the new label
-    the first of the list.
-    If new_label is not None it must be one of the label in the list
-    labels_to_merge or must not be in the image (safety reason).
-    :param in_data: 2d 3d array of integers
-    :param labels_to_merge: list of labels in im_data
-    :param leading_label: value assigned to the merged labels. First of
-    labels_to_merge if None
-    :return: input array with selected labels merged in the new label or in the
-    first label of the labels_to_merge
-    lists.
-    """
-
-    list_labels = list(set(in_data.astype('uint64').flat))
-    list_labels.sort()
-
-    # sanity tests:
-    
-
-    # raise warning if labels to merge are not in the image:
-    if new_label is not None:
-        new_label = labels_to_merge[0]
-    return 0
-
-
-def label_merger_path(im_data_path, out_data_path, labels_to_merge,
-                      new_label=None):
-    pass

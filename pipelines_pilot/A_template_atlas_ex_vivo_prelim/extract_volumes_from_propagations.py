@@ -2,7 +2,7 @@ import os
 from os.path import join as jph
 import numpy as np
 
-from tools.label_manager.caliber import SegmentationAnalyzer
+from tools.label_management.caliber import SegmentationAnalyzer
 from definitions import root_pilot_study
 from tabulate import tabulate
 

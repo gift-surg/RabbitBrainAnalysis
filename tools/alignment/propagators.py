@@ -13,8 +13,6 @@ import os
 import numpy as np
 import nibabel as nib
 
-from definitions import root_ex_vivo_dwi, root_ex_vivo_template
-
 
 def register_and_propagate_path(fixed_path, template_path, template_atlas_path,
                                 output_template_warped_path=None,

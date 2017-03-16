@@ -1,7 +1,6 @@
 import numpy as np
 import nibabel as nib
 import os
-import copy
 
 
 def set_new_data(image, new_data, new_dtype=None):
@@ -22,37 +21,9 @@ def set_new_data(image, new_data, new_dtype=None):
     elif image.header['sizeof_hdr'] == 540:
         new_image = nib.Nifti2Image(new_data, image.affine, header=image.header)
     else:
-        raise IOError('input_image_problem')
-    # update data type:
+        raise IOError('Input image header problem')
 
     return new_image
-
-
-def label_selector(path_input_image, path_output_image, labels_to_keep, binarize=True):
-    """
-    Given an label of image and a list of labels to keep, a new image with only the labels to keep will be created.
-    New image can still have the original labels, or can binarize them.
-    :param path_input_image:
-    :param path_output_image:
-    :param labels to keep: list of labels
-    :param binarize: True if you want the output to be a binary images. Original labels are otherwise kept.
-    """
-    im = nib.load(path_input_image)
-    im_data = im.get_data()[:]
-    new_data = np.zeros_like(im_data)
-
-    for i in range(im_data.shape[0]):
-        for j in range(im_data.shape[1]):
-            for k in range(im_data.shape[2]):
-                if im_data[i,j,k] in labels_to_keep:
-                    if binarize:
-                        new_data[i,j,k] = 1
-                    else:
-                        new_data[i,j,k] = im_data[i,j,k]
-
-    new_im = set_new_data(im, new_data)
-    nib.save(new_im, path_output_image)
-    print('Output image saved in ' + str(path_output_image))
 
 
 def compare_two_nib(im1, im2, toll=1e-3):
@@ -146,6 +117,18 @@ def reproduce_slice_fourth_dimension_path(pfi_input_image, pfi_output_image, num
     new_im = reproduce_slice_fourth_dimension(old_im, num_slices=num_slices, repetition_axis=repetition_axis)
     nib.save(new_im, pfi_output_image)
     print 'New image created and saved in {0}'.format(pfi_output_image)
+
+
+def grab_a_timepoint(input_4d_im, t=0):
+    assert t < input_4d_im.shape[3]
+    return set_new_data(input_4d_im, input_4d_im.get_data()[..., t])
+
+
+def grab_a_timepoint_path(path_input_4d_im, path_output_single_timepoint, t=0):
+
+    im = nib.load(path_input_4d_im)
+    im_output = grab_a_timepoint(im, t=t)
+    nib.save(im_output, path_output_single_timepoint)
 
 
 def cut_dwi_image_from_first_slice_mask(input_dwi, input_mask):

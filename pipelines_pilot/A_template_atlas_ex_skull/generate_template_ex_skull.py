@@ -21,7 +21,7 @@ safety_on = True
 step_create_masks = True
 step_generate_template = True
 
-' path manager'
+' path manager '
 
 study_path = jph(root_pilot_study, 'A_template_atlas_ex_skull')
 
