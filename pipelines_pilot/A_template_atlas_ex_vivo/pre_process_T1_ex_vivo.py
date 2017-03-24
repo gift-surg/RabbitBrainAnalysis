@@ -3,11 +3,12 @@ Align T1 in histological orientation after standard pre-processing.
 """
 import os
 from os.path import join as jph
+import numpy as np
 
 from definitions import root_pilot_study
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.auxiliary.lesion_mask_extractor import simple_lesion_mask_extractor_path
-from tools.auxiliary.utils import print_and_run
+from tools.auxiliary.utils import print_and_run, adjust_header_from_transformations
 
 
 def process_T1(sj, control=None):
@@ -15,6 +16,7 @@ def process_T1(sj, control=None):
     print ' --- Pre process T1 {} --- \n'.format(sj)
 
     # --- paths manager --- #
+    # INPUT:
 
     pfo_root_main = jph(root_pilot_study, 'A_template_atlas_ex_vivo')
 
@@ -26,15 +28,18 @@ def process_T1(sj, control=None):
         raise IOError(msg)
 
     # subject 1305 with region of interest (brain + skull) masks:
-    pfi_1305_bicomm = jph(pfo_root_main, 'Utils', '1305_brain_and_skull_mask_T1', '1305_T1.nii.gz')
-    pfi_1305_bicomm_roi_mask = jph(pfo_root_main, 'Utils', '1305_brain_and_skull_mask_T1', '1305_T1_roi_mask.nii.gz')
+    pfi_1305_bicomm = jph(pfo_root_main, 'Utils', '1305_bicommissural_orientation', '1305_T1_bicomm.nii.gz')
+    pfi_1305_bicomm_roi_mask = jph(pfo_root_main, 'Utils', '1305_bicommissural_orientation', '1305_T1_bicomm_roi_mask.nii.gz')
 
     # subject 1305 manually oriented in histological coordinates
 
-    pfi_1305_in_histological_coordinates = jph(pfo_root_main, 'Utils', '1305_histological_orientation',
-                                             '1305_T1.nii.gz')
-    pfi_1305_in_histological_coordinates_brain_mask = jph(pfo_root_main, 'Utils', '1305_histological_orientation',
-                                                        '1305_T1_roi_mask.nii.gz')
+    pfi_1305_in_histological_coordinates = jph(pfo_root_main, 'Utils', '1305_histological_orientation', '1305_T1_histo.nii.gz')
+    pfi_1305_in_histological_coordinates_roi_mask = jph(pfo_root_main, 'Utils', '1305_histological_orientation', '1305_T1_histo_roi_mask.nii.gz')
+
+    # check inputs:
+    for ph in [pfi_3d_nii_original, pfi_1305_bicomm, pfi_1305_bicomm_roi_mask, pfi_1305_in_histological_coordinates, pfi_1305_in_histological_coordinates_roi_mask]:
+        if not os.path.isfile(ph):
+            raise IOError('File {} does not exist'.format(ph))
 
     # --- paths per steps:   --- #
 
@@ -167,10 +172,22 @@ def process_T1(sj, control=None):
 
     if control['step_orient_histological']:
 
+        if not control['safety_on']:
+
+            if sj == '1805' or sj == '2002' :
+                theta = 0  # no pre-adjustment for this subject
+            else:
+                theta = -np.pi / float(3)
+
+            adjust_header_from_transformations(pfi_3d_bias_field_corrected, pfi_3d_bias_field_corrected,
+                                               theta=-theta, trasl=(0, 0, 0))
+            adjust_header_from_transformations(pfi_resampled_mask_bicomm, pfi_resampled_mask_bicomm,
+                                               theta=theta, trasl=(0, 0, 0))
+
         cmd0 = 'reg_aladin -ref {0} -flo {1} -rmask {2} -fmask {3} -aff {4} -res {5} -rigOnly ; '.format(
                  pfi_1305_in_histological_coordinates,
                  pfi_3d_bias_field_corrected,
-                 pfi_1305_in_histological_coordinates_brain_mask,
+                 pfi_1305_in_histological_coordinates_roi_mask,
                  pfi_resampled_mask_bicomm,
                  pfi_affine_transformation_to_histological,
                  pfi_3d_histological)

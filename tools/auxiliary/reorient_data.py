@@ -184,3 +184,21 @@ def symmetrise_image_path(input_im_path, output_im_path,
     nib.save(im_relabelled, output_im_path)
 
     print 'Symmetrised image from \n{0} \n saved in \n{1}'.format(input_im_path, output_im_path)
+
+
+def reorient_bicomm2dwi(pfi_in, pfi_out):
+    # from bicommissural to dwi
+    _cmd = ''' cp {0} {1};
+          fslorient -deleteorient {1};
+          fslswapdim {1} z y -x {1};
+          fslorient -setqformcode 1 {1};'''.format(pfi_in, pfi_out)
+    return _cmd
+
+
+def reorient_dwi2bicomm(pfi_in, pfi_out):
+    # from bicommissural to dwi
+    _cmd = ''' cp {0} {1};
+          fslorient -deleteorient {1};
+          fslswapdim {1} -z -y -x {1};
+          fslorient -setqformcode 1 {1};'''.format(pfi_in, pfi_out)  # -z -y -x
+    return _cmd

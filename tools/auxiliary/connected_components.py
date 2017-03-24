@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import nibabel as nib
 
@@ -7,7 +6,7 @@ from tools.auxiliary.utils import set_new_data
 
 def filter_connected_components_by_volume(im_input, num_cc_to_filter=10):
     """
-    Given a mask image (volex values are integers from 1 to something), it takes the num_cc_to_filter with maximal
+    Given a mask image (voxel values are integers from 1 to something), it takes the num_cc_to_filter with maximal
     volume and it relabels them from 1 to num_cc_to_filter, where 1 is the component with the biggest volume.
     If components are connected then it will provides the first num_cc_to_filter connected components divided by
     volumes.
@@ -17,7 +16,6 @@ def filter_connected_components_by_volume(im_input, num_cc_to_filter=10):
     """
 
     im_data = im_input.get_data().astype(np.int32)
-
 
     new_data = np.zeros_like(im_data)
 

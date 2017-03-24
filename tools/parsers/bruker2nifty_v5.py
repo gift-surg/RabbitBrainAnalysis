@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 import numpy as np
 import nibabel as nib
 
@@ -7,7 +8,7 @@ def indian_file_parser(s, sh=None):
     """
     An indian file is a string whose shape needs to be changed, according to its content.
     It can be provided with an additional provided shape.
-    This function transform the indian file in an hopefully meaningful data structure, 
+    This function transform the indian file in an hopefully meaningful data structure,
     according to the information that can be parsed in the file:
     A - list of vectors
     B - list of numbers, transformed as a np.ndarray, or single number stored as a single float
@@ -19,10 +20,10 @@ def indian_file_parser(s, sh=None):
     :return: parsed indian file of adequate output.
     """
 
-    s = s.strip()
+    s = s.strip()  # removes initial and final spaces.
 
     if ('(' in s) and (')' in s):
-        s = s[1:-1]
+        s = s[1:-1]  # removes initial and final ( )
         a = ['(' + v + ')' for v in s.split(') (')]
     elif s.replace('-', '').replace('.', '').replace(' ', '').replace('e', '').isdigit():
         if ' ' in s:
@@ -32,12 +33,28 @@ def indian_file_parser(s, sh=None):
         else:
             a = float(s)
     elif ('<' in s) and ('>' in s):
-        s = s[1:-1]
+        s = s[1:-1]  # removes initial and final < >
         a = [v for v in s.split('> <')]
     else:
         a = s[:]
 
     return a
+
+
+def get_bruker_version(data_path):
+
+    if not os.path.isdir(data_path):
+        raise IOError('Input folder does not exists.')
+
+    f = open(os.path.join(data_path, 'AdjStatePerStudy'), 'r')
+    first_line = f.readline()
+
+    if 'ParaVision' in first_line:
+        version = first_line.split('ParaVision')[1].strip()
+    else:
+        raise IOError('Version not detectable')
+
+    return version
 
 
 def var_name_clean(line_in):
@@ -52,7 +69,7 @@ def var_name_clean(line_in):
 
 def bruker_read_files(param_file, data_path, reco_num=1):
     """
-    Based on BMS Matlab code, available from CABI UCL.
+    Based on BMS Matlab code, available at CABI UCL.
 
     Reads parameters files of from Bruckert raw data imaging format.
     It parses the files 'acqp' 'method' and 'reco'
@@ -105,7 +122,6 @@ def bruker_read_files(param_file, data_path, reco_num=1):
                 else:
                     sh = [int(num) for num in sh.split(',')]
 
-
                 while not done:
 
                     pos += 1
@@ -124,7 +140,6 @@ def bruker_read_files(param_file, data_path, reco_num=1):
                 dict_info[var_name] = indian_file_parser(indian_file, sh)
 
             if ('$' in line_in) and ('(' not in line_in):
-
                 splitted_line = line_in.split('=')
                 var_name = var_name_clean(splitted_line[0][3:])
                 indian_file = splitted_line[1]
@@ -158,7 +173,6 @@ def bruker_read_files(param_file, data_path, reco_num=1):
                 dict_info[var_name] = indian_file_parser(indian_file)
 
             if ('$' not in line_in) and ('(' not in line_in):
-
                 splitted_line = line_in.split('=')
                 var_name = var_name_clean(splitted_line[0])
                 indian_file = splitted_line[1].replace('=', '').strip()
@@ -168,15 +182,14 @@ def bruker_read_files(param_file, data_path, reco_num=1):
 
 
 def bruker_data_parser(data_path):
-
-    # Get infomation from method file
+    # Get information from method file
     acqp = bruker_read_files('acqp', data_path)
     method = bruker_read_files('method', data_path)
     reco = bruker_read_files('reco', data_path)
 
     # get dimensions
     if method['SpatDimEnum'] == '2D':
-        dimensions = [0]*3
+        dimensions = [0] * 3
         dimensions[0:2] = reco['RECO_size'][0:2]
         dimensions[2] = acqp['NSLICES']
     elif method['SpatDimEnum'] == '3D':
@@ -251,9 +264,9 @@ def bruker2nifti(input_data_path, output_data_path):
     except:
         raise IOError('Input folder does not contain any Bruckert format image.')
 
-    acqp   = info['acqp']
+    acqp = info['acqp']
     method = info['method']
-    reco   = info['reco']
+    reco = info['reco']
 
     pt, in_name = os.path.split(input_data_path)
 

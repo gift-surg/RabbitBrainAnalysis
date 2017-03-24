@@ -37,16 +37,23 @@ def process_DWI_fsl(sj, control=None):
         raise IOError(msg)
 
     # subject 1305 with region of interest (brain + skull) masks - to extract the regions of interests:
-
-    s_1305_with_roi = jph(root, 'Utils', '1305_brain_and_skull_mask_T1_dwi_oriented', '1305_T1.nii.gz')
-    s_1305_with_roi_brain_skull_mask = jph(root, 'Utils', '1305_brain_and_skull_mask_T1_dwi_oriented',
-                                           '1305_T1_roi_mask.nii.gz')
-
-    # --- Paths per step:  --- #
+    s_1305_with_roi = jph(root, 'Utils', '1305_dwi_orientation', '1305_T1_dwi_oriented.nii.gz')
+    s_1305_with_roi_brain_skull_mask = jph(root, 'Utils', '1305_dwi_orientation', '1305_T1_dwi_oriented_roi_mask.nii.gz')
 
     # Paths to T1 images and roi mask of the same subject in histological coordinates:
     T1_in_histological_coordinates = jph(root, sj, 'all_modalities', sj + '_T1.nii.gz')
     T1_in_histological_coordinates_brain_mask = jph(root, sj, 'masks', sj + '_roi_mask.nii.gz')
+
+    # check inputs:
+    for ph in [s_1305_with_roi, s_1305_with_roi_brain_skull_mask]:
+        if not os.path.isfile(ph):
+            raise IOError('File {} does not exist.'.format(ph))
+
+    for ph in [T1_in_histological_coordinates, T1_in_histological_coordinates_brain_mask]:
+        if not os.path.isfile(ph):
+            raise IOError('File {} does not exist. Run pre-process T1 in vivo first'.format(ph))
+
+    # --- Paths per step:  --- #
 
     # generate_output_folder
     outputs_folder = jph(root, sj, 'all_modalities', 'z_pre_process_DWI_fsl')
@@ -241,7 +248,8 @@ def process_DWI_fsl(sj, control=None):
 
             if fn.split('.')[0].endswith('V1'):
 
-                reproduce_slice_fourth_dimension_path(pfi_mask_reoriented, pfi_mask_reoriented_V1, num_slices=3)
+                if not control['safety_on']:
+                    reproduce_slice_fourth_dimension_path(pfi_mask_reoriented, pfi_mask_reoriented_V1, num_slices=3)
 
                 cmd = 'reg_aladin -ref {0} -flo {1} -rmask {2} -fmask {3} -aff {4} -res {5} -rigOnly ; '.format(
                         T1_in_histological_coordinates,

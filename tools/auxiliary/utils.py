@@ -3,7 +3,7 @@ import nibabel as nib
 import os
 
 
-def set_new_data(image, new_data, new_dtype=None):
+def set_new_data(image, new_data, new_dtype=None, remove_nan=True):
     """
     From a nibabel image and a numpy array it creates a new image with
     the same header of the image and the new_data as its data.
@@ -13,6 +13,8 @@ def set_new_data(image, new_data, new_dtype=None):
     """
     if new_dtype is not None:
         new_data = new_data.astype(new_dtype)
+    if remove_nan:
+        new_data = np.nan_to_num(new_data)
 
     # if nifty1
     if image.header['sizeof_hdr'] == 348:
@@ -24,6 +26,25 @@ def set_new_data(image, new_data, new_dtype=None):
         raise IOError('Input image header problem')
 
     return new_image
+
+
+def change_something_in_the_header(pfi_input, pfi_output, something='datatype', new_value_for_something=np.array(512, dtype=np.int16)):
+    """
+    default values to have the data converted in uint16
+    """
+    im_input = nib.load(pfi_input)
+    im_header= im_input.header
+    im_header[something] = new_value_for_something
+    nib.save(im_input, pfi_output)
+
+
+def compose_aff_transf_from_paths(pfi_left_aff, pfi_right_aff, pfi_final):
+    for pfi in [pfi_left_aff, pfi_right_aff]:
+        if not os.path.exists(pfi):
+            raise IOError()
+    left = np.loadtxt(pfi_left_aff)
+    right = np.loadtxt(pfi_right_aff)
+    np.savetxt(pfi_final, left.dot(right))
 
 
 def compare_two_nib(im1, im2, toll=1e-3):
@@ -191,3 +212,39 @@ def print_and_run(cmd, msg=None, safety_on=True):
 
     if not safety_on:
         os.system(cmd)
+
+
+def adjust_header_from_transformations(pfi_input, pfi_output, theta, trasl):
+
+    # transformations parameters
+    rot_x = np.array([[1,            0,           0,     trasl[0]],
+                     [0,  np.cos(theta),  -np.sin(theta),     trasl[1]],
+                     [0,  np.sin(theta), np.cos(theta),   trasl[2]],
+                     [0,             0,          0,      1]])
+
+    # Load input image:
+    im_input = nib.load(pfi_input)
+
+    # generate new affine transformation (from bicommissural to histological)
+    new_transf = rot_x.dot(im_input.get_affine())
+
+    # create output image on the input
+    if im_input.header['sizeof_hdr'] == 348:
+        new_image = nib.Nifti1Image(im_input.get_data(), new_transf, header=im_input.get_header())
+    # if nifty2
+    elif im_input.header['sizeof_hdr'] == 540:
+        new_image = nib.Nifti2Image(im_input.get_data(), new_transf, header=im_input.get_header())
+    else:
+        raise IOError
+
+    # print intermediate results
+    print 'Affine input image: \n'
+    print im_input.get_affine()
+    print 'Affine after transformation: \n'
+    print new_image.get_affine()
+
+    # sanity check
+    np.testing.assert_almost_equal(np.linalg.det(new_transf), np.linalg.det(im_input.get_affine()))
+
+    # save output image
+    nib.save(new_image, pfi_output)
