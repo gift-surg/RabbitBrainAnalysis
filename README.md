@@ -3,7 +3,7 @@
 Python code to manipulate MRI data from the "Encephalopaty of prematurity" project, in collaboration with KU Leuven.
 
 Corresponding folder structure shared on Dropbox:
-
+```
 ├── 0_original_data
 │   ├── ex_skull
 │   ├── ex_vivo
@@ -73,7 +73,7 @@ Corresponding folder structure shared on Dropbox:
 │   ├── statistics
 │   └── templates
 └── setbacks_solutions.txt
-
+```
 
 
 Other than the pipelines to manipulate data, a converter for raw bruker data is provided.
