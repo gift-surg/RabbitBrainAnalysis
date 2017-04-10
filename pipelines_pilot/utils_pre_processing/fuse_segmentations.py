@@ -1,6 +1,7 @@
 # Draft code
 
 """
+OLD! see under A_template_atlas_ex_vivo
 After manual processing and alignment: template creation with NiftyReg.
 
 Conditional random field:
@@ -23,8 +24,8 @@ from tools.auxiliary.utils import set_new_data
 
 # paths to segmentations:
 
-source_subjects = ['1305', '1702', '1805']
-target_subject = '2002'
+source_subjects = ['1305', '1702', '1805', '1201']
+target_subject = '1203'
 
 pfo_segmentations = jph(root_pilot_study, 'A_template_atlas_ex_vivo', target_subject, 'segmentations')
 pfo_experiments   = jph(pfo_segmentations, 'zz_lab_fusion')

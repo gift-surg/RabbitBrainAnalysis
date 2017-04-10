@@ -2,6 +2,13 @@ import os
 import sys
 import numpy as np
 import nibabel as nib
+import pprint
+
+"""
+pfi_study
+
+pfi_scan
+"""
 
 
 def indian_file_parser(s, sh=None):
@@ -41,8 +48,17 @@ def indian_file_parser(s, sh=None):
     return a
 
 
-def get_bruker_version(data_path):
+def get_bruker_version(data_path, default_if_not_specified='5.1'):
+    """
+    From the parameter list 'AdjStatePerStudy' file it recover the ParaVision version.
+    The first line should be filled as
 
+    ##TITLE=Parameter List, ParaVision 6.0.1
+
+    :param data_path: path to the main ParaVision data folder.
+    :param if_not_specified: if the title does not contain the version, will recover it from the input variable
+    :return: Version of the ParaVision from the 'AdjStatePerStudy' file.
+    """
     if not os.path.isdir(data_path):
         raise IOError('Input folder does not exists.')
 
@@ -52,7 +68,7 @@ def get_bruker_version(data_path):
     if 'ParaVision' in first_line:
         version = first_line.split('ParaVision')[1].strip()
     else:
-        raise IOError('Version not detectable')
+        version = default_if_not_specified
 
     return version
 
@@ -247,8 +263,6 @@ def bruker2nifti(input_data_path, output_data_path):
     """
     Conversion method, from bruckert row-data to nifti.
 
-    Preliminary version - essential data only!
-
     :param input_data_path: path to the Bruckert data folder structure
     :param output_data_path: folder where to store the converted image
     :return:
@@ -270,6 +284,24 @@ def bruker2nifti(input_data_path, output_data_path):
 
     pt, in_name = os.path.split(input_data_path)
 
-    nifti_im = nib.Nifti1Image(im, np.eye(4))  # For the moment only the data are parsed.
+    print im.shape
+    print '\n\n --------------'
+    print pprint.pprint(acqp)
+    print '\n\n --------------'
+    print pprint.pprint(method)
+    print '\n\n --------------'
+    print pprint.pprint(reco)
+    print '\n\n --------------'
+    #nifti_im = nib.Nifti1Image(im, np.eye(4))  # For the moment only the data are parsed.
 
-    nib.save(nifti_im, os.path.join(output_data_path, in_name + '.nii.gz'))
+    #nib.save(nifti_im, os.path.join(output_data_path, in_name + '.nii.gz'))
+
+
+def bruker2nifti_study(input_data_path, output_data_path,
+                       list_modalities_to_convert=('FLASH', '3D', 'DWI', 'MSME_T2', 'FieldMap', 'DtiEpi'),
+                       list_corresponding_folder_names=('3D',  'DWI', 'MSME_T2', 'FieldMap', 'DtiEpi')):
+    # spacchetta
+    # prendi la version da ACQ_sw_version=( 65 ) <PV 5.1> come da dizionario
+    #
+    pass
+
