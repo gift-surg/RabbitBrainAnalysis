@@ -12,31 +12,30 @@ from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, set_new_data, \
     reproduce_slice_fourth_dimension_path
 from tools.auxiliary.utils import print_and_run, adjust_header_from_transformations
-from tools.parsers.parse_bruker_txt import parse_bruker_dwi_txt
 from tools.correctors.slope_corrector import slope_corrector_path
 from tools.auxiliary.reorient_data import reorient_bicomm2dwi, reorient_dwi2bicomm
 
 
-def process_DWI_fsl(sj, control=None):
+def process_DWI_fsl_pv6(sj, control=None):
 
     print ' --- Pre process DWI FSL {} --- \n'.format(sj)
 
     # --- paths manager, general --- #
 
-    root = jph(root_pilot_study, 'A_template_atlas_ex_vivo')
+    root = jph(root_pilot_study, 'A_templ_atlas_ex_vivo')
 
     # path to DWI data subject
 
     pfi_dwi_original = jph(root_pilot_study, '0_original_data', 'ex_vivo', sj, 'DWI', sj + '_DWI.nii.gz')
-    pfi_dwi_txt_data_original = jph(root_pilot_study, '0_original_data', 'ex_vivo', sj, 'DWI', sj + '_DWI.txt')
+    # pfi_dwi_txt_data_original = jph(root_pilot_study, '0_original_data', 'ex_vivo', sj, 'DWI', sj + '_DWI.txt')
 
     if not os.path.isfile(pfi_dwi_original):
         msg = 'Input file subject {0} does not exists: \n{1}'.format(sj, pfi_dwi_original)
         raise IOError(msg)
 
-    if not os.path.isfile(pfi_dwi_txt_data_original):
-        msg = 'Input data dfile subject {} does not exists'.format(sj)
-        raise IOError(msg)
+    # if not os.path.isfile(pfi_dwi_txt_data_original):
+    #     msg = 'Input data dfile subject {} does not exists'.format(sj)
+    #     raise IOError(msg)
 
     # Paths to T1 images and roi mask of the same subject in histological coordinates:
     T1_in_histological_coordinates = jph(root, sj, 'all_modalities', sj + '_T1.nii.gz')
@@ -57,9 +56,13 @@ def process_DWI_fsl(sj, control=None):
 
     # step_extract_bval_bvect_slope
     # Output filenames (fn) are the default: 'DwDir.txt', 'DwEffBval.txt', 'DwGradVec.txt', 'VisuCoreDataSlope.txt'
-    pfi_input_bvals   = os.path.join(outputs_folder, sj + '_DwEffBval.txt')
-    pfi_input_bvects  = os.path.join(outputs_folder, sj + '_DwGradVec.txt')
-    pfi_slopes_txt_file = jph(outputs_folder, sj + '_VisuCoreDataSlope.txt')
+    pfi_input_bvals   = jph(root_pilot_study, '0_original_data', 'ex_vivo', sj, 'DWI', sj + '_DwEffBval.txt')
+    pfi_input_bvects  = jph(root_pilot_study, '0_original_data', 'ex_vivo', sj, 'DWI', sj + '_DwGradVec.txt')
+
+    # check inputs:
+    for ph in [pfi_input_bvals, pfi_input_bvects]:
+        if not os.path.isfile(ph):
+            raise IOError('File {} does not exist.'.format(ph))
 
     # step_extract_first_timepoint
     pfi_dwi_b0 = jph(outputs_folder, sj + '_DWI_first_timepoint.nii.gz')
@@ -178,11 +181,7 @@ def process_DWI_fsl(sj, control=None):
 
     if control['step_extract_bval_bvect_slope']:
 
-        print '\nParse the txt data files b-val b-vect and slopes: execution for subject {0}.\n'.format(sj)
-        if not control['safety_on']:
-            parse_bruker_dwi_txt(pfi_dwi_txt_data_original,
-                                 output_folder=outputs_folder,
-                                 prefix=sj + '_')
+        pass  # used for paravision 5 conversions.
 
     if control['step_extract_first_timepoint']:
 
@@ -238,9 +237,7 @@ def process_DWI_fsl(sj, control=None):
 
     if control['step_correct_the_slope']:
 
-        print '\ncorrect for the slope: execution for subject {0}.\n'.format(sj)
-        if not control['safety_on']:
-            slope_corrector_path(pfi_slopes_txt_file, pfi_dwi_cropped_to_roi, pfi_dwi_slope_corrected)
+        pass  # used for paravision 5.
 
     """ *** PHASE 2 - EDDY CURRENTS CORRECTION and analysis *** """
 
@@ -297,12 +294,12 @@ def process_DWI_fsl(sj, control=None):
             print 'Set header in histological for the bicommissural orientation: ' + pfi_in, pfi_out
             if not control['safety_on']:
 
-                if sj == '1805' or sj == '2002':
-                    theta = 0  # no pre-adjustment (coherent with pre process T1)
+                if sj == '1805' or sj == '2002' or sj == '2502':
+                    pass  # no pre-adjustment (coherent with pre process T1)
                 else:
                     theta = -np.pi / float(3)
 
-                adjust_header_from_transformations(pfi_in, pfi_out, theta=theta, trasl=(0, 0, 0))
+                    adjust_header_from_transformations(pfi_in, pfi_out, theta=theta, trasl=(0, 0, 0))
 
     """ *** PHASE 3 - ORIENT RESULTS IN HISTOLOGICAL COORDINATES *** """
 

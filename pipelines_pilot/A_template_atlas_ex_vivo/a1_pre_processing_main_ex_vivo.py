@@ -17,8 +17,8 @@ Dlways process T1 before DWI.
 
 """
 
-from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_T1_ex_vivo import process_T1
-from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_DWI_fsl_ex_vivo_new import process_DWI_fsl
+from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_T1_ex_vivo_pv6 import process_T1_pv6
+from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_DWI_fsl_ex_vivo_pv6 import process_DWI_fsl_pv6
 
 
 # all:
@@ -27,7 +27,7 @@ from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_DWI_fsl_ex_vivo_new im
 # subjects = ['1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002']
 # subjects = ['1201', '1203', '1305', '1404', '1505', '1507', '1702', '1805', '2002']
 
-subjects = ['2002', ]  # '1805', '2002'
+subjects = ['2502', ]  # '1805', '2002'
 
 controller_process_T1 = {'safety_on':                     False,
                          'step_generate_output_folder':   False,
@@ -46,18 +46,18 @@ controller_process_T1 = {'safety_on':                     False,
 controller_process_DWI = {'safety_on':                     False,
                           'step_generate_output_folder':   False,
                           'step_squeeze':                  False,
-                          'step_extract_bval_bvect_slope': False,
-                          'step_extract_first_timepoint':  False,
+                          'step_extract_bval_bvect_slope': False,  # always false for pv 6
+                          'step_extract_first_timepoint':  False,  # ---
                           'step_grab_the_roi_mask':        False,
-                          'step_dilate_mask':              False,
-                          'step_cut_to_mask_dwi':          False,
-                          'step_correct_the_slope':        False,
-                          'step_eddy_current_corrections': False,
-                          'step_dwi_analysis_with_fsl':    False,
+                          'step_dilate_mask':              True,
+                          'step_cut_to_mask_dwi':          True,
+                          'step_correct_the_slope':        False,  # always false for pv 6
+                          'step_eddy_current_corrections': True,
+                          'step_dwi_analysis_with_fsl':    True,
                           'step_orient_directions_bicomm': False,
-                          'step_set_header_histo'        : True,
-                          'step_orient_histo':             True,
-                          'step_final_adjustment':         True,
+                          'step_set_header_histo'        : False,
+                          'step_orient_histo':             False,
+                          'step_final_adjustment':         False,
                           'step_bfc_b0':                   False,
                           'step_save_results_histo':       False,
                           'delete_intermediate_steps':     False
@@ -70,6 +70,6 @@ print controller_process_DWI
 
 
 for sj in subjects:
-    # process_T1(sj, control=controller_process_T1)
-    process_DWI_fsl(sj, control=controller_process_DWI)
+    # process_T1_pv6(sj, control=controller_process_T1)
+    process_DWI_fsl_pv6(sj, control=controller_process_DWI)
     pass

@@ -3,6 +3,7 @@
 """
 Propagate subject 1,2,3 on subject 4 and then select the best with a
 majority voting.
+
 """
 
 import os
@@ -15,9 +16,9 @@ from labels_manager.main import LabelsManager
 
 root_pilot_study_ex_vivo = jph(root_pilot_study, 'A_template_atlas_ex_vivo')
 
-source_subjects = ['1305', '1702', '1805', '2002', '1201', '1203']
+source_subjects = ['1305', '1702', '1805', '2002', '1201', '1203', '1404', '1507']
 source_modalities = ['T1', 'FA', 'MD', 'S0', 'V1']
-target_subject = '1404'
+target_subject = '1510'
 
 
 steps_map = {'Create intermediate folders'           : True,
@@ -28,22 +29,28 @@ steps_map = {'Create intermediate folders'           : True,
              'N-rig alignment of BFC'                : True,
              'Propagate to target n-rig'             : True,
              'Smooth result'                         : True,
-             'Propagate to other modalities'         : True,  # T1 only to avoid errors
-             'Generate stack'                        : True,
+             'Propagate to other modalities'         : True,
+             'Generate stack'                        : True,  # phase 2 from here
              'Fuse'                                  : True}
 
 
 safety_on = False
 
+study_tag = '_st1'  # st1 : no 15xx
+test_tag = '_test2_'
 
 pfo_target = jph(root_pilot_study_ex_vivo, target_subject)
 pfo_segmentations = jph(root_pilot_study, 'A_template_atlas_ex_vivo', target_subject, 'segmentations')
-pfo_intermediate = jph(pfo_segmentations, 'z_groupwise_intermediate')
-pfo_fused = jph(pfo_segmentations, 'z_lab_fusion')
+pfo_intermediate = jph(pfo_segmentations, 'z_gpwise_interm' + study_tag)
+pfo_fused = jph(pfo_segmentations, 'z_lab_fusion' + study_tag )
 
-test_tag = '_test2_'
+
+if steps_map['Create intermediate folders']:
+    print_and_run('mkdir -p {0} '.format(pfo_intermediate), safety_on=safety_on)
+
 
 for sj in source_subjects:
+
     mod = 'T1'  # Only T1 modality at the moment
 
     pfo_source = jph(root_pilot_study_ex_vivo, sj)
@@ -80,10 +87,10 @@ for sj in source_subjects:
         if not os.path.exists(p):
             raise IOError('Pfi {} does not exist. '.format(p))
 
-    if steps_map['Create intermediate folders']:
-        print_and_run('mkdir -p {0} '.format(pfo_intermediate), safety_on=safety_on)
-
     if steps_map['Aff alignment']:
+
+        print '\n Affine alignment: source {} \n\n'.format(sj)
+
         cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} '.format(
                pfi_target, pfi_target_roi_registration_masks,
                pfi_template_sj, pfi_mask_sj, pfi_affine_transf, pfi_affine_transf_sj)
@@ -92,6 +99,8 @@ for sj in source_subjects:
 
     if steps_map['Propagate transformation to atlas aff']:
 
+        print '\n Propagate transformation to atlas aff: source {} \n\n'.format(sj)
+
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
                  pfi_target, pfi_atlas_sj, pfi_affine_transf, pfi_atlas_affine_registered)
 
@@ -99,12 +108,16 @@ for sj in source_subjects:
 
     if steps_map['Propagate transformation to mask aff']:
 
+        print '\n Propagate transformation to mask aff: source {} \n\n'.format(sj)
+
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
                  pfi_target, pfi_mask_sj, pfi_affine_transf, pfi_mask_affine_registered)
 
         print_and_run(cmd, safety_on=safety_on)
 
     if steps_map['Get differential BFC']:
+
+        print '\n Get differential BFC: source {} \n\n'.format(sj)
 
         bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc '
         cmd = bfc_corrector_cmd + ' {0} {1} {2} {3} {4} {5} '.format(
@@ -114,9 +127,11 @@ for sj in source_subjects:
         print_and_run(cmd, safety_on=safety_on)
 
     if steps_map['N-rig alignment of BFC']:
-        print 'Non rigid alignment'
-        options = '  -ln 2 '
-        cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -cpp {4} -res {5} {6} '.format(
+
+        print '\n N-rig alignment of BFC: source {} \n\n'.format(sj)
+
+        options = '-ln 2'  # segmentation fault here.
+        cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -cpp {4} -res {5} {6}'.format(
             pfi_diff_bfc_target, pfi_target_roi_registration_masks, pfi_diff_bfc_subject, pfi_mask_affine_registered,
             pfi_diff_bfc_n_rig_cpp, pfi_diff_bfc_n_rig_res, options)
 
@@ -126,6 +141,8 @@ for sj in source_subjects:
         print_and_run(cmd, safety_on=safety_on)
 
     if steps_map['Propagate to target n-rig']:
+
+        print '\n Propagate to target n-rig: source {} \n\n'.format(sj)
 
         cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
                  pfi_target, pfi_atlas_affine_registered, pfi_diff_bfc_n_rig_cpp, pfi_propagated_subject_on_target_segm)
@@ -138,6 +155,8 @@ for sj in source_subjects:
 
     if steps_map['Smooth result']:
 
+        print '\n Smooth result: source {} \n\n'.format(sj)
+
         cmd = 'seg_maths {0} -smol {1} {2}'.format(pfi_propagated_subject_on_target_segm, smol, pfi_propagated_subject_on_target_segm_smol)
 
         print_and_run(cmd, safety_on=safety_on)
@@ -146,6 +165,8 @@ for sj in source_subjects:
         '''
         The same transformations obtained for the T1 are applied to the other modalities.
         '''
+        print '\n Propagate to other modalities: source {} \n\n'.format(sj)
+
         for mod in list(set(source_modalities) - {'T1'}):
 
             pfi_target_mod = jph(pfo_target, 'all_modalities', target_subject + '_' + mod + '.nii.gz')
@@ -175,8 +196,9 @@ for sj in source_subjects:
 
 list_pfi_stack = []
 
-
 if steps_map['Generate stack']:
+
+    print '\n Generate stack \n\n'
 
     os.system('mkdir -p {0}'.format(pfo_fused))
 
@@ -214,6 +236,8 @@ pfi_4d_warp = jph(pfo_fused, 'res_4d_warp.nii.gz')
 
 
 if steps_map['Fuse']:
+
+    print '\n Fuse \n\n'
 
     # Majority voting:
     pfi_output_MV = jph(pfo_fused, 'output_fusion_MV.nii.gz')
