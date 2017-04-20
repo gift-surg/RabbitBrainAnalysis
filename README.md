@@ -75,7 +75,6 @@ Corresponding folder structure shared on Dropbox:
 └── setbacks_solutions.txt
 ```
 
-
 Other than the pipelines to manipulate data, a converter for raw bruker data is provided.
 Based on a Matlab version provided by CABI for paravision 5, a python version is available both for python 5 and 6
 
