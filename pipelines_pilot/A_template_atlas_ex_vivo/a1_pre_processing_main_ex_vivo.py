@@ -27,15 +27,19 @@ from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_DWI_fsl_ex_vivo_pv6 im
 # subjects = ['1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002']
 # subjects = ['1201', '1203', '1305', '1404', '1505', '1507', '1702', '1805', '2002']
 
-subjects = ['2502', ]  # '1805', '2002'
+# subjects = ['2502', ]
+subjects = ['2503', ]
+# subjects = ['2608', ]
+# subjects = ['2702', ]
+
 
 controller_process_T1 = {'safety_on':                     False,
                          'step_generate_output_folder':   False,
                          'step_reorient':                 False,
                          'step_thr':                      False,
-                         'step_register_masks':           False,
-                         'step_cut_masks':                False,
-                         'step_bfc':                      False,
+                         'step_register_masks':           True,
+                         'step_cut_masks':                True,
+                         'step_bfc':                      True,
                          'step_orient_histological':      True,
                          'step_compute_lesion_masks':     True,
                          'step_compute_reg_masks':        True,
@@ -44,14 +48,15 @@ controller_process_T1 = {'safety_on':                     False,
                          'delete_intermediate_steps':     False}
 
 controller_process_DWI = {'safety_on':                     False,
-                          'step_generate_output_folder':   False,
-                          'step_squeeze':                  False,
-                          'step_extract_bval_bvect_slope': False,  # always false for pv 6
-                          'step_extract_first_timepoint':  False,  # ---
-                          'step_grab_the_roi_mask':        False,
+                          'is squashed' :                  True,  # See the image to answer this.
+                          'step_generate_output_folder':   True,
+                          'step_squeeze':                  True,
+                          'step_extract_bval_bvect_slope': False,  # always false for pv 6, already extracted.
+                          'step_extract_first_timepoint':  False,
+                          'step_grab_the_roi_mask':        True,
                           'step_dilate_mask':              True,
                           'step_cut_to_mask_dwi':          True,
-                          'step_correct_the_slope':        False,  # always false for pv 6
+                          'step_correct_the_slope':        True,  # ---
                           'step_eddy_current_corrections': True,
                           'step_dwi_analysis_with_fsl':    True,
                           'step_orient_directions_bicomm': False,
@@ -72,4 +77,3 @@ print controller_process_DWI
 for sj in subjects:
     # process_T1_pv6(sj, control=controller_process_T1)
     process_DWI_fsl_pv6(sj, control=controller_process_DWI)
-    pass

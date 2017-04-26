@@ -23,6 +23,7 @@ def slope_corrector(slopes, im_input, eliminate_consec_duplicates=False):
         raise IOError(err_msg)
 
     for j in xrange(num_directions):
+        print j
         im_data[..., j] *= slopes[j]
 
     im_output = set_new_data(im_input, im_data)

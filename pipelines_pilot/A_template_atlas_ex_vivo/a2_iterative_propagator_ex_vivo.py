@@ -8,28 +8,27 @@ majority voting.
 
 import os
 from os.path import join as jph
-import nibabel as nib
 
 from definitions import root_pilot_study
 from tools.auxiliary.utils import print_and_run, grab_a_timepoint_path
 from labels_manager.main import LabelsManager
 
-root_pilot_study_ex_vivo = jph(root_pilot_study, 'A_template_atlas_ex_vivo')
+root_pilot_study_ex_vivo = jph(root_pilot_study, 'A_templ_atlas_ex_vivo')
 
-source_subjects = ['1305', '1702', '1805', '2002', '1201', '1203', '1404', '1507']
+source_subjects = ['1305', '1702', '1805', '2002', '1201', '1203', '1404', '1507', '1510']
 source_modalities = ['T1', 'FA', 'MD', 'S0', 'V1']
-target_subject = '1510'
+target_subject = '2502'
 
 
 steps_map = {'Create intermediate folders'           : True,
-             'Aff alignment'                         : True,
-             'Propagate transformation to atlas aff' : True,
-             'Propagate transformation to mask aff'  : True,
-             'Get differential BFC'                  : True,
-             'N-rig alignment of BFC'                : True,
-             'Propagate to target n-rig'             : True,
+             'Aff alignment'                         : False,
+             'Propagate transformation to atlas aff' : False,
+             'Propagate transformation to mask aff'  : False,
+             'Get differential BFC'                  : False,
+             'N-rig alignment of BFC'                : False,
+             'Propagate to target n-rig'             : False,
              'Smooth result'                         : True,
-             'Propagate to other modalities'         : True,
+             'Propagate to other modalities'         : False,
              'Generate stack'                        : True,  # phase 2 from here
              'Fuse'                                  : True}
 
@@ -37,10 +36,10 @@ steps_map = {'Create intermediate folders'           : True,
 safety_on = False
 
 study_tag = '_st1'  # st1 : no 15xx
-test_tag = '_test2_'
+test_tag = '_test2_'  # with smol in the pre-processing.
 
 pfo_target = jph(root_pilot_study_ex_vivo, target_subject)
-pfo_segmentations = jph(root_pilot_study, 'A_template_atlas_ex_vivo', target_subject, 'segmentations')
+pfo_segmentations = jph(root_pilot_study, 'A_templ_atlas_ex_vivo', target_subject, 'segmentations')
 pfo_intermediate = jph(pfo_segmentations, 'z_gpwise_interm' + study_tag)
 pfo_fused = jph(pfo_segmentations, 'z_lab_fusion' + study_tag )
 
@@ -130,7 +129,7 @@ for sj in source_subjects:
 
         print '\n N-rig alignment of BFC: source {} \n\n'.format(sj)
 
-        options = '-ln 2'  # segmentation fault here.
+        options = '-ln 2 -be 0.4'
         cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -cpp {4} -res {5} {6}'.format(
             pfi_diff_bfc_target, pfi_target_roi_registration_masks, pfi_diff_bfc_subject, pfi_mask_affine_registered,
             pfi_diff_bfc_n_rig_cpp, pfi_diff_bfc_n_rig_res, options)
@@ -202,7 +201,8 @@ if steps_map['Generate stack']:
 
     os.system('mkdir -p {0}'.format(pfo_fused))
 
-    list_pfi_segmentations = [jph(pfo_intermediate, 'res_' + sj + '_T1_on_' + target_subject + '_subject_on_target_segm' + test_tag + '.nii.gz')
+    list_pfi_segmentations = [jph(pfo_intermediate, 'res_' + sj + '_T1_on_' + target_subject +
+                                  '_subject_on_target_segm_smol' + test_tag + '.nii.gz')  # smol segmentation
                               for sj in source_subjects]
 
     list_pfi_warped = [jph(pfo_intermediate, 'res_' + sj + '_T1_on_' + target_subject + '_subject_on_target_anatomy' + test_tag + '.nii.gz')
@@ -252,13 +252,13 @@ if steps_map['Fuse']:
     # os.system(cmd_staple)
 
     # STEPS:
-    pfi_output_STEPS = jph(pfo_fused, 'output_fusion_STEPS_3_3_beta4p0_prop_update.nii.gz')
+    pfi_output_STEPS = jph(pfo_fused, 'output_fusion_STEPS_3_3_beta2p0.nii.gz')
     cmd_steps = 'seg_LabFusion -in {0} -out {1} -STEPS {2} {3} {4} {5} -MRF_beta {6} -prop_update'.format(pfi_4d_seg,
                                                                                                       pfi_output_STEPS,
                                                                                                       str(3),
                                                                                                       str(3),
                                                                                                       pfi_target,
                                                                                                       pfi_4d_warp,
-                                                                                                      str(4.0))
+                                                                                                      str(4.0))  # 4.0
     print cmd_steps
     os.system(cmd_steps)

@@ -11,8 +11,6 @@ def set_new_data(image, new_data, new_dtype=None, remove_nan=True):
     :param new_data: numpy array
     :return: nibabel image
     """
-    if new_dtype is not None:
-        new_data = new_data.astype(new_dtype)
     if remove_nan:
         new_data = np.nan_to_num(new_data)
 
@@ -25,7 +23,23 @@ def set_new_data(image, new_data, new_dtype=None, remove_nan=True):
     else:
         raise IOError('Input image header problem')
 
+    # update data type:
+    if new_dtype is None:
+        new_image.set_data_dtype(new_data.dtype)
+    else:
+        new_image.set_data_dtype(new_dtype)
+
     return new_image
+
+
+def set_new_dtype_path(pfi_in, pfi_out, new_dtype):
+
+    im = nib.load(pfi_in)
+    im_new_type = set_new_data(im, im.get_data(), new_dtype=new_dtype)
+    print im_new_type.shape
+    print im_new_type.get_data_dtype()
+    nib.save(im_new_type, pfi_out)
+    print('image {0} saved to {1} with new datatype {2}'.format(pfi_in, pfi_out, new_dtype))
 
 
 def change_something_in_the_header(pfi_input, pfi_output, something='datatype', new_value_for_something=np.array(512, dtype=np.int16)):
@@ -154,13 +168,12 @@ def grab_a_timepoint_path(path_input_4d_im, path_output_single_timepoint, t=0):
 
 def cut_dwi_image_from_first_slice_mask(input_dwi, input_mask):
 
-    data_dwi  = input_dwi.get_data()
-    data_mask = input_mask.get_data()
-
-    data_masked_dw = np.zeros_like(data_dwi)
+    data_masked_dw = np.zeros(input_dwi.shape, dtype=input_dwi.get_data_dtype())
+    print data_masked_dw.shape
 
     for t in range(input_dwi.shape[-1]):
-        data_masked_dw[..., t] = np.multiply(data_mask, data_dwi[..., t])
+        print 'cut_dwi_image_from_first_slice_mask, slice processed: ' + str(t)
+        data_masked_dw[..., t] = np.multiply(input_mask.get_data(), input_dwi.get_data()[..., t])
 
     # image with header of the dwi and values under the mask for each slice:
     return set_new_data(input_dwi, data_masked_dw)

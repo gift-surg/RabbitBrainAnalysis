@@ -174,9 +174,12 @@ def process_T1_pv6(sj, control=None):
 
         if not control['safety_on']:
 
-            if sj == '1805' or sj == '2002' or sj == '2502':
+            if sj == '1805' or sj == '2002' or sj == '2502' or sj == '2503' or sj == '2608' or sj == '2702':
                 pass
+
             else:
+
+                print '\n\n\n HEADER PRE-ADJUSTMENT \n\n\n'
                 theta = -np.pi / float(3)
 
                 adjust_header_from_transformations(pfi_3d_bias_field_corrected, pfi_3d_bias_field_corrected,
@@ -184,13 +187,13 @@ def process_T1_pv6(sj, control=None):
                 adjust_header_from_transformations(pfi_resampled_mask_bicomm, pfi_resampled_mask_bicomm,
                                                    theta=theta, trasl=(0, 0, 0))
 
-        # cmd0 = 'reg_aladin -ref {0} -flo {1} -rmask {2} -fmask {3} -aff {4} -res {5} -rigOnly ; '.format(
-        #          pfi_1305_in_histological_coordinates,
-        #          pfi_3d_bias_field_corrected,
-        #          pfi_1305_in_histological_coordinates_roi_mask,
-        #          pfi_resampled_mask_bicomm,
-        #          pfi_affine_transformation_to_histological,
-        #          pfi_3d_histological)
+        cmd0 = 'reg_aladin -ref {0} -flo {1} -rmask {2} -fmask {3} -aff {4} -res {5} -rigOnly ; '.format(
+                 pfi_1305_in_histological_coordinates,
+                 pfi_3d_bias_field_corrected,
+                 pfi_1305_in_histological_coordinates_roi_mask,
+                 pfi_resampled_mask_bicomm,
+                 pfi_affine_transformation_to_histological,
+                 pfi_3d_histological)
 
         cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
                 pfi_1305_in_histological_coordinates,
@@ -199,7 +202,7 @@ def process_T1_pv6(sj, control=None):
                 pfi_roi_mask_histological)
 
         print '\n Alignment in histological coordinates, subject {}.\n'.format(sj)
-        # print_and_run(cmd0, safety_on=control['safety_on'])
+        print_and_run(cmd0, safety_on=control['safety_on'])
         print_and_run(cmd1, safety_on=control['safety_on'])
 
         cmd = 'seg_maths {0} -thr 0 {0}'.format(pfi_3d_histological)

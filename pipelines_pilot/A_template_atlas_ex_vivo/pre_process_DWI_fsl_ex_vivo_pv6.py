@@ -10,7 +10,7 @@ from definitions import root_pilot_study
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, set_new_data, \
-    reproduce_slice_fourth_dimension_path
+    reproduce_slice_fourth_dimension_path, set_new_dtype_path
 from tools.auxiliary.utils import print_and_run, adjust_header_from_transformations
 from tools.correctors.slope_corrector import slope_corrector_path
 from tools.auxiliary.reorient_data import reorient_bicomm2dwi, reorient_dwi2bicomm
@@ -49,7 +49,7 @@ def process_DWI_fsl_pv6(sj, control=None):
     # --- Paths per step:  --- #
 
     # generate_output_folder
-    outputs_folder = jph(root, sj, 'all_modalities', 'z_pre_process_DWI_fsl')
+    outputs_folder = jph(root, sj, 'all_modalities', 'z_preproc_DWI_fsl')
 
     # step_squeeze  in case the timepoints are in the 5th rather than the fourth dim
     pfi_dwi_squeezed = jph(outputs_folder, sj + '_DWI_squeezed.nii.gz')
@@ -94,6 +94,8 @@ def process_DWI_fsl_pv6(sj, control=None):
     pfi_dwi_cropped_to_roi = jph(outputs_folder, sj + '_DWI_roi_cropped.nii.gz')
 
     # step_correct_the_slope
+    pfi_slopes_txt_file = jph(root_pilot_study, '0_original_data', 'ex_vivo', sj, 'DWI', sj + '_DWI_slope.txt')
+
     pfi_dwi_slope_corrected = jph(outputs_folder, sj + '_DWI_slope_corrected.nii.gz')
 
     # step_eddy_current_corrections
@@ -117,13 +119,14 @@ def process_DWI_fsl_pv6(sj, control=None):
     pfi_V1_bicomm = jph(outputs_folder, 'bicomm_' + name_for_analysis_fsl + '_V1.nii.gz')
     pfi_S0_bicomm = jph(outputs_folder, 'bicomm_' + name_for_analysis_fsl + '_S0.nii.gz')
 
-    pfi_FA_header_histo  = jph(outputs_folder, 'bicomm_header_histo_' + name_for_analysis_fsl + '_FA.nii.gz')
-    pfi_MD_header_histo  = jph(outputs_folder, 'bicomm_header_histo_' + name_for_analysis_fsl + '_MD.nii.gz')
-    pfi_V1_header_histo  = jph(outputs_folder, 'bicomm_header_histo_' + name_for_analysis_fsl + '_V1.nii.gz')
-    pfi_S0_header_histo  = jph(outputs_folder, 'bicomm_header_histo_' + name_for_analysis_fsl + '_S0.nii.gz')
+    pfi_FA_header_histo  = jph(outputs_folder, 'hdr_histo_' + name_for_analysis_fsl + '_FA.nii.gz')
+    pfi_MD_header_histo  = jph(outputs_folder, 'hdr_histo_' + name_for_analysis_fsl + '_MD.nii.gz')
+    pfi_V1_header_histo  = jph(outputs_folder, 'hdr_histo_' + name_for_analysis_fsl + '_V1.nii.gz')
+    pfi_S0_header_histo  = jph(outputs_folder, 'hdr_histo_' + name_for_analysis_fsl + '_S0.nii.gz')
 
     # Path to corresponding T1 transformation from bicommissural to histological:
-    pfi_aff_bicomm_to_histo_T1 = jph(root, sj, 'all_modalities', 'z_pre_process_T1', sj + '_transformation_to_histological_coordinates.txt')
+    pfi_aff_bicomm_to_histo_T1 = jph(root, sj, 'all_modalities', 'z_pre_process_T1', sj +
+                                     '_transformation_to_histological_coordinates.txt')
     pfi_aff_bicomm_to_histo_T1_storage = jph(root, sj, 'all_modalities', 'z_pre_process_T1',
                                      'z_' + sj + '_transformation_to_histological_coordinates.txt')
     # paths to results out of fsl in histo orientation as T1
@@ -189,55 +192,86 @@ def process_DWI_fsl_pv6(sj, control=None):
 
         if not control['safety_on']:
             nib_dwi = nib.load(pfi_dwi_squeezed)
-            nib_dwi_first_slice_data = nib_dwi.get_data()[..., 0]
-            nib_first_slice_dwi = set_new_data(nib_dwi, nib_dwi_first_slice_data)
+            nib_first_slice_dwi = set_new_data(nib_dwi, nib_dwi.get_data()[..., 0])
             nib.save(nib_first_slice_dwi, pfi_dwi_b0)
 
     if control['step_grab_the_roi_mask']:
 
-        # the roi mask is taken from the T1 processing, swapped in DWI reference and rigidly registered.
+        if control['is squashed']:
 
-        # reorient to dwi:
-        cmd1 = reorient_bicomm2dwi(pfi_T1_brain_skull_bicomm_reference, pfi_T1_brain_skull_in_dwi_reference)
-        cmd2 = reorient_bicomm2dwi(pfi_T1_brain_skull_mask_bicomm_reference, pfi_T1_brain_skull_mask_in_dwi_reference)
+            # the roi mask is created from scratch:
+            pfi_dwi_b0_thr = jph(outputs_folder, sj + '_DWI_roi_crop_thr.nii.gz')
 
-        print_and_run(cmd1, safety_on=control['safety_on'])
-        print_and_run(cmd2, safety_on=control['safety_on'])
+            # crop the first time point:
+            cmd0 = 'seg_maths {0} -thr 150 {1}'.format(pfi_dwi_b0, pfi_dwi_b0_thr)
+            print_and_run(cmd0, safety_on=control['safety_on'])
 
-        # Register the swapped to the S0:
+            # binarise it and take it as the mask:
+            cmd1 = 'seg_maths {0} -bin {1}'.format(pfi_dwi_b0_thr, pfi_roi_mask_dwi_orientation_dilated)
+            print_and_run(cmd1, safety_on=control['safety_on'])
 
-        cmd_1 = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} -rigOnly; '.format(
-                    pfi_dwi_b0,
-                    pfi_T1_brain_skull_in_dwi_reference,
-                    pfi_affine_transformation_reoriented_bicom_T1_on_b0,
-                    pfi_warped_reoriented_bicom_T1_on_b0)
+        else:
+            # the roi mask is taken from the T1 processing, swapped in DWI reference and rigidly registered.
 
-        cmd_2 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-                    pfi_dwi_b0,
-                    pfi_T1_brain_skull_mask_in_dwi_reference,
-                    pfi_affine_transformation_reoriented_bicom_T1_on_b0,
-                    pfi_roi_mask_dwi_orientation)
+            # reorient to dwi:
+            cmd1 = reorient_bicomm2dwi(pfi_T1_brain_skull_bicomm_reference, pfi_T1_brain_skull_in_dwi_reference)
+            cmd2 = reorient_bicomm2dwi(pfi_T1_brain_skull_mask_bicomm_reference, pfi_T1_brain_skull_mask_in_dwi_reference)
 
-        print '\nRegistration ROI mask (skull+brain): execution for subject {0}.\n'.format(sj)
-        print_and_run(cmd_1, safety_on=control['safety_on'])
-        print_and_run(cmd_2, safety_on=control['safety_on'])
+            print_and_run(cmd1, safety_on=control['safety_on'])
+            print_and_run(cmd2, safety_on=control['safety_on'])
+
+            # Register the swapped to the S0:
+
+            cmd_1 = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} -rigOnly; '.format(
+                        pfi_dwi_b0,
+                        pfi_T1_brain_skull_in_dwi_reference,
+                        pfi_affine_transformation_reoriented_bicom_T1_on_b0,
+                        pfi_warped_reoriented_bicom_T1_on_b0)
+
+            cmd_2 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+                        pfi_dwi_b0,
+                        pfi_T1_brain_skull_mask_in_dwi_reference,
+                        pfi_affine_transformation_reoriented_bicom_T1_on_b0,
+                        pfi_roi_mask_dwi_orientation)
+
+            print '\nRegistration ROI mask (skull+brain): execution for subject {0}.\n'.format(sj)
+            print_and_run(cmd_1, safety_on=control['safety_on'])
+            print_and_run(cmd_2, safety_on=control['safety_on'])
 
     if control['step_dilate_mask']:
 
-        cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_roi_mask_dwi_orientation, dil_factor, pfi_roi_mask_dwi_orientation_dilated)
-        print_and_run(cmd, msg='Dilate mask ' + sj, safety_on=control['safety_on'])
+        if control['is squashed']:
+            pass
+
+        else:
+            cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_roi_mask_dwi_orientation, dil_factor, pfi_roi_mask_dwi_orientation_dilated)
+            print_and_run(cmd, msg='Dilate mask ' + sj, safety_on=control['safety_on'])
+            # restore a reasonable type np.int16 for the dilated mask
+            # set_new_dtype_path(pfi_roi_mask_dwi_orientation_dilated, pfi_roi_mask_dwi_orientation_dilated,
+            #                     new_dtype=np.int16)
 
     if control['step_cut_to_mask_dwi']:
 
-        print '\nCutting newly-created ROI mask on the subject: execution for subject {0}.\n'.format(sj)
-        if not control['safety_on']:
-            cut_dwi_image_from_first_slice_mask_path(pfi_dwi_squeezed,
-                                                     pfi_roi_mask_dwi_orientation_dilated,
-                                                     pfi_dwi_cropped_to_roi)
+        if control['is squashed']:
+            # do not extract the mask: do only a threshold to "crop" the image:
+            cmd0 = 'cp {0} {1}'.format(pfi_dwi_squeezed, pfi_dwi_cropped_to_roi)
+            print_and_run(cmd0, safety_on=control['safety_on'])
+            cmd1 = 'seg_maths {0} -thr 150 {1}'.format(pfi_dwi_cropped_to_roi, pfi_dwi_cropped_to_roi)
+            print_and_run(cmd1, safety_on=control['safety_on'])
+
+        else:
+
+            print '\nCutting newly-created ROI mask on the subject: execution for subject {0}.\n'.format(sj)
+            if not control['safety_on']:
+                cut_dwi_image_from_first_slice_mask_path(pfi_dwi_squeezed,
+                                                         pfi_roi_mask_dwi_orientation_dilated,
+                                                         pfi_dwi_cropped_to_roi)
 
     if control['step_correct_the_slope']:
 
-        pass  # used for paravision 5.
+        print '\ncorrect for the slope: execution for subject {0}.\n'.format(sj)
+        if not control['safety_on']:
+            slope_corrector_path(pfi_slopes_txt_file, pfi_dwi_cropped_to_roi, pfi_dwi_slope_corrected)
 
     """ *** PHASE 2 - EDDY CURRENTS CORRECTION and analysis *** """
 
@@ -245,6 +279,7 @@ def process_DWI_fsl_pv6(sj, control=None):
 
         cmd = 'eddy_correct {0} {1} 0 '.format(pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected)
         print_and_run(cmd, msg='\n Eddy currents correction: subject {}.\n'.format(sj), safety_on=control['safety_on'])
+
     else:
         pfi_dwi_eddy_corrected = pfi_dwi_slope_corrected
 
@@ -267,145 +302,205 @@ def process_DWI_fsl_pv6(sj, control=None):
 
     """ *** PHASE 3 - POST-PROCESSING *** """
 
-    if control['step_orient_directions_bicomm']:
+    if control['is squashed']:
 
-        # MOVE ALL RELEVANT RESULTS FROM DWI TO BICOMMISSURAL with HISTO HEADER:
+        if control['step_orient_directions_bicomm']:
+            pass
 
-        for pfi_in, pfi_out in zip([pfi_FA, pfi_MD, pfi_V1, pfi_S0],
-                                   [pfi_FA_bicomm, pfi_MD_bicomm, pfi_V1_bicomm, pfi_S0_bicomm]):
+        if control['step_set_header_histo']:
+            pass
 
-            cmd = ''' cp {0} {1};
-                      fslorient -deleteorient {1};
-                      fslswapdim {1} -z -y -x {1};
-                      fslorient -setqformcode 1 {1};'''.format(pfi_in, pfi_out)
+        if control['step_orient_histo']:
+            pass
 
+        if control['step_final_adjustment']:
+            pass
+
+        if control['step_bfc_b0']:
+            pass
+
+    else:
+
+        if control['step_orient_directions_bicomm']:
+
+            # MOVE ALL RELEVANT RESULTS FROM DWI TO BICOMMISSURAL (with HISTO HEADER in the next step):
+
+            for pfi_in, pfi_out in zip([pfi_FA, pfi_MD, pfi_V1, pfi_S0],
+                                       [pfi_FA_bicomm, pfi_MD_bicomm, pfi_V1_bicomm, pfi_S0_bicomm]):
+
+                cmd = ''' cp {0} {1};
+                          fslorient -deleteorient {1};
+                          fslswapdim {1} -z -y -x {1};
+                          fslorient -setqformcode 1 {1};'''.format(pfi_in, pfi_out)
+
+                print_and_run(cmd, safety_on=control['safety_on'])
+
+        if control['step_set_header_histo']:
+
+            print '\nTAKE abs OF THE V1:'
+
+            cmd = 'seg_maths {0} -abs {0}'.format(pfi_V1_bicomm)
             print_and_run(cmd, safety_on=control['safety_on'])
 
-    if control['step_set_header_histo']:
+            for pfi_in, pfi_out in zip([pfi_FA_bicomm, pfi_MD_bicomm, pfi_V1_bicomm, pfi_S0_bicomm],
+                           [pfi_FA_header_histo, pfi_MD_header_histo, pfi_V1_header_histo, pfi_S0_header_histo]):
 
-        print '\nTAKE abs OF THE V1:'
+                print 'Set header in histological for the bicommissural orientation: ' + pfi_in, pfi_out
+                if not control['safety_on']:
 
-        cmd = 'seg_maths {0} -abs {0}'.format(pfi_V1_bicomm)
-        print_and_run(cmd, safety_on=control['safety_on'])
+                    if sj == '1805' or sj == '2002' or sj == '2502':
+                        cmd = 'cp {0} {1}'.format(pfi_in, pfi_out)
+                        print_and_run(cmd, safety_on=control['safety_on'])
+                    else:
+                        theta = -np.pi / float(3)
 
-        for pfi_in, pfi_out in zip([pfi_FA_bicomm, pfi_MD_bicomm, pfi_V1_bicomm, pfi_S0_bicomm],
-                       [pfi_FA_header_histo, pfi_MD_header_histo, pfi_V1_header_histo, pfi_S0_header_histo]):
+                        adjust_header_from_transformations(pfi_in, pfi_out, theta=theta, trasl=(0, 0, 0))
 
-            print 'Set header in histological for the bicommissural orientation: ' + pfi_in, pfi_out
-            if not control['safety_on']:
+        """ *** PHASE 3 - ORIENT RESULTS IN HISTOLOGICAL COORDINATES *** """
 
-                if sj == '1805' or sj == '2002' or sj == '2502':
-                    pass  # no pre-adjustment (coherent with pre process T1)
-                else:
-                    theta = -np.pi / float(3)
+        if control['step_orient_histo']:  # orient histo pre-process -
 
-                    adjust_header_from_transformations(pfi_in, pfi_out, theta=theta, trasl=(0, 0, 0))
+            if not sj == '2502':  # fast strategy, not possible for 2502 !!
 
-    """ *** PHASE 3 - ORIENT RESULTS IN HISTOLOGICAL COORDINATES *** """
+                print '\nMOVING S0 FROM BICOMMISSURAL TO HISTOLOGICAL USING THE SAME TRANSFORMATION USED FOR T1'
 
-    if control['step_orient_histo']:  # orient histo pre-process -
+                # if sj == '1805':
+                #     os.system('cp {0} {1}'.format(pfi_aff_bicomm_to_histo_T1, pfi_aff_bicomm_to_histo_T1_storage))
+                #     transf = np.loadtxt(pfi_aff_bicomm_to_histo_T1)
+                #     transf_new = np.eye(4)
+                #     transf_new[:3, :3] = transf[:3, :3]
+                #     np.savetxt(pfi_aff_bicomm_to_histo_T1, transf_new)
 
-        print '\nMOVING S0 FROM BICOMMISSURAL TO HISTOLOGICAL USING THE SAME TRANSFORMATION USED FOR T1'
+                cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(
+                    T1_in_histological_coordinates,
+                    pfi_S0_header_histo,
+                    pfi_aff_bicomm_to_histo_T1,
+                    pfi_S0_histo_as_T1
+                )
 
-        # if sj == '1805':
-        #     os.system('cp {0} {1}'.format(pfi_aff_bicomm_to_histo_T1, pfi_aff_bicomm_to_histo_T1_storage))
-        #     transf = np.loadtxt(pfi_aff_bicomm_to_histo_T1)
-        #     transf_new = np.eye(4)
-        #     transf_new[:3, :3] = transf[:3, :3]
-        #     np.savetxt(pfi_aff_bicomm_to_histo_T1, transf_new)
+                print_and_run(cmd0, msg='Reorient bicomm to histo S0 ' + sj, safety_on=control['safety_on'])
 
-        cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(
-            T1_in_histological_coordinates,
-            pfi_S0_header_histo,
-            pfi_aff_bicomm_to_histo_T1,
-            pfi_S0_histo_as_T1
-        )
+                print '\nREGISTER S0 IN HISTOLOGICAL TO T1:'
 
-        print_and_run(cmd0, msg='Reorient bicomm to histo S0 ' + sj, safety_on=control['safety_on'])
+                cmd1 = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly '.format(
+                    T1_in_histological_coordinates,
+                    pfi_registration_mask_in_histo_T1,
+                    pfi_S0_histo_as_T1,
+                    pfi_registration_mask_in_histo_T1,
+                    pfi_aff_S0_histo_as_T1_readjusted,
+                    pfi_S0_histo_as_T1_readjusted,
+                )
 
-        print '\nREGISTER S0 IN HISTOLOGICAL TO T1:'
+                print_and_run(cmd1, safety_on=control['safety_on'])
 
-        cmd1 = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly '.format(
-            T1_in_histological_coordinates,
-            pfi_registration_mask_in_histo_T1,
-            pfi_S0_histo_as_T1,
-            pfi_registration_mask_in_histo_T1,
-            pfi_aff_S0_histo_as_T1_readjusted,
-            pfi_S0_histo_as_T1_readjusted,
-        )
+                print '\nCOMPOSE THE TWO OBTAINED TRANSFORMATION TO GET THE FINAL ONE: [(small adj) o (bicomm_2_histo)]'
 
-        print_and_run(cmd1, safety_on=control['safety_on'])
+                def compose_aff_transf_from_paths(pfi_left_aff, pfi_right_aff, pfi_final):
 
-        print '\nCOMPOSE THE TWO OBTAINED TRANSFORMATION TO GET THE FINAL ONE: [(small adj) o (bicomm_2_histo)]'
+                    if not os.path.exists(pfi_left_aff):
+                        raise IOError(pfi_left_aff)
+                    if not os.path.exists(pfi_right_aff):
+                        raise IOError(pfi_right_aff)
 
-        def compose_aff_transf_from_paths(pfi_left_aff, pfi_right_aff, pfi_final):
+                    left = np.loadtxt(pfi_left_aff)
+                    right = np.loadtxt(pfi_right_aff)
+                    np.savetxt(pfi_final, left.dot(right))
 
-            if not os.path.exists(pfi_left_aff):
-                raise IOError(pfi_left_aff)
-            if not os.path.exists(pfi_right_aff):
-                raise IOError(pfi_right_aff)
+                if not control['safety_on']:
+                    compose_aff_transf_from_paths(pfi_aff_bicomm_to_histo_T1,  # small adj (reg resample takes the inverse)
+                                                  pfi_aff_S0_histo_as_T1_readjusted,  # main from bicomm 2 histo
+                                                  pfi_final_aff_transf_bicomm_to_histo)
 
-            left = np.loadtxt(pfi_left_aff)
-            right = np.loadtxt(pfi_right_aff)
-            np.savetxt(pfi_final, left.dot(right))
+                print '\nAPPLY THE FINAL OBTAINED TRANSFORMATION TO ALL THE RESULTS'
 
-        if not control['safety_on']:
-            compose_aff_transf_from_paths(pfi_aff_bicomm_to_histo_T1,  # small adj (NOTE reg resample takes the inverse)
-                                          pfi_aff_S0_histo_as_T1_readjusted,  # main from bicomm 2 histo
-                                          pfi_final_aff_transf_bicomm_to_histo)
+                for pfi_floating, pfi_res in zip([pfi_FA_header_histo, pfi_MD_header_histo, pfi_V1_header_histo, pfi_S0_header_histo],
+                                                 [pfi_FA_histo, pfi_MD_histo, pfi_V1_histo, pfi_S0_histo]):
 
-        print '\nAPPLY THE FINAL OBTAINED TRANSFORMATION TO ALL THE RESULTS'
-
-        for pfi_floating, pfi_res in zip([pfi_FA_header_histo, pfi_MD_header_histo, pfi_V1_header_histo, pfi_S0_header_histo],
-                                         [pfi_FA_histo, pfi_MD_histo, pfi_V1_histo, pfi_S0_histo]):
-
-            cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(
-                T1_in_histological_coordinates,
-                pfi_floating,
-                pfi_final_aff_transf_bicomm_to_histo,
-                pfi_res
-            )
-            print_and_run(cmd0, safety_on=control['safety_on'])
-
-    if control['step_final_adjustment']:
-
-        for pfi_sj in [pfi_FA_histo, pfi_MD_histo, pfi_V1_histo, pfi_S0_histo]:
-
-            # CROP TO T1 MASK
-            if 'V1' in pfi_sj:
-                reproduce_slice_fourth_dimension_path(T1_in_histological_coordinates_brain_mask,
-                                                      pfi_cropping_mask_for_the_V1, num_slices=3)
-                cmd0 = 'seg_maths {0} -mul {1} {0}'.format(pfi_sj, pfi_cropping_mask_for_the_V1, pfi_sj)
-                print_and_run(cmd0, safety_on=control['safety_on'])
+                    cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(
+                        T1_in_histological_coordinates,
+                        pfi_floating,
+                        pfi_final_aff_transf_bicomm_to_histo,
+                        pfi_res
+                    )
+                    print_and_run(cmd0, safety_on=control['safety_on'])
 
             else:
-                cmd0 = 'seg_maths {0} -mul {1} {0}'.format(pfi_sj, T1_in_histological_coordinates_brain_mask, pfi_sj)
+
+                # re-create mask S0:
+                pfi_custom_mask_S0 = jph(outputs_folder, 'bicomm_header_histo_fsl_dtifit_2502_S0_MASK.nii.gz')
+                cmd0 = 'seg_maths {0} -bin {1}'.format(pfi_S0_header_histo, pfi_custom_mask_S0)
+                cmd1 = 'seg_maths {0} -ero 3 {0}'.format(pfi_custom_mask_S0)
+                # print_and_run(cmd0, safety_on=control['safety_on'])
+                # print_and_run(cmd1, safety_on=control['safety_on'])
+
+                # rigid registration s0 with the T1
+                pfi_warp_S0_on_T1 = jph(outputs_folder, 'warp2502_S0onT1.nii.gz')
+                pfi_transf_S0_on_T1 = jph(outputs_folder, 'rig_S0onT1.txt')
+
+                print '\n\nRigid registration S0 with T1\n\n'
+                cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -res {4} -aff {5} -rigOnly'.format(
+                    T1_in_histological_coordinates, T1_in_histological_coordinates_brain_mask,
+                    pfi_S0_header_histo, pfi_custom_mask_S0,
+                    pfi_warp_S0_on_T1, pfi_transf_S0_on_T1)
+
+                # print_and_run(cmd, safety_on=control['safety_on'])
+
+                # apply the same transformation to all the other images
+
+                print '\nAPPLY THE FINAL OBTAINED TRANSFORMATION TO ALL THE RESULTS'
+
+                for pfi_floating, pfi_res in zip(
+                        [pfi_FA_header_histo, pfi_MD_header_histo, pfi_V1_header_histo, pfi_S0_header_histo],
+                        [pfi_FA_histo, pfi_MD_histo, pfi_V1_histo, pfi_S0_histo]):
+                    cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(
+                        T1_in_histological_coordinates,
+                        pfi_floating,
+                        pfi_transf_S0_on_T1,
+                        pfi_res
+                    )
+                    print_and_run(cmd0, safety_on=control['safety_on'])
+
+        if control['step_final_adjustment']:
+
+            for pfi_sj in [pfi_FA_histo, pfi_MD_histo, pfi_V1_histo, pfi_S0_histo]:
+
+                # CROP TO T1 MASK
+                if 'V1' in pfi_sj:
+                    reproduce_slice_fourth_dimension_path(T1_in_histological_coordinates_brain_mask,
+                                                          pfi_cropping_mask_for_the_V1, num_slices=3)
+                    cmd0 = 'seg_maths {0} -mul {1} {0}'.format(pfi_sj, pfi_cropping_mask_for_the_V1, pfi_sj)
+                    print_and_run(cmd0, safety_on=control['safety_on'])
+
+                else:
+                    cmd0 = 'seg_maths {0} -mul {1} {0}'.format(pfi_sj, T1_in_histological_coordinates_brain_mask, pfi_sj)
+                    print_and_run(cmd0, safety_on=control['safety_on'])
+
+                # REMOVE NAN
+                cmd0 = 'seg_maths {0} -removenan {0}'.format(pfi_sj, T1_in_histological_coordinates_brain_mask, pfi_sj)
                 print_and_run(cmd0, safety_on=control['safety_on'])
 
-            # REMOVE NAN
-            cmd0 = 'seg_maths {0} -removenan {0}'.format(pfi_sj, T1_in_histological_coordinates_brain_mask, pfi_sj)
-            print_and_run(cmd0, safety_on=control['safety_on'])
+                # REMOVE NEGATIVE
+                cmd0 = 'seg_maths {0} -thr {1} {0}'.format(pfi_sj, ' 0 ', pfi_sj)
+                print_and_run(cmd0, safety_on=control['safety_on'])
 
-            # REMOVE NEGATIVE
-            cmd0 = 'seg_maths {0} -thr {1} {0}'.format(pfi_sj, ' 0 ', pfi_sj)
-            print_and_run(cmd0, safety_on=control['safety_on'])
+        if control['step_bfc_b0']:
 
-    if control['step_bfc_b0']:
+            print '\nBias field correction: subject {} S0 in DWI pipeline.\n'.format(sj)
 
-        print '\nBias field correction: subject {} S0 in DWI pipeline.\n'.format(sj)
+            if not control['safety_on']:
+                bias_field_correction(pfi_S0_histo, pfi_S0_histo,
+                                      pfi_mask=None,
+                                      prefix='',
+                                      convergenceThreshold=convergenceThreshold,
+                                      maximumNumberOfIterations=maximumNumberOfIterations,
+                                      biasFieldFullWidthAtHalfMaximum=biasFieldFullWidthAtHalfMaximum,
+                                      wienerFilterNoise=wienerFilterNoise,
+                                      numberOfHistogramBins=numberOfHistogramBins,
+                                      numberOfControlPoints=numberOfControlPoints,
+                                      splineOrder=splineOrder,
+                                      print_only=control['safety_on'])
 
-        if not control['safety_on']:
-            bias_field_correction(pfi_S0_histo, pfi_S0_histo,
-                                  pfi_mask=None,
-                                  prefix='',
-                                  convergenceThreshold=convergenceThreshold,
-                                  maximumNumberOfIterations=maximumNumberOfIterations,
-                                  biasFieldFullWidthAtHalfMaximum=biasFieldFullWidthAtHalfMaximum,
-                                  wienerFilterNoise=wienerFilterNoise,
-                                  numberOfHistogramBins=numberOfHistogramBins,
-                                  numberOfControlPoints=numberOfControlPoints,
-                                  splineOrder=splineOrder,
-                                  print_only=control['safety_on'])
+
 
     """ *** PHASE 4 - MOVE RESULTS IN THE APPROPRIATE FOLDER OF THE FOLDER STRUCTURE *** """
 
