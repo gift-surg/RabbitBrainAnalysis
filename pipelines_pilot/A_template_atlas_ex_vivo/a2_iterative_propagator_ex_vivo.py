@@ -15,18 +15,18 @@ from labels_manager.main import LabelsManager
 
 root_pilot_study_ex_vivo = jph(root_pilot_study, 'A_templ_atlas_ex_vivo')
 
-source_subjects = ['1305', '1702', '1805', '2002', '1201', '1203', '1404', '1507', '1510']
+source_subjects = ['1305', '1702', '1805', '2002', '1201', '1203', '1404', '1507', '1510', '2502']
 source_modalities = ['T1', 'FA', 'MD', 'S0', 'V1']
-target_subject = '2502'
+target_subject = '2503'
 
 
 steps_map = {'Create intermediate folders'           : True,
-             'Aff alignment'                         : False,
-             'Propagate transformation to atlas aff' : False,
-             'Propagate transformation to mask aff'  : False,
-             'Get differential BFC'                  : False,
-             'N-rig alignment of BFC'                : False,
-             'Propagate to target n-rig'             : False,
+             'Aff alignment'                         : True,
+             'Propagate transformation to atlas aff' : True,
+             'Propagate transformation to mask aff'  : True,
+             'Get differential BFC'                  : True,
+             'N-rig alignment of BFC'                : True,
+             'Propagate to target n-rig'             : True,
              'Smooth result'                         : True,
              'Propagate to other modalities'         : False,
              'Generate stack'                        : True,  # phase 2 from here

@@ -304,6 +304,32 @@ def process_DWI_fsl_pv6(sj, control=None):
 
     if control['is squashed']:
 
+        print 'Deal with them manually... Too much intra-subject variability!'
+        # NOTES:
+        # ------
+        # Squeeze and abs value of the V1
+        # Orient in LSP manually with itksnap of the interesting modalities (S0, V1, MD, FA).
+        # Manually change type to float for each of the image.
+        # Manually create the registration mask of the S0.
+        # Affine register S0 with T1 with registration masks and manual registration mask of S0.
+        # Check results and redo again util it works.
+        # Propagate the transformation to the remaining interesting modalities (V1, MD, FA)
+        # Check again and start again and redo until it works.
+        # Threshold the images from up to zero.
+        # Manually crop with the registration mask. Mask for the V1 needs to be created ad hoc
+
+
+        # commands:
+        # change types:
+        # seg_maths fsl_dtifit_2503_V1.nii.gz -4to5 fsl_dtifit_2503_V1_OK.nii.gz
+        # seg_maths fsl_dtifit_2503_V1_OK.nii.gz -abs fsl_dtifit_2503_V1_OK.nii.gz
+        # register
+        # reg_aladin -ref ../../2503_T1.nii.gz -rmask ../../../masks/2503_roi_registration_mask.nii.gz -flo fsl_dtifit_2503_S0.nii.gz -fmask registration_mask.nii.gz -res warped_s0_on_T1 -aff MAIN_AFF.txt
+        # reg_resample -ref ../../2503_T1.nii.gz  -flo fsl_dtifit_2503_V1_OK.nii.gz -trans MAIN_AFF.txt -res warped_V1_on_T1.nii.gz
+        # create V1 mask ad hoc
+        # seg_maths ../masks/2503_roi_mask.nii.gz -merge 2 4  ../masks/2503_roi_mask.nii.gz ../masks/2503_roi_mask.nii.gz roi_mask_V1.nii.gz
+        # crop for the masks
+
         if control['step_orient_directions_bicomm']:
             pass
 
@@ -317,6 +343,7 @@ def process_DWI_fsl_pv6(sj, control=None):
             pass
 
         if control['step_bfc_b0']:
+            # no bias field correction if it is squashed.
             pass
 
     else:

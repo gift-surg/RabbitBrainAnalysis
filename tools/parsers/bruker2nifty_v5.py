@@ -5,9 +5,7 @@ import nibabel as nib
 import pprint
 
 """
-pfi_study
-
-pfi_scan
+DEPRECATED. USE THE STANDALONE LIBRARY ON GIT-HUB
 """
 
 

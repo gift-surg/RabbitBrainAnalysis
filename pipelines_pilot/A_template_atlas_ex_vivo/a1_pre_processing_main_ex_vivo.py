@@ -28,9 +28,9 @@ from pipelines_pilot.A_template_atlas_ex_vivo.pre_process_DWI_fsl_ex_vivo_pv6 im
 # subjects = ['1201', '1203', '1305', '1404', '1505', '1507', '1702', '1805', '2002']
 
 # subjects = ['2502', ]
-subjects = ['2503', ]
+# subjects = ['2503', ]
 # subjects = ['2608', ]
-# subjects = ['2702', ]
+subjects = ['2702', ]
 
 
 controller_process_T1 = {'safety_on':                     False,
@@ -52,7 +52,7 @@ controller_process_DWI = {'safety_on':                     False,
                           'step_generate_output_folder':   True,
                           'step_squeeze':                  True,
                           'step_extract_bval_bvect_slope': False,  # always false for pv 6, already extracted.
-                          'step_extract_first_timepoint':  False,
+                          'step_extract_first_timepoint':  True,
                           'step_grab_the_roi_mask':        True,
                           'step_dilate_mask':              True,
                           'step_cut_to_mask_dwi':          True,
