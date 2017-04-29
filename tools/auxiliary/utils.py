@@ -217,6 +217,10 @@ def print_and_run(cmd, msg=None, safety_on=True):
     :return:
     """
 
+    # if len(cmd) > 249:
+    #     print(cmd)
+    #     raise IOError('input command is too long, this may create problems. Please use shortest names!')
+
     path_free_cmd = scan_and_remove_path(cmd)
     if msg is not None:
         print '\n' + msg + '\n'

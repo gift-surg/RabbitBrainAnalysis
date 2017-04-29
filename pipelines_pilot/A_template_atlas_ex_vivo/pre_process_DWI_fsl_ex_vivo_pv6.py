@@ -304,7 +304,7 @@ def process_DWI_fsl_pv6(sj, control=None):
 
     if control['is squashed']:
 
-        print 'Deal with them manually... Too much intra-subject variability!'
+        print 'Now deal with them manually... Too much intra-subject header and acquisition protocol variability!'
         # NOTES:
         # ------
         # Squeeze and abs value of the V1
@@ -312,12 +312,13 @@ def process_DWI_fsl_pv6(sj, control=None):
         # Manually change type to float for each of the image.
         # Manually create the registration mask of the S0.
         # Affine register S0 with T1 with registration masks and manual registration mask of S0.
-        # Check results and redo again util it works.
+        # Check results and redo the mask again util it works (if it does not, write an initial affine matrix
+        # by hand, resample than register again, then compose the manual affine with the final automatic affine
+        # as the final seek transformation).
         # Propagate the transformation to the remaining interesting modalities (V1, MD, FA)
         # Check again and start again and redo until it works.
         # Threshold the images from up to zero.
         # Manually crop with the registration mask. Mask for the V1 needs to be created ad hoc
-
 
         # commands:
         # change types:

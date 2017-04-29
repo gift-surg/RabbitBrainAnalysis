@@ -9,15 +9,33 @@ majority voting.
 import os
 from os.path import join as jph
 
-from definitions import root_pilot_study
+from definitions import root_pilot_study_dropbox, root_pilot_study_pantopolium
 from tools.auxiliary.utils import print_and_run, grab_a_timepoint_path
 from labels_manager.main import LabelsManager
 
-root_pilot_study_ex_vivo = jph(root_pilot_study, 'A_templ_atlas_ex_vivo')
 
 source_subjects = ['1305', '1702', '1805', '2002', '1201', '1203', '1404', '1507', '1510', '2502']
 source_modalities = ['T1', 'FA', 'MD', 'S0', 'V1']
-target_subject = '2503'
+target_subject = source_subjects[1]
+
+safety_on = False
+
+study_tag = '_st1'  # st1 : no 15xx
+test_tag = '_test2_'  # with smol in the pre-processing.
+
+snake_round = '2'  # '' means 1, '2' means 2
+
+# dropbox paths - input and final destination data
+root_pilot_study_dropbox = jph(root_pilot_study_dropbox, 'A_templ_atlas_ex_vivo')
+
+pfo_target_dropbox = jph(root_pilot_study_dropbox, target_subject)
+pfo_target_seg_dropbox = jph(pfo_target_dropbox, 'segm')
+
+# parntopolio paths - intermediate data
+pfo_target_subject_pantopolium = jph(root_pilot_study_pantopolium, 'A_internal_template', target_subject)
+
+pfo_intermediate = jph(pfo_target_subject_pantopolium, 'z_gpwise_interm' + snake_round + study_tag)
+pfo_fused = jph(root_pilot_study_pantopolium, 'z_lab_fusion' + snake_round + study_tag)
 
 
 steps_map = {'Create intermediate folders'           : True,
@@ -30,36 +48,32 @@ steps_map = {'Create intermediate folders'           : True,
              'Smooth result'                         : True,
              'Propagate to other modalities'         : False,
              'Generate stack'                        : True,  # phase 2 from here
-             'Fuse'                                  : True}
-
-
-safety_on = False
-
-study_tag = '_st1'  # st1 : no 15xx
-test_tag = '_test2_'  # with smol in the pre-processing.
-
-pfo_target = jph(root_pilot_study_ex_vivo, target_subject)
-pfo_segmentations = jph(root_pilot_study, 'A_templ_atlas_ex_vivo', target_subject, 'segmentations')
-pfo_intermediate = jph(pfo_segmentations, 'z_gpwise_interm' + study_tag)
-pfo_fused = jph(pfo_segmentations, 'z_lab_fusion' + study_tag )
+             'Fuse'                                  : True,
+             'Send data to Dropbox'                  : True}
 
 
 if steps_map['Create intermediate folders']:
     print_and_run('mkdir -p {0} '.format(pfo_intermediate), safety_on=safety_on)
 
 
+mod = 'T1'  # Only T1 modality at the moment
+
+# target
+pfi_target = jph(pfo_target_dropbox, 'all_modalities', target_subject + '_' + mod + '.nii.gz')
+pfi_target_roi_registration_masks = jph(pfo_target_dropbox, 'masks', target_subject + '_roi_registration_mask.nii.gz')
+
+
 for sj in source_subjects:
 
-    mod = 'T1'  # Only T1 modality at the moment
+    pfo_source = jph(root_pilot_study_dropbox, sj)
 
-    pfo_source = jph(root_pilot_study_ex_vivo, sj)
+    pfi_template_sj = jph(pfo_source, 'all_modalities', sj + '_' + mod + '.nii.gz')
 
-    # input
-    pfi_target                        = jph(pfo_target, 'all_modalities', target_subject + '_' + mod + '.nii.gz')
-    pfi_target_roi_registration_masks = jph(pfo_target, 'masks', target_subject + '_roi_registration_mask.nii.gz')
+    if os.path.exists(jph(pfo_source, 'segm', 'approved2')):
+        pfi_atlas_sj = jph(pfo_source, 'segm', 'approved2', sj + '_propagate_me.nii.gz')
+    else:
+        pfi_atlas_sj = jph(pfo_source, 'segm', 'approved', sj + '_propagate_me.nii.gz')
 
-    pfi_template_sj                   = jph(pfo_source, 'all_modalities', sj + '_' + mod + '.nii.gz')
-    pfi_atlas_sj                      = jph(pfo_source, 'segmentations', 'approved', sj + '_propagate_me.nii.gz')
     pfi_mask_sj                       = jph(pfo_source, 'masks', sj + '_roi_registration_mask.nii.gz')
 
     # intermediate
@@ -76,9 +90,9 @@ for sj in source_subjects:
     smol = 1.2
 
     pfi_propagated_subject_on_target_anatomy = jph(pfo_intermediate,
-                                                   'res_' + sj + '_' + mod + '_on_' + target_subject + '_subject_on_target_anatomy' + test_tag + '.nii.gz')
-    pfi_propagated_subject_on_target_segm = jph(pfo_intermediate, 'res_' + sj + '_' + mod + '_on_' + target_subject + '_subject_on_target_segm' + test_tag + '.nii.gz')
-    pfi_propagated_subject_on_target_segm_smol = jph(pfo_intermediate, 'res_' + sj + '_' + mod + '_on_' + target_subject + '_subject_on_target_segm_smol' + test_tag + '.nii.gz')
+                                                   'res_' + sj + '_' + mod + '_on_' + target_subject + '_sj_on_target_anatomy' + test_tag + '.nii.gz')
+    pfi_propagated_subject_on_target_segm = jph(pfo_intermediate, 'res_' + sj + '_' + mod + '_on_' + target_subject + '_sj_on_target_segm' + test_tag + '.nii.gz')
+    pfi_propagated_subject_on_target_segm_smol = jph(pfo_intermediate, 'res_' + sj + '_' + mod + '_on_' + target_subject + '_sj_on_target_segm_smol' + test_tag + '.nii.gz')
 
     list_pfi_input = [pfi_target, pfi_target_roi_registration_masks, pfi_template_sj, pfi_atlas_sj, pfi_mask_sj]
 
@@ -86,110 +100,123 @@ for sj in source_subjects:
         if not os.path.exists(p):
             raise IOError('Pfi {} does not exist. '.format(p))
 
-    if steps_map['Aff alignment']:
+    # if the target and the source are not the same:
+    if not sj == target_subject:
 
-        print '\n Affine alignment: source {} \n\n'.format(sj)
+        if steps_map['Aff alignment']:
 
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} '.format(
-               pfi_target, pfi_target_roi_registration_masks,
-               pfi_template_sj, pfi_mask_sj, pfi_affine_transf, pfi_affine_transf_sj)
+            print '\n Affine alignment: source {} \n\n'.format(sj)
 
-        print_and_run(cmd, safety_on=safety_on)
+            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} '.format(
+                   pfi_target, pfi_target_roi_registration_masks,
+                   pfi_template_sj, pfi_mask_sj, pfi_affine_transf, pfi_affine_transf_sj)
 
-    if steps_map['Propagate transformation to atlas aff']:
+            print_and_run(cmd, safety_on=safety_on)
 
-        print '\n Propagate transformation to atlas aff: source {} \n\n'.format(sj)
+        if steps_map['Propagate transformation to atlas aff']:
 
-        cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-                 pfi_target, pfi_atlas_sj, pfi_affine_transf, pfi_atlas_affine_registered)
+            print '\n Propagate transformation to atlas aff: source {} \n\n'.format(sj)
 
-        print_and_run(cmd, safety_on=safety_on)
+            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+                     pfi_target, pfi_atlas_sj, pfi_affine_transf, pfi_atlas_affine_registered)
 
-    if steps_map['Propagate transformation to mask aff']:
+            print_and_run(cmd, safety_on=safety_on)
 
-        print '\n Propagate transformation to mask aff: source {} \n\n'.format(sj)
+        if steps_map['Propagate transformation to mask aff']:
 
-        cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-                 pfi_target, pfi_mask_sj, pfi_affine_transf, pfi_mask_affine_registered)
+            print '\n Propagate transformation to mask aff: source {} \n\n'.format(sj)
 
-        print_and_run(cmd, safety_on=safety_on)
+            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+                     pfi_target, pfi_mask_sj, pfi_affine_transf, pfi_mask_affine_registered)
 
-    if steps_map['Get differential BFC']:
+            print_and_run(cmd, safety_on=safety_on)
 
-        print '\n Get differential BFC: source {} \n\n'.format(sj)
+        if steps_map['Get differential BFC']:
 
-        bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc '
-        cmd = bfc_corrector_cmd + ' {0} {1} {2} {3} {4} {5} '.format(
-            pfi_target, pfi_target_roi_registration_masks,      pfi_diff_bfc_target,
-            pfi_affine_transf_sj,    pfi_mask_affine_registered, pfi_diff_bfc_subject)
+            print '\n Get differential BFC: source {} \n\n'.format(sj)
 
-        print_and_run(cmd, safety_on=safety_on)
+            bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc '
+            cmd = bfc_corrector_cmd + ' {0} {1} {2} {3} {4} {5} '.format(
+                pfi_target, pfi_target_roi_registration_masks,      pfi_diff_bfc_target,
+                pfi_affine_transf_sj,    pfi_mask_affine_registered, pfi_diff_bfc_subject)
 
-    if steps_map['N-rig alignment of BFC']:
+            print_and_run(cmd, safety_on=safety_on)
 
-        print '\n N-rig alignment of BFC: source {} \n\n'.format(sj)
+        if steps_map['N-rig alignment of BFC']:
 
-        options = '-ln 2 -be 0.4'
-        cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -cpp {4} -res {5} {6}'.format(
-            pfi_diff_bfc_target, pfi_target_roi_registration_masks, pfi_diff_bfc_subject, pfi_mask_affine_registered,
-            pfi_diff_bfc_n_rig_cpp, pfi_diff_bfc_n_rig_res, options)
+            print '\n N-rig alignment of BFC: source {} \n\n'.format(sj)
 
-        print '\n\n'
-        print cmd
+            options = '-ln 2 -be 0.4'
+            cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -cpp {4} -res {5} {6}'.format(
+                pfi_diff_bfc_target, pfi_target_roi_registration_masks, pfi_diff_bfc_subject, pfi_mask_affine_registered,
+                pfi_diff_bfc_n_rig_cpp, pfi_diff_bfc_n_rig_res, options)
 
-        print_and_run(cmd, safety_on=safety_on)
+            print '\n\n'
+            print cmd
 
-    if steps_map['Propagate to target n-rig']:
+            print_and_run(cmd, safety_on=safety_on)
 
-        print '\n Propagate to target n-rig: source {} \n\n'.format(sj)
+        if steps_map['Propagate to target n-rig']:
 
-        cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-                 pfi_target, pfi_atlas_affine_registered, pfi_diff_bfc_n_rig_cpp, pfi_propagated_subject_on_target_segm)
+            print '\n Propagate to target n-rig: source {} \n\n'.format(sj)
 
-        cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 2'.format(
-            pfi_target, pfi_affine_transf_sj, pfi_diff_bfc_n_rig_cpp, pfi_propagated_subject_on_target_anatomy)
+            cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+                     pfi_target, pfi_atlas_affine_registered, pfi_diff_bfc_n_rig_cpp, pfi_propagated_subject_on_target_segm)
 
-        print_and_run(cmd0, safety_on=safety_on)
-        print_and_run(cmd1, safety_on=safety_on)
-
-    if steps_map['Smooth result']:
-
-        print '\n Smooth result: source {} \n\n'.format(sj)
-
-        cmd = 'seg_maths {0} -smol {1} {2}'.format(pfi_propagated_subject_on_target_segm, smol, pfi_propagated_subject_on_target_segm_smol)
-
-        print_and_run(cmd, safety_on=safety_on)
-
-    if steps_map['Propagate to other modalities']:
-        '''
-        The same transformations obtained for the T1 are applied to the other modalities.
-        '''
-        print '\n Propagate to other modalities: source {} \n\n'.format(sj)
-
-        for mod in list(set(source_modalities) - {'T1'}):
-
-            pfi_target_mod = jph(pfo_target, 'all_modalities', target_subject + '_' + mod + '.nii.gz')
-            pfi_sj_mod = jph(pfo_source, 'all_modalities', sj + '_' + mod + '.nii.gz')
-            pfi_sj_mod_affine_registered = jph(pfo_intermediate,
-                                               sj + '_' + mod + '_on_' + target_subject + '_rigid_subject_on_target_' + test_tag + '.nii.gz')
-            pfi_sj_mod_non_rig_registered = jph(pfo_intermediate,
-                                                sj + '_' + mod + '_on_' + target_subject + '_non_rigid_subject_on_target_' + test_tag + '.nii.gz')
-
-            if mod == 'V1':
-                # take only the first timepoint of the V1
-                pfi_sj_mod_first_slice = jph(pfo_intermediate, sj + 'V1_first_direction.nii.gz')
-
-                grab_a_timepoint_path(pfi_sj_mod, pfi_sj_mod_first_slice)
-                mod = 'V1_first_direction'
-
-            cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(
-                pfi_target_mod, pfi_sj_mod, pfi_affine_transf, pfi_sj_mod_affine_registered)
-
-            cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(
-                pfi_target_mod, pfi_sj_mod_affine_registered, pfi_diff_bfc_n_rig_cpp, pfi_sj_mod_non_rig_registered)
+            cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 2'.format(
+                pfi_target, pfi_affine_transf_sj, pfi_diff_bfc_n_rig_cpp, pfi_propagated_subject_on_target_anatomy)
 
             print_and_run(cmd0, safety_on=safety_on)
             print_and_run(cmd1, safety_on=safety_on)
+
+        if steps_map['Smooth result']:
+
+            print '\n Smooth result: source {} \n\n'.format(sj)
+
+            cmd = 'seg_maths {0} -smol {1} {2}'.format(pfi_propagated_subject_on_target_segm, smol, pfi_propagated_subject_on_target_segm_smol)
+
+            print_and_run(cmd, safety_on=safety_on)
+
+        if steps_map['Propagate to other modalities']:
+            '''
+            The same transformations obtained for the T1 are applied to the other modalities.
+            '''
+            print '\n Propagate to other modalities: source {} \n\n'.format(sj)
+
+            for mod in list(set(source_modalities) - {'T1'}):
+
+                pfi_target_mod = jph(pfo_target_dropbox, 'all_modalities', target_subject + '_' + mod + '.nii.gz')
+                pfi_sj_mod = jph(pfo_source, 'all_modalities', sj + '_' + mod + '.nii.gz')
+                pfi_sj_mod_affine_registered = jph(pfo_intermediate,
+                                                   sj + '_' + mod + '_on_' + target_subject + '_rigid_subject_on_target_' + test_tag + '.nii.gz')
+                pfi_sj_mod_non_rig_registered = jph(pfo_intermediate,
+                                                    sj + '_' + mod + '_on_' + target_subject + '_non_rigid_subject_on_target_' + test_tag + '.nii.gz')
+
+                if mod == 'V1':
+                    # take only the first timepoint of the V1
+                    pfi_sj_mod_first_slice = jph(pfo_intermediate, sj + 'V1_first_direction.nii.gz')
+
+                    grab_a_timepoint_path(pfi_sj_mod, pfi_sj_mod_first_slice)
+                    mod = 'V1_first_direction'
+
+                cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(
+                    pfi_target_mod, pfi_sj_mod, pfi_affine_transf, pfi_sj_mod_affine_registered)
+
+                cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(
+                    pfi_target_mod, pfi_sj_mod_affine_registered, pfi_diff_bfc_n_rig_cpp, pfi_sj_mod_non_rig_registered)
+
+                print_and_run(cmd0, safety_on=safety_on)
+                print_and_run(cmd1, safety_on=safety_on)
+
+    else:
+
+        # source and target are the same: copy original segmentation on the folder with appropriate name
+        # this will avoid smoothing
+        pfi_new_source_T1 = jph(pfo_intermediate, 'res_' + sj + '_T1_on_' + target_subject + '_sj_on_target_anatomy' + test_tag + '.nii.gz')
+        pfi_new_source_atlas = jph(pfo_intermediate, 'res_' + sj + '_T1_on_' + target_subject + '_sj_on_target_segm_smol' + test_tag + '.nii.gz')
+
+        print_and_run('cp {0} {1}'.format(pfi_target, pfi_new_source_T1), safety_on=safety_on)
+        print_and_run('cp {0} {1}'.format(pfi_atlas_sj, pfi_new_source_atlas), safety_on=safety_on)
 
 """ Generate stacks and fuse: """
 
@@ -202,10 +229,10 @@ if steps_map['Generate stack']:
     os.system('mkdir -p {0}'.format(pfo_fused))
 
     list_pfi_segmentations = [jph(pfo_intermediate, 'res_' + sj + '_T1_on_' + target_subject +
-                                  '_subject_on_target_segm_smol' + test_tag + '.nii.gz')  # smol segmentation
+                                  '_sj_on_target_segm_smol' + test_tag + '.nii.gz')  # smol segmentation
                               for sj in source_subjects]
 
-    list_pfi_warped = [jph(pfo_intermediate, 'res_' + sj + '_T1_on_' + target_subject + '_subject_on_target_anatomy' + test_tag + '.nii.gz')
+    list_pfi_warped = [jph(pfo_intermediate, 'res_' + sj + '_T1_on_' + target_subject + '_sj_on_target_anatomy' + test_tag + '.nii.gz')
                               for sj in source_subjects]
 
     print list_pfi_segmentations
@@ -213,24 +240,25 @@ if steps_map['Generate stack']:
 
     for pfi_file in list_pfi_segmentations:
         if not os.path.exists(pfi_file):
-            raise IOError('File {} does not exists '.format(pfi_file))
+            raise IOError('File {} in the list of segmentations does not exists '.format(pfi_file))
 
     for pfi_file in list_pfi_warped:
         if not os.path.exists(pfi_file):
-            raise IOError('File {} does not exists '.format(pfi_file))
+            raise IOError('File {} in the list of warped does not exists '.format(pfi_file))
 
     lm = LabelsManager(pfo_intermediate, pfo_fused)
-    pfi_target, pfi_result, pfi_4d_seg, pfi_4d_warp = lm.fuse.seg_LabFusion(pfi_target=jph(pfo_target, 'all_modalities',
-                                                                                           target_subject + '_T1.nii.gz'),
-                                                                      pfi_result='',
-                                                                      list_pfi_segmentations=list_pfi_segmentations,
-                                                                      list_pfi_warped=list_pfi_warped,
-                                                                      options='',
-                                                                      prepare_data_only=True)
+    pfi_target, pfi_result, pfi_4d_seg, pfi_4d_warp = lm.fuse.seg_LabFusion(
+        pfi_target=jph(pfo_target_dropbox, 'all_modalities', target_subject + '_T1.nii.gz'),
+        pfi_result='',
+        list_pfi_segmentations=list_pfi_segmentations,
+        list_pfi_warped=list_pfi_warped,
+        options='',
+        prepare_data_only=True)
+
     print pfi_target, pfi_result, pfi_4d_seg, pfi_4d_warp
 
 
-pfi_target = jph(pfo_target, 'all_modalities', target_subject + '_T1.nii.gz')
+pfi_target = jph(pfo_target_dropbox, 'all_modalities', target_subject + '_T1.nii.gz')
 pfi_4d_seg = jph(pfo_fused, 'res_4d_seg.nii.gz')
 pfi_4d_warp = jph(pfo_fused, 'res_4d_warp.nii.gz')
 
@@ -262,3 +290,7 @@ if steps_map['Fuse']:
                                                                                                       str(4.0))  # 4.0
     print cmd_steps
     os.system(cmd_steps)
+
+
+if steps_map['Aff alignment']:
+    pass
