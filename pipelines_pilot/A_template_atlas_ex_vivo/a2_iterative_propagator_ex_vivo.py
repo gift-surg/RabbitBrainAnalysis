@@ -16,7 +16,7 @@ from labels_manager.main import LabelsManager
 
 source_subjects = ['1305', '1702', '1805', '2002', '1201', '1203', '1404', '1507', '1510', '2502']
 source_modalities = ['T1', 'FA', 'MD', 'S0', 'V1']
-target_subject = source_subjects[1]
+target_subject = source_subjects[4]
 
 safety_on = False
 
@@ -26,16 +26,16 @@ test_tag = '_test2_'  # with smol in the pre-processing.
 snake_round = '2'  # '' means 1, '2' means 2
 
 # dropbox paths - input and final destination data
-root_pilot_study_dropbox = jph(root_pilot_study_dropbox, 'A_templ_atlas_ex_vivo')
+root_pilot_study_dropbox = jph(root_pilot_study_dropbox, 'A_internal_template')
 
 pfo_target_dropbox = jph(root_pilot_study_dropbox, target_subject)
 pfo_target_seg_dropbox = jph(pfo_target_dropbox, 'segm')
 
 # parntopolio paths - intermediate data
-pfo_target_subject_pantopolium = jph(root_pilot_study_pantopolium, 'A_internal_template', target_subject)
+pfo_target_subject_pantopolium = jph(root_pilot_study_pantopolium, 'A_templ_atlas_ex_vivo', target_subject)
 
 pfo_intermediate = jph(pfo_target_subject_pantopolium, 'z_gpwise_interm' + snake_round + study_tag)
-pfo_fused = jph(root_pilot_study_pantopolium, 'z_lab_fusion' + snake_round + study_tag)
+pfo_fused = jph(pfo_target_subject_pantopolium, 'z_lab_fusion' + snake_round + study_tag)
 
 
 steps_map = {'Create intermediate folders'           : True,
@@ -46,7 +46,7 @@ steps_map = {'Create intermediate folders'           : True,
              'N-rig alignment of BFC'                : True,
              'Propagate to target n-rig'             : True,
              'Smooth result'                         : True,
-             'Propagate to other modalities'         : False,
+             'Propagate to other modalities'         : False,  # not yet there.
              'Generate stack'                        : True,  # phase 2 from here
              'Fuse'                                  : True,
              'Send data to Dropbox'                  : True}
@@ -62,6 +62,8 @@ mod = 'T1'  # Only T1 modality at the moment
 pfi_target = jph(pfo_target_dropbox, 'all_modalities', target_subject + '_' + mod + '.nii.gz')
 pfi_target_roi_registration_masks = jph(pfo_target_dropbox, 'masks', target_subject + '_roi_registration_mask.nii.gz')
 
+# output
+
 
 for sj in source_subjects:
 
@@ -69,10 +71,20 @@ for sj in source_subjects:
 
     pfi_template_sj = jph(pfo_source, 'all_modalities', sj + '_' + mod + '.nii.gz')
 
-    if os.path.exists(jph(pfo_source, 'segm', 'approved2')):
-        pfi_atlas_sj = jph(pfo_source, 'segm', 'approved2', sj + '_propagate_me.nii.gz')
+    # third round
+    if os.path.exists(jph(pfo_source, 'segm', 'approved', sj + '_propagate_me_3.nii.gz')):
+        pfi_atlas_sj = jph(pfo_source, 'segm', 'approved', sj + '_propagate_me_3.nii.gz')
+        smol = 0.2
+
+    # second round
+    elif os.path.exists(jph(pfo_source, 'segm', 'approved', sj + '_propagate_me_2.nii.gz')):
+        pfi_atlas_sj = jph(pfo_source, 'segm', 'approved', sj + '_propagate_me_2.nii.gz')
+        smol = 0.7
+
+    # first round
     else:
-        pfi_atlas_sj = jph(pfo_source, 'segm', 'approved', sj + '_propagate_me.nii.gz')
+        pfi_atlas_sj = jph(pfo_source, 'segm', 'approved', sj + '_propagate_me_1.nii.gz')
+        smol = 1.2
 
     pfi_mask_sj                       = jph(pfo_source, 'masks', sj + '_roi_registration_mask.nii.gz')
 
@@ -85,9 +97,6 @@ for sj in source_subjects:
     pfi_diff_bfc_subject         = jph(pfo_intermediate, sj + '_' + mod + '_on_' + target_subject + '_bfc_subject.nii.gz')
     pfi_diff_bfc_n_rig_cpp       = jph(pfo_intermediate, sj + '_' + mod + '_on_' + target_subject + '_bfc_cpp.nii.gz')
     pfi_diff_bfc_n_rig_res       = jph(pfo_intermediate, sj + '_' + mod + '_on_' + target_subject + '_bfc_res.nii.gz')
-
-    # output
-    smol = 1.2
 
     pfi_propagated_subject_on_target_anatomy = jph(pfo_intermediate,
                                                    'res_' + sj + '_' + mod + '_on_' + target_subject + '_sj_on_target_anatomy' + test_tag + '.nii.gz')
@@ -262,13 +271,17 @@ pfi_target = jph(pfo_target_dropbox, 'all_modalities', target_subject + '_T1.nii
 pfi_4d_seg = jph(pfo_fused, 'res_4d_seg.nii.gz')
 pfi_4d_warp = jph(pfo_fused, 'res_4d_warp.nii.gz')
 
+fin_MV = target_subject + '_fusion_s' + snake_round + '_MV.nii.gz'
+pfi_output_MV = jph(pfo_fused, fin_MV)
+
+fin_STEPS = target_subject + '_fusion_s' + snake_round + '_STEPS_3_3_beta2p0.nii.gz'
+pfi_output_STEPS = jph(pfo_fused, fin_STEPS)
 
 if steps_map['Fuse']:
 
     print '\n Fuse \n\n'
 
     # Majority voting:
-    pfi_output_MV = jph(pfo_fused, 'output_fusion_MV.nii.gz')
     cmd_mv = 'seg_LabFusion -in {0} -out {1} -MV'.format(pfi_4d_seg, pfi_output_MV)
     print cmd_mv
     os.system(cmd_mv)
@@ -280,7 +293,6 @@ if steps_map['Fuse']:
     # os.system(cmd_staple)
 
     # STEPS:
-    pfi_output_STEPS = jph(pfo_fused, 'output_fusion_STEPS_3_3_beta2p0.nii.gz')
     cmd_steps = 'seg_LabFusion -in {0} -out {1} -STEPS {2} {3} {4} {5} -MRF_beta {6} -prop_update'.format(pfi_4d_seg,
                                                                                                       pfi_output_STEPS,
                                                                                                       str(3),
@@ -292,5 +304,17 @@ if steps_map['Fuse']:
     os.system(cmd_steps)
 
 
-if steps_map['Aff alignment']:
-    pass
+if steps_map['Send data to Dropbox']:
+
+    pfo_automatic = jph(pfo_target_dropbox, 'segm', 'automatic' + snake_round)
+    os.system('mkdir -p {}'.format(pfo_automatic))
+
+    if os.path.exists(pfi_output_MV):
+        pfi_copied_MV = jph(pfo_automatic, fin_MV)
+        print_and_run('cp {0} {1}'.format(pfi_output_MV, pfi_copied_MV), safety_on=safety_on)
+        print '\n\n Majority voting copied'
+
+    if os.path.exists(pfi_output_STEPS):
+        pfi_copied_STEPS = jph(pfo_automatic, fin_STEPS)
+        print_and_run('cp {0} {1}'.format(pfi_output_MV, pfi_copied_STEPS), safety_on=safety_on)
+        print '\n\n STEPS copied'
