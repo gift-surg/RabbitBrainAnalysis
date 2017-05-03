@@ -22,11 +22,11 @@ def process_DWI_fsl_pv6(sj, control=None):
 
     # --- paths manager, general --- #
 
-    root = jph(root_pilot_study, 'A_templ_atlas_ex_vivo')
+    root = jph(root_pilot_study_dropbox, 'A_templ_atlas_ex_vivo')
 
     # path to DWI data subject
 
-    pfi_dwi_original = jph(root_pilot_study, '0_original_data', 'ex_vivo', sj, 'DWI', sj + '_DWI.nii.gz')
+    pfi_dwi_original = jph(root_pilot_study_pantopolium, '0_original_data', 'ex_vivo', sj, 'DWI', sj + '_DWI.nii.gz')
     # pfi_dwi_txt_data_original = jph(root_pilot_study, '0_original_data', 'ex_vivo', sj, 'DWI', sj + '_DWI.txt')
 
     if not os.path.isfile(pfi_dwi_original):
