@@ -16,9 +16,9 @@ still need to squeeze, to orient according to MNI and to clean q-form and s-form
 
 # controller
 control = {'safety on'                        : False,
-           'oversample'                       : False,
-           'extract first slice standard'     : False,
-           'extract first slice oversampled'  : False,
+           'oversample'                       : True,
+           'extract first slice standard'     : True,
+           'extract first slice oversampled'  : True,
            'threshold zero'                    : True}
 
 
@@ -32,6 +32,8 @@ for p in [root_pilot_study_msme_in_vivo, pfo_utils]:
 # subjects
 list_subjects = np.sort(list(set(os.listdir(root_pilot_study_msme_in_vivo)) - {'.DS_Store', 'Utils'}))
 print(list_subjects)
+
+# list_subjects = ['2503']
 
 for sj in list_subjects:
 

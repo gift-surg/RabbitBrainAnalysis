@@ -16,7 +16,7 @@ from labels_manager.main import LabelsManager
 
 source_subjects = ['1305', '1702', '1805', '2002', '1201', '1203', '1404', '1507', '1510', '2502']
 source_modalities = ['T1', 'FA', 'MD', 'S0', 'V1']
-target_subject = source_subjects[4]
+target_subject = source_subjects[7]
 
 safety_on = False
 
@@ -38,9 +38,9 @@ pfo_intermediate = jph(pfo_target_subject_pantopolium, 'z_gpwise_interm' + snake
 pfo_fused = jph(pfo_target_subject_pantopolium, 'z_lab_fusion' + snake_round + study_tag)
 
 
-steps_map = {'Create intermediate folders'           : True,
-             'Aff alignment'                         : True,
-             'Propagate transformation to atlas aff' : True,
+steps_map = {'Create intermediate folders'           : False,
+             'Aff alignment'                         : False,
+             'Propagate transformation to atlas aff' : False,
              'Propagate transformation to mask aff'  : True,
              'Get differential BFC'                  : True,
              'N-rig alignment of BFC'                : True,
@@ -62,8 +62,16 @@ mod = 'T1'  # Only T1 modality at the moment
 pfi_target = jph(pfo_target_dropbox, 'all_modalities', target_subject + '_' + mod + '.nii.gz')
 pfi_target_roi_registration_masks = jph(pfo_target_dropbox, 'masks', target_subject + '_roi_registration_mask.nii.gz')
 
-# output
+# sanity check
 
+if not os.path.isdir('/Volumes/sebastianof/rabbits/'):
+    raise IOError('Connect pantopolio!')
+
+for sj_k in source_subjects:
+    if not os.path.isfile(jph(root_pilot_study_dropbox, sj_k, 'all_modalities', sj_k + '_T1.nii.gz')):
+        raise IOError('T1 modality for subject {} does not exists'.format(sj_k))
+    if not os.path.isfile(jph(root_pilot_study_dropbox, sj_k, 'segm', 'approved', sj_k + '_propagate_me_1.nii.gz')):
+        raise IOError('Tere is not even an approved segmentation for subject {}'.format(sj_k))
 
 for sj in source_subjects:
 
@@ -293,13 +301,14 @@ if steps_map['Fuse']:
     # os.system(cmd_staple)
 
     # STEPS:
-    cmd_steps = 'seg_LabFusion -in {0} -out {1} -STEPS {2} {3} {4} {5} -MRF_beta {6} -prop_update'.format(pfi_4d_seg,
-                                                                                                      pfi_output_STEPS,
-                                                                                                      str(3),
-                                                                                                      str(3),
-                                                                                                      pfi_target,
-                                                                                                      pfi_4d_warp,
-                                                                                                      str(4.0))  # 4.0
+    cmd_steps = 'seg_LabFusion -in {0} -out {1} -STEPS {2} {3} {4} {5} -MRF_beta {6} -prop_update'.format(
+                                                                                                    pfi_4d_seg,
+                                                                                                    pfi_output_STEPS,
+                                                                                                    str(3),
+                                                                                                    str(3),
+                                                                                                    pfi_target,
+                                                                                                    pfi_4d_warp,
+                                                                                                    str(4.0))  # 4.0
     print cmd_steps
     os.system(cmd_steps)
 

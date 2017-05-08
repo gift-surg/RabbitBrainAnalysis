@@ -47,9 +47,10 @@ for p in [root_pilot_study_msme_ex_vivo, pfo_utils, pfo_masks, pfi_reg_mask_1201
 
 # subjects
 list_subjects = np.sort(list(set(os.listdir(root_pilot_study_msme_ex_vivo)) -
-                             {'.DS_Store', 'Utils', '1505', '2608', '2702'}))  # re-add 1505, 2608, 2702
+                             {'.DS_Store', 'Utils', '1505', '2608', '2702', 'Dump'}))  # re-add 1505, 2608, 2702
 print(list_subjects)
 
+list_subjects = ['1510', '2503']
 
 for sj in list_subjects:
 
@@ -114,7 +115,7 @@ for sj in list_subjects:
         print_and_run(cmd1, safety_on=control['safety on'])
         print_and_run(cmd2, safety_on=control['safety on'])
 
-        if sj not in ['1805', '2002', '2502']:  # change orientations of all the others
+        if sj not in ['1805', '2002', '2502', '1510', '2503']:  # change orientations of all the others
 
             theta = np.pi / float(3)
             if not control['safety on']:
