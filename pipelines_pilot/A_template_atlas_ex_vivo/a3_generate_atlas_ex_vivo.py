@@ -14,19 +14,9 @@ phase 2)
     goodness of the registration (LNCC, patch shape and values between warped and the target image).
 """
 
-import os
 from os.path import join as jph
-import copy
-import numpy as np
-import nibabel as nib
-from collections import Counter
 
 from definitions import root_pilot_study
-from tools.auxiliary.utils import set_new_data
-from tools.label_management.local_measures import weighting_for_LNCC, weighting_for_whole_label_background, weighting_for_distance_from_certain_label
-from tools.label_management.patches import get_morphological_patch, get_morphological_mask
-from tools.label_management.selector import get_intensities_statistics_matrix
-
 
 source_subjects = ['1305', '1702', '1805']
 target_subject = '2002'

@@ -1,9 +1,7 @@
-import numpy as np
 import os
 from os.path import join as jph
-from scipy.linalg import expm, logm
 
-from tools.label_management.caliber import SegmentationAnalyzer
+import numpy as np
 from scipy.optimize import minimize
 
 from tools.auxiliary.utils import print_and_run

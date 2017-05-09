@@ -2,15 +2,15 @@
 Based on nifty_fit, should be installed on the system before running the program.
 """
 import os
-import numpy as np
+
 import nibabel as nib
 
-from definitions import root_ex_vivo_dwi, root_ex_vivo_template
+from definitions import root_ex_vivo_dwi
+from tools.auxiliary.separate_shells import separate_shells_txt_path, separate_shells_dwi_path
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, set_new_data
-from tools.parsers.parse_bruker_txt import parse_bruker_dwi_txt
 from tools.correctors.slope_corrector import slope_corrector_path
-from tools.parsers.separate_shells import separate_shells_txt_path, separate_shells_dwi_path
+from tools.parsers.parse_bruker_txt import parse_bruker_dwi_txt
 
 # paths
 

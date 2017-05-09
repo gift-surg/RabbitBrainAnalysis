@@ -15,6 +15,8 @@ def flip_data(in_data, axis='x'):
     msg = 'axis variable must be one of the following: {}.'.format(['x', 'y', 'z'])
     assert axis in ['x', 'y', 'z'], msg
 
+    out_data = None
+
     if axis == 'x':
         out_data = in_data[:, ::-1, :]
     if axis == 'y':

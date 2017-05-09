@@ -16,7 +16,7 @@ from labels_manager.main import LabelsManager
 
 source_subjects = ['1305', '1702', '1805', '2002', '1201', '1203', '1404', '1507', '1510', '2502']
 source_modalities = ['T1', 'FA', 'MD', 'S0', 'V1']
-target_subject = source_subjects[7]
+target_subject = source_subjects[9]
 
 safety_on = False
 
@@ -38,9 +38,9 @@ pfo_intermediate = jph(pfo_target_subject_pantopolium, 'z_gpwise_interm' + snake
 pfo_fused = jph(pfo_target_subject_pantopolium, 'z_lab_fusion' + snake_round + study_tag)
 
 
-steps_map = {'Create intermediate folders'           : False,
-             'Aff alignment'                         : False,
-             'Propagate transformation to atlas aff' : False,
+steps_map = {'Create intermediate folders'           : True,
+             'Aff alignment'                         : True,
+             'Propagate transformation to atlas aff' : True,
              'Propagate transformation to mask aff'  : True,
              'Get differential BFC'                  : True,
              'N-rig alignment of BFC'                : True,
