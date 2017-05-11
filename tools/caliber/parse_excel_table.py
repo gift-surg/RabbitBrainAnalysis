@@ -1,5 +1,4 @@
 import os
-from os.path import join as jph
 from openpyxl import load_workbook
 
 
@@ -26,7 +25,7 @@ def parse_excel_data_to_list(pfi_excel_file):
     return ans
 
 
-pfi_data = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/docs/REoP_Pilot_MRI_Data.xlsx'
-parse_excel_data_to_list(pfi_data)
+# pfi_data = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/docs/REoP_Pilot_MRI_Data.xlsx'
+# parse_excel_data_to_list(pfi_data)
 
 

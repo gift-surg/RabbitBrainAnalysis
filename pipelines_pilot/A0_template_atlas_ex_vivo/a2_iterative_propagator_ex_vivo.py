@@ -62,7 +62,7 @@ mod = 'T1'  # Only T1 modality at the moment
 pfi_target = jph(pfo_target_dropbox, 'all_modalities', target_subject + '_' + mod + '.nii.gz')
 pfi_target_roi_registration_masks = jph(pfo_target_dropbox, 'masks', target_subject + '_roi_registration_mask.nii.gz')
 
-# sanity check
+# Sanity check
 
 if not os.path.isdir('/Volumes/sebastianof/rabbits/'):
     raise IOError('Connect pantopolio!')
@@ -71,7 +71,7 @@ for sj_k in source_subjects:
     if not os.path.isfile(jph(root_pilot_study_dropbox, sj_k, 'all_modalities', sj_k + '_T1.nii.gz')):
         raise IOError('T1 modality for subject {} does not exists'.format(sj_k))
     if not os.path.isfile(jph(root_pilot_study_dropbox, sj_k, 'segm', 'approved', sj_k + '_propagate_me_1.nii.gz')):
-        raise IOError('Tere is not even an approved segmentation for subject {}'.format(sj_k))
+        raise IOError('There is not even an approved segmentation for subject {}'.format(sj_k))
 
 for sj in source_subjects:
 
