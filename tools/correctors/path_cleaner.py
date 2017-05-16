@@ -21,43 +21,43 @@ def clean_a_study(pfo_study):
     for p in list_experiments:
 
         pfo_experiment_p = jph(pfo_study, p)
-        pfi_name_method = jph(pfo_experiment_p, 'name_method.txt')
+        pfi_acquisition_method = jph(pfo_experiment_p, 'acquisition_method.txt')
 
-        if os.path.exists(pfi_name_method):
+        if os.path.exists(pfi_acquisition_method):
 
-            fi_name_method = open(pfi_name_method, 'r')
-            name_method = fi_name_method.read()
-            fi_name_method.close()
+            fi_acquisition_method = open(pfi_acquisition_method, 'r')
+            acquisition_method = fi_acquisition_method.read()
+            fi_acquisition_method.close()
 
-            print name_method
+            print acquisition_method
 
-            list_files_in_experiment = list(set(os.listdir(pfo_experiment_p)) - {'.DS_Store', 'name_method.txt'})
+            list_files_in_experiment = list(set(os.listdir(pfo_experiment_p)) - {'.DS_Store', 'acquisition_method.txt'})
             list_nii_gz_in_experiment = [j for j in list_files_in_experiment
                                          if j.endswith('.nii.gz')]
 
             num_nii = len(list_nii_gz_in_experiment)
 
             # conversion table for the filenames:
-            if name_method == 'FieldMap':
-                name_method = 'FM'
-            elif name_method == 'FLASH' and num_nii == 3:
-                name_method = 'FOV'
-            elif name_method == 'FLASH' and not num_nii == 3:
-                name_method = '3D'
-            elif name_method == 'MSME':
-                name_method = 'MSME'
-            elif name_method == 'DtiEpi':
-                name_method = 'DWI'
+            if acquisition_method == 'FieldMap':
+                acquisition_method = 'FM'
+            elif (acquisition_method == 'FLASH' or acquisition_method == 'IntraGateFLASH') and num_nii == 3:
+                acquisition_method = 'FOV'
+            elif (acquisition_method == 'FLASH' or acquisition_method == 'RARE') and not num_nii == 3:
+                acquisition_method = '3D'
+            elif acquisition_method == 'MSME':
+                acquisition_method = 'MSME'
+            elif acquisition_method == 'DtiEpi':
+                acquisition_method = 'DWI'
 
-            experiments_methods_list.append(name_method)
+            experiments_methods_list.append(acquisition_method)
 
-            if name_method in experiments_methods_list[:-1]:
-                name_method += str(experiments_methods_list.count(name_method))
+            if acquisition_method in experiments_methods_list[:-1]:
+                acquisition_method += str(experiments_methods_list.count(acquisition_method))
 
             # fi are the files to be cleaned:
             for fi in list_files_in_experiment:
 
-                if name_method in fi:
+                if acquisition_method in fi:
                     print('already converted?')
                 else:
                     # get filename and extension:
@@ -73,9 +73,9 @@ def clean_a_study(pfo_study):
                     if 'subscan_1' in fi_name:
                         os.system('rm {}'.format(jph(pfo_experiment_p, fi)))
                     else:
-                        # replace the second element (experiment number) separated between '_' by the name_method
+                        # replace the second element (experiment number) separated between '_' by the acquisition_method
                         fi_name_components = fi_name.split('_')
-                        fi_name_components[1] = name_method
+                        fi_name_components[1] = acquisition_method
                         # get the stack back:
                         new_fi = ''
                         for c in fi_name_components:
@@ -87,8 +87,11 @@ def clean_a_study(pfo_study):
                         os.system(cmd)
 
             # rename the folder p containing the files:
-            new_p = p.split('_')[0] + '_' + name_method
+            new_p = p.split('_')[0] + '_' + acquisition_method
             cmd = 'mv {} {}'.format(pfo_experiment_p, jph(pfo_study, new_p))
+            os.system(cmd)
+
+            cmd = 'rm {}'.format(jph(pfo_study, new_p, 'acquisition_method.txt'))
             os.system(cmd)
 
         else:
@@ -97,7 +100,7 @@ def clean_a_study(pfo_study):
                 os.system('rm -r {}'.format(pfo_experiment_p))
             else:
                 # the experiment folder is not empty, but there is no name method inside. Raise a warning!
-                cmd = 'No name_method.txt in the folder {}'.format(pfo_experiment_p)
+                cmd = 'No acquisition_method.txt in the folder {}'.format(pfo_experiment_p)
                 warnings.warn(cmd)
 
 # root = '/Users/sebastiano/Desktop/test_PV/'
