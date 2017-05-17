@@ -6,7 +6,7 @@ from tabulate import tabulate
 
 from definitions import root_pilot_study
 from pipelines_pilot.A_template_atlas_ex_vivo_prelim.a_definitions_regions_subjects import regions, subjects
-from tools.caliber.caliber import SegmentationAnalyzer
+from tools.measurements.compile_record import SegmentationAnalyzer
 
 pfo_study = jph(root_pilot_study, 'A_template_atlas_ex_vivo')
 

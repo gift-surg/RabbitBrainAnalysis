@@ -10,99 +10,50 @@ from definitions import root_pilot_study_pantopolium
 print root_pilot_study_pantopolium
 root_nifti = jph(root_pilot_study_pantopolium, '01_nifti')
 
-# controller
-PTB_clean_ex_skull = False
-PTB_clean_ex_vivo  = False
-PTB_clean_in_vivo  = True
-PTB_clean_op_skull = False
-ACS_clean_ex_vivo = False
 
+def cleaner_converted_data(pfo_to_be_cleaned):
 
-''' convert pilot '''
+    assert os.path.exists(pfo_to_be_cleaned)
 
-if PTB_clean_ex_skull:
+    subj_list = np.sort(list(set(os.listdir(pfo_to_be_cleaned)) - {'.DS_Store'}))
 
-    pfo_PTB_ex_skull = jph(root_nifti, 'PTB', 'ex_skull')
-
-    assert os.path.exists(pfo_PTB_ex_skull)
-
-    subj_list = np.sort(list(set(os.listdir(pfo_PTB_ex_skull)) - {'.DS_Store'}))
-
-    print '\n\n SUBJECTS EX SKULL\n'
-    print subj_list
-
-    for sj in subj_list:
-
-        print 'Study subject {} cleaning!\n'.format(sj)
-
-        clean_a_study(jph(pfo_PTB_ex_skull, sj))
-
-
-if PTB_clean_ex_vivo:
-
-    pfo_PTB_ex_vivo = jph(root_nifti, 'PTB', 'ex_vivo')
-
-    assert os.path.exists(pfo_PTB_ex_vivo)
-
-    subj_list = np.sort(list(set(os.listdir(pfo_PTB_ex_vivo)) - {'.DS_Store'}))
-
-    print '\n\n SUBJECTS EX SKULL\n'
+    print '\n\n SUBJECTS in {}\n {} \n'.format(pfo_to_be_cleaned, subj_list)
     print subj_list
 
     for sj in subj_list:
         print 'Study subject {} cleaning!\n'.format(sj)
 
-        clean_a_study(jph(pfo_PTB_ex_vivo, sj))
+        clean_a_study(jph(pfo_to_be_cleaned, sj))
 
 
-if PTB_clean_in_vivo:
+def main_cleaner(PTB_clean_ex_skull=False,
+                 PTB_clean_ex_vivo=False,
+                 PTB_clean_in_vivo=True,
+                 PTB_clean_op_skull=False,
+                 ACS_clean_ex_vivo=False):
+    
+    global root_nifti
+    
+    if PTB_clean_ex_skull:
 
-    pfo_PTB_in_vivo = jph(root_nifti, 'PTB', 'in_vivo')
+        cleaner_converted_data(jph(root_nifti, 'PTB', 'ex_skull'))
+        
+    if PTB_clean_ex_vivo:
 
-    assert os.path.exists(pfo_PTB_in_vivo)
-
-    subj_list = np.sort(list(set(os.listdir(pfo_PTB_in_vivo)) - {'.DS_Store'}))
-
-    print '\n\n SUBJECTS EX SKULL\n'
-    print subj_list
-
-    for sj in subj_list:
-        print 'Study subject {} cleaning!\n'.format(sj)
-
-        clean_a_study(jph(pfo_PTB_in_vivo, sj))
-
-
-if PTB_clean_op_skull:
-
-    pfo_PTB_op_skull = jph(root_nifti, 'PTB', 'in_vivo')
-
-    assert os.path.exists(pfo_PTB_op_skull)
-
-    subj_list = np.sort(list(set(os.listdir(pfo_PTB_op_skull)) - {'.DS_Store'}))
-
-    print '\n\n SUBJECTS EX SKULL\n'
-    print subj_list
-
-    for sj in subj_list:
-        print 'Study subject {} cleaning!\n'.format(sj)
-
-        clean_a_study(jph(pfo_PTB_op_skull, sj))
+        cleaner_converted_data(jph(root_nifti, 'PTB', 'ex_vivo'))
+        
+    if PTB_clean_in_vivo:
+    
+        cleaner_converted_data(jph(root_nifti, 'PTB', 'in_vivo'))
+    
+    if PTB_clean_op_skull:
+    
+        cleaner_converted_data(jph(root_nifti, 'PTB', 'in_vivo'))
+    
+    if ACS_clean_ex_vivo:
+    
+        cleaner_converted_data(jph(root_nifti, 'ACS', 'ex_vivo'))
 
 
-''' convert extra_14 '''
-
-if ACS_clean_ex_vivo:
-
-    pfo_ACS_ex_vivo = jph(root_nifti, 'ACS', 'ex_vivo')
-
-    assert os.path.exists(pfo_ACS_ex_vivo)
-
-    subj_list = np.sort(list(set(os.listdir(pfo_ACS_ex_vivo)) - {'.DS_Store'}))
-
-    print '\n\n SUBJECTS EX SKULL\n'
-    print subj_list
-
-    for sj in subj_list:
-        print 'Study subject {} cleaning!\n'.format(sj)
-
-        clean_a_study(jph(pfo_ACS_ex_vivo, sj))
+if __name__ == '__main__':
+    main_cleaner()

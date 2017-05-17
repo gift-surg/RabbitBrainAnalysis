@@ -1,7 +1,7 @@
 import os
 from os.path import join as jph
 
-from tools.caliber.caliber import compile_record
+from tools.measurements.compile_record import compile_record
 
 
 from definitions import root_study_dropbox, root_docs_dropbox
