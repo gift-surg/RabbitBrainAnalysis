@@ -1,5 +1,5 @@
 """
-T1 processing in their original coordinate system, after conversion
+T1 processing in their original coordinate system.
 """
 import os
 from os.path import join as jph
@@ -11,31 +11,19 @@ from tools.auxiliary.lesion_mask_extractor import simple_lesion_mask_extractor_p
 from pipeline_project.U_utils.maps import subject
 
 """
-Todo processing list for each T1 of each subject:
+Processing list for each T1 of each subject:
 (there are artefacts shared by multiple modalities, the group subdivision is meaningless. It must be done
 subject-wise, using the map of parameters under U_Utils/maps)
 
-
 Generate intermediate folder
-
 Generate output folder
-
 Orient to standard - fsl
-
 Get mask - subject params.
-
 Cut mask
-
 Bias field correction
-
 Compute registration and lesion mask
 
 """
-
-''' Aux functions '''
-
-
-''' Main functions '''
 
 
 def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
@@ -46,24 +34,22 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
 
     if sj not in subject.keys():
         raise IOError('Subject parameters not known')
-    if os.path.exists(pfo_input_sj_3D):
-        raise IOError('input folder T1 does not exists')
+    if not os.path.exists(pfo_input_sj_3D):
+        raise IOError('Input folder T1 does not exist.')
+
+    # --  Generate intermediate and output folder
 
     pfo_mod = jph(pfo_output_sj, 'mod')
     pfo_segm = jph(pfo_output_sj, 'segm')
     pfo_mask = jph(pfo_output_sj, 'z_mask')
     pfo_tmp = jph(pfo_output_sj, 'z_tmp', 'z_T1')
 
-    # --  Generate intermediate and output folder
-    if controller['generate folders']:
+    os.system('mkdir -p {}'.format(pfo_output_sj))
+    os.system('mkdir -p {}'.format(pfo_mod))
+    os.system('mkdir -p {}'.format(pfo_segm))
+    os.system('mkdir -p {}'.format(pfo_mask))
+    os.system('mkdir -p {}'.format(pfo_tmp))
 
-        os.system('mkdir -p {}'.format(pfo_output_sj))
-        os.system('mkdir -p {}'.format(pfo_mod))
-        os.system('mkdir -p {}'.format(pfo_segm))
-        os.system('mkdir -p {}'.format(pfo_mask))
-        os.system('mkdir -p {}'.format(pfo_tmp))
-
-    # --  Orient to standard
     if controller['orient to standard']:
 
         cmd = 'fslreorient2std {0} {1}'.format(jph(pfo_input_sj_3D, sj + '_3D.nii.gz'),
@@ -104,7 +90,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
         pfi_3d_thr = jph(pfo_tmp, sj + '_3D_thr.nii.gz')
         pfi_1305_roi_mask = jph(root_pilot_study_pantopolium, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.nii.gz')
         pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '.txt')
-        pfi_roi_mask = jph(pfo_mask, sj + '_roi_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
 
         assert os.path.exists(pfi_3d_thr)
         assert os.path.exists(pfi_1305_roi_mask)
@@ -120,7 +106,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
 
     if controller['adjust mask']:
 
-        pfi_roi_mask = jph(pfo_mask, sj + '_roi_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
 
         assert os.path.exists(pfi_roi_mask)
 
@@ -171,8 +157,8 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
     if controller['create lesion mask']:
 
         pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_3D_bfc.nii.gz')
-        pfi_roi_mask = jph(pfo_mask, sj + '_roi_mask.nii.gz')
-        pfi_lesion_mask = jph(pfo_mask, sj + '_lesion_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
+        pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
 
         assert os.path.exists(pfi_3d_bias_field_corrected)
         assert os.path.exists(pfi_roi_mask)
@@ -184,9 +170,9 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
 
     if controller['create reg masks']:
 
-        pfi_roi_mask = jph(pfo_mask, sj + '_roi_mask.nii.gz')
-        pfi_lesion_mask = jph(pfo_mask, sj + '_lesion_mask.nii.gz')
-        pfi_registration_mask = jph(pfo_mask, sj + '_reg_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
+        pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
+        pfi_registration_mask = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
 
         assert os.path.exists(pfi_roi_mask)
         assert os.path.exists(pfi_roi_mask)
@@ -227,7 +213,7 @@ def process_T1_per_group(controller, pfo_input_group_category, pfo_output_group_
     for sj in subj_list:
 
         process_T1_per_subject(sj,
-                               jph(pfo_input_group_category, sj, sj + '3D'),
+                               jph(pfo_input_group_category, sj, sj + '_3D'),
                                jph(pfo_output_group_category, sj),
                                controller)
 
@@ -291,8 +277,10 @@ def main_process_T1(controller,
 
 if __name__ == '__main__':
 
-    controller_steps = {'generate folders'    : True,
-                        'orient to standard'  : True,
+    if not os.path.isdir('/Volumes/sebastianof/rabbits/'):
+        raise IOError('Connect pantopolio!')
+
+    controller_steps = {'orient to standard'  : True,
                         'threshold'           : True,
                         'register roi masks'  : True,
                         'propagate roi masks' : True,

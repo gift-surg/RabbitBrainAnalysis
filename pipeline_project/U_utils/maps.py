@@ -15,9 +15,18 @@ import numpy as np
 #
 subject = {'1201': [['PTB', 'ex_vivo'],  # 0: study  - category
                     [np.pi/12, True],  # 1:  bicomm angle - in template
-                    [300, 1],  # 2: thr, erosion roi mask
-                    [0.001, (50, 50, 50, 50), 0.15, 0.01, 200, (4, 4, 4), 3],  # 3: Bias field parameters
-                    [False]  # 4: DWI squeezed
-                    ]
+                    [300, 1],  # 2: thr, erosion roi mask for T1
+                    [0.001, (50, 50, 50, 50), 0.15, 0.01, 200, (4, 4, 4), 3],  # 3: Bias field parameters T1
+                    [1, False],  # 4: mask dilation factor, DWI is squeezed,
+                    ['high_res', ]  # 5: MSME
+                    ],
+
+
+           '2502' : [[],
+                     [],
+                     [],
+                     [],
+                     ['low_res', ]  # 5 : MSME some have the low res protocol even if ex_vivo.
+                     ]
            }
 

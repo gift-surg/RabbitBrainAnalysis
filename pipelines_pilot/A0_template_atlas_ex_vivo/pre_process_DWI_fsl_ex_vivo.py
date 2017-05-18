@@ -386,7 +386,7 @@ def process_DWI_fsl(sj, control=None):
                 print_and_run(cmd0, safety_on=control['safety_on'])
 
             # REMOVE NAN
-            cmd0 = 'seg_maths {0} -removenan {0}'.format(pfi_sj, T1_in_histological_coordinates_brain_mask, pfi_sj)
+            cmd0 = 'seg_maths {0} -removenan {0}'.format(pfi_sj)
             print_and_run(cmd0, safety_on=control['safety_on'])
 
             # REMOVE NEGATIVE

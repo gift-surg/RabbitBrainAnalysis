@@ -1,141 +1,229 @@
 """
-High anisotropicity of the MSME_T2 makes it not useful when oriented in
-histological coordinates.
-Analysis are preformed in bicommissural orientation
+MSME processing in their original coordinate system
 """
 import numpy as np
 import os
 from os.path import join as jph
 
-from definitions import root_pilot_study_dropbox
-from tools.auxiliary.squeezer import squeeze_image_from_path, sform_qform_cleaner
+from pipeline_project.U_utils.maps import subject
+from definitions import root_pilot_study_pantopolium
+from tools.auxiliary.squeezer import squeeze_image_from_path
 
 """
-After importing the data in proper structure and having them with header properly oriented,
-still need to squeeze, to orient according to MNI and to clean q-form and s-form.
-"""
 
+Processing list for each MSME of each subject:
 
-root_pilot_study_msme_in_vivo = jph(root_pilot_study_dropbox, 'A_msme_t2_analysis', 'ex_vivo')
-
-list_subjects = np.sort(list(set(os.listdir(root_pilot_study_msme_in_vivo)) - {'.DS_Store'}))
-
-control = {'squeeze'       : False,
-           'fsl reorient'  : False,
-           'set 0 transl'  : False,
-           'store and delete intemediate' : True}
-
-print(list_subjects)
-
-for sj in list_subjects:
-
-    pfi_initial = jph(root_pilot_study_msme_in_vivo, sj, 'mod', sj + '_MSME.nii.gz')
-    pfi_oriented = jph(root_pilot_study_msme_in_vivo, sj, 'mod', sj + '_MSME_sq_and_or.nii.gz')
-    pfi_zero_translation = jph(root_pilot_study_msme_in_vivo, sj, 'mod', sj + '_MSME_zero_t.nii.gz')
-
-    print('\n\n Subject {} \n\n'.format(sj))
-
-    if control['squeeze']:
-        squeeze_image_from_path(pfi_initial, pfi_initial)
-
-    if control['fsl reorient']:
-        os.system('fslreorient2std {0} {1} '.format(pfi_initial, pfi_initial))
-
-    if control['set 0 transl']:
-        sform_qform_cleaner(pfi_initial, pfi_zero_translation)
-
-    if control['store and delete intemediate']:
-        os.system('cp {0} {1}'.format(pfi_zero_translation, pfi_initial))
-        os.system('rm {0}'.format(pfi_zero_translation))
-
+Generate intermediate folder
+Generate output folder
+squeeze
+Orient to standard - fsl
+Oversample
+Extract first slice oversampled
+Extract first slice normal
+Get mask oversampled - subject params.
+Downsample the mask
 
 """
-PART II to integrate with part 1.
-Analysis are preformed in bicommissural orientation, but for a better registration of the
-latest segmentation,
-"""
-import numpy as np
-import os
-from os.path import join as jph
-
-from definitions import root_pilot_study_dropbox
-from tools.auxiliary.utils import print_and_run
-
-"""
-After importing the data in proper structure and having them with header properly oriented,
-still need to squeeze, to orient according to MNI and to clean q-form and s-form.
-"""
-
-# controller
-control = {'safety on'                        : False,
-           'oversample'                       : True,
-           'extract first slice standard'     : True,
-           'extract first slice oversampled'  : True,
-           'threshold zero'                    : True}
 
 
-# main paths
-root_pilot_study_msme_in_vivo = jph(root_pilot_study_dropbox, 'A_msme_t2_analysis', 'ex_vivo')
-pfo_utils = jph(root_pilot_study_dropbox, 'A_msme_t2_analysis', 'ex_vivo', 'Utils')
-for p in [root_pilot_study_msme_in_vivo, pfo_utils]:
-    if not os.path.exists(p):
-        raise IOError('Path {} not defined'.format(p))
+def process_MSME_per_subject(sj, pfo_input_sj_MSME, pfo_output_sj, controller):
+    print('\nProcessing DWI, subject {} started.\n'.format(sj))
 
-# subjects
-list_subjects = np.sort(list(set(os.listdir(root_pilot_study_msme_in_vivo)) - {'.DS_Store', 'Utils'}))
-print(list_subjects)
+    if sj not in subject.keys():
+        raise IOError('Subject parameters not known')
+    if not os.path.exists(pfo_input_sj_MSME):
+        raise IOError('Input folder DWI does not exist.')
 
-# list_subjects = ['2503']
+    # -- Generate intermediate and output folders:
 
-for sj in list_subjects:
+    pfo_mod = jph(pfo_output_sj, 'mod')
+    pfo_segm = jph(pfo_output_sj, 'segm')
+    pfo_mask = jph(pfo_output_sj, 'z_mask')
+    pfo_tmp = jph(pfo_output_sj, 'z_tmp', 'z_MSME')
 
-    # input
-    pfi_sj_standard = jph(root_pilot_study_msme_in_vivo, sj, 'mod', sj + '_MSME.nii.gz')
+    os.system('mkdir -p {}'.format(pfo_output_sj))
+    os.system('mkdir -p {}'.format(pfo_mod))
+    os.system('mkdir -p {}'.format(pfo_segm))
+    os.system('mkdir -p {}'.format(pfo_mask))
+    os.system('mkdir -p {}'.format(pfo_tmp))
 
-    if not os.path.exists(pfi_sj_standard):
-        raise IOError('Path {} not defined'.format(pfi_sj_standard))
+    if controller['squeeze']:
+        pfi_msme = jph(pfo_input_sj_MSME, sj + '_MSME.nii.gz')
+        assert os.path.exists(pfi_msme)
+        pfi_msme_final = jph(pfo_output_sj, 'mod', sj + '_MSME.nii.gz')
+        squeeze_image_from_path(pfi_msme, pfi_msme_final, copy_anyway=True)
 
-    # utils
-    if sj == '2502':
-        pfi_resampling_grid = jph(pfo_utils, 'resampling_grid_2502.nii.gz')
-    else:
-        pfi_resampling_grid = jph(pfo_utils, 'resampling_grid.nii.gz')
-    pfi_affine_identity = jph(pfo_utils, 'aff_id.txt')
+    if controller['orient to standard']:
+        pfi_msme_final = jph(pfo_output_sj, 'mod', sj + '_MSME.nii.gz')
+        assert os.path.exists(pfi_msme_final)
+        cmd = 'fslreorient2std {0} {0}'.format(pfi_msme_final)
+        os.system(cmd)
 
-    for p in [pfi_resampling_grid, pfi_affine_identity]:
-        if not os.path.exists(p):
-            raise IOError('Path {} not defined'.format(p))
+    if controller['oversample']:
+        pfo_utils = jph(root_pilot_study_pantopolium, 'A_data', 'Utils')
+        pfi_msme_original = jph(pfo_output_sj, 'mod', sj + '_MSME.nii.gz')
+        pfi_affine_identity = jph(pfo_utils, 'aff_id.txt')
+        grid_size_param = subject[sj][5][0]
+        if grid_size_param == 'low_res':  # this in the subject parameter!!
+            pfi_resampling_grid = jph(pfo_utils, 'resampling_grid_low.nii.gz')
+        elif grid_size_param == 'high_res':
+            pfi_resampling_grid = jph(pfo_utils, 'resampling_grid_high.nii.gz')
+        else:
+            raise IOError
+        assert os.path.exists(pfi_msme_original)
+        assert os.path.exists(pfi_affine_identity)
+        assert os.path.exists(pfi_resampling_grid)
+        pfi_msme_upsampled = jph(pfo_output_sj, 'mod', sj + '_MSME_up.nii.gz')
 
-    # output
-    pfi_sj_oversampled = jph(root_pilot_study_msme_in_vivo, sj, 'mod', sj + '_MSME_ups.nii.gz')
-    pfi_sj_first_layer_standard = jph(root_pilot_study_msme_in_vivo, sj, 'mod', sj + '_MSME_layer1.nii.gz')
-    pfi_sj_first_layer_oversampled = jph(root_pilot_study_msme_in_vivo, sj, 'mod', sj + '_MSME_ups_layer1.nii.gz')
+        cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(pfi_resampling_grid,
+                                                                           pfi_msme_original, 
+                                                                           pfi_affine_identity,
+                                                                           pfi_msme_upsampled)
+        os.system(cmd0)
+        cmd1 = 'seg_maths {0} -thr 0 {0}'.format(pfi_msme_upsampled)
+        os.system(cmd1)
 
-    if control['oversample']:
-        cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(pfi_resampling_grid,
-                                                                          pfi_sj_standard,
-                                                                          pfi_affine_identity,
-                                                                          pfi_sj_oversampled)
+    if controller['extract first layers']:
+        pfi_msme_original = jph(pfo_output_sj, 'mod', sj + '_MSME.nii.gz')
+        assert os.path.exists(pfi_msme_original)
+        pfi_msme_original_first_layer = jph(pfo_output_sj, 'mod', sj + '_MSME_1st.nii.gz')
+        cmd = 'seg_maths {0} -tp 0 {1}'.format(pfi_msme_original, pfi_msme_original_first_layer)
+        os.system(cmd)
+        pfi_msme_upsampled = jph(pfo_output_sj, 'mod', sj + '_MSME_up.nii.gz')
+        assert os.path.exists(pfi_msme_upsampled)
+        pfi_msme_upsampled_first_layer = jph(pfo_output_sj, 'mod', sj + '_MSME_up_1st.nii.gz')
+        cmd = 'seg_maths {0} -tp 0 {1}'.format(pfi_msme_upsampled, pfi_msme_upsampled_first_layer)
+        os.system(cmd)
 
-        print_and_run(cmd, safety_on=control['safety on'])
+    if controller['register roi masks']:
+        pfi_msme_upsampled_first_layer = jph(pfo_output_sj, 'mod', sj + '_MSME_up_1st.nii.gz')
+        pfi_1305 = jph(root_pilot_study_pantopolium, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
+        pfi_affine_transformation_1305_on_subject = jph(pfo_output_sj, 'z_tmp', 'aff_1305_on_' + sj + '.txt')
+        pfi_msme_warped_1305_on_subject = jph(pfo_tmp, 'warp_1305_on_' + sj + '.nii.gz')
 
-    if control['extract first slice standard']:
+        assert os.path.exists(pfi_msme_upsampled_first_layer)
+        assert os.path.exists(pfi_1305)
 
-        cmd = 'seg_maths {0} -tp 0 {1}'.format(pfi_sj_standard, pfi_sj_first_layer_standard)
-        print_and_run(cmd, safety_on=control['safety on'])
+        cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} ; '.format(
+            pfi_msme_upsampled_first_layer,
+            pfi_1305,
+            pfi_affine_transformation_1305_on_subject,
+            pfi_msme_warped_1305_on_subject)
+        os.system(cmd)
 
-    if control['extract first slice oversampled']:
+    if controller['propagate roi masks']:
+        pfi_msme_upsampled_first_layer = jph(pfo_output_sj, 'mod', sj + '_MSME_up_1st.nii.gz')
+        pfi_1305_roi_mask = jph(root_pilot_study_pantopolium, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.nii.gz')
+        pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '.txt')
+        pfi_roi_mask = jph(pfo_mask, sj + '_MSME_roi_mask.nii.gz')
 
-        cmd = 'seg_maths {0} -tp 0 {1}'.format(pfi_sj_oversampled, pfi_sj_first_layer_oversampled)
-        print_and_run(cmd, safety_on=control['safety on'])
+        assert os.path.exists(pfi_msme_upsampled_first_layer)
+        assert os.path.exists(pfi_1305_roi_mask)
+        assert os.path.exists(pfi_affine_transformation_1305_on_subject)
 
-    if control['threshold zero']:
+        cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+            pfi_msme_upsampled_first_layer,
+            pfi_1305_roi_mask,
+            pfi_affine_transformation_1305_on_subject,
+            pfi_roi_mask)
 
-        for p in [pfi_sj_oversampled, pfi_sj_first_layer_oversampled]:
-            if not os.path.exists(p):
-                raise IOError('Path {} not defined'.format(p))
+        os.system(cmd)
+        
 
-        cmd0 = 'seg_maths {0} -thr 0 {0}'.format(pfi_sj_oversampled)
-        print_and_run(cmd0, safety_on=control['safety on'])
-        cmd1 = 'seg_maths {0} -thr 0 {0}'.format(pfi_sj_first_layer_oversampled)
-        print_and_run(cmd1, safety_on=control['safety on'])
+def process_MSME_per_group(controller, pfo_input_group_category, pfo_output_group_category, bypass_subjects=()):
+
+    assert os.path.exists(pfo_input_group_category)
+    assert os.path.exists(pfo_output_group_category)
+
+    subj_list = np.sort(list(set(os.listdir(pfo_input_group_category)) - {'.DS_Store'}))
+
+    # allow to force the subj_list to be the input tuple bypass subject, chosen by the user.
+    if not bypass_subjects == ():
+
+        if not set(bypass_subjects).intersection(set(subj_list)) == {}:
+            raise IOError
+        else:
+            subj_list = bypass_subjects
+
+    print '\n\n Processing MSME subjects  from {0} to {1} :\n {2}\n'.format(pfo_input_group_category,
+                                                                            pfo_output_group_category,
+                                                                            subj_list)
+    for sj in subj_list:
+        
+        process_MSME_per_subject(sj,
+                                 jph(pfo_input_group_category, sj, sj + '_MSME'),
+                                 jph(pfo_output_group_category, sj),
+                                 controller)
+
+
+def main_process_DWI(controller,
+                     process_MSME_PTB_ex_skull=False,
+                     process_MSME_PTB_ex_vivo=False,
+                     process_MSME_PTB_in_vivo=False,
+                     process_MSME_PTB_op_skull=True,
+                     process_MSME_ACS_ex_vivo=False):
+    print root_pilot_study_pantopolium
+    root_nifti = jph(root_pilot_study_pantopolium, '01_nifti')
+    root_data = jph(root_pilot_study_pantopolium, 'A_data')
+
+    if process_MSME_PTB_ex_skull:
+        pfo_PTB_ex_skull = jph(root_nifti, 'PTB', 'ex_skull')
+        pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')
+
+        tuple_subjects = ()  # can force the input to a predefined input list of subjects if they exists.
+
+        process_MSME_per_group(controller, pfo_PTB_ex_skull, pfo_PTB_ex_skull_data, bypass_subjects=tuple_subjects)
+
+    if process_MSME_PTB_ex_vivo:
+        pfo_PTB_ex_vivo = jph(root_nifti, 'PTB', 'ex_vivo')
+        pfo_PTB_ex_vivo_data = jph(root_data, 'PTB', 'ex_vivo')
+
+        tuple_subjects = ()
+
+        process_MSME_per_group(controller, pfo_PTB_ex_vivo, pfo_PTB_ex_vivo_data, bypass_subjects=tuple_subjects)
+
+    if process_MSME_PTB_in_vivo:
+        pfo_PTB_in_vivo = jph(root_nifti, 'PTB', 'in_vivo')
+        pfo_PTB_in_vivo_data = jph(root_data, 'PTB', 'in_vivo')
+
+        tuple_subjects = ()
+
+        process_MSME_per_group(controller, pfo_PTB_in_vivo, pfo_PTB_in_vivo_data, bypass_subjects=tuple_subjects)
+
+    if process_MSME_PTB_op_skull:
+        pfo_PTB_op_skull = jph(root_nifti, 'PTB', 'op_skull')
+        pfo_PTB_op_skull_data = jph(root_data, 'PTB', 'op_skull')
+
+        tuple_subjects = ()
+
+        process_MSME_per_group(controller, pfo_PTB_op_skull, pfo_PTB_op_skull_data, bypass_subjects=tuple_subjects)
+
+    if process_MSME_ACS_ex_vivo:
+        pfo_ACS_ex_vivo = jph(root_nifti, 'ACS', 'ex_vivo')
+        pfo_ACS_ex_vivo_data = jph(root_data, 'ACS', 'ex_vivo')
+
+        tuple_subjects = ()
+
+        process_MSME_per_group(controller, pfo_ACS_ex_vivo, pfo_ACS_ex_vivo_data, bypass_subjects=tuple_subjects)
+
+
+if __name__ == '__main__':
+
+    if not os.path.isdir('/Volumes/sebastianof/rabbits/'):
+        raise IOError('Connect pantopolio!')
+
+    controller_steps = {'squeeze'             : True,
+                        'orient to standard'  : True,
+                        'oversample'          : True,
+                        'extract first layer' : True,
+                        'register roi masks'  : True,
+                        'propagate roi masks' : True
+                        }
+
+    main_process_DWI(controller_steps,
+                     process_MSME_PTB_ex_skull=False,
+                     process_MSME_PTB_ex_vivo=False,
+                     process_MSME_PTB_in_vivo=False,
+                     process_MSME_PTB_op_skull=True,
+                     process_MSME_ACS_ex_vivo=False
+                     )
