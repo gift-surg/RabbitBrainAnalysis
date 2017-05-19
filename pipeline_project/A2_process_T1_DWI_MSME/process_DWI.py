@@ -101,8 +101,8 @@ def process_DWI_per_subject(sj, pfo_input_sj_DWI, pfo_output_sj, controller):
 
     if controller['adjust mask']:
         pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
-        pfi_roi_mask_dil = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
         assert os.path.exists(pfi_roi_mask)
+        pfi_roi_mask_dil = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
         dil_factor = subject[sj][4][0]
         cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_roi_mask,
                                                   dil_factor,

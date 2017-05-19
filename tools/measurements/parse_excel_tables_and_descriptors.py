@@ -75,11 +75,13 @@ def parse_multi_label_descriptor_in_a_list(pfi_multi_lab_descriptor):
     for l in lines:
         if not l.startswith('#'):
             parsed_line = [j.strip() for j in l.split('&')]
+            for k in xrange(1, len(parsed_line)):
+                parsed_line[k] = int(parsed_line[k])
             label_descriptor_list.append(parsed_line)
 
     return label_descriptor_list
 
-
-pfi_multi_lab = '/Users/sebastiano/Desktop/test_main/Utils/multi_label_descriptor.txt'
-li = parse_multi_label_descriptor_in_a_list(pfi_multi_lab)
-print li
+#
+# pfi_multi_lab = '/Users/sebastiano/Desktop/test_main/Utils/multi_label_descriptor.txt'
+# li = parse_multi_label_descriptor_in_a_list(pfi_multi_lab)
+# print li

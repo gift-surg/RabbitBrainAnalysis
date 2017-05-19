@@ -27,19 +27,24 @@ def create_alias_for_group(pfo_source, pfo_target):
     print '\n\n LINKING SUBJECTS from {0} to {1}:\n {2}\n'.format(pfo_source, pfo_target, subj_list)
 
     for sj in subj_list:
+        pfi_where_to_store_alias = jph(pfo_target, sj, 'a_' + sj)
+
         cmd1 = 'mkdir -p {}'.format(jph(pfo_target, sj))
         os.system(cmd1)
-        cmd2 = 'mkdir -p {}'.format(jph(pfo_target, sj, 'a_'))
+        cmd2 = 'mkdir -p {}'.format(pfi_where_to_store_alias)
         os.system(cmd2)
 
-        link_folder_content_into_folder(jph(pfo_source, sj), jph(pfo_target, sj, 'a_'))
+        cmd3 = 'rm -r {}'.format(jph(pfo_target, sj, 'a_'))
+        os.system(cmd3)
+
+        link_folder_content_into_folder(jph(pfo_source, sj), pfi_where_to_store_alias)
 
 
-def main_generate_alias(alias_PTB_ex_skull=False,
-                        alias_PTB_ex_vivo=False,
-                        alias_PTB_in_vivo=False,
+def main_generate_alias(alias_PTB_ex_skull=True,
+                        alias_PTB_ex_vivo=True,
+                        alias_PTB_in_vivo=True,
                         alias_PTB_op_skull=True,
-                        alias_ACS_ex_vivo=False):
+                        alias_ACS_ex_vivo=True):
 
     print root_pilot_study_pantopolium
     root_nifti = jph(root_pilot_study_pantopolium, '01_nifti')

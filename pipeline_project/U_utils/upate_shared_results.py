@@ -1,3 +1,3 @@
 """
-Update results on the shared folder with Hannes
+Update results on the shared Dropbox folder with Hannes
 """

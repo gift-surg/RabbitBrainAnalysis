@@ -17,7 +17,9 @@ def compile_record(pfi_T1,
                    pfi_FA,
                    pfi_ADC,
                    pfi_multi_lab_descriptor,
-                   pfi_segmentation,
+                   pfi_segm_T1,
+                   pfi_segm_FA,
+                   pfi_segm_ADC,
                    pfi_excel_table,
                    subject_name,
                    pfo_output,
@@ -25,7 +27,8 @@ def compile_record(pfi_T1,
                    create_output_folder_if_not_present=True):
 
     # Sanity check input
-    for p in [pfi_segmentation, pfi_multi_lab_descriptor, pfi_T1, pfi_FA, pfi_ADC, pfi_excel_table]:
+    for p in [pfi_segm_T1, pfi_segm_FA, pfi_segm_ADC, pfi_multi_lab_descriptor, pfi_T1, pfi_FA, pfi_ADC,
+              pfi_excel_table]:
         if not os.path.exists(p):
             raise IOError('input file {} does not exists'.format(p))
 
@@ -38,43 +41,37 @@ def compile_record(pfi_T1,
 
     # Get label descriptor data:
     multi_lab_descriptor_list = parse_multi_label_descriptor_in_a_list(pfi_multi_lab_descriptor)
-    labels_list = [k[0] for k in multi_lab_descriptor_list]
+    labels_list = [k[1:] for k in multi_lab_descriptor_list]
     values_list = []
+    # strip:
     for k in multi_lab_descriptor_list:
         if len(k[1:]) > 1:
-            values_list.append([k[1:]])
-        else:
             values_list.append(k[1:])
-
-    print multi_lab_descriptor_list
-    print labels_list
-    print values_list
-
-    # debugging from here!
-    return
+        else:
+            values_list.append(k[1:][0])
 
     ''' Collect data using an instance of Caliber: '''
 
     # T1 - volume (more accurate the segmentation on the T1 to avoid partial voluming):
-    sa = SegmentationAnalyzer(pfi_segmentation=pfi_segmentation,
+    sa = SegmentationAnalyzer(pfi_segmentation=pfi_segm_T1,
                               pfi_scalar_im=pfi_T1,
                               icv_factor=None,
                               return_mm3=True)
-    vols, voxels, z1, z2 = sa.get_volumes_per_label(labels_list)
+    vols, voxels, z1, z2 = sa.get_volumes_per_label(values_list)
 
     # FA:
-    sa = SegmentationAnalyzer(pfi_segmentation=pfi_segmentation,
+    sa = SegmentationAnalyzer(pfi_segmentation=pfi_segm_FA,
                               pfi_scalar_im=pfi_FA,
                               icv_factor=None,
                               return_mm3=True)
-    FAs = sa.get_average_below_labels(labels_list)
+    FAs = sa.get_average_below_labels(values_list)
 
     # ADC:
-    sa = SegmentationAnalyzer(pfi_segmentation=pfi_segmentation,
+    sa = SegmentationAnalyzer(pfi_segmentation=pfi_segm_ADC,
                               pfi_scalar_im=pfi_ADC,
                               icv_factor=None,
                               return_mm3=True)
-    ADCs = sa.get_average_below_labels(labels_list)
+    ADCs = sa.get_average_below_labels(values_list)
 
     ''' Create rabbit record '''
 
@@ -94,12 +91,12 @@ def compile_record(pfi_T1,
     for key, value in zip(excel_tab_list[0], excel_tab_list[row_subject_index]):
         subject_info.update({key: value})
 
-    regions = [k[1] for k in lab_descriptor_list]
+    regions = [k[0] for k in multi_lab_descriptor_list]
 
     # Compile record:
     record = {'Info'      : subject_info,
               'Regions'   : regions,
-              'LabelsID'  : labels_list,
+              'LabelsID'  : values_list,
               'NumVoxels' : voxels,
               'vols'      : vols,
               'FAs'       : FAs,
@@ -120,7 +117,7 @@ def compile_record(pfi_T1,
                      ]
 
     record_tab = []
-    for reg, lab, vox, vol, fa, adc in zip(regions, labels_list, voxels, vols, FAs, ADCs):
+    for reg, lab, vox, vol, fa, adc in zip(regions, values_list, voxels, vols, FAs, ADCs):
         record_tab.append([reg, lab, vox, vol, fa, adc])
     headers = ['region', 'label number', 'number of voxels', 'vol (mm)', 'FA', 'ADC']
     table = tabulate(record_tab, headers=headers)
@@ -157,28 +154,20 @@ def compile_record(pfi_T1,
 
 
 # -- TEST HERE:
-
-# from os.path import join as jph
-
-# pfo_subjet = '/Users/sebastiano/Desktop/test/1305_test'
-# pfo_output = '/Users/sebastiano/Desktop/test/1305_report'
-# sj = '1305'
 #
+# pfo_subject = '/Users/sebastiano/Desktop/test_main/A_internal_template/1201'
+# pfo_output = '/Users/sebastiano/Desktop/test_main/1201_report'
+# sj = '1201'
 #
 # assert os.path.exists(pfo_subject)
+# assert os.path.exists(pfo_output)
 #
-
-pfo_subject = '/Users/sebastiano/Desktop/test_main/A_internal_template/1201'
-pfo_output = '/Users/sebastiano/Desktop/test/1201_report'
-sj = '1201'
-
-compile_record(pfi_T1=jph(pfo_subject, 'all_modalities', sj  + '_T1.nii.gz'),
-                   pfi_FA=jph(pfo_subject, 'all_modalities', sj  + '_FA.nii.gz'),
-                   pfi_ADC=jph(pfo_subject, 'all_modalities', sj  + '_MD.nii.gz'),
-                   pfi_multi_lab_descriptor=jph(pfo_subject, 'labels_descriptor_v8_beta.txt'),
-                   pfi_segmentation=jph(pfo_subject, 'segm', 'approved', '1305_propagate_me_2.nii.gz'),
-                   pfi_excel_table=jph(pfo_subject, 'REoP_Pilot_MRI_Data.xlsx'),
-                   subject_name=sj,
-                   pfo_output=pfo_output)
-
-
+# compile_record(pfi_T1=jph(pfo_subject, 'all_modalities', sj  + '_T1.nii.gz'),
+#                pfi_FA=jph(pfo_subject, 'all_modalities', sj  + '_FA.nii.gz'),
+#                pfi_ADC=jph(pfo_subject, 'all_modalities', sj  + '_MD.nii.gz'),
+#                pfi_multi_lab_descriptor=jph('/Users/sebastiano/Desktop/test_main/A_internal_template/Utils',
+#                                             'multi_labels_descriptor.txt'),
+#                pfi_segmentation=jph(pfo_subject, 'segm', 'approved', sj + '_propagate_me_2.nii.gz'),
+#                pfi_excel_table=jph('/Users/sebastiano/Dropbox/RabbitEOP-MRI/docs', 'REoP_Pilot_MRI_Data.xlsx'),
+#                subject_name=sj,
+#                pfo_output=pfo_output)
