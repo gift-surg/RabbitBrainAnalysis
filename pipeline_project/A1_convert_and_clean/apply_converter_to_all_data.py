@@ -30,7 +30,7 @@ def convert_a_group(pfo_group_to_convert, pfo_goup_destination):
 def main_converter(PTB_convert_ex_skull=False,
                     PTB_convert_ex_vivo=False,
                     PTB_convert_in_vivo=True,
-                    PTB_convert_op_skull=False,
+                    PTB_convert_op_skull=True,
                     ACS_convert_ex_vivo=False):
 
     if PTB_convert_ex_skull:

@@ -28,8 +28,8 @@ def cleaner_converted_data(pfo_to_be_cleaned):
 
 def main_cleaner(PTB_clean_ex_skull=False,
                  PTB_clean_ex_vivo=False,
-                 PTB_clean_in_vivo=True,
-                 PTB_clean_op_skull=False,
+                 PTB_clean_in_vivo=False,
+                 PTB_clean_op_skull=True,
                  ACS_clean_ex_vivo=False):
     
     global root_nifti
@@ -48,7 +48,7 @@ def main_cleaner(PTB_clean_ex_skull=False,
     
     if PTB_clean_op_skull:
     
-        cleaner_converted_data(jph(root_nifti, 'PTB', 'in_vivo'))
+        cleaner_converted_data(jph(root_nifti, 'PTB', 'op_skull'))
     
     if ACS_clean_ex_vivo:
     
