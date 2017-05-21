@@ -9,7 +9,7 @@ import numpy as np
 from labels_manager.main import LabelsManager
 
 from definitions import root_pilot_study_pantopolium
-from pipeline_project.U_utils.maps import subject, propagate_me_level, templ_subjects
+from pipeline_project.U_utils.main_controller import subject, propagate_me_level, templ_subjects
 from tools.auxiliary.utils import adjust_header_from_transformations
 
 
@@ -476,10 +476,10 @@ def propagate_and_fuse_per_group_over_all_modalities(controller_fuser,
                                                      pfo_target_group_category,
                                                      pfo_templ_subjects,
                                                      list_templ_subjects,
-                                                     bypass_subjects=()):
+                                                     bypass_subjects=None):
     assert os.path.exists(pfo_target_group_category)
     subj_list = np.sort(list(set(os.listdir(pfo_target_group_category)) - {'.DS_Store'}))
-    if not bypass_subjects == ():
+    if bypass_subjects is not None:
 
         if not set(bypass_subjects).intersection(set(subj_list)) == set(bypass_subjects):
             raise IOError

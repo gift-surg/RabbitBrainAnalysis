@@ -41,6 +41,8 @@ def slope_corrector_path(slopes_array, path_im_input, path_im_output, eliminate_
     """
     im_input = nib.load(path_im_input)
     # slopes = np.loadtxt(slopes_txt_path)
+    if eliminate_consec_duplicates:
+        slopes_array = np.array(eliminates_consecutive_duplicates(list(slopes_array)))
     data_output = slope_corrector(im_input.get_data(), slopes_array)
     im_output = set_new_data(im_input, data_output)
     nib.save(im_output, path_im_output)

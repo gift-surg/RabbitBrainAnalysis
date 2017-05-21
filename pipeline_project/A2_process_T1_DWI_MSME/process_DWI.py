@@ -6,7 +6,7 @@ from os.path import join as jph
 
 import numpy as np
 
-from pipeline_project.U_utils.maps import subject
+from pipeline_project.U_utils.main_controller import subject, RunParameters
 from definitions import root_pilot_study_pantopolium
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.correctors.bias_field_corrector4 import bias_field_correction
@@ -154,7 +154,7 @@ def process_DWI_per_subject(sj, pfo_input_sj_DWI, pfo_output_sj, controller):
         assert os.path.exists(pfi_slope_txt)
         pfi_dwi_slope_corrected = jph(pfo_tmp, sj + '_DWI_slope_corrected.nii.gz')
         slopes = np.loadtxt(pfi_slope_txt)
-        slope_corrector_path(slopes, pfi_dwi_cropped, pfi_dwi_slope_corrected)
+        slope_corrector_path(slopes, pfi_dwi_cropped, pfi_dwi_slope_corrected, eliminate_consec_duplicates=True)
         # --
         pfi_b0_cropped = jph(pfo_tmp, sj + '_b0_cropped.nii.gz')
         assert os.path.exists(pfi_b0_cropped)
@@ -170,7 +170,6 @@ def process_DWI_per_subject(sj, pfo_input_sj_DWI, pfo_output_sj, controller):
         os.system(cmd)
     else:
         pfi_dwi_slope_corrected = jph(pfo_tmp, sj + '_DWI_slope_corrected.nii.gz')
-        assert os.path.exists(pfi_dwi_slope_corrected)
         pfi_dwi_eddy_corrected = jph(pfo_tmp, sj + '_DWI_eddy.nii.gz')
         cmd = 'cp {0} {1} '.format(pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected)
         os.system(cmd)
@@ -186,9 +185,7 @@ def process_DWI_per_subject(sj, pfo_input_sj_DWI, pfo_output_sj, controller):
         assert os.path.exists(pfi_bvects)
         assert os.path.exists(pfi_roi_mask)
         pfi_analysis_fsl = jph(pfo_tmp, 'fsl_fit_' + sj)
-
         here = os.getcwd()
-
         cmd0 = 'cd {}'.format(pfo_tmp)
         cmd1 = 'dtifit -k {0} -b {1} -r {2} -m {3} ' \
                '-w --save_tensor -o {4}'.format(pfi_dwi_eddy_corrected,
@@ -197,7 +194,6 @@ def process_DWI_per_subject(sj, pfo_input_sj_DWI, pfo_output_sj, controller):
                                                 pfi_roi_mask,
                                                 pfi_analysis_fsl)
         cmd2 = 'cd {}'.format(here)
-
         os.system(cmd0)
         os.system(cmd1)
         os.system(cmd2)
@@ -289,12 +285,12 @@ def process_DWI_per_subject(sj, pfo_input_sj_DWI, pfo_output_sj, controller):
             os.system(cmd)
 
 
-def process_DWI_per_group(controller, pfo_input_group_category, pfo_output_group_category, bypass_subjects=()):
+def process_DWI_per_group(controller, pfo_input_group_category, pfo_output_group_category, bypass_subjects=None):
     assert os.path.exists(pfo_input_group_category)
     assert os.path.exists(pfo_output_group_category)
     subj_list = np.sort(list(set(os.listdir(pfo_input_group_category)) - {'.DS_Store'}))
     # allow to force the subj_list to be the input tuple bypass subject, chosen by the user.
-    if not bypass_subjects == ():
+    if bypass_subjects is not None:
         if not set(bypass_subjects).intersection(set(subj_list)) == set(bypass_subjects):
             raise IOError
         else:
@@ -309,64 +305,49 @@ def process_DWI_per_group(controller, pfo_input_group_category, pfo_output_group
                                 controller)
 
 
-def main_process_DWI(controller,
-                     process_DWI_PTB_ex_skull=False,
-                     process_DWI_PTB_ex_vivo=False,
-                     process_DWI_PTB_in_vivo=False,
-                     process_DWI_PTB_op_skull=True,
-                     process_DWI_ACS_ex_vivo=False):
-    
-    print root_pilot_study_pantopolium
+def execute_processing_DWI(controller, rp):
+
+    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert isinstance(rp, RunParameters)
+
     root_nifti = jph(root_pilot_study_pantopolium, '01_nifti')
     root_data = jph(root_pilot_study_pantopolium, 'A_data')
 
-    if process_DWI_PTB_ex_skull:
+    if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull = jph(root_nifti, 'PTB', 'ex_skull')
+        assert os.path.exists(pfo_PTB_ex_skull), pfo_PTB_ex_skull
         pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')
+        process_DWI_per_group(controller, pfo_PTB_ex_skull, pfo_PTB_ex_skull_data, bypass_subjects=rp.subjects)
 
-        tuple_subjects = ()  # can force the input to a predefined input list of subjects if they exists.
-
-        process_DWI_per_group(controller, pfo_PTB_ex_skull, pfo_PTB_ex_skull_data, bypass_subjects=tuple_subjects)
-
-    if process_DWI_PTB_ex_vivo:
+    if rp.execute_PTB_ex_vivo:
         pfo_PTB_ex_vivo = jph(root_nifti, 'PTB', 'ex_vivo')
+        assert os.path.exists(pfo_PTB_ex_vivo), pfo_PTB_ex_vivo
         pfo_PTB_ex_vivo_data = jph(root_data, 'PTB', 'ex_vivo')
+        process_DWI_per_group(controller, pfo_PTB_ex_vivo, pfo_PTB_ex_vivo_data, bypass_subjects=rp.subjects)
 
-        tuple_subjects = () #('1505', '2503', '2608', '2702')
-
-        process_DWI_per_group(controller, pfo_PTB_ex_vivo, pfo_PTB_ex_vivo_data, bypass_subjects=tuple_subjects)
-
-    if process_DWI_PTB_in_vivo:
+    if rp.execute_PTB_in_vivo:
         pfo_PTB_in_vivo = jph(root_nifti, 'PTB', 'in_vivo')
+        assert os.path.exists(pfo_PTB_in_vivo), pfo_PTB_in_vivo
         pfo_PTB_in_vivo_data = jph(root_data, 'PTB', 'in_vivo')
+        process_DWI_per_group(controller, pfo_PTB_in_vivo, pfo_PTB_in_vivo_data, bypass_subjects=rp.subjects)
 
-        tuple_subjects = ()
-
-        process_DWI_per_group(controller, pfo_PTB_in_vivo, pfo_PTB_in_vivo_data, bypass_subjects=tuple_subjects)
-
-    if process_DWI_PTB_op_skull:
+    if rp.execute_PTB_op_skull:
         pfo_PTB_op_skull = jph(root_nifti, 'PTB', 'op_skull')
+        assert os.path.exists(pfo_PTB_op_skull), pfo_PTB_op_skull
         pfo_PTB_op_skull_data = jph(root_data, 'PTB', 'op_skull')
+        process_DWI_per_group(controller, pfo_PTB_op_skull, pfo_PTB_op_skull_data, bypass_subjects=rp.subjects)
 
-        tuple_subjects = ()
-
-        process_DWI_per_group(controller, pfo_PTB_op_skull, pfo_PTB_op_skull_data, bypass_subjects=tuple_subjects)
-
-    if process_DWI_ACS_ex_vivo:
+    if rp.execute_ACS_ex_vivo:
         pfo_ACS_ex_vivo = jph(root_nifti, 'ACS', 'ex_vivo')
+        assert os.path.exists(pfo_ACS_ex_vivo), pfo_ACS_ex_vivo
         pfo_ACS_ex_vivo_data = jph(root_data, 'ACS', 'ex_vivo')
+        process_DWI_per_group(controller, pfo_ACS_ex_vivo, pfo_ACS_ex_vivo_data, bypass_subjects=rp.subjects)
 
-        tuple_subjects = ()
-
-        process_DWI_per_group(controller, pfo_ACS_ex_vivo, pfo_ACS_ex_vivo_data, bypass_subjects=tuple_subjects)
 
 if __name__ == '__main__':
 
-    if not os.path.isdir(root_pilot_study_pantopolium):
-        raise IOError('Connect pantopolio!')
-
-    controller_steps = {'squeeze'              : False,
-                        'orient to standard'   : False,
+    controller_steps = {'squeeze'              : True,
+                        'orient to standard'   : True,
                         'threshold'            : False,
                         'register roi masks'   : False,
                         'propagate roi masks'  : False,
@@ -378,14 +359,18 @@ if __name__ == '__main__':
                         'fsl tensor fitting'   : False,
                         'adjust dti-based mod' : False,
                         'bfc b0'               : False,
-                        'create lesion mask'   : True,
-                        'create reg masks'     : True,
-                        'save results'         : True}
+                        'create lesion mask'   : False,
+                        'create reg masks'     : False,
+                        'save results'         : False}
 
-    main_process_DWI(controller_steps,
-                     process_DWI_PTB_ex_skull=False,
-                     process_DWI_PTB_ex_vivo=True,
-                     process_DWI_PTB_in_vivo=False,
-                     process_DWI_PTB_op_skull=False,
-                     process_DWI_ACS_ex_vivo=False
-                     )
+    rpa = RunParameters()
+
+    rpa.execute_PTB_ex_skull = True
+    rpa.execute_PTB_ex_vivo = True
+    rpa.execute_PTB_in_vivo = True
+    rpa.execute_PTB_op_skull = True
+    rpa.execute_ACS_ex_vivo = True
+
+    rpa.subjects = None
+
+    execute_processing_DWI(controller_steps, rpa)

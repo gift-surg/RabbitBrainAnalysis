@@ -5,29 +5,25 @@ Propagate and fuse T1
 import os
 from os.path import join as jph
 
+from pipeline_project.U_utils.main_controller import templ_subjects, RunParameters
 from propagate_and_fuse_utils import propagate_and_fuse_per_group_over_all_modalities
 from definitions import root_pilot_study_pantopolium, root_pilot_study_dropbox
-from pipeline_project.U_utils.maps import templ_subjects
 
 
-def propagate_and_fuse_all(controller_fuser,
-                           controller_propagator,
-                           controller_inter_modality_propagator,
-                           pfo_templ_subjects,
-                           list_templ_subjects,
-                           propagate_and_fuse_PTB_ex_skull=True,
-                           propagate_and_fuse_PTB_ex_vivo=True,
-                           propagate_and_fuse_PTB_in_vivo=True,
-                           propagate_and_fuse_PTB_op_skull=True,
-                           propagate_and_fuse_ACS_ex_vivo=True):
+def execute_propagate_and_fuse_all(controller_fuser,
+                                   controller_propagator,
+                                   controller_inter_modality_propagator,
+                                   pfo_templ_subjects,
+                                   list_templ_subjects,
+                                   rp):
 
-    print root_pilot_study_pantopolium
+    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert isinstance(rp, RunParameters)
+
     root_data = jph(root_pilot_study_pantopolium, 'A_data')
 
-    if propagate_and_fuse_PTB_ex_skull:
+    if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')
-
-        tuple_subjects = ()  # can force the input to a predefined input list of subjects if they exists.
 
         propagate_and_fuse_per_group_over_all_modalities(controller_fuser,
                                                          controller_propagator,
@@ -35,13 +31,10 @@ def propagate_and_fuse_all(controller_fuser,
                                                          pfo_PTB_ex_skull_data,
                                                          pfo_templ_subjects,
                                                          list_templ_subjects,
-                                                         bypass_subjects=tuple_subjects)
+                                                         bypass_subjects=rp.subjects)
 
-    if propagate_and_fuse_PTB_ex_vivo:
+    if rp.execute_PTB_ex_vivo:
         pfo_PTB_ex_vivo_data = jph(root_data, 'PTB', 'ex_vivo')
-
-        tuple_subjects = ('1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002', '2502',
-                          '2503', '2608', '2702')
 
         propagate_and_fuse_per_group_over_all_modalities(controller_fuser,
                                                          controller_propagator,
@@ -49,12 +42,10 @@ def propagate_and_fuse_all(controller_fuser,
                                                          pfo_PTB_ex_vivo_data,
                                                          pfo_templ_subjects,
                                                          list_templ_subjects,
-                                                         bypass_subjects=tuple_subjects)
+                                                         bypass_subjects=rp.subjects)
 
-    if propagate_and_fuse_PTB_in_vivo:
+    if rp.execute_PTB_in_vivo:
         pfo_PTB_in_vivo_data = jph(root_data, 'PTB', 'in_vivo')
-
-        tuple_subjects = ()
 
         propagate_and_fuse_per_group_over_all_modalities(controller_fuser,
                                                          controller_propagator,
@@ -62,12 +53,10 @@ def propagate_and_fuse_all(controller_fuser,
                                                          pfo_PTB_in_vivo_data,
                                                          pfo_templ_subjects,
                                                          list_templ_subjects,
-                                                         bypass_subjects=tuple_subjects)
+                                                         bypass_subjects=rp.subjects)
 
-    if propagate_and_fuse_PTB_op_skull:
+    if rp.execute_PTB_op_skull:
         pfo_PTB_op_skull_data = jph(root_data, 'PTB', 'op_skull')
-
-        tuple_subjects = ()
 
         propagate_and_fuse_per_group_over_all_modalities(controller_fuser,
                                                          controller_propagator,
@@ -75,12 +64,11 @@ def propagate_and_fuse_all(controller_fuser,
                                                          pfo_PTB_op_skull_data,
                                                          pfo_templ_subjects,
                                                          list_templ_subjects,
-                                                         bypass_subjects=tuple_subjects)
+                                                         bypass_subjects=rp.subjects)
 
-    if propagate_and_fuse_ACS_ex_vivo:
+    if rp.execute_ACS_ex_vivo:
         pfo_ACS_ex_vivo_data = jph(root_data, 'ACS', 'ex_vivo')
 
-        tuple_subjects = ()
 
         propagate_and_fuse_per_group_over_all_modalities(controller_fuser,
                                                          controller_propagator,
@@ -88,13 +76,10 @@ def propagate_and_fuse_all(controller_fuser,
                                                          pfo_ACS_ex_vivo_data,
                                                          pfo_templ_subjects,
                                                          list_templ_subjects,
-                                                         bypass_subjects=tuple_subjects)
+                                                         bypass_subjects=rp.subjects)
 
 
 if __name__ == '__main__':
-
-    if not os.path.isdir(root_pilot_study_pantopolium):
-        raise IOError('Connect pantopolio!')
 
     controller_fuser_ = {'set header bicommissural'  : True,
                          'aff alignment'             : True,
@@ -125,13 +110,21 @@ if __name__ == '__main__':
     pfo_templ_subjects_input = jph(root_pilot_study_dropbox, 'A_internal_template')
     list_templ_subjects_input = templ_subjects
 
-    propagate_and_fuse_all(controller_fuser_,
-                           controller_propagator_,
-                           controller_inter_modality_propagator_,
-                           pfo_templ_subjects_input,
-                           list_templ_subjects_input,
-                           propagate_and_fuse_PTB_ex_skull=False,
-                           propagate_and_fuse_PTB_ex_vivo=True,
-                           propagate_and_fuse_PTB_in_vivo=True,
-                           propagate_and_fuse_PTB_op_skull=False,
-                           propagate_and_fuse_ACS_ex_vivo=False)
+    rpa = RunParameters()
+
+    rpa.execute_PTB_ex_skull = True
+    rpa.execute_PTB_ex_vivo = True
+    rpa.execute_PTB_in_vivo = True
+    rpa.execute_PTB_op_skull = True
+    rpa.execute_ACS_ex_vivo = True
+
+    rpa.subjects = None
+    # rpa.subjects = ['1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002', '2502', '2503',
+    #                 '2608', '2702']
+
+    execute_propagate_and_fuse_all(controller_fuser_,
+                                   controller_propagator_,
+                                   controller_inter_modality_propagator_,
+                                   pfo_templ_subjects_input,
+                                   list_templ_subjects_input,
+                                   rpa)

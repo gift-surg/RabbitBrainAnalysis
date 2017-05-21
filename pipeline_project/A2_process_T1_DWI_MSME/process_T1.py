@@ -5,10 +5,10 @@ import os
 from os.path import join as jph
 import numpy as np
 
+from pipeline_project.U_utils.main_controller import subject, RunParameters
 from definitions import root_pilot_study_pantopolium
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
-from pipeline_project.U_utils.maps import subject
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 
 """
@@ -155,10 +155,18 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
         assert os.path.exists(pfi_3d_bias_field_corrected)
         assert os.path.exists(pfi_roi_mask)
         pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
+
+        if subject[sj][0][1] == 'ex_vivo':
+            percentile = (15, 90)
+        elif subject[sj][0][1] == 'in_vivo':
+            percentile = (10, 98)
+        else:
+            raise IOError
+
         percentile_lesion_mask_extractor(im_input_path=pfi_3d_bias_field_corrected,
                                          im_output_path=pfi_lesion_mask,
                                          im_mask_foreground_path=pfi_roi_mask,
-                                         percentiles=(15, 95),
+                                         percentiles=percentile,
                                          safety_on=False)
 
     if controller['create reg masks']:
@@ -207,67 +215,46 @@ def process_T1_per_group(controller, pfo_input_group_category, pfo_output_group_
                                controller)
 
 
-def main_process_T1(controller,
-                    process_T1_PTB_ex_skull=True,
-                    process_T1_PTB_ex_vivo=True,
-                    process_T1_PTB_in_vivo=True,
-                    process_T1_PTB_op_skull=True,
-                    process_T1_ACS_ex_vivo=True):
+def execute_processing_T1(controller, rp):
 
-    print root_pilot_study_pantopolium
+    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert isinstance(rp, RunParameters)
+
     root_nifti = jph(root_pilot_study_pantopolium, '01_nifti')
     root_data = jph(root_pilot_study_pantopolium, 'A_data')
 
-    if process_T1_PTB_ex_skull:
-
+    if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull = jph(root_nifti, 'PTB', 'ex_skull')
+        assert os.path.exists(pfo_PTB_ex_skull), pfo_PTB_ex_skull
         pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')
+        process_T1_per_group(controller, pfo_PTB_ex_skull, pfo_PTB_ex_skull_data, bypass_subjects=rp.subjects)
 
-        tuple_subjects = ()  # can force the input to a predefined input list of subjects if they exists.
-
-        process_T1_per_group(controller, pfo_PTB_ex_skull, pfo_PTB_ex_skull_data, bypass_subjects=tuple_subjects)
-
-    if process_T1_PTB_ex_vivo:
-
+    if rp.execute_PTB_ex_vivo:
         pfo_PTB_ex_vivo = jph(root_nifti, 'PTB', 'ex_vivo')
+        assert os.path.exists(pfo_PTB_ex_vivo), pfo_PTB_ex_vivo
         pfo_PTB_ex_vivo_data = jph(root_data, 'PTB', 'ex_vivo')
+        process_T1_per_group(controller, pfo_PTB_ex_vivo, pfo_PTB_ex_vivo_data, bypass_subjects=rp.subjects)
 
-        tuple_subjects = ()
-
-        process_T1_per_group(controller, pfo_PTB_ex_vivo, pfo_PTB_ex_vivo_data, bypass_subjects=tuple_subjects)
-
-    if process_T1_PTB_in_vivo:
-
+    if rp.execute_PTB_in_vivo:
         pfo_PTB_in_vivo = jph(root_nifti, 'PTB', 'in_vivo')
+        assert os.path.exists(pfo_PTB_in_vivo), pfo_PTB_in_vivo
         pfo_PTB_in_vivo_data = jph(root_data, 'PTB', 'in_vivo')
+        process_T1_per_group(controller, pfo_PTB_in_vivo, pfo_PTB_in_vivo_data, bypass_subjects=rp.subjects)
 
-        tuple_subjects = ()
-
-        process_T1_per_group(controller, pfo_PTB_in_vivo, pfo_PTB_in_vivo_data, bypass_subjects=tuple_subjects)
-
-    if process_T1_PTB_op_skull:
-
+    if rp.execute_PTB_op_skull:
         pfo_PTB_op_skull = jph(root_nifti, 'PTB', 'op_skull')
+        assert os.path.exists(pfo_PTB_op_skull), pfo_PTB_op_skull
         pfo_PTB_op_skull_data = jph(root_data, 'PTB', 'op_skull')
+        process_T1_per_group(controller, pfo_PTB_op_skull, pfo_PTB_op_skull_data, bypass_subjects=rp.subjects)
 
-        tuple_subjects = ()
-
-        process_T1_per_group(controller, pfo_PTB_op_skull, pfo_PTB_op_skull_data, bypass_subjects=tuple_subjects)
-
-    if process_T1_ACS_ex_vivo:
-
+    if rp.execute_ACS_ex_vivo:
         pfo_ACS_ex_vivo = jph(root_nifti, 'ACS', 'ex_vivo')
+        assert os.path.exists(pfo_ACS_ex_vivo), pfo_ACS_ex_vivo
         pfo_ACS_ex_vivo_data = jph(root_data, 'ACS', 'ex_vivo')
-
-        tuple_subjects = ()
-
-        process_T1_per_group(controller, pfo_ACS_ex_vivo, pfo_ACS_ex_vivo_data, bypass_subjects=tuple_subjects)
+        process_T1_per_group(controller, pfo_ACS_ex_vivo, pfo_ACS_ex_vivo_data, bypass_subjects=rp.subjects)
 
 
 if __name__ == '__main__':
-
-    if not os.path.isdir(root_pilot_study_pantopolium):
-        raise IOError('Connect pantopolio!')
 
     controller_steps = {'orient to standard'  : False,
                         'threshold'           : False,
@@ -280,10 +267,14 @@ if __name__ == '__main__':
                         'create reg masks'    : True,
                         'save results'        : True}
 
-    main_process_T1(controller_steps,
-                    process_T1_PTB_ex_skull=False,
-                    process_T1_PTB_ex_vivo=True,
-                    process_T1_PTB_in_vivo=True,
-                    process_T1_PTB_op_skull=False,
-                    process_T1_ACS_ex_vivo=False
-                    )
+    rpa = RunParameters()
+
+    rpa.execute_PTB_ex_skull = True
+    rpa.execute_PTB_ex_vivo = True
+    rpa.execute_PTB_in_vivo = True
+    rpa.execute_PTB_op_skull = True
+    rpa.execute_ACS_ex_vivo = True
+
+    rpa.subjects = None
+
+    execute_processing_T1(controller_steps, rpa)

@@ -2,14 +2,15 @@ import os
 from os.path import join as jph
 import numpy as np
 
+from pipeline_project.U_utils.main_controller import RunParameters
 from tools.measurements.compile_record import compile_record
 from definitions import root_docs_dropbox, root_pilot_study_pantopolium
 
 
-def compile_record_per_group(pfo_input_data, pfo_output_record, tuple_subjects=()):
+def compile_record_per_group(pfo_input_data, pfo_output_record, tuple_subjects=None):
     assert os.path.exists(pfo_input_data)
     subj_list = np.sort(list(set(os.listdir(pfo_input_data)) - {'.DS_Store'}))
-    if not tuple_subjects == ():
+    if tuple_subjects is not None:
         subj_list = tuple_subjects
 
     print '\n\n Collecting data for a group of subjects. ' \
@@ -71,60 +72,50 @@ def compile_record_per_group(pfo_input_data, pfo_output_record, tuple_subjects=(
                            )
 
 
-def compile_record_all(extract_data_PTB_ex_skull=True,
-                       extract_data_PTB_ex_vivo=True,
-                       extract_data_PTB_in_vivo=True,
-                       extract_data_PTB_op_skull=True,
-                       extract_data_ACS_ex_vivo=True):
+def compile_record_T1_DWI(rp):
 
-    print root_pilot_study_pantopolium
+    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert isinstance(rp, RunParameters)
+
     root_data    = jph(root_pilot_study_pantopolium, 'A_data')
     root_records = jph(root_pilot_study_pantopolium, 'B_records')
 
-    if extract_data_PTB_ex_skull:
+    if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')
         pfo_PTB_ex_skull_records = jph(root_records, 'PTB', 'ex_skull')
-        # ---------------
-        tuple_subjects = ()  # can force the input to a predefined input list of subjects if they exists.
-        # ---------------
-        compile_record_per_group(pfo_PTB_ex_skull_data, pfo_PTB_ex_skull_records, tuple_subjects)
+        compile_record_per_group(pfo_PTB_ex_skull_data, pfo_PTB_ex_skull_records, rp.subjects)
 
-    if extract_data_PTB_ex_vivo:
+    if rp.execute_PTB_ex_vivo:
         pfo_PTB_ex_vivo_data = jph(root_data, 'PTB', 'ex_vivo')
         pfo_PTB_ex_vivo_records = jph(root_records, 'PTB', 'ex_vivo')
-        # ---------------
-        tuple_subjects = ()
-        # ---------------
-        compile_record_per_group(pfo_PTB_ex_vivo_data, pfo_PTB_ex_vivo_records, tuple_subjects)
+        compile_record_per_group(pfo_PTB_ex_vivo_data, pfo_PTB_ex_vivo_records, rp.subjects)
 
-    if extract_data_PTB_in_vivo:
+    if rp.execute_PTB_in_vivo:
         pfo_PTB_in_vivo_data = jph(root_data, 'PTB', 'in_vivo')
         pfo_PTB_in_vivo_records = jph(root_records, 'PTB', 'in_vivo')
-        # ---------------
-        tuple_subjects = ()
-        # ---------------
-        compile_record_per_group(pfo_PTB_in_vivo_data, pfo_PTB_in_vivo_records, tuple_subjects)
+        compile_record_per_group(pfo_PTB_in_vivo_data, pfo_PTB_in_vivo_records, rp.subjects)
 
-    if extract_data_PTB_op_skull:
+    if rp.execute_PTB_op_skull:
         pfo_PTB_op_skull_data = jph(root_data, 'PTB', 'op_skull')
         pfo_PTB_op_skull_records = jph(root_records, 'PTB', 'op_skull')
-        # ---------------
-        tuple_subjects = ()
-        # ---------------
-        compile_record_per_group(pfo_PTB_op_skull_data, pfo_PTB_op_skull_records, tuple_subjects)
+        compile_record_per_group(pfo_PTB_op_skull_data, pfo_PTB_op_skull_records, rp.subjects)
 
-    if extract_data_ACS_ex_vivo:
+    if rp.execute_ACS_ex_vivo:
         pfo_ACS_ex_vivo_data = jph(root_data, 'ACS', 'ex_vivo')
         pfo_ACS_ex_vivo_records = jph(root_records, 'ACS', 'ex_vivo')
-        # ---------------
-        tuple_subjects = ()
-        # ---------------
-        compile_record_per_group(pfo_ACS_ex_vivo_data, pfo_ACS_ex_vivo_records, tuple_subjects)
+        compile_record_per_group(pfo_ACS_ex_vivo_data, pfo_ACS_ex_vivo_records, rp.subjects)
 
 
 if __name__ == '__main__':
-    compile_record_all(extract_data_PTB_ex_skull=False,
-                       extract_data_PTB_ex_vivo=True,
-                       extract_data_PTB_in_vivo=False,
-                       extract_data_PTB_op_skull=False,
-                       extract_data_ACS_ex_vivo=False)
+
+    rpa = RunParameters()
+
+    rpa.execute_PTB_ex_skull = True
+    rpa.execute_PTB_ex_vivo = True
+    rpa.execute_PTB_in_vivo = True
+    rpa.execute_PTB_op_skull = True
+    rpa.execute_ACS_ex_vivo = True
+
+    rpa.subjects = None
+
+    compile_record_T1_DWI(rpa)

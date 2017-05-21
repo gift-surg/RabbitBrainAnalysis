@@ -2,13 +2,9 @@ import os
 import numpy as np
 from os.path import join as jph
 
-
 from tools.correctors.path_cleaner import clean_a_study
 from definitions import root_pilot_study_pantopolium
-
-
-print root_pilot_study_pantopolium
-root_nifti = jph(root_pilot_study_pantopolium, '01_nifti')
+from pipeline_project.U_utils.main_controller import RunParameters
 
 
 def cleaner_converted_data(pfo_to_be_cleaned):
@@ -26,36 +22,65 @@ def cleaner_converted_data(pfo_to_be_cleaned):
         clean_a_study(jph(pfo_to_be_cleaned, sj))
 
 
-def main_cleaner(PTB_clean_ex_skull=False,
-                 PTB_clean_ex_vivo=False,
-                 PTB_clean_in_vivo=True,
-                 PTB_clean_op_skull=True,
-                 ACS_clean_ex_vivo=False):
-    
-    global root_nifti
-    
-    if PTB_clean_ex_skull:
+def execute_cleaner(rp):
 
-        cleaner_converted_data(jph(root_nifti, 'PTB', 'ex_skull'))
-        
-    if PTB_clean_ex_vivo:
+    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert isinstance(rp, RunParameters)
 
-        cleaner_converted_data(jph(root_nifti, 'PTB', 'ex_vivo'))
+    root_nifti = jph(root_pilot_study_pantopolium, '01_nifti_converted')
+    root_nifti_clean = jph(root_pilot_study_pantopolium, '01_nifti')
+    
+    if rp.execute_PTB_ex_skull:
+        pfo_source = jph(root_nifti, 'PTB', 'ex_skull')
+        assert os.path.exists(pfo_source)
+        pfo_target = jph(root_nifti_clean, 'PTB', 'ex_skull')
+        cmd = 'cp {} {}'.format(pfo_source, pfo_target)
+        os.system(cmd)
+        cleaner_converted_data(pfo_target)
         
-    if PTB_clean_in_vivo:
+    if rp.execute_PTB_ex_vivo:
+        pfo_source = jph(root_nifti, 'PTB', 'ex_vivo')
+        assert os.path.exists(pfo_source)
+        pfo_target = jph(root_nifti_clean, 'PTB', 'ex_vivo')
+        cmd = 'cp {} {}'.format(pfo_source, pfo_target)
+        os.system(cmd)
+        cleaner_converted_data(pfo_target)
+        
+    if rp.execute_PTB_in_vivo:
+        pfo_source = jph(root_nifti, 'PTB', 'in_vivo')
+        assert os.path.exists(pfo_source)
+        pfo_target = jph(root_nifti_clean, 'PTB', 'in_vivo')
+        cmd = 'cp {} {}'.format(pfo_source, pfo_target)
+        os.system(cmd)
+        cleaner_converted_data(pfo_target)
+
+    if rp.execute_PTB_op_skull:
+        pfo_source = jph(root_nifti, 'PTB', 'op_skull')
+        assert os.path.exists(pfo_source)
+        pfo_target = jph(root_nifti_clean, 'PTB', 'op_skull')
+        cmd = 'cp {} {}'.format(pfo_source, pfo_target)
+        os.system(cmd)
+        cleaner_converted_data(pfo_target)
     
-        cleaner_converted_data(jph(root_nifti, 'PTB', 'in_vivo'))
-    
-    if PTB_clean_op_skull:
-    
-        cleaner_converted_data(jph(root_nifti, 'PTB', 'op_skull'))
-    
-    if ACS_clean_ex_vivo:
-    
-        cleaner_converted_data(jph(root_nifti, 'ACS', 'ex_vivo'))
+    if rp.execute_ACS_ex_vivo:
+        pfo_source = jph(root_nifti, 'ACS', 'ex_vivo')
+        assert os.path.exists(pfo_source)
+        pfo_target = jph(root_nifti_clean, 'ACS', 'ex_vivo')
+        cmd = 'cp {} {}'.format(pfo_source, pfo_target)
+        os.system(cmd)
+        cleaner_converted_data(pfo_target)
 
 
 if __name__ == '__main__':
-    if not os.path.isdir(root_pilot_study_pantopolium):
-        raise IOError('Connect pantopolio!')
-    main_cleaner()
+
+    rpa = RunParameters()
+
+    rpa.execute_PTB_ex_skull = True
+    rpa.execute_PTB_ex_vivo = True
+    rpa.execute_PTB_in_vivo = True
+    rpa.execute_PTB_op_skull = True
+    rpa.execute_ACS_ex_vivo = True
+
+    rpa.subjects = None
+
+    execute_cleaner(rpa)

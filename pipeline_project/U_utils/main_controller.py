@@ -15,8 +15,59 @@ import numpy as np
 # Axial Angle, angle of the axial orientation sign from L to R,
 # from initial position to aligned with axis (yaw).
 # Sagittal Angle sign from L to R from initial position to aligned with axis (roll)
-# TODO angles for ex_skull, they require some time...!
 
+
+class RunParameters(object):
+    """
+    one instance of the controller parameter has all the parameters to run the
+    whole pipeline. If to process in group, or if to process a single subject.
+    """
+
+    def __init__(self, execute_PTB_ex_skull=False, execute_PTB_ex_vivo=False, execute_PTB_in_vivo=False,
+                 execute_PTB_op_skull=False, execute_ACS_ex_vivo=False, subjects=None):
+
+        self.execute_PTB_ex_skull = execute_PTB_ex_skull
+        self.execute_PTB_ex_vivo = execute_PTB_ex_vivo
+        self.execute_PTB_in_vivo = execute_PTB_in_vivo
+        self.execute_PTB_op_skull = execute_PTB_op_skull
+        self.execute_ACS_ex_vivo = execute_ACS_ex_vivo
+
+        self.subjects = subjects
+
+        self._check_sj()
+
+    def _check_sj(self):
+        if isinstance(self.subjects, str):
+            if str == 'all':
+                self.execute_PTB_ex_skull = True
+                self.execute_PTB_ex_vivo = True
+                self.execute_PTB_in_vivo = True
+                self.execute_PTB_op_skull = True
+                self.execute_ACS_ex_vivo = True
+            else:
+                self.subjects = [self.subjects, ]
+                self._update_params()
+
+    def _update_params(self):
+        # Turn on flags of the groups where the parameters are.
+        for sj in self.subjects:
+            assert sj in subject.keys(), '{} Not in the subject list'.format(sj)
+            group, category = subject[self.subjects][0]
+            if group == 'PTB':
+                if category == 'ex_skull':
+                    self.execute_PTB_ex_skull = True
+                if category == 'ex_vivo':
+                    self.execute_PTB_ex_vivo = True
+                if category == 'in_vivo':
+                    self.execute_PTB_in_vivo = True
+                if category == 'op_skull':
+                    self.execute_PTB_op_skull = True
+            elif group == 'ACS':
+                if category == 'ex_vivo':
+                    self.execute_ACS_ex_vivo = True
+
+
+# TODO angles for ex_skull, they require some time...!
 
 bfp_slow = [0.001, (50, 50, 50, 50), 0.15, 0.01, 200, (4, 4, 4), 3]
 bfp_fast = [0.01, (50, 40, 30, 20), 0.15, 0.01, 200, (4, 4, 4), 3]
@@ -26,7 +77,7 @@ subject = {
     # ------------------------
     # PTB ex skull:
     # ------------------------
-    '0104': [['PTB', 'ex_skull'],  # 0: study  - category
+    '0104': [['PTB', 'ex_skull'],  # 0:
              [0, 0, 0, False],  # 1:  bicomm angle, axial angle, sagittal angle, in templ
              [300, 1],  # 2: thr, erosion roi mask for T1
              bfp_fast,  # 3: Bias field parameters T1

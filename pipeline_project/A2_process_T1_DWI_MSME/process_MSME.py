@@ -5,7 +5,7 @@ import numpy as np
 import os
 from os.path import join as jph
 
-from pipeline_project.U_utils.maps import subject
+from pipeline_project.U_utils.main_controller import subject, RunParameters
 from definitions import root_pilot_study_pantopolium
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
@@ -136,7 +136,7 @@ def process_MSME_per_subject(sj, pfo_input_sj_MSME, pfo_output_sj, controller):
         os.system(cmd)
         
 
-def process_MSME_per_group(controller, pfo_input_group_category, pfo_output_group_category, bypass_subjects=()):
+def process_MSME_per_group(controller, pfo_input_group_category, pfo_output_group_category, bypass_subjects=None):
 
     assert os.path.exists(pfo_input_group_category)
     assert os.path.exists(pfo_output_group_category)
@@ -144,7 +144,7 @@ def process_MSME_per_group(controller, pfo_input_group_category, pfo_output_grou
     subj_list = np.sort(list(set(os.listdir(pfo_input_group_category)) - {'.DS_Store'}))
 
     # allow to force the subj_list to be the input tuple bypass subject, chosen by the user.
-    if not bypass_subjects == ():
+    if bypass_subjects is not None:
 
         if not set(bypass_subjects).intersection(set(subj_list)) == {}:
             raise IOError
@@ -162,61 +162,46 @@ def process_MSME_per_group(controller, pfo_input_group_category, pfo_output_grou
                                  controller)
 
 
-def main_process_DWI(controller,
-                     process_MSME_PTB_ex_skull=False,
-                     process_MSME_PTB_ex_vivo=False,
-                     process_MSME_PTB_in_vivo=False,
-                     process_MSME_PTB_op_skull=True,
-                     process_MSME_ACS_ex_vivo=False):
-    print root_pilot_study_pantopolium
+def execute_processing_DWI(controller, rp):
+
+    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert isinstance(rp, RunParameters)
+
     root_nifti = jph(root_pilot_study_pantopolium, '01_nifti')
     root_data = jph(root_pilot_study_pantopolium, 'A_data')
 
-    if process_MSME_PTB_ex_skull:
+    if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull = jph(root_nifti, 'PTB', 'ex_skull')
+        assert os.path.exists(pfo_PTB_ex_skull), pfo_PTB_ex_skull
         pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')
+        process_MSME_per_group(controller, pfo_PTB_ex_skull, pfo_PTB_ex_skull_data, bypass_subjects=rp.subjects)
 
-        tuple_subjects = ()  # can force the input to a predefined input list of subjects if they exists.
-
-        process_MSME_per_group(controller, pfo_PTB_ex_skull, pfo_PTB_ex_skull_data, bypass_subjects=tuple_subjects)
-
-    if process_MSME_PTB_ex_vivo:
+    if rp.execute_PTB_ex_vivo:
         pfo_PTB_ex_vivo = jph(root_nifti, 'PTB', 'ex_vivo')
+        assert os.path.exists(pfo_PTB_ex_vivo), pfo_PTB_ex_vivo
         pfo_PTB_ex_vivo_data = jph(root_data, 'PTB', 'ex_vivo')
+        process_MSME_per_group(controller, pfo_PTB_ex_vivo, pfo_PTB_ex_vivo_data, bypass_subjects=rp.subjects)
 
-        tuple_subjects = ()
-
-        process_MSME_per_group(controller, pfo_PTB_ex_vivo, pfo_PTB_ex_vivo_data, bypass_subjects=tuple_subjects)
-
-    if process_MSME_PTB_in_vivo:
+    if rp.execute_PTB_in_vivo:
         pfo_PTB_in_vivo = jph(root_nifti, 'PTB', 'in_vivo')
+        assert os.path.exists(pfo_PTB_in_vivo), pfo_PTB_in_vivo
         pfo_PTB_in_vivo_data = jph(root_data, 'PTB', 'in_vivo')
+        process_MSME_per_group(controller, pfo_PTB_in_vivo, pfo_PTB_in_vivo_data, bypass_subjects=rp.subjects)
 
-        tuple_subjects = ()
-
-        process_MSME_per_group(controller, pfo_PTB_in_vivo, pfo_PTB_in_vivo_data, bypass_subjects=tuple_subjects)
-
-    if process_MSME_PTB_op_skull:
+    if rp.execute_PTB_op_skull:
         pfo_PTB_op_skull = jph(root_nifti, 'PTB', 'op_skull')
+        assert os.path.exists(pfo_PTB_op_skull), pfo_PTB_op_skull
         pfo_PTB_op_skull_data = jph(root_data, 'PTB', 'op_skull')
+        process_MSME_per_group(controller, pfo_PTB_op_skull, pfo_PTB_op_skull_data, bypass_subjects=rp.subjects)
 
-        tuple_subjects = ()
-
-        process_MSME_per_group(controller, pfo_PTB_op_skull, pfo_PTB_op_skull_data, bypass_subjects=tuple_subjects)
-
-    if process_MSME_ACS_ex_vivo:
+    if rp.execute_ACS_ex_vivo:
         pfo_ACS_ex_vivo = jph(root_nifti, 'ACS', 'ex_vivo')
+        assert os.path.exists(pfo_ACS_ex_vivo), pfo_ACS_ex_vivo
         pfo_ACS_ex_vivo_data = jph(root_data, 'ACS', 'ex_vivo')
-
-        tuple_subjects = ()
-
-        process_MSME_per_group(controller, pfo_ACS_ex_vivo, pfo_ACS_ex_vivo_data, bypass_subjects=tuple_subjects)
+        process_MSME_per_group(controller, pfo_ACS_ex_vivo, pfo_ACS_ex_vivo_data, bypass_subjects=rp.subjects)
 
 
 if __name__ == '__main__':
-
-    if not os.path.isdir(root_pilot_study_pantopolium):
-        raise IOError('Connect pantopolio!')
 
     controller_steps = {'squeeze'              : True,
                         'orient to standard'   : True,
@@ -226,10 +211,14 @@ if __name__ == '__main__':
                         'propagate roi masks'  : True
                         }
 
-    main_process_DWI(controller_steps,
-                     process_MSME_PTB_ex_skull=False,
-                     process_MSME_PTB_ex_vivo=True,
-                     process_MSME_PTB_in_vivo=False,
-                     process_MSME_PTB_op_skull=False,
-                     process_MSME_ACS_ex_vivo=False
-                     )
+    rpa = RunParameters()
+
+    rpa.execute_PTB_ex_skull = True
+    rpa.execute_PTB_ex_vivo = True
+    rpa.execute_PTB_in_vivo = True
+    rpa.execute_PTB_op_skull = True
+    rpa.execute_ACS_ex_vivo = True
+
+    rpa.subjects = None
+
+    execute_processing_DWI(controller_steps, rpa)
