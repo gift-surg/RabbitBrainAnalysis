@@ -40,7 +40,8 @@ def propagate_and_fuse_all(controller_fuser,
     if propagate_and_fuse_PTB_ex_vivo:
         pfo_PTB_ex_vivo_data = jph(root_data, 'PTB', 'ex_vivo')
 
-        tuple_subjects = ()
+        tuple_subjects = ('1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002', '2502',
+                          '2503', '2608', '2702')
 
         propagate_and_fuse_per_group_over_all_modalities(controller_fuser,
                                                          controller_propagator,
@@ -92,7 +93,7 @@ def propagate_and_fuse_all(controller_fuser,
 
 if __name__ == '__main__':
 
-    if not os.path.isdir('/Volumes/sebastianof/rabbits/'):
+    if not os.path.isdir(root_pilot_study_pantopolium):
         raise IOError('Connect pantopolio!')
 
     controller_fuser_ = {'set header bicommissural'  : True,
@@ -129,8 +130,8 @@ if __name__ == '__main__':
                            controller_inter_modality_propagator_,
                            pfo_templ_subjects_input,
                            list_templ_subjects_input,
-                           propagate_and_fuse_PTB_ex_skull=True,
+                           propagate_and_fuse_PTB_ex_skull=False,
                            propagate_and_fuse_PTB_ex_vivo=True,
                            propagate_and_fuse_PTB_in_vivo=True,
-                           propagate_and_fuse_PTB_op_skull=True,
-                           propagate_and_fuse_ACS_ex_vivo=True)
+                           propagate_and_fuse_PTB_op_skull=False,
+                           propagate_and_fuse_ACS_ex_vivo=False)

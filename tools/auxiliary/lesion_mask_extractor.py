@@ -1,9 +1,11 @@
 import os
 import numpy as np
 import nibabel as nib
+from scipy.stats import norm
 
 from tools.auxiliary.utils import set_new_data
 from definitions import root_dir
+
 
 def filter_connected_components_by_volume(im_input, num_cc_to_filter=10):
     """
@@ -17,7 +19,6 @@ def filter_connected_components_by_volume(im_input, num_cc_to_filter=10):
     """
 
     im_data = im_input.get_data().astype(np.int32)
-
 
     new_data = np.zeros_like(im_data)
 
@@ -106,6 +107,61 @@ def simple_lesion_mask_extractor_path(im_input_path, im_output_path, im_mask_for
 
     print cmd
 
+    if not safety_on:
+        os.system(cmd)
+
+
+# --- Auxiliaries
+def get_percentiles_range(pfi_im_input, percentiles=(15, 95)):
+    assert os.path.exists(pfi_im_input)
+    im = nib.load(pfi_im_input)
+    im_data = im.get_data().flatten()
+    non_zero_data = im_data[np.where(im_data > 1e-6)]
+    low_p = np.percentile(non_zero_data, percentiles[0])
+    high_p = np.percentile(non_zero_data, percentiles[1])
+    return low_p, high_p
+
+
+def get_normal_interval_range(pfi_im_input, k=1):
+    assert os.path.exists(pfi_im_input)
+    im = nib.load(pfi_im_input)
+    im_data = im.get_data().flatten()
+    non_zero_data = im_data[np.where(im_data > 1e-6)]
+    mu, std = norm.fit(non_zero_data)
+    return mu - k * std,  mu + k * std
+
+
+def normal_lesion_mask_extractor(im_input_path, im_output_path, im_mask_foreground_path, safety_on=False):
+    low_thr, up_thr = get_normal_interval_range(im_input_path)
+    cmd = '''seg_maths {0} -thr {3} {1};
+             seg_maths {1} -uthr {4} {1};
+             seg_maths {1} -bin {1};
+             seg_maths {1} -add {2} {1};
+             seg_maths {1} -replace 2 0 {1};
+             seg_maths {1} -fill {1};
+             seg_maths {1} -dil 0.5 {1};
+             seg_maths {1} -ero 0.5 {1};
+             seg_maths {1} -mul {2} {1};
+          '''.format(im_input_path, im_output_path, im_mask_foreground_path, low_thr, up_thr)
+    print cmd
+    if not safety_on:
+        os.system(cmd)
+
+
+def percentile_lesion_mask_extractor(im_input_path, im_output_path, im_mask_foreground_path, percentiles,
+                                     safety_on=False):
+    low_thr, up_thr = get_percentiles_range(im_input_path, percentiles=percentiles)
+    cmd = '''seg_maths {0} -thr {3} {1};
+             seg_maths {1} -uthr {4} {1};
+             seg_maths {1} -bin {1};
+             seg_maths {1} -add {2} {1};
+             seg_maths {1} -replace 2 0 {1};
+             seg_maths {1} -fill {1};
+             seg_maths {1} -ero 0.7 {1};
+             seg_maths {1} -dil 1 {1};
+             seg_maths {1} -mul {2} {1};
+          '''.format(im_input_path, im_output_path, im_mask_foreground_path, low_thr, up_thr)
+    print cmd
     if not safety_on:
         os.system(cmd)
 

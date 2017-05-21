@@ -34,16 +34,17 @@ def create_alias_for_group(pfo_source, pfo_target):
         cmd2 = 'mkdir -p {}'.format(pfi_where_to_store_alias)
         os.system(cmd2)
 
+        # TMP:
         cmd3 = 'rm -r {}'.format(jph(pfo_target, sj, 'a_'))
         os.system(cmd3)
 
         link_folder_content_into_folder(jph(pfo_source, sj), pfi_where_to_store_alias)
 
 
-def main_generate_alias(alias_PTB_ex_skull=False,
-                        alias_PTB_ex_vivo=False,
-                        alias_PTB_in_vivo=False,
-                        alias_PTB_op_skull=False,
+def main_generate_alias(alias_PTB_ex_skull=True,
+                        alias_PTB_ex_vivo=True,
+                        alias_PTB_in_vivo=True,
+                        alias_PTB_op_skull=True,
                         alias_ACS_ex_vivo=True):
 
     print root_pilot_study_pantopolium

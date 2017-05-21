@@ -4,10 +4,11 @@ from os.path import join as jph
 
 
 from bruker2nifti.study_converter import convert_a_study
+from definitions import root_pilot_study_pantopolium
 
 
-root_raw_data    = '/Volumes/sebastianof/rabbits/00_raw_data'
-root_destination = '/Volumes/sebastianof/rabbits/01_nifti'
+root_raw_data    = jph(root_pilot_study_pantopolium, '00_raw_data')
+root_destination = jph(root_pilot_study_pantopolium, '01_nifti')
 
 
 def convert_a_group(pfo_group_to_convert, pfo_goup_destination):
@@ -70,6 +71,9 @@ def main_converter(PTB_convert_ex_skull=False,
 
 
 if __name__ == '__main__':
+
+    if not os.path.isdir(root_pilot_study_pantopolium):
+        raise IOError('Connect pantopolio!')
 
     main_converter()
     #

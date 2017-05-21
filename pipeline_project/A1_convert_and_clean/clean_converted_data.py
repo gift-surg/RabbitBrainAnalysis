@@ -28,7 +28,7 @@ def cleaner_converted_data(pfo_to_be_cleaned):
 
 def main_cleaner(PTB_clean_ex_skull=False,
                  PTB_clean_ex_vivo=False,
-                 PTB_clean_in_vivo=False,
+                 PTB_clean_in_vivo=True,
                  PTB_clean_op_skull=True,
                  ACS_clean_ex_vivo=False):
     
@@ -56,4 +56,6 @@ def main_cleaner(PTB_clean_ex_skull=False,
 
 
 if __name__ == '__main__':
+    if not os.path.isdir(root_pilot_study_pantopolium):
+        raise IOError('Connect pantopolio!')
     main_cleaner()
