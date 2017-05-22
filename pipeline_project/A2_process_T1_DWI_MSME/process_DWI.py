@@ -376,7 +376,7 @@ if __name__ == '__main__':
                         'eddy current'         : False,
                         'fsl tensor fitting'   : True,
                         'adjust dti-based mod' : True,
-                        'bfc b0'               : True,
+                        'bfc b0'               : False,
                         'create lesion mask'   : True,
                         'create reg masks'     : True,
                         'save results'         : True}
@@ -389,7 +389,7 @@ if __name__ == '__main__':
     # rpa.execute_PTB_op_skull = True
     # rpa.execute_ACS_ex_vivo = True
 
-    rpa.subjects = ['2503', '2608', '2702']
+    rpa.subjects = ['2702']  #
     rpa.update_params()
 
     execute_processing_DWI(controller_steps, rpa)

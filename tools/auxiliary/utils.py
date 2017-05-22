@@ -317,7 +317,7 @@ def scale_y_values(pfi_input, pfi_output, squeeze_factor=2.16481481481481):
 
     # generate new affine transformation (from bicommissural to histological)
     new_transf = np.copy(im_input.get_affine())
-    new_transf[1, 1] = new_transf[0, 0] / squeeze_factor
+    new_transf[1, 1] = new_transf[0, 0] * squeeze_factor
 
     # create output image on the input
     if im_input.header['sizeof_hdr'] == 348:
