@@ -1,14 +1,15 @@
 """
 MSME processing in their original coordinate system
 """
-import numpy as np
 import os
 from os.path import join as jph
 
-from pipeline_project.U_utils.main_controller import subject, RunParameters
+import numpy as np
+
 from definitions import root_pilot_study_pantopolium
-from tools.auxiliary.squeezer import squeeze_image_from_path
+from pipeline_project.A0_main.main_controller import subject, RunParameters
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
+from tools.auxiliary.squeezer import squeeze_image_from_path
 
 """
 
@@ -162,7 +163,7 @@ def process_MSME_per_group(controller, pfo_input_group_category, pfo_output_grou
                                  controller)
 
 
-def execute_processing_DWI(controller, rp):
+def execute_processing_MSME(controller, rp):
 
     assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
@@ -213,12 +214,12 @@ if __name__ == '__main__':
 
     rpa = RunParameters()
 
-    rpa.execute_PTB_ex_skull = True
-    rpa.execute_PTB_ex_vivo = True
+    rpa.execute_PTB_ex_skull = False
+    rpa.execute_PTB_ex_vivo = False
     rpa.execute_PTB_in_vivo = True
-    rpa.execute_PTB_op_skull = True
-    rpa.execute_ACS_ex_vivo = True
+    rpa.execute_PTB_op_skull = False
+    rpa.execute_ACS_ex_vivo = False
 
     rpa.subjects = None
 
-    execute_processing_DWI(controller_steps, rpa)
+    execute_processing_MSME(controller_steps, rpa)

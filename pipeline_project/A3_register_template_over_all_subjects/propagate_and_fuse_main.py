@@ -5,17 +5,17 @@ Propagate and fuse T1
 import os
 from os.path import join as jph
 
-from pipeline_project.U_utils.main_controller import templ_subjects, RunParameters
-from propagate_and_fuse_utils import propagate_and_fuse_per_group_over_all_modalities
 from definitions import root_pilot_study_pantopolium, root_pilot_study_dropbox
+from pipeline_project.A0_main.main_controller import templ_subjects, RunParameters
+from propagate_and_fuse_utils import propagate_and_fuse_per_group_over_all_modalities
 
 
-def execute_propagate_and_fuse_all(controller_fuser,
-                                   controller_propagator,
-                                   controller_inter_modality_propagator,
-                                   pfo_templ_subjects,
-                                   list_templ_subjects,
-                                   rp):
+def execute_propag_and_fuse_all(controller_fuser,
+                                controller_propagator,
+                                controller_inter_modality_propagator,
+                                pfo_templ_subjects,
+                                list_templ_subjects,
+                                rp):
 
     assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
@@ -69,7 +69,6 @@ def execute_propagate_and_fuse_all(controller_fuser,
     if rp.execute_ACS_ex_vivo:
         pfo_ACS_ex_vivo_data = jph(root_data, 'ACS', 'ex_vivo')
 
-
         propagate_and_fuse_per_group_over_all_modalities(controller_fuser,
                                                          controller_propagator,
                                                          controller_inter_modality_propagator,
@@ -81,17 +80,17 @@ def execute_propagate_and_fuse_all(controller_fuser,
 
 if __name__ == '__main__':
 
-    controller_fuser_ = {'set header bicommissural'  : True,
-                         'aff alignment'             : True,
-                         'Propagate aff to segm'     : True,
-                         'Propagate aff to mask'     : True,
-                         'Get differential BFC'      : True,
-                         'N-rig alignment'           : True,
-                         'Propagate to target n-rig' : True,
-                         'Smooth result'             : True,
-                         'Stack warps and segm'      : True,
-                         'Fuse'                      : True,
-                         'save result'               : True
+    controller_fuser_ = {'set header bicommissural'  : False,
+                         'aff alignment'             : False,
+                         'Propagate aff to segm'     : False,
+                         'Propagate aff to mask'     : False,
+                         'Get differential BFC'      : False,
+                         'N-rig alignment'           : False,
+                         'Propagate to target n-rig' : False,
+                         'Smooth result'             : False,
+                         'Stack warps and segm'      : False,
+                         'Fuse'                      : False,
+                         'save result'               : False
                          }
 
     controller_propagator_ = {'set header bicommissural'   : True,
@@ -101,7 +100,8 @@ if __name__ == '__main__':
                               'Smooth'                     : True,
                               'save result'                : True}
 
-    controller_inter_modality_propagator_ = {'rig register to S0'       : True,
+    controller_inter_modality_propagator_ = {'compensate squeezing'     : True,
+                                             'rig register to S0'       : True,
                                              'rig propagate to S0'      : True,
                                              'rig register to MSME_up'  : True,
                                              'rig propagate to MSME_up' : True,
@@ -112,17 +112,25 @@ if __name__ == '__main__':
 
     rpa = RunParameters()
 
-    rpa.execute_PTB_ex_skull = True
-    rpa.execute_PTB_ex_vivo = True
-    rpa.execute_PTB_in_vivo = True
-    rpa.execute_PTB_op_skull = True
-    rpa.execute_ACS_ex_vivo = True
+    # rpa.execute_PTB_ex_skull = True
+    # rpa.execute_PTB_ex_vivo = True
+    # rpa.execute_PTB_in_vivo = True
+    # rpa.execute_PTB_op_skull = True
+    # rpa.execute_ACS_ex_vivo = True
 
-    rpa.subjects = None
+    # rpa.subjects = ['0802t1']
+    # rpa.update_params()
     # rpa.subjects = ['1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002', '2502', '2503',
     #                 '2608', '2702']
+    rpa.subjects = ['2503', ] # '2608', '2702']
 
-    execute_propagate_and_fuse_all(controller_fuser_,
+
+    # ['0904t1', '1501t1', '1504t1', '1508t1', '1509t1', '1511t1' ]
+                    #  '0904t1', '1501t1', '1504t1', '1508t1', '1509t1', '1511t1', '2502bt1', '2503t1',
+                    #'2605t1', '2702t1']  # '0802t1',
+    rpa.update_params()
+
+    execute_propag_and_fuse_all(controller_fuser_,
                                    controller_propagator_,
                                    controller_inter_modality_propagator_,
                                    pfo_templ_subjects_input,

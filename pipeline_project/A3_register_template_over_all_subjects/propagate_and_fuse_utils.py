@@ -4,14 +4,13 @@ Propagate subject 1,2,3 (source_subjects) on subject 4 (target_subject) and then
 
 import os
 from os.path import join as jph
-import numpy as np
 
+import numpy as np
 from labels_manager.main import LabelsManager
 
 from definitions import root_pilot_study_pantopolium
-from pipeline_project.U_utils.main_controller import subject, propagate_me_level, templ_subjects
-from tools.auxiliary.utils import adjust_header_from_transformations
-
+from pipeline_project.A0_main.main_controller import subject, propagate_me_level, templ_subjects
+from tools.auxiliary.utils import adjust_header_from_transformations, scale_z_values
 
 """
 Disregarding the modality or other issues, various options are allowed.
@@ -74,6 +73,11 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             adjust_header_from_transformations(pfi_templ_reg_mask_sj_bicomm_header, pfi_templ_reg_mask_sj_bicomm_header,
                                                theta=theta, trasl=(0, 0, 0))
         if controller['aff alignment']:
+
+            opt = ''
+            if subject[sj_target][0][1] == 'in_vivo':
+                opt = ' -rigOnly -speeeeed '
+
             print('- aff alignment, {} over {}'.format(sj, sj_target))
             pfi_target = jph(pfo_mod, sj_target + '_T1.nii.gz')
             pfi_target_roi_registration_masks = jph(pfo_mask, sj_target + '_T1_reg_mask.nii.gz')
@@ -85,10 +89,10 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             assert os.path.exists(pfi_templ_reg_mask_sj_bicomm_header)
             pfi_affine_transf = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_transf_aff.txt')
             pfi_affine_warp_sj = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_warp_aff.nii.gz')
-            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} '.format(
+            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} {6}'.format(
                 pfi_target, pfi_target_roi_registration_masks,
                 pfi_templ_sj_bicomm_header, pfi_templ_reg_mask_sj_bicomm_header, 
-                pfi_affine_transf, pfi_affine_warp_sj)
+                pfi_affine_transf, pfi_affine_warp_sj, opt)
             os.system(cmd)
 
         if controller['Propagate aff to segm']:
@@ -115,12 +119,13 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             assert os.path.exists(pfi_templ_reg_mask_sj_bicomm_header)
             assert os.path.exists(pfi_affine_transf)
             pfi_templ_reg_mask_sj_aff_registered = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_reg_mask.nii.gz')
-            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0 '.format(
                 pfi_target, pfi_templ_reg_mask_sj_bicomm_header, pfi_affine_transf,
                 pfi_templ_reg_mask_sj_aff_registered)
             os.system(cmd)
 
-        if controller['Get differential BFC']:  # This can be optional. If false copy
+        if controller['Get differential BFC'] and not subject[sj_target][0][1] == 'in_vivo':
+            # for the in-vivo there is no need for the differential BFC
             print('- Get differential BFC, {} over {} '.format(sj, sj_target))
             pfi_target = jph(pfo_mod, sj_target + '_T1.nii.gz')
             pfi_target_roi_registration_masks = jph(pfo_mask, sj_target + '_T1_reg_mask.nii.gz')
@@ -161,7 +166,10 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             assert os.path.exists(pfi_templ_reg_mask_sj_aff_registered)
             pfi_diff_bfc_n_rig_cpp = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '_cpp.nii.gz')
             pfi_diff_bfc_n_rig_res = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '_warp.nii.gz')
-            options = '-ln 2 -be 0.4'
+            options = '-ln 2 -be 0.5'
+            if subject[sj_target][0][1] == 'in_vivo':
+                options = '-ln 2 -be 0.8'
+
             cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -cpp {4} -res {5} {6}'.format(
                 pfi_diff_bfc_target, pfi_target_roi_registration_masks, pfi_diff_bfc_subject,
                 pfi_templ_reg_mask_sj_aff_registered, pfi_diff_bfc_n_rig_cpp, pfi_diff_bfc_n_rig_res, options)
@@ -195,11 +203,13 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_subject_propagated_on_target_segm_smol = jph(pfo_tmp,
                                                              'final' + sj + 'over' + sj_target + '_segm_smol.nii.gz')
             smol = 0.2
+            if subject[sj_target][0][1] == 'in_vivo':
+                smol = 0
             if smol > 0:
                 cmd = 'seg_maths {0} -smol {1} {2}'.format(pfi_subject_propagated_on_target_segm, smol,
                                                            pfi_subject_propagated_on_target_segm_smol)
             else:
-                cmd = 'cp {0} {1}'.format(pfi_subject_propagated_on_target_segm, smol,
+                cmd = 'cp {0} {1}'.format(pfi_subject_propagated_on_target_segm,
                                           pfi_subject_propagated_on_target_segm_smol)
             os.system(cmd)
 
@@ -208,7 +218,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
     if controller['Stack warps and segm']:
         print('- Stack warps and segm {} '.format(sj_target))
 
-        list_pfi_segmentations = [jph(pfo_tmp, 'final' + sj + 'over' + sj_target + '_segm_smol.nii.gz')  # smol segmentation
+        list_pfi_segmentations = [jph(pfo_tmp, 'final' + sj + 'over' + sj_target + '_segm_smol.nii.gz')  # smol seg
                                   for sj in list_templ_subjects]
 
         list_pfi_warped = [jph(pfo_tmp, 'final' + sj + 'over' + sj_target + '_segm.nii.gz')  # warped
@@ -302,7 +312,7 @@ def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_
         assert os.path.exists(pfi_source_T1), pfi_source_T1
         assert os.path.exists(pfi_source_segm), pfi_source_segm
         assert os.path.exists(pfi_source_reg_mask), pfi_source_reg_mask
-        theta = - subject[sj_source][1][0]
+        theta = subject[sj_source][1][0]
         pfi_source_T1_bicomm_hd = jph(pfo_tmp, sj_source + '_templ_bicomm_hd.nii.gz')
         pfi_source_segm_bicomm_hd = jph(pfo_tmp, sj_source + '_templ_segm_bicomm_hd.nii.gz')
         pfi_source_reg_mask_bicomm_hd = jph(pfo_tmp, sj_source + '_templ_reg_mask_bicomm_hd.nii.gz')
@@ -377,7 +387,7 @@ def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_
             cmd = 'seg_maths {0} -smol {1} {2}'.format(pfi_templ_segm_aff_registered_on_sj_target, smol,
                                                        pfi_subject_propagated_on_target_segm_smol)
         else:
-            cmd = 'cp {0} {1}'.format(pfi_templ_segm_aff_registered_on_sj_target, smol,
+            cmd = 'cp {0} {1}'.format(pfi_templ_segm_aff_registered_on_sj_target,
                                       pfi_subject_propagated_on_target_segm_smol)
         os.system(cmd)
 
@@ -432,7 +442,22 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
         print('- rig register to S0 {}'.format(sj))
         pfi_rigid_transf_to_s0 = jph(pfo_tmp, sj + 'rigid_T1_to_s0_aff.txt')
         pfi_rigid_warp_to_s0 = jph(pfo_tmp, sj + 'rigid_T1_to_s0_warp.nii.gz')
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly'.format(
+
+        # if subject[sj][4][1]:  # is squashed! - use anti squash the transformation
+        #
+        #     pfi_T1_anti_sqash = jph(pfo_tmp, sj + '_T1_antisqash.nii.gz')
+        #     pfi_T1_reg_mask_anti_sqash = jph(pfo_tmp, sj + '_T1_antisqash_reg_mask.nii.gz')
+        #
+        #     scale_z_values(pfi_T1, pfi_T1_anti_sqash, squeeze_factor=2.218074656188605)
+        #     scale_z_values(pfi_reg_mask_T1, pfi_T1_reg_mask_anti_sqash, squeeze_factor=2.218074656188605)
+        #
+        #     cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly -speeeeed '.format(
+        #         pfi_S0, pfi_reg_mask_S0, pfi_T1_anti_sqash, pfi_T1_reg_mask_anti_sqash, pfi_rigid_transf_to_s0,
+        #         pfi_rigid_warp_to_s0)
+        #     os.system(cmd)
+        # else:
+
+        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly  '.format(
             pfi_S0, pfi_reg_mask_S0, pfi_T1, pfi_reg_mask_T1, pfi_rigid_transf_to_s0, pfi_rigid_warp_to_s0)
         os.system(cmd)
 
@@ -440,6 +465,21 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
         print('- rig propagate to S0 {}'.format(sj))
         pfi_rigid_transf_to_s0 = jph(pfo_tmp, sj + 'rigid_T1_to_s0_aff.txt')
         assert os.path.exists(pfi_rigid_transf_to_s0)
+        # if subject[sj][4][1]:  # is squashed!
+        #
+        #     pfi_T1_anti_sqash = jph(pfo_tmp, sj + '_T1_antisqash.nii.gz')
+        #     pfi_T1_reg_mask_anti_sqash = jph(pfo_tmp, sj + '_T1_antisqash_reg_mask.nii.gz')
+        #     assert os.path.exists(pfi_T1_anti_sqash)
+        #     assert os.path.exists(pfi_T1_reg_mask_anti_sqash)
+        #
+        #     pfi_T1_segm_anti_squash = jph(pfo_tmp, sj + '_T1_antisqash_segm.nii.gz')
+        #
+        #     scale_z_values(pfi_segm_T1, pfi_T1_segm_anti_squash, squeeze_factor=2.218074656188605**2)
+        #
+        #     cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+        #         pfi_S0, pfi_T1_segm_anti_squash, pfi_rigid_transf_to_s0, pfi_segm_S0)
+        #     os.system(cmd)
+        # else:
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_S0, pfi_segm_T1, pfi_rigid_transf_to_s0, pfi_segm_S0)
         os.system(cmd)

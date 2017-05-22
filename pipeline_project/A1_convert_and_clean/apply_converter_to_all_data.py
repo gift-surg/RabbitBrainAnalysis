@@ -1,15 +1,14 @@
 import os
-import numpy as np
 from os.path import join as jph
 
-
+import numpy as np
 from bruker2nifti.study_converter import convert_a_study
-from definitions import root_pilot_study_pantopolium
-from pipeline_project.U_utils.main_controller import RunParameters
 
+from definitions import root_pilot_study_pantopolium
+from pipeline_project.A0_main.main_controller import RunParameters
 
 root_raw_data    = jph(root_pilot_study_pantopolium, '00_raw_data')
-root_destination = jph(root_pilot_study_pantopolium, '01_nifti_converted')
+root_destination = jph(root_pilot_study_pantopolium, '01_nifti')
 
 
 def convert_a_group(pfo_group_to_convert, pfo_goup_destination):
@@ -76,5 +75,6 @@ if __name__ == '__main__':
     rpa.execute_ACS_ex_vivo = True
 
     rpa.subjects = None
+    rpa.update()
 
     execute_converter(rpa)

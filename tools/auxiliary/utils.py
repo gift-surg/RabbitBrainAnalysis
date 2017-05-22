@@ -32,6 +32,14 @@ def set_new_data(image, new_data, new_dtype=None, remove_nan=True):
     return new_image
 
 
+def set_new_data_path(pfi_target_im, pfi_image_where_the_new_data, pfi_result, new_dtype=None, remove_nan=True):
+
+    image = nib.load(pfi_target_im)
+    new_data = nib.load(pfi_image_where_the_new_data).get_data()
+    new_image = set_new_data(image, new_data, new_dtype=new_dtype, remove_nan=remove_nan)
+    nib.save(new_image, filename=pfi_result)
+
+
 def set_new_dtype_path(pfi_in, pfi_out, new_dtype):
 
     im = nib.load(pfi_in)
@@ -262,6 +270,70 @@ def adjust_header_from_transformations(pfi_input, pfi_output, theta, trasl):
 
     # sanity check
     np.testing.assert_almost_equal(np.linalg.det(new_transf), np.linalg.det(im_input.get_affine()))
+
+    # save output image
+    nib.save(new_image, pfi_output)
+
+
+def scale_z_values(pfi_input, pfi_output, squeeze_factor=2.218074656188605):
+    # the input must be oriented to standard with FSL!
+    # we assume and confirm some sort of aniotropcit
+    # Load input image:
+    im_input = nib.load(pfi_input)
+
+    assert np.count_nonzero(np.diag(im_input.get_affine())) == 4
+
+    # generate new affine transformation (from bicommissural to histological)
+    new_transf = np.copy(im_input.get_affine())
+    new_transf[2, 2] = new_transf[1, 1] / squeeze_factor
+
+    # create output image on the input
+    if im_input.header['sizeof_hdr'] == 348:
+        new_image = nib.Nifti1Image(im_input.get_data(), new_transf, header=im_input.get_header())
+    # if nifty2
+    elif im_input.header['sizeof_hdr'] == 540:
+        new_image = nib.Nifti2Image(im_input.get_data(), new_transf, header=im_input.get_header())
+    else:
+        raise IOError
+
+    # print intermediate results
+    print 'Unsquashing z coordinate:'
+    print 'Affine input image: \n'
+    print im_input.get_affine()
+    print 'Affine after transformation: \n'
+    print new_image.get_affine()
+
+    # save output image
+    nib.save(new_image, pfi_output)
+
+
+def scale_y_values(pfi_input, pfi_output, squeeze_factor=2.16481481481481):
+    # the input must be oriented to standard with FSL!
+    # we assume and confirm some sort of aniotropcit
+    # Load input image:
+    im_input = nib.load(pfi_input)
+
+    assert np.count_nonzero(np.diag(im_input.get_affine())) == 4
+
+    # generate new affine transformation (from bicommissural to histological)
+    new_transf = np.copy(im_input.get_affine())
+    new_transf[1, 1] = new_transf[0, 0] / squeeze_factor
+
+    # create output image on the input
+    if im_input.header['sizeof_hdr'] == 348:
+        new_image = nib.Nifti1Image(im_input.get_data(), new_transf, header=im_input.get_header())
+    # if nifty2
+    elif im_input.header['sizeof_hdr'] == 540:
+        new_image = nib.Nifti2Image(im_input.get_data(), new_transf, header=im_input.get_header())
+    else:
+        raise IOError
+
+    # print intermediate results
+    print 'Unsquashing z coordinate:'
+    print 'Affine input image: \n'
+    print im_input.get_affine()
+    print 'Affine after transformation: \n'
+    print new_image.get_affine()
 
     # save output image
     nib.save(new_image, pfi_output)

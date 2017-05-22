@@ -1,13 +1,14 @@
 import os
 from os.path import join as jph
+
 import numpy as np
 
-from pipeline_project.U_utils.main_controller import RunParameters
-from tools.measurements.compile_record import compile_record
 from definitions import root_docs_dropbox, root_pilot_study_pantopolium
+from pipeline_project.A0_main.main_controller import RunParameters
+from tools.measurements.compile_record import compile_record
 
 
-def compile_record_per_group(pfo_input_data, pfo_output_record, tuple_subjects=None):
+def compile_record_per_group(pfo_input_data, tuple_subjects=None):
     assert os.path.exists(pfo_input_data)
     subj_list = np.sort(list(set(os.listdir(pfo_input_data)) - {'.DS_Store'}))
     if tuple_subjects is not None:
@@ -18,15 +19,13 @@ def compile_record_per_group(pfo_input_data, pfo_output_record, tuple_subjects=N
           'Subjects {1}\n'.format(pfo_input_data, subj_list)
 
     for sj in subj_list:
-        can_collect_data = True
-
-        pfo_sj = jph(pfo_input_data, sj)
-        pfo_output_record_sj = jph(pfo_output_record, sj)
-
         # grab modalities
+        pfo_sj = jph(pfo_input_data, sj)
         pfi_T1 = jph(pfo_sj, 'mod', sj + '_T1.nii.gz')
         pfi_FA = jph(pfo_sj, 'mod', sj + '_FA.nii.gz')
         pfi_ADC = jph(pfo_sj, 'mod', sj + '_MD.nii.gz')
+        # -
+        can_collect_data = True
         if not os.path.exists(pfi_T1):
             print('RECORD DATA not possible for subject {}. T1 not present'.format(sj))
             print pfi_T1
@@ -47,6 +46,10 @@ def compile_record_per_group(pfo_input_data, pfo_output_record, tuple_subjects=N
             print('RECORD DATA not possible for subject {}. Segmentation S0 not present'.format(sj))
             can_collect_data = False
         if can_collect_data:
+
+            pfo_output_record_sj = jph(pfo_input_data, sj, 'records')
+            cmd = 'mkdir -p {}'.format(pfo_output_record_sj)
+            os.system(cmd)
             # grab label descriptor
             pfi_multi_labels_descr = jph(root_pilot_study_pantopolium, 'A_data', 'Utils', 'multi_label_descriptor.txt')
             assert os.path.exists(pfi_multi_labels_descr)
@@ -78,44 +81,46 @@ def compile_record_T1_DWI(rp):
     assert isinstance(rp, RunParameters)
 
     root_data    = jph(root_pilot_study_pantopolium, 'A_data')
-    root_records = jph(root_pilot_study_pantopolium, 'B_records')
 
     if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')
-        pfo_PTB_ex_skull_records = jph(root_records, 'PTB', 'ex_skull')
-        compile_record_per_group(pfo_PTB_ex_skull_data, pfo_PTB_ex_skull_records, rp.subjects)
+        assert os.path.exists(pfo_PTB_ex_skull_data)
+        compile_record_per_group(pfo_PTB_ex_skull_data, rp.subjects)
 
     if rp.execute_PTB_ex_vivo:
         pfo_PTB_ex_vivo_data = jph(root_data, 'PTB', 'ex_vivo')
-        pfo_PTB_ex_vivo_records = jph(root_records, 'PTB', 'ex_vivo')
-        compile_record_per_group(pfo_PTB_ex_vivo_data, pfo_PTB_ex_vivo_records, rp.subjects)
+        assert os.path.exists(pfo_PTB_ex_vivo_data)
+        compile_record_per_group(pfo_PTB_ex_vivo_data, rp.subjects)
 
     if rp.execute_PTB_in_vivo:
         pfo_PTB_in_vivo_data = jph(root_data, 'PTB', 'in_vivo')
-        pfo_PTB_in_vivo_records = jph(root_records, 'PTB', 'in_vivo')
-        compile_record_per_group(pfo_PTB_in_vivo_data, pfo_PTB_in_vivo_records, rp.subjects)
+        assert os.path.exists(pfo_PTB_in_vivo_data)
+        compile_record_per_group(pfo_PTB_in_vivo_data, rp.subjects)
 
     if rp.execute_PTB_op_skull:
         pfo_PTB_op_skull_data = jph(root_data, 'PTB', 'op_skull')
-        pfo_PTB_op_skull_records = jph(root_records, 'PTB', 'op_skull')
-        compile_record_per_group(pfo_PTB_op_skull_data, pfo_PTB_op_skull_records, rp.subjects)
+        assert os.path.exists(pfo_PTB_op_skull_data)
+        compile_record_per_group(pfo_PTB_op_skull_data, rp.subjects)
 
     if rp.execute_ACS_ex_vivo:
         pfo_ACS_ex_vivo_data = jph(root_data, 'ACS', 'ex_vivo')
-        pfo_ACS_ex_vivo_records = jph(root_records, 'ACS', 'ex_vivo')
-        compile_record_per_group(pfo_ACS_ex_vivo_data, pfo_ACS_ex_vivo_records, rp.subjects)
+        assert os.path.exists(pfo_ACS_ex_vivo_data)
+        compile_record_per_group(pfo_ACS_ex_vivo_data, rp.subjects)
 
 
 if __name__ == '__main__':
 
     rpa = RunParameters()
 
-    rpa.execute_PTB_ex_skull = True
+    rpa.execute_PTB_ex_skull = False
     rpa.execute_PTB_ex_vivo = True
     rpa.execute_PTB_in_vivo = True
-    rpa.execute_PTB_op_skull = True
-    rpa.execute_ACS_ex_vivo = True
+    rpa.execute_PTB_op_skull = False
+    rpa.execute_ACS_ex_vivo = False
 
-    rpa.subjects = None
+    # rpa.subjects = None
+    # rpa.update_params()
+    # rpa.subjects = ['1511t1', ]
+    # rpa.update_params()
 
     compile_record_T1_DWI(rpa)

@@ -21,9 +21,9 @@ from os.path import join as jph
 from definitions import root_pilot_study
 
 
-from pipelines_internal_template.A_template_atlas_in_vivo.pre_process_T1_in_vivo import process_T1
-from pipelines_internal_template.A_template_atlas_in_vivo.pre_process_DWI_fsl_in_vivo import process_DWI_fsl
-from pipelines_internal_template.A_template_atlas_in_vivo.pre_process_skull_strip_all import generate_skull_stripped
+from pipelines_internal_template.A0_template_atlas_in_vivo.pre_process_T1_in_vivo import process_T1
+from pipelines_internal_template.A0_template_atlas_in_vivo.pre_process_DWI_fsl_in_vivo import process_DWI_fsl
+from pipelines_internal_template.A0_template_atlas_in_vivo.pre_process_skull_strip_all import generate_skull_stripped
 
 subjects = ['0802_t1', '0904_t1', '1501_t1', '1504_t1', '1508_t1', '1509_t1', '1511_t1']
 # subjects = ['0904_t1', '1501_t1', '1504_t1', '1508_t1', '1509_t1', '1511_t1']

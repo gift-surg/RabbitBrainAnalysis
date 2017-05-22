@@ -7,14 +7,14 @@ STEPS:
 """
 import os
 from os.path import join as jph
-from definitions import root_pilot_study
+from definitions import root_pilot_study_dropbox
 
 from tools.auxiliary.utils import print_and_run
 
-from pipelines_internal_template.A_template_atlas_in_vivo_prelim.a_definitions_regions_subjects import subjects
 
+subjects = ['0802_t1', '0904_t1', '1501_t1', '1504_t1', '1508_t1', '1509_t1', '1511_t1']
 
-pfo_root_main = jph(root_pilot_study, 'A_template_atlas_in_vivo')
+pfo_root_main = jph(root_pilot_study_dropbox, 'A_template_atlas_in_vivo')
 
 pfi_template = jph(pfo_root_main, 'Utils', 'preliminary_template', 'in_vivo_template.nii.gz')
 pfi_atlas = jph(pfo_root_main, 'Utils', 'preliminary_template', 'in_vivo_atlas_roi.nii.gz')
@@ -33,7 +33,7 @@ for sj in subjects:
     print '\n######################\n\n\n'
 
     # input:
-    pfi_subject = jph(root_pilot_study, 'A_template_atlas_in_vivo', sj,
+    pfi_subject = jph(root_pilot_study_dropbox, 'A_template_atlas_in_vivo', sj,
                       'all_modalities', sj + '_T1.nii.gz')
 
     # intermediate steps paths:
@@ -55,16 +55,16 @@ for sj in subjects:
     pfi_diff_bfc_n_rig_res = jph(pfo_propagation_data, sj + '_z_bfc_0802_on_bfc_sj_nrig.nii.gz')
 
     # output folder:
-    pfo_atuomatic_segmentation = jph(root_pilot_study, 'A_template_atlas_in_vivo', sj, 'segmentations', 'automatic')
+    pfo_atuomatic_segmentation = jph(root_pilot_study_dropbox, 'A_template_atlas_in_vivo', sj, 'segmentations',
+                                     'automatic')
     # output data:
     test_tag = '_t1'  # t1 :  -be 0.8 -ln 2 -maxit 250 no mask (same as t3_reg_mask temporary...)
-    pfi_propagated_prelim_templ = jph(root_pilot_study, 'A_template_atlas_in_vivo', sj,
+    pfi_propagated_prelim_templ = jph(root_pilot_study_dropbox, 'A_template_atlas_in_vivo', sj,
                            'segmentations', 'automatic', 'prelim_' + sj + '_template' + test_tag + '.nii.gz')
 
     # Step smooth result
-    pfi_propagated_prelim_templ_smol = jph(root_pilot_study, 'A_template_atlas_in_vivo', sj,
+    pfi_propagated_prelim_templ_smol = jph(root_pilot_study_dropbox, 'A_template_atlas_in_vivo', sj,
                            'segmentations', 'automatic', 'prelim_' + sj + '_template_smol' + test_tag + '.nii.gz')
-
 
     """ Steps manager """
 

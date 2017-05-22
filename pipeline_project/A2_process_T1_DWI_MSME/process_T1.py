@@ -3,13 +3,14 @@ T1 processing in their original coordinate system.
 """
 import os
 from os.path import join as jph
+
 import numpy as np
 
-from pipeline_project.U_utils.main_controller import subject, RunParameters
 from definitions import root_pilot_study_pantopolium
-from tools.correctors.bias_field_corrector4 import bias_field_correction
+from pipeline_project.A0_main.main_controller import subject, RunParameters
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
+from tools.correctors.bias_field_corrector4 import bias_field_correction
 
 """
 Processing list for each T1 of each subject:
@@ -161,7 +162,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
         elif subject[sj][0][1] == 'in_vivo':
             percentile = (10, 98)
         else:
-            raise IOError
+            percentile = (5, 95)  # todo: add percentile as subject attributes, not as cat. attribute
 
         percentile_lesion_mask_extractor(im_input_path=pfi_3d_bias_field_corrected,
                                          im_output_path=pfi_lesion_mask,
@@ -189,7 +190,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
         os.system(cmd)
 
 
-def process_T1_per_group(controller, pfo_input_group_category, pfo_output_group_category, bypass_subjects=()):
+def process_T1_per_group(controller, pfo_input_group_category, pfo_output_group_category, bypass_subjects=None):
 
     assert os.path.exists(pfo_input_group_category)
     assert os.path.exists(pfo_output_group_category)
@@ -197,7 +198,7 @@ def process_T1_per_group(controller, pfo_input_group_category, pfo_output_group_
     subj_list = np.sort(list(set(os.listdir(pfo_input_group_category)) - {'.DS_Store'}))
 
     # allow to force the subj_list to be the input tuple bypass subject, chosen by the user.
-    if not bypass_subjects == ():
+    if bypass_subjects is not None:
 
         if not set(bypass_subjects).intersection(set(subj_list)) == {}:
             raise IOError
@@ -256,12 +257,12 @@ def execute_processing_T1(controller, rp):
 
 if __name__ == '__main__':
 
-    controller_steps = {'orient to standard'  : False,
-                        'threshold'           : False,
-                        'register roi masks'  : False,
-                        'propagate roi masks' : False,
-                        'adjust mask'         : False,
-                        'cut masks'           : False,
+    controller_steps = {'orient to standard'  : True,
+                        'threshold'           : True,
+                        'register roi masks'  : True,
+                        'propagate roi masks' : True,
+                        'adjust mask'         : True,
+                        'cut masks'           : True,
                         'step bfc'            : False,
                         'create lesion mask'  : True,
                         'create reg masks'    : True,
@@ -270,8 +271,8 @@ if __name__ == '__main__':
     rpa = RunParameters()
 
     rpa.execute_PTB_ex_skull = True
-    rpa.execute_PTB_ex_vivo = True
-    rpa.execute_PTB_in_vivo = True
+    rpa.execute_PTB_ex_vivo = False
+    rpa.execute_PTB_in_vivo = False
     rpa.execute_PTB_op_skull = True
     rpa.execute_ACS_ex_vivo = True
 

@@ -6,15 +6,15 @@ from os.path import join as jph
 
 import numpy as np
 
-from pipeline_project.U_utils.main_controller import subject, RunParameters
 from definitions import root_pilot_study_pantopolium
-from tools.auxiliary.squeezer import squeeze_image_from_path
-from tools.correctors.bias_field_corrector4 import bias_field_correction
-from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, \
-    reproduce_slice_fourth_dimension_path
-from tools.correctors.slope_corrector import slope_corrector_path
-from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
+from pipeline_project.A0_main.main_controller import subject, RunParameters
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
+from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
+from tools.auxiliary.squeezer import squeeze_image_from_path
+from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, \
+    reproduce_slice_fourth_dimension_path, scale_y_values
+from tools.correctors.bias_field_corrector4 import bias_field_correction
+from tools.correctors.slope_corrector import slope_corrector_path
 
 """
 Processing list for each DWI image acquired
@@ -81,6 +81,25 @@ def process_DWI_per_subject(sj, pfo_input_sj_DWI, pfo_output_sj, controller):
         cmd1 = 'fslreorient2std {0} {1}'.format(pfi_b0_original, pfi_b0_std)
         os.system(cmd1)
         set_translational_part_to_zero(pfi_b0_std, pfi_b0_std)
+
+        if subject[sj][4][1]:
+            scale_y_values(pfi_dwi_std, pfi_dwi_std, squeeze_factor=2.218074656188605)
+            scale_y_values(pfi_b0_std, pfi_b0_std, squeeze_factor=2.218074656188605)
+
+    if controller['register roi masks']:
+        print('- register roi masks {}'.format(sj))
+        pfi_b0 = jph(pfo_tmp, sj + '_DWI_b0_to_std.nii.gz')
+        pfi_1305 = jph(root_pilot_study_pantopolium, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
+        assert os.path.exists(pfi_b0)
+        assert os.path.exists(pfi_1305)
+        pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '_b0.txt')
+        pfi_3d_warped_1305_on_subject = jph(pfo_tmp, 'warp_1305_on_' + sj + '_b0.nii.gz')
+        cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} ; '.format(
+            pfi_b0,
+            pfi_1305,
+            pfi_affine_transformation_1305_on_subject,
+            pfi_3d_warped_1305_on_subject)
+        os.system(cmd)
 
     if controller['register roi masks']:
         print('- register roi masks {}'.format(sj))
@@ -154,7 +173,7 @@ def process_DWI_per_subject(sj, pfo_input_sj_DWI, pfo_output_sj, controller):
         assert os.path.exists(pfi_slope_txt)
         pfi_dwi_slope_corrected = jph(pfo_tmp, sj + '_DWI_slope_corrected.nii.gz')
         slopes = np.loadtxt(pfi_slope_txt)
-        slope_corrector_path(slopes, pfi_dwi_cropped, pfi_dwi_slope_corrected, eliminate_consec_duplicates=True)
+        slope_corrector_path(slopes, pfi_dwi_cropped, pfi_dwi_slope_corrected)
         # --
         pfi_b0_cropped = jph(pfo_tmp, sj + '_b0_cropped.nii.gz')
         assert os.path.exists(pfi_b0_cropped)
@@ -346,31 +365,31 @@ def execute_processing_DWI(controller, rp):
 
 if __name__ == '__main__':
 
-    controller_steps = {'squeeze'              : True,
+    controller_steps = {'squeeze'              : False,
                         'orient to standard'   : True,
-                        'threshold'            : False,
-                        'register roi masks'   : False,
-                        'propagate roi masks'  : False,
-                        'adjust mask'          : False,
-                        'cut mask dwi'         : False,
-                        'cut mask b0'          : False,
-                        'correct slope'        : False,
+                        'register roi masks'   : True,
+                        'propagate roi masks'  : True,
+                        'adjust mask'          : True,
+                        'cut mask dwi'         : True,
+                        'cut mask b0'          : True,
+                        'correct slope'        : True,
                         'eddy current'         : False,
-                        'fsl tensor fitting'   : False,
-                        'adjust dti-based mod' : False,
-                        'bfc b0'               : False,
-                        'create lesion mask'   : False,
-                        'create reg masks'     : False,
-                        'save results'         : False}
+                        'fsl tensor fitting'   : True,
+                        'adjust dti-based mod' : True,
+                        'bfc b0'               : True,
+                        'create lesion mask'   : True,
+                        'create reg masks'     : True,
+                        'save results'         : True}
 
     rpa = RunParameters()
 
-    rpa.execute_PTB_ex_skull = True
-    rpa.execute_PTB_ex_vivo = True
-    rpa.execute_PTB_in_vivo = True
-    rpa.execute_PTB_op_skull = True
-    rpa.execute_ACS_ex_vivo = True
+    # rpa.execute_PTB_ex_skull = True
+    # rpa.execute_PTB_ex_vivo = True
+    # rpa.execute_PTB_in_vivo = True
+    # rpa.execute_PTB_op_skull = True
+    # rpa.execute_ACS_ex_vivo = True
 
-    rpa.subjects = None
+    rpa.subjects = ['2503', '2608', '2702']
+    rpa.update_params()
 
     execute_processing_DWI(controller_steps, rpa)

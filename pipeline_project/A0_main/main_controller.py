@@ -46,13 +46,13 @@ class RunParameters(object):
                 self.execute_ACS_ex_vivo = True
             else:
                 self.subjects = [self.subjects, ]
-                self._update_params()
+                self.update_params()
 
-    def _update_params(self):
+    def update_params(self):
         # Turn on flags of the groups where the parameters are.
         for sj in self.subjects:
             assert sj in subject.keys(), '{} Not in the subject list'.format(sj)
-            group, category = subject[self.subjects][0]
+            group, category = subject[sj][0]
             if group == 'PTB':
                 if category == 'ex_skull':
                     self.execute_PTB_ex_skull = True
@@ -65,6 +65,12 @@ class RunParameters(object):
             elif group == 'ACS':
                 if category == 'ex_vivo':
                     self.execute_ACS_ex_vivo = True
+
+
+# snake round
+propagate_me_level = 2
+# subjects of the template
+templ_subjects = ['1305', '1702', '1805', '2002', '1201', '1203', '1404', '1507', '1510', '2502']
 
 
 # TODO angles for ex_skull, they require some time...!
@@ -420,7 +426,3 @@ subject = {
              ],
 }
 
-# snake round
-propagate_me_level = 2
-# subjects of the template
-templ_subjects = ['1305', '1702', '1805', '2002', '1201', '1203', '1404', '1507', '1510', '2502']

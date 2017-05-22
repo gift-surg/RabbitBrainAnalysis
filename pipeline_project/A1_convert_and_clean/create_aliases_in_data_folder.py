@@ -1,9 +1,10 @@
 import os
-import numpy as np
 from os.path import join as jph
 
+import numpy as np
+
 from definitions import root_pilot_study_pantopolium
-from pipeline_project.U_utils.main_controller import RunParameters
+from pipeline_project.A0_main.main_controller import RunParameters
 
 
 def link_folder_content_into_folder(folder_source, folder_target):

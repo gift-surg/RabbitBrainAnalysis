@@ -92,7 +92,6 @@ def process_DWI_fsl(sj, control=None):
     numberOfControlPoints = (4, 4, 4)
     splineOrder = 3
 
-
     """ *** PHASE 1 - DWI PRE-PROCESSING IN BICOMMISSURAL COORDINATES *** """
 
     if control['step_generate_output_folder']:
