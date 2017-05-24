@@ -112,15 +112,15 @@ if __name__ == '__main__':
 
     rpa = RunParameters()
 
-    rpa.execute_PTB_ex_skull = False
-    rpa.execute_PTB_ex_vivo = True
-    rpa.execute_PTB_in_vivo = True
-    rpa.execute_PTB_op_skull = False
-    rpa.execute_ACS_ex_vivo = False
+    # rpa.execute_PTB_ex_skull = False
+    # rpa.execute_PTB_ex_vivo = True
+    # rpa.execute_PTB_in_vivo = True
+    # rpa.execute_PTB_op_skull = False
+    # rpa.execute_ACS_ex_vivo = False
 
     # rpa.subjects = None
     # rpa.update_params()
-    # rpa.subjects = ['1511t1', ]
-    # rpa.update_params()
+    rpa.subjects = ['2702', ]
+    rpa.update_params()
 
-    compile_record_T1_DWI(rpa)
+    # compile_record_T1_DWI(rpa)

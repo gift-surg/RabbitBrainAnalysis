@@ -31,13 +31,13 @@ if __name__ == '__main__':
     rpa.execute_PTB_op_skull = False
     rpa.execute_ACS_ex_vivo  = True
 
-    # rpa.subjects = ['2503', '2608', '2702']
+    # rpa.subjects = ['2608', ]  # '2608', '2702'
     # rpa.update_params()
 
     ''' Set steps '''
 
-    step_A1      = True
-    step_A2_T1   = True
+    step_A1      = False
+    step_A2_T1   = False
     step_A2_MSME = True
     step_A2_DWI  = True
     step_A3      = True
@@ -45,12 +45,14 @@ if __name__ == '__main__':
 
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
+        print('\nStep A2\n')
         execute_converter(rpa)
         execute_cleaner(rpa)
         execute_generate_alias(rpa)
 
     ''' Step A2 - T1 '''
     if step_A2_T1:
+        print('\nStep A2 T1\n')
         controller_A2_T1 = {'orient to standard'  : True,
                             'threshold'           : True,
                             'register roi masks'  : True,
@@ -66,6 +68,7 @@ if __name__ == '__main__':
 
     ''' Step A2 - MSME '''
     if step_A2_MSME:
+        print('\nStep A2 MSME\n')
         controller_MSME = {'squeeze'               : True,
                             'orient to standard'   : True,
                             'oversample'           : True,
@@ -78,6 +81,7 @@ if __name__ == '__main__':
 
     ''' Step A2 - DWI '''
     if step_A2_DWI:
+        print('\nStep A2 DWI\n')
         controller_DWI = {'squeeze'                : False,
                             'orient to standard'   : True,
                             'register roi masks'   : True,
@@ -86,7 +90,7 @@ if __name__ == '__main__':
                             'cut mask dwi'         : True,
                             'cut mask b0'          : True,
                             'correct slope'        : True,
-                            'eddy current'         : False,
+                            'eddy current'         : True,
                             'fsl tensor fitting'   : True,
                             'adjust dti-based mod' : True,
                             'bfc b0'               : True,
@@ -98,6 +102,7 @@ if __name__ == '__main__':
 
     ''' Step A3 - Propagate template '''
     if step_A3:
+        print('\nStep A3\n')
         controller_fuser_ = {'set header bicommissural'  : True,
                              'aff alignment'             : True,
                              'Propagate aff to segm'     : True,
@@ -132,5 +137,6 @@ if __name__ == '__main__':
 
     ''' Step A4 - Data collection '''
     if step_A4:
+        print('\nStep A4\n')
         compile_record_T1_DWI(rpa)
         compile_record_MSME(rpa)

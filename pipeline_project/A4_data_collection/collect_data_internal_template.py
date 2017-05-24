@@ -58,5 +58,6 @@ def compile_record_internal_template():
                        )
 
 if __name__ == '__main__':
+    print('Compile record')
 
-    compile_record_internal_template()
+    # compile_record_internal_template()

@@ -80,17 +80,17 @@ def execute_propag_and_fuse_all(controller_fuser,
 
 if __name__ == '__main__':
 
-    controller_fuser_ = {'set header bicommissural'  : False,
-                         'aff alignment'             : False,
-                         'Propagate aff to segm'     : False,
-                         'Propagate aff to mask'     : False,
-                         'Get differential BFC'      : False,
-                         'N-rig alignment'           : False,
-                         'Propagate to target n-rig' : False,
-                         'Smooth result'             : False,
-                         'Stack warps and segm'      : False,
-                         'Fuse'                      : False,
-                         'save result'               : False
+    controller_fuser_ = {'set header bicommissural'  : True,
+                         'aff alignment'             : True,
+                         'Propagate aff to segm'     : True,
+                         'Propagate aff to mask'     : True,
+                         'Get differential BFC'      : True,
+                         'N-rig alignment'           : True,
+                         'Propagate to target n-rig' : True,
+                         'Smooth result'             : True,
+                         'Stack warps and segm'      : True,
+                         'Fuse'                      : True,
+                         'save result'               : True
                          }
 
     controller_propagator_ = {'set header bicommissural'   : True,
@@ -100,8 +100,7 @@ if __name__ == '__main__':
                               'Smooth'                     : True,
                               'save result'                : True}
 
-    controller_inter_modality_propagator_ = {'compensate squeezing'     : True,
-                                             'rig register to S0'       : True,
+    controller_inter_modality_propagator_ = {'rig register to S0'       : True,
                                              'rig propagate to S0'      : True,
                                              'rig register to MSME_up'  : True,
                                              'rig propagate to MSME_up' : True,
@@ -122,7 +121,7 @@ if __name__ == '__main__':
     # rpa.update_params()
     # rpa.subjects = ['1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002', '2502', '2503',
     #                 '2608', '2702']
-    rpa.subjects = ['2702', ] # '2608', '2702']
+    rpa.subjects = ['2503', ] # '2608', '2702']
 
 
     # ['0904t1', '1501t1', '1504t1', '1508t1', '1509t1', '1511t1' ]
@@ -130,9 +129,10 @@ if __name__ == '__main__':
                     #'2605t1', '2702t1']  # '0802t1',
     rpa.update_params()
 
-    execute_propag_and_fuse_all(controller_fuser_,
-                                   controller_propagator_,
-                                   controller_inter_modality_propagator_,
-                                   pfo_templ_subjects_input,
-                                   list_templ_subjects_input,
-                                   rpa)
+    # execute_propag_and_fuse_all(controller_fuser_,
+    #                                controller_propagator_,
+    #                                controller_inter_modality_propagator_,
+    #                                pfo_templ_subjects_input,
+    #                                list_templ_subjects_input,
+    #                                rpa)
+

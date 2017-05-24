@@ -424,7 +424,7 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
     pfi_MSME_up = jph(pfo_mod, sj + '_MSME_up_1st.nii.gz')
     pfi_MSME = jph(pfo_mod, sj + '_MSME.nii.gz')
     pfi_reg_mask_T1 = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
-    pfi_reg_mask_S0 = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')  # get also the registration mask other than the roi?
+    pfi_reg_mask_S0 = jph(pfo_mask, sj + '_b0_reg_mask.nii.gz')  # get also the registration mask other than the roi?
     pfi_reg_mask_MSME_up = jph(pfo_mask, sj + '_MSME_roi_mask.nii.gz')
     assert os.path.exists(pfi_T1)
     assert os.path.exists(pfi_segm_T1)
@@ -459,6 +459,7 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
 
         cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly  '.format(
             pfi_S0, pfi_reg_mask_S0, pfi_T1, pfi_reg_mask_T1, pfi_rigid_transf_to_s0, pfi_rigid_warp_to_s0)
+        print(cmd)
         os.system(cmd)
 
     if controller['rig propagate to S0']:
@@ -482,6 +483,7 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
         # else:
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_S0, pfi_segm_T1, pfi_rigid_transf_to_s0, pfi_segm_S0)
+        print(cmd)
         os.system(cmd)
 
     if controller['rig register to MSME_up']:
