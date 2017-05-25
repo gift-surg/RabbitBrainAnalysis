@@ -364,32 +364,33 @@ def execute_processing_DWI(controller, rp):
 
 
 if __name__ == '__main__':
+    print('process DWI, local run. ')
 
-    controller_steps = {'squeeze'              : False,
-                        'orient to standard'   : True,
-                        'register roi masks'   : True,
-                        'propagate roi masks'  : True,
-                        'adjust mask'          : True,
-                        'cut mask dwi'         : True,
-                        'cut mask b0'          : True,
-                        'correct slope'        : True,
-                        'eddy current'         : False,
-                        'fsl tensor fitting'   : True,
-                        'adjust dti-based mod' : True,
-                        'bfc b0'               : False,
-                        'create lesion mask'   : True,
-                        'create reg masks'     : True,
-                        'save results'         : True}
+    # controller_steps = {'squeeze'              : False,
+    #                     'orient to standard'   : True,
+    #                     'register roi masks'   : True,
+    #                     'propagate roi masks'  : True,
+    #                     'adjust mask'          : True,
+    #                     'cut mask dwi'         : True,
+    #                     'cut mask b0'          : True,
+    #                     'correct slope'        : True,
+    #                     'eddy current'         : False,
+    #                     'fsl tensor fitting'   : True,
+    #                     'adjust dti-based mod' : True,
+    #                     'bfc b0'               : False,
+    #                     'create lesion mask'   : True,
+    #                     'create reg masks'     : True,
+    #                     'save results'         : True}
+    #
+    # rpa_dwi = RunParameters()
+    #
+    # # rpa_dwi.execute_PTB_ex_skull = True
+    # # rpa_dwi.execute_PTB_ex_vivo = True
+    # # rpa_dwi.execute_PTB_in_vivo = True
+    # # rpa_dwi.execute_PTB_op_skull = True
+    # # rpa_dwi.execute_ACS_ex_vivo = True
+    #
+    # rpa_dwi.subjects = ['2503', '2608', '2702',]  #
+    # rpa_dwi.update_params()
 
-    rpa = RunParameters()
-
-    # rpa.execute_PTB_ex_skull = True
-    # rpa.execute_PTB_ex_vivo = True
-    # rpa.execute_PTB_in_vivo = True
-    # rpa.execute_PTB_op_skull = True
-    # rpa.execute_ACS_ex_vivo = True
-
-    rpa.subjects = ['2503', '2608', '2702',]  #
-    rpa.update_params()
-
-    # execute_processing_DWI(controller_steps, rpa)
+    # execute_processing_DWI(controller_steps, rpa_dwi)

@@ -109,8 +109,9 @@ def compile_record_T1_DWI(rp):
 
 
 if __name__ == '__main__':
+    print('Collect data, local run. ')
 
-    rpa = RunParameters()
+    # rpa = RunParameters()
 
     # rpa.execute_PTB_ex_skull = False
     # rpa.execute_PTB_ex_vivo = True
@@ -120,7 +121,7 @@ if __name__ == '__main__':
 
     # rpa.subjects = None
     # rpa.update_params()
-    rpa.subjects = ['2702', ]
-    rpa.update_params()
+    # rpa.subjects = ['2702', ]
+    # rpa.update_params()
 
     # compile_record_T1_DWI(rpa)

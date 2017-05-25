@@ -8,8 +8,9 @@ import numpy as np
 
 from definitions import root_pilot_study_pantopolium
 from pipeline_project.A0_main.main_controller import subject, RunParameters
-from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
+from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor, get_percentiles_range
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
+from tools.auxiliary.utils import print_and_run
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 
 """
@@ -57,19 +58,20 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
         pfi_input_original = jph(pfo_input_sj_3D, sj + '_3D.nii.gz')
         assert os.path.exists(pfi_input_original)
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
-        cmd = 'fslreorient2std {0} {1}'.format(pfi_input_original,
-                                               jph(pfo_tmp, sj + '_to_std.nii.gz'))
+        cmd = 'fslreorient2std {0} {1}'.format(pfi_input_original, pfi_std)
         os.system(cmd)
         set_translational_part_to_zero(pfi_std, pfi_std)
 
-    if controller['threshold']:
-        print('- threshold {}'.format(sj))
-        assert os.path.exists(jph(pfo_input_sj_3D, sj + '_3D.nii.gz'))
-        thr = subject[sj][3][0]
-        cmd = 'seg_maths {0} -thr {1} {2}'.format(jph(pfo_tmp, sj + '_to_std.nii.gz'),
-                                                  thr,
-                                                  jph(pfo_tmp, sj + '_thr.nii.gz'))
-        os.system(cmd)
+    # ... Just a waste of time!
+    # if controller['threshold']:
+    #     print('- threshold {}'.format(sj))
+    #     pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
+    #     assert os.path.exists(pfi_std)
+    #     pfi_3d_thr = jph(pfo_tmp, sj + '_thr.nii.gz')
+    #     low_perc = subject[sj][2][0]
+    #     thr = get_percentiles_range(pfi_std, percentiles=(low_perc, 95))[0]
+    #     cmd = 'seg_maths {0} -thr {1} {2}'.format(pfi_std, thr, pfi_3d_thr)
+    #     print_and_run(cmd)
 
     if controller['register roi masks']:
         print('- register roi masks {}'.format(sj))
@@ -156,14 +158,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
         assert os.path.exists(pfi_3d_bias_field_corrected)
         assert os.path.exists(pfi_roi_mask)
         pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
-
-        if subject[sj][0][1] == 'ex_vivo':
-            percentile = (15, 90)
-        elif subject[sj][0][1] == 'in_vivo':
-            percentile = (10, 98)
-        else:
-            percentile = (5, 95)  # todo: add percentile as subject attributes, not as cat. attribute
-
+        percentile = subject[sj][2][2]
         percentile_lesion_mask_extractor(im_input_path=pfi_3d_bias_field_corrected,
                                          im_output_path=pfi_lesion_mask,
                                          im_mask_foreground_path=pfi_roi_mask,
@@ -200,7 +195,7 @@ def process_T1_per_group(controller, pfo_input_group_category, pfo_output_group_
     # allow to force the subj_list to be the input tuple bypass subject, chosen by the user.
     if bypass_subjects is not None:
 
-        if not set(bypass_subjects).intersection(set(subj_list)) == {}:
+        if set(bypass_subjects).intersection(set(subj_list)) == {}:
             raise IOError
         else:
             subj_list = bypass_subjects
@@ -256,26 +251,28 @@ def execute_processing_T1(controller, rp):
 
 
 if __name__ == '__main__':
+    print('process T1, local run. ')
 
-    controller_steps = {'orient to standard'  : True,
-                        'threshold'           : True,
-                        'register roi masks'  : True,
-                        'propagate roi masks' : True,
-                        'adjust mask'         : True,
-                        'cut masks'           : True,
+    controller_steps = {'orient to standard'  : False,
+                        # 'threshold'           : True,
+                        'register roi masks'  : False,
+                        'propagate roi masks' : False,
+                        'adjust mask'         : False,
+                        'cut masks'           : False,
                         'step bfc'            : False,
                         'create lesion mask'  : True,
-                        'create reg masks'    : True,
-                        'save results'        : True}
+                        'create reg masks'    : False,
+                        'save results'        : False}
 
     rpa = RunParameters()
 
-    rpa.execute_PTB_ex_skull = True
-    rpa.execute_PTB_ex_vivo = False
-    rpa.execute_PTB_in_vivo = False
-    rpa.execute_PTB_op_skull = True
+    # rpa.execute_PTB_ex_skull = True
+    # rpa.execute_PTB_ex_vivo = True
+    # rpa.execute_PTB_in_vivo = False
+    # rpa.execute_PTB_op_skull = True
     rpa.execute_ACS_ex_vivo = True
 
-    rpa.subjects = None
+    # rpa.subjects = ['3103']
+    # rpa.update_params()
 
-    # execute_processing_T1(controller_steps, rpa)
+    execute_processing_T1(controller_steps, rpa)

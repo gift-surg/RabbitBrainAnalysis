@@ -58,6 +58,6 @@ def compile_record_internal_template():
                        )
 
 if __name__ == '__main__':
-    print('Compile record')
+    print('Compile record, local run')
 
     # compile_record_internal_template()

@@ -29,7 +29,7 @@ Downsample the mask
 
 
 def process_MSME_per_subject(sj, pfo_input_sj_MSME, pfo_output_sj, controller):
-    print('\nProcessing DWI, subject {} started.\n'.format(sj))
+    print('\nProcessing MSME, subject {} started.\n'.format(sj))
 
     if sj not in subject.keys():
         raise IOError('Subject parameters not known')
@@ -203,23 +203,24 @@ def execute_processing_MSME(controller, rp):
 
 
 if __name__ == '__main__':
+    print('process MSME, local run. ')
 
-    controller_steps = {'squeeze'              : True,
-                        'orient to standard'   : True,
-                        'oversample'           : True,
-                        'extract first layers' : True,
-                        'register roi masks'   : True,
-                        'propagate roi masks'  : True
-                        }
+    # controller_steps = {'squeeze'              : True,
+    #                     'orient to standard'   : True,
+    #                     'oversample'           : True,
+    #                     'extract first layers' : True,
+    #                     'register roi masks'   : True,
+    #                     'propagate roi masks'  : True
+    #                     }
+    #
+    # rpa_msme = RunParameters()
+    #
+    # rpa_msme.execute_PTB_ex_skull = False
+    # rpa_msme.execute_PTB_ex_vivo = False
+    # rpa_msme.execute_PTB_in_vivo = True
+    # rpa_msme.execute_PTB_op_skull = False
+    # rpa_msme.execute_ACS_ex_vivo = False
+    #
+    # rpa_msme.subjects = None
 
-    rpa = RunParameters()
-
-    rpa.execute_PTB_ex_skull = False
-    rpa.execute_PTB_ex_vivo = False
-    rpa.execute_PTB_in_vivo = True
-    rpa.execute_PTB_op_skull = False
-    rpa.execute_ACS_ex_vivo = False
-
-    rpa.subjects = None
-
-    # execute_processing_MSME(controller_steps, rpa)
+    # execute_processing_MSME(controller_steps, rpa_msme)

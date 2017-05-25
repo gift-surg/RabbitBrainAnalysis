@@ -16,6 +16,7 @@ from pipeline_project.A3_register_template_over_all_subjects.propagate_and_fuse_
 from pipeline_project.A4_data_collection.collect_data_study_T1_and_DWI import compile_record_T1_DWI
 from pipeline_project.A4_data_collection.collect_data_study_MSME import compile_record_MSME
 
+from pipeline_project.U_utils.upate_shared_results import send_data_to_hannes
 
 if __name__ == '__main__':
 
@@ -25,27 +26,28 @@ if __name__ == '__main__':
 
     rpa = RunParameters()
 
-    rpa.execute_PTB_ex_skull = False
-    rpa.execute_PTB_ex_vivo  = False
-    rpa.execute_PTB_in_vivo  = False
-    rpa.execute_PTB_op_skull = False
-    rpa.execute_ACS_ex_vivo  = True
+    # rpa.execute_PTB_ex_skull = False
+    # rpa.execute_PTB_ex_vivo  = False
+    # rpa.execute_PTB_in_vivo  = False
+    # rpa.execute_PTB_op_skull = False
+    # rpa.execute_ACS_ex_vivo  = True
 
-    # rpa.subjects = ['2608', ]  # '2608', '2702'
-    # rpa.update_params()
+    rpa.subjects = ['3307', '3401', '3403', '3404']  # '2608', '2702'
+    rpa.update_params()
 
     ''' Set steps '''
 
     step_A1      = False
     step_A2_T1   = False
-    step_A2_MSME = True
-    step_A2_DWI  = True
+    step_A2_MSME = False
+    step_A2_DWI  = False
     step_A3      = True
     step_A4      = True
+    step_A5      = True
 
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
-        print('\nStep A2\n')
+        print('\nStep A1\n')
         execute_converter(rpa)
         execute_cleaner(rpa)
         execute_generate_alias(rpa)
@@ -53,9 +55,8 @@ if __name__ == '__main__':
     ''' Step A2 - T1 '''
     if step_A2_T1:
         print('\nStep A2 T1\n')
-        controller_A2_T1 = {'orient to standard'  : True,
-                            'threshold'           : True,
-                            'register roi masks'  : True,
+        controller_A2_T1 = {'orient to standard'  : False,
+                            'register roi masks'  : False,
                             'propagate roi masks' : True,
                             'adjust mask'         : True,
                             'cut masks'           : True,
@@ -140,3 +141,6 @@ if __name__ == '__main__':
         print('\nStep A4\n')
         compile_record_T1_DWI(rpa)
         compile_record_MSME(rpa)
+
+    if step_A5:
+        send_data_to_hannes(rpa, records_only=False)

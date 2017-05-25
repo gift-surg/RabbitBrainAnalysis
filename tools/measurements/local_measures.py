@@ -1,6 +1,6 @@
 import numpy as np
 
-from tools.label_management.patches import get_patch_values, get_shell_for_given_radius
+from tools.measurements.patches import get_patch_values, get_shell_for_given_radius
 
 
 def weighting_for_LNCC(point, target_image, stack_warped, morphological_mask):

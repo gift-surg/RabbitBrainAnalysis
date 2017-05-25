@@ -9,12 +9,12 @@ from tools.auxiliary.utils import print_and_run
 
 class ICV_estimator(object):
 
-    def __init__(self, pfi_list_subjects_to_register, pfo_output, S=None, m=None,
+    def __init__(self, pfi_list_subjects_to_coregister, pfo_output, S=None, m=None,
                       n=0.001, a=0.001, b=0.1, alpha=0.001, beta=0.1):
         # input subjects
-        self.pfi_list_subjects_to_register = pfi_list_subjects_to_register
+        self.pfi_list_subjects_to_coregister = pfi_list_subjects_to_coregister
         self.pfo_output = pfo_output
-        self.num_subjects = len(pfi_list_subjects_to_register)
+        self.num_subjects = len(pfi_list_subjects_to_coregister)
         self.subjects_id = None
         # optimisation function parameters
         self.S = S
@@ -24,24 +24,25 @@ class ICV_estimator(object):
         self.b = b
         self.alpha = alpha
         self.beta = beta
+        # graph connection is complete by default.
+        self.graph_connections = [[i, j] for i in xrange(self.num_subjects) for j in xrange(i+1, self.num_subjects)]
 
         self.__initialise_list_id__()
 
     def __initialise_list_id__(self):
         self.subjects_id = [os.path.dirname(s).split('.')[0]
-                            for s in self.pfi_list_subjects_to_register
+                            for s in self.pfi_list_subjects_to_coregister
                             if (s.endswith('.nii') or s.endswith('.nii.gz'))]
 
     def generate_transformations(self):
 
-        cmd_1 = 'mkdir -p {0} '.format(self.pfo_output_folder, 'warped')
-        cmd_2 = 'mkdir -p {0} '.format(jph(self.pfo_output_folder, 'transformations'))
+        cmd_1 = 'mkdir -p {0} '.format(self.pfo_output, 'warped')
+        cmd_2 = 'mkdir -p {0} '.format(jph(self.pfo_output, 'transformations'))
         print_and_run(cmd_1)
         print_and_run(cmd_2)
 
-        # coregister subjects and save the matrix transformations in the jph(pfo_output_folder, 'transformations')
-        for i in xrange(0, self.num_subjects):
-            for j in xrange(i + 1, self.num_subjects):  # assuming registration symmetric.
+        for i in [c[0] for c in self.graph_connections]:
+            for j in [c[1] for c in self.graph_connections]:
                 fname_i_j = self.subjects_id[i] + '_' + self.subjects_id[j]
                 fname_j_i = self.subjects_id[j] + '_' + self.subjects_id[i]
                 pfi_aff_i_j = jph(self.pfo_output, 'transformations', fname_i_j + '.txt')
@@ -50,10 +51,10 @@ class ICV_estimator(object):
                 pfi_res_j_i = jph(self.pfo_output, 'warped', fname_j_i + '.nii.gz')
 
                 cmd_reg_i_j = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} -speeeeed '.format(
-                            self.pfi_list_subjects_to_register[i], self.pfi_list_subjects_to_register[j],
+                            self.pfi_list_subjects_to_coregister[i], self.pfi_list_subjects_to_coregister[j],
                             pfi_aff_i_j, pfi_res_i_j)
                 cmd_reg_j_i = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} -speeeeed '.format(
-                            self.pfi_list_subjects_to_register[j], self.pfi_list_subjects_to_register[i],
+                            self.pfi_list_subjects_to_coregister[j], self.pfi_list_subjects_to_coregister[i],
                             pfi_aff_j_i, pfi_res_j_i)
 
                 print_and_run(cmd_reg_i_j)
@@ -61,26 +62,30 @@ class ICV_estimator(object):
 
     def compute_S(self):
 
+        S = np.zeros(2, 2)
+
         for i in xrange(self.num_subjects):
             for j in xrange(i+1, self.num_subjects):
 
-                fname_i_j = self.subjects_id[i] + '_' + self.subjects_id[j]
-                fname_j_i = self.subjects_id[j] + '_' + self.subjects_id[i]
-
-                pfi_aff_i_j = jph(pfo_transformations, 'transformations',
+                pfi_aff_i_j = jph(self.pfo_output, 'transformations',
                                   self.subjects_id[i] + '_' + self.subjects_id[j] + '.txt')
-                pfi_aff_j_i = jph(pfo_transformations, 'transformations',
+                pfi_aff_j_i = jph(self.pfo_output, 'transformations',
                                   self.subjects_id[j] + '_' + self.subjects_id[i] + '.txt')
 
-                S[i,j] = np.linalg.det( np.loatxt(pfi_aff_i_j) )
-                S[j,i] = np.linalg.det( np.loatxt(pfi_aff_j_i) )
+                S[i, j] = np.linalg.det(np.loadtxt(pfi_aff_i_j))
+                S[j, i] = np.linalg.det(np.loadtxt(pfi_aff_j_i))
 
         self.S = S
 
     def compute_m_from_list_masks(self, pfi_list_brain_masks, increase_volume_estimate=0.05):
         # compute m from a list of propagated segmentation of the brain.
-        # the icv is the volume of the propagated segmentations * (1 + increase_volume_estimate)
-        pass
+        # the icv is the mean volume of some propagated segmentation, whose path is stored in the list
+        # pfi_list_brain_mask
+        mean_vol = 0
+        for p in pfi_list_brain_masks:
+            print p
+
+        self.m = mean_vol
 
     def icv_estimator(self):
         """

@@ -214,13 +214,14 @@ def scan_and_remove_path(msg):
     return ' '.join(a)
 
 
-def print_and_run(cmd, msg=None, safety_on=True):
+def print_and_run(cmd, msg=None, safety_on=False, short_path_output=True):
     """
     run the command to console and print the message.
     if msg is None print the command itself.
     :param cmd: command for the terminal
     :param msg: message to show before running the command
     on the top of the command itself.
+    :param short_path_output: the message provided at the prompt has only the filenames without the paths.
     :param safety_on: safety, in case you want to see the messages at a first run.
     :return:
     """
@@ -228,12 +229,15 @@ def print_and_run(cmd, msg=None, safety_on=True):
     # if len(cmd) > 249:
     #     print(cmd)
     #     raise IOError('input command is too long, this may create problems. Please use shortest names!')
+    if short_path_output:
+        path_free_cmd = scan_and_remove_path(cmd)
+    else:
+        path_free_cmd = cmd
 
-    path_free_cmd = scan_and_remove_path(cmd)
     if msg is not None:
         print '\n' + msg + '\n'
     else:
-        print '\n' + path_free_cmd + '\n'
+        print '\n-> ' + path_free_cmd + '\n'
 
     if not safety_on:
         os.system(cmd)
