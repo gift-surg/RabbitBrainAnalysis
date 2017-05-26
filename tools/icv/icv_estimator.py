@@ -1,10 +1,13 @@
 import os
 from os.path import join as jph
+import nibabel as nib
 
 import numpy as np
 from scipy.optimize import minimize
 
 from tools.auxiliary.utils import print_and_run
+
+# move this to Label Manager once paper accepted.
 
 
 class ICV_estimator(object):
@@ -24,7 +27,7 @@ class ICV_estimator(object):
         self.b = b
         self.alpha = alpha
         self.beta = beta
-        # graph connection is complete by default.
+        # graph connection is complete by default. Have to edit this directly.
         self.graph_connections = [[i, j] for i in xrange(self.num_subjects) for j in xrange(i+1, self.num_subjects)]
 
         self.__initialise_list_id__()
@@ -81,40 +84,38 @@ class ICV_estimator(object):
         # compute m from a list of propagated segmentation of the brain.
         # the icv is the mean volume of some propagated segmentation, whose path is stored in the list
         # pfi_list_brain_mask
-        mean_vol = 0
+        sum_vol = 0.
         for p in pfi_list_brain_masks:
-            print p
+            im_nib = nib.load(p)
+            one_voxel_volume = np.round(np.abs(np.prod(np.diag(im_nib.get_affine()))), decimals=6)  # (in mm)
+            sum_vol += np.count_nonzero(im_nib.get_data()) * one_voxel_volume
 
-        self.m = mean_vol
+        mean_vol_estimate = (sum_vol / float(len(pfi_list_brain_masks))) * (1 + increase_volume_estimate)
+        self.m = mean_vol_estimate
 
     def icv_estimator(self):
-        """
-        :param S: antysimmetric squared matrix S_ij, log(det(mean of transf))
-                can be computed as
-                    S_ij = det( log ( expm (0.5 (logm(A_ij) + logm(A_ji))) ) )
-        :param m: prior mean ICV, as the mean of the volume of the propagated brain segmentation
-        as an initial value for the ICV.
-        """
 
-        assert S.shape[0] == S.shape[1]
+        assert self.S.shape[0] == self.S.shape[1]
 
-        log_estimate_v = m * np.ones(S.shape[0], dtype=np.float64)
+        log_estimate_v = self.m * np.ones(self.S.shape[0], dtype=np.float64)
 
-        def cost(v, S=S, m=m, n=n, a=a, b=b, alpha=alpha, beta=beta):
+        def cost(v, S, m, n, a, b, alpha, beta):
 
             sum_abs_log_diff = 0
             for i in xrange(len(v)):
                 for j in xrange(i+1, len(v)):
-                    sum_abs_log_diff += np.abs(S[i,j] - v[i] + v[j])
+                    sum_abs_log_diff += np.abs(S[i, j] - v[i] + v[j])
             mean_v = np.mean(v)
             N = S.shape[0]
 
             a1 = alpha + np.linalg.det(S)
-            a2 = np.log( beta + sum_abs_log_diff )
+            a2 = np.log(beta + sum_abs_log_diff)
             a3 = (2 * a + N) / float(2)
-            a4 = np.log( b + 0.5 * np.sum( [(v_i + mean_v) ** 2 for v_i in list(v)] ) +  (N * n * (mean_v - m) ** 2) / (2 * (N + n)) )
+            a4 = np.log(b + 0.5 * np.sum([(v_i + mean_v) ** 2 for v_i in list(v)]) +
+                        (N * n * (mean_v - m) ** 2) / (2 * (N + n)))
             return a1 * a2 + a3 * a4
 
-        log_answer = minimize(cost(v, S=S, m=m, n=n, a=a, b=b, alpha=alpha, beta=beta), log_estimate_v, method='trust-ncg', tol=1e-6)
+        init_values = np.array([log_estimate_v, self.S, self.m, self.n, self.a, self.b, self.alpha, self.beta])
+        log_answer = minimize(cost, init_values, method='trust-ncg', tol=1e-6)
 
         return np.exp(log_answer)

@@ -3,8 +3,8 @@ from os.path import join as jph
 
 import numpy as np
 
-from definitions import root_docs_dropbox, root_pilot_study_pantopolium
-from pipeline_project.A0_main.main_controller import RunParameters
+from definitions import pfi_excel_table_ACS, root_study_pantopolium, pfi_excel_table_PTB
+from pipeline_project.A0_main.main_controller import RunParameters, subject
 from tools.measurements.compile_record import compile_record
 
 
@@ -51,10 +51,15 @@ def compile_record_per_group(pfo_input_data, tuple_subjects=None):
             cmd = 'mkdir -p {}'.format(pfo_output_record_sj)
             os.system(cmd)
             # grab label descriptor
-            pfi_multi_labels_descr = jph(root_pilot_study_pantopolium, 'A_data', 'Utils', 'multi_label_descriptor.txt')
+            pfi_multi_labels_descr = jph(root_study_pantopolium, 'A_data', 'Utils', 'multi_label_descriptor.txt')
             assert os.path.exists(pfi_multi_labels_descr)
             # grab excel table
-            pfi_excel_table = jph(root_docs_dropbox, 'REoP_Pilot_MRI_Data.xlsx')
+            if subject[sj][0][0] == 'ACS':
+                pfi_excel_table = pfi_excel_table_ACS
+            elif subject[sj][0][0] == 'PTB':
+                pfi_excel_table = pfi_excel_table_PTB
+            else:
+                raise IOError
             assert os.path.exists(pfi_excel_table)
 
             print '\n\n DATA PARSING SUBJECT {} \n\n'.format(sj)
@@ -77,10 +82,10 @@ def compile_record_per_group(pfo_input_data, tuple_subjects=None):
 
 def compile_record_T1_DWI(rp):
 
-    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
 
-    root_data    = jph(root_pilot_study_pantopolium, 'A_data')
+    root_data = jph(root_study_pantopolium, 'A_data')
 
     if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')
@@ -111,7 +116,7 @@ def compile_record_T1_DWI(rp):
 if __name__ == '__main__':
     print('Collect data, local run. ')
 
-    # rpa = RunParameters()
+    rpa = RunParameters()
 
     # rpa.execute_PTB_ex_skull = False
     # rpa.execute_PTB_ex_vivo = True
@@ -121,7 +126,7 @@ if __name__ == '__main__':
 
     # rpa.subjects = None
     # rpa.update_params()
-    # rpa.subjects = ['2702', ]
-    # rpa.update_params()
+    rpa.subjects = ['2702', ]
+    rpa.update_params()
 
-    # compile_record_T1_DWI(rpa)
+    compile_record_T1_DWI(rpa)

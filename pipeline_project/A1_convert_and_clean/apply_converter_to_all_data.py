@@ -4,11 +4,12 @@ from os.path import join as jph
 import numpy as np
 from bruker2nifti.study_converter import convert_a_study
 
-from definitions import root_pilot_study_pantopolium
+from definitions import root_study_pantopolium
 from pipeline_project.A0_main.main_controller import RunParameters
 
-root_raw_data    = jph(root_pilot_study_pantopolium, '00_raw_data')
-root_destination = jph(root_pilot_study_pantopolium, '01_nifti')
+
+root_raw_data    = jph(root_study_pantopolium, '00_raw_data')
+root_destination = jph(root_study_pantopolium, '01_nifti')
 
 
 def convert_a_group(pfo_group_to_convert, pfo_goup_destination):
@@ -30,7 +31,7 @@ def convert_a_group(pfo_group_to_convert, pfo_goup_destination):
 
 def execute_converter(rp):
 
-    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
 
     if rp.execute_PTB_ex_skull:
@@ -75,6 +76,6 @@ if __name__ == '__main__':
     rpa.execute_ACS_ex_vivo = True
 
     rpa.subjects = None
-    rpa.update()
+    rpa.update_params()
 
     execute_converter(rpa)

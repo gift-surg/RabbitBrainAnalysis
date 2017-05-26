@@ -6,7 +6,7 @@ from os.path import join as jph
 
 import numpy as np
 
-from definitions import root_pilot_study_pantopolium
+from definitions import root_study_pantopolium
 from pipeline_project.A0_main.main_controller import subject, RunParameters
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor, get_percentiles_range
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
@@ -76,7 +76,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
     if controller['register roi masks']:
         print('- register roi masks {}'.format(sj))
         pfi_3d_thr = jph(pfo_tmp, sj + '_thr.nii.gz')
-        pfi_1305 = jph(root_pilot_study_pantopolium, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
+        pfi_1305 = jph(root_study_pantopolium, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
         assert os.path.exists(pfi_3d_thr)
         assert os.path.exists(pfi_1305)
         pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '.txt')
@@ -91,7 +91,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
     if controller['propagate roi masks']:
         print('- propagate roi masks {}'.format(sj))
         pfi_3d_thr = jph(pfo_tmp, sj + '_thr.nii.gz')
-        pfi_1305_roi_mask = jph(root_pilot_study_pantopolium, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.gz')
+        pfi_1305_roi_mask = jph(root_study_pantopolium, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.gz')
         pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '.txt')
         assert os.path.exists(pfi_3d_thr)
         assert os.path.exists(pfi_1305_roi_mask)
@@ -213,11 +213,11 @@ def process_T1_per_group(controller, pfo_input_group_category, pfo_output_group_
 
 def execute_processing_T1(controller, rp):
 
-    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
 
-    root_nifti = jph(root_pilot_study_pantopolium, '01_nifti')
-    root_data = jph(root_pilot_study_pantopolium, 'A_data')
+    root_nifti = jph(root_study_pantopolium, '01_nifti')
+    root_data = jph(root_study_pantopolium, 'A_data')
 
     if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull = jph(root_nifti, 'PTB', 'ex_skull')

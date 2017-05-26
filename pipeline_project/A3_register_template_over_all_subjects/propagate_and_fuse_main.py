@@ -5,8 +5,8 @@ Propagate and fuse T1
 import os
 from os.path import join as jph
 
-from definitions import root_pilot_study_pantopolium, root_pilot_study_dropbox
-from pipeline_project.A0_main.main_controller import templ_subjects, RunParameters
+from definitions import root_study_pantopolium, root_study_dropbox
+from pipeline_project.A0_main.main_controller import RunParameters
 from propagate_and_fuse_utils import propagate_and_fuse_per_group_over_all_modalities
 
 
@@ -17,10 +17,10 @@ def execute_propag_and_fuse_all(controller_fuser,
                                 list_templ_subjects,
                                 rp):
 
-    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
 
-    root_data = jph(root_pilot_study_pantopolium, 'A_data')
+    root_data = jph(root_study_pantopolium, 'A_data')
 
     if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')
@@ -107,7 +107,7 @@ if __name__ == '__main__':
     #                                          'rig propagate to MSME_up' : True,
     #                                          'MSME_up to MSME'          : True}
     #
-    # pfo_templ_subjects_input = jph(root_pilot_study_dropbox, 'A_internal_template')
+    # pfo_templ_subjects_input = jph(root_study_dropbox, 'A_internal_template')
     # list_templ_subjects_input = templ_subjects
     #
     # rpa = RunParameters()

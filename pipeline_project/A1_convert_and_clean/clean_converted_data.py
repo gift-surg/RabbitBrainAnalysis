@@ -3,7 +3,7 @@ from os.path import join as jph
 
 import numpy as np
 
-from definitions import root_pilot_study_pantopolium
+from definitions import root_study_pantopolium
 from pipeline_project.A0_main.main_controller import RunParameters
 from tools.correctors.path_cleaner import clean_a_study
 
@@ -25,10 +25,10 @@ def cleaner_converted_data(pfo_to_be_cleaned):
 
 def execute_cleaner(rp):
 
-    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
 
-    root_nifti = jph(root_pilot_study_pantopolium, '01_nifti')
+    root_nifti = jph(root_study_pantopolium, '01_nifti')
     
     if rp.execute_PTB_ex_skull:
         pfo_target = jph(root_nifti, 'PTB', 'ex_skull')

@@ -9,6 +9,7 @@ import codecs
 import csv
 from os.path import join as jph
 from labels_manager.caliber.segmentation_analyzer import SegmentationAnalyzer
+import datetime
 
 from parse_excel_tables_and_descriptors import parse_excel_data_to_list, parse_multi_label_descriptor_in_a_list
 
@@ -50,6 +51,28 @@ def compile_record(pfi_T1,
         else:
             values_list.append(k[1:][0])
 
+    ''' Collect rabbit data from excel files'''
+
+    # Parse excel table
+    excel_tab_list = parse_excel_data_to_list(pfi_excel_table)
+    # Get subjects ID Number from excel table
+    pos_id_number = excel_tab_list[0].index('ID Number')
+    subjects_id_from_excel = [k[pos_id_number].replace('.', '') for k in excel_tab_list[1:]]
+
+    # Generate output folder
+    if subject_name in subjects_id_from_excel:
+        row_subject_index = subjects_id_from_excel.index(subject_name) + 1
+    else:
+        msg = 'subject {0} not present in the excel table saved in {1}'.format(subject_name, pfi_excel_table)
+        raise IOError(msg)
+
+    # Get preamble data for record:
+    subject_info = {}
+    for key, value in zip(excel_tab_list[0], excel_tab_list[row_subject_index]):
+        subject_info.update({key: value})
+
+    regions = [k[0] for k in multi_lab_descriptor_list]
+
     ''' Collect data using an instance of Caliber: '''
 
     # T1 - volume (more accurate the segmentation on the T1 to avoid partial voluming):
@@ -73,25 +96,7 @@ def compile_record(pfi_T1,
                               return_mm3=True)
     ADCs = sa.get_average_below_labels(values_list)
 
-    ''' Create rabbit record '''
-
-    # Get subjects id from excel spreadsheet:
-    excel_tab_list = parse_excel_data_to_list(pfi_excel_table)
-    subjects_id_from_excel = [k[0] for k in excel_tab_list[1:]]
-
-    # Generate output folder
-    if subject_name in subjects_id_from_excel:
-        row_subject_index = subjects_id_from_excel.index(subject_name) + 1
-    else:
-        msg = 'subject {0} not present in the excel table saved in {1}'.format(subject_name, pfi_excel_table)
-        raise IOError(msg)
-
-    # Get preamble data for record:
-    subject_info = {}
-    for key, value in zip(excel_tab_list[0], excel_tab_list[row_subject_index]):
-        subject_info.update({key: value})
-
-    regions = [k[0] for k in multi_lab_descriptor_list]
+    ''' Create rabbit data from excel files'''
 
     # Compile record:
     record = {'Info'      : subject_info,
@@ -106,15 +111,15 @@ def compile_record(pfi_T1,
     np.save(jph(pfo_output, subject_name + '_record.npy') , record)
 
     # -- save record in csv
-    preamble_data = [['ID Number',              subject_info['ID Number']],
-                     ['Sex',                    subject_info['Sex']],
-                     ['Delivery Gestation (d)', subject_info['Delivery Gestation (d)']],
-                     ['Harvest Date',           subject_info['Harvest Date'].strftime('%Y-%m-%d')],
-                     ['MRI Date',               subject_info['MRI Date'].strftime('%Y-%m-%d')],
-                     ['Weight PND1 (g)',        subject_info['Weight PND1 (g)']],
-                     ['Brain Weight (g)',       subject_info['Brain Weight (g)']],
-                     ['Acquisition',            subject_info['Acquisition']]
-                     ]
+    list_keys = ['ID Number', 'Sex', 'Delivery Gestation (d)', 'Harvest Date', 'MRI Date', 'Weight PND1 (g)',
+                 'Brain Weight (g)', 'Acquisition']
+    preamble_data = []
+    for k in list_keys:
+        if k in subject_info.keys():
+            if isinstance(subject_info[k], datetime.datetime):
+                preamble_data.append([k, subject_info[k].strftime('%Y-%m-%d')])
+            else:
+                preamble_data.append([k, subject_info[k]])
 
     record_tab = []
     for reg, lab, vox, vol, fa, adc in zip(regions, values_list, voxels, vols, FAs, ADCs):

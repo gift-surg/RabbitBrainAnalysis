@@ -1,4 +1,3 @@
-from os.path import join as jph
 import numpy as np
 
 # Bias field parameters order

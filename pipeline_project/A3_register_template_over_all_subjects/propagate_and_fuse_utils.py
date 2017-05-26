@@ -8,7 +8,7 @@ from os.path import join as jph
 import numpy as np
 from labels_manager.main import LabelsManager
 
-from definitions import root_pilot_study_pantopolium
+from definitions import root_study_pantopolium
 from pipeline_project.A0_main.main_controller import subject, propagate_me_level, templ_subjects
 from tools.auxiliary.utils import adjust_header_from_transformations, scale_z_values
 
@@ -505,7 +505,7 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
 
     if controller['MSME_up to MSME']:
         print('- MSME_up to MSME {}'.format(sj))
-        pfo_utils = jph(root_pilot_study_pantopolium, 'A_data', 'Utils')
+        pfo_utils = jph(root_study_pantopolium, 'A_data', 'Utils')
         pfi_id_transf = jph(pfo_utils, 'aff_id.txt')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_MSME, pfi_segm_MSME_up, pfi_id_transf, pfi_segm_MSME)

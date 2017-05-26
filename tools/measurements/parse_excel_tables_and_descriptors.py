@@ -2,7 +2,7 @@ import os
 from openpyxl import load_workbook
 
 
-def parse_excel_data_to_list(pfi_excel_file):
+def parse_excel_data_to_list(pfi_excel_file, min_col=0, max_col=12):
 
     if not os.path.exists(pfi_excel_file):
         raise IOError('Input file {} does not exists'.format(pfi_excel_file))
@@ -13,7 +13,7 @@ def parse_excel_data_to_list(pfi_excel_file):
     ws = wb.active
 
     ans = []
-    for row in ws.iter_rows(min_col=0, max_col=8,):
+    for row in ws.iter_rows(min_col=min_col, max_col=max_col,):
         ans_row = []
         for cell in row:
             ans_row.append(cell.value)

@@ -3,7 +3,7 @@ from os.path import join as jph
 
 import numpy as np
 
-from definitions import root_pilot_study_pantopolium
+from definitions import root_study_pantopolium
 from pipeline_project.A0_main.main_controller import RunParameters
 
 
@@ -45,11 +45,11 @@ def create_alias_for_group(pfo_source, pfo_target):
 
 def execute_generate_alias(rp):
 
-    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
 
-    root_nifti = jph(root_pilot_study_pantopolium, '01_nifti')
-    root_data = jph(root_pilot_study_pantopolium, 'A_data')
+    root_nifti = jph(root_study_pantopolium, '01_nifti')
+    root_data = jph(root_study_pantopolium, 'A_data')
 
     if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull = jph(root_nifti, 'PTB', 'ex_skull')

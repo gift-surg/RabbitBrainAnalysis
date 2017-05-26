@@ -1,7 +1,7 @@
 import os
 
 from pipeline_project.A0_main.main_controller import RunParameters, templ_subjects
-from definitions import root_pilot_study_pantopolium, root_pilot_study_dropbox
+from definitions import root_study_pantopolium, root_study_dropbox
 
 from pipeline_project.A1_convert_and_clean.apply_converter_to_all_data import execute_converter
 from pipeline_project.A1_convert_and_clean.clean_converted_data import execute_cleaner
@@ -17,10 +17,11 @@ from pipeline_project.A4_data_collection.collect_data_study_T1_and_DWI import co
 from pipeline_project.A4_data_collection.collect_data_study_MSME import compile_record_MSME
 
 from pipeline_project.U_utils.upate_shared_results import send_data_to_hannes
+from pipeline_project.U_utils.copy_to_excel_file import save_data_into_excel_file
 
 if __name__ == '__main__':
 
-    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
 
     ''' Set parameters per subjects or per group '''
 
@@ -32,7 +33,8 @@ if __name__ == '__main__':
     # rpa.execute_PTB_op_skull = False
     # rpa.execute_ACS_ex_vivo  = True
 
-    rpa.subjects = ['3307', '3401', '3403', '3404']  # '2608', '2702'
+    rpa.subjects = ['3405', '3501'] #['3505', '3507', '3602', '3604', '3606',]   # ['3505', '3507', '3602', '3604', '3606',]
+    #  '3307', '3404']  # '2608', '2702'
     rpa.update_params()
 
     ''' Set steps '''
@@ -41,9 +43,9 @@ if __name__ == '__main__':
     step_A2_T1   = False
     step_A2_MSME = False
     step_A2_DWI  = False
-    step_A3      = True
+    step_A3      = False
     step_A4      = True
-    step_A5      = True
+    step_A5      = False
 
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
@@ -130,7 +132,7 @@ if __name__ == '__main__':
                                                  'rig register to MSME_up'  : True,
                                                  'rig propagate to MSME_up' : True,
                                                  'MSME_up to MSME'          : True}
-        pfo_templ_subjects_input = os.path.join(root_pilot_study_dropbox, 'A_internal_template')
+        pfo_templ_subjects_input = os.path.join(root_study_dropbox, 'A_internal_template')
         list_templ_subjects_input = templ_subjects
 
         execute_propag_and_fuse_all(controller_fuser_, controller_propagator_, controller_inter_modality_propagator_,
@@ -144,3 +146,4 @@ if __name__ == '__main__':
 
     if step_A5:
         send_data_to_hannes(rpa, records_only=False)
+        save_data_into_excel_file(rpa)

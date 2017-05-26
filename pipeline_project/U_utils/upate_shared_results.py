@@ -7,7 +7,7 @@ from os.path import join as jph
 
 import numpy as np
 
-from definitions import root_pilot_study_dropbox, root_pilot_study_pantopolium
+from definitions import root_study_dropbox, root_study_pantopolium
 from pipeline_project.A0_main.main_controller import RunParameters
 
 
@@ -67,11 +67,11 @@ def send_or_erase(rp, pfo_source, pfo_destination, records_only=False, erase=Fal
 
 def send_data_to_hannes(rp, records_only=False, erase=False):
 
-    assert os.path.isdir(root_pilot_study_pantopolium), 'Connect pantopolio!'
+    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
 
-    root_data    = jph(root_pilot_study_pantopolium, 'A_data')
-    root_dropbox_reports = jph(root_pilot_study_dropbox, 'C_records')
+    root_data    = jph(root_study_pantopolium, 'A_data')
+    root_dropbox_reports = jph(root_study_dropbox, 'C_records')
 
     assert os.path.isdir(root_data)
     assert os.path.isdir(root_dropbox_reports)
