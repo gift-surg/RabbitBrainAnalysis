@@ -7,9 +7,9 @@ from pipeline_project.A1_convert_and_clean.apply_converter_to_all_data import ex
 from pipeline_project.A1_convert_and_clean.clean_converted_data import execute_cleaner
 from pipeline_project.A1_convert_and_clean.create_aliases_in_data_folder import execute_generate_alias
 
-from pipeline_project.A2_process_T1_DWI_MSME.process_T1 import execute_processing_T1
-from pipeline_project.A2_process_T1_DWI_MSME.process_DWI import execute_processing_DWI
-from pipeline_project.A2_process_T1_DWI_MSME.process_MSME import execute_processing_MSME
+from pipeline_project.A2_process_modalities.process_T1 import execute_processing_T1
+from pipeline_project.A2_process_modalities.process_DWI import execute_processing_DWI
+from pipeline_project.A2_process_modalities.process_MSME import execute_processing_MSME
 
 from pipeline_project.A3_register_template_over_all_subjects.propagate_and_fuse_main import execute_propag_and_fuse_all
 
@@ -18,6 +18,7 @@ from pipeline_project.A4_data_collection.collect_data_study_MSME import compile_
 
 from pipeline_project.U_utils.upate_shared_results import send_data_to_hannes
 from pipeline_project.U_utils.copy_to_excel_file import save_data_into_excel_file
+
 
 if __name__ == '__main__':
 
@@ -33,7 +34,7 @@ if __name__ == '__main__':
     # rpa.execute_PTB_op_skull = False
     # rpa.execute_ACS_ex_vivo  = True
 
-    rpa.subjects = ['3405', '3501'] #['3505', '3507', '3602', '3604', '3606',]   # ['3505', '3507', '3602', '3604', '3606',]
+    rpa.subjects = ['3505'] #['3505', '3507', '3602', '3604', '3606',]
     #  '3307', '3404']  # '2608', '2702'
     rpa.update_params()
 
@@ -43,9 +44,9 @@ if __name__ == '__main__':
     step_A2_T1   = False
     step_A2_MSME = False
     step_A2_DWI  = False
-    step_A3      = False
+    step_A3      = True
     step_A4      = True
-    step_A5      = False
+    step_A5      = True
 
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:

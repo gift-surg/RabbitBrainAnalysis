@@ -59,19 +59,8 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
         assert os.path.exists(pfi_input_original)
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
         cmd = 'fslreorient2std {0} {1}'.format(pfi_input_original, pfi_std)
-        os.system(cmd)
+        print_and_run(cmd)
         set_translational_part_to_zero(pfi_std, pfi_std)
-
-    # ... Just a waste of time!
-    # if controller['threshold']:
-    #     print('- threshold {}'.format(sj))
-    #     pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
-    #     assert os.path.exists(pfi_std)
-    #     pfi_3d_thr = jph(pfo_tmp, sj + '_thr.nii.gz')
-    #     low_perc = subject[sj][2][0]
-    #     thr = get_percentiles_range(pfi_std, percentiles=(low_perc, 95))[0]
-    #     cmd = 'seg_maths {0} -thr {1} {2}'.format(pfi_std, thr, pfi_3d_thr)
-    #     print_and_run(cmd)
 
     if controller['register roi masks']:
         print('- register roi masks {}'.format(sj))
@@ -86,7 +75,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
             pfi_1305,
             pfi_affine_transformation_1305_on_subject,
             pfi_3d_warped_1305_on_subject)
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['propagate roi masks']:
         print('- propagate roi masks {}'.format(sj))
@@ -102,7 +91,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
             pfi_1305_roi_mask,
             pfi_affine_transformation_1305_on_subject,
             pfi_roi_mask)
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['adjust mask']:
         print('- adjust mask {}'.format(sj))
@@ -113,7 +102,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
             cmd = 'seg_maths {0} -ero {1} {2}'.format(pfi_roi_mask,
                                                       erosion_param,
                                                       pfi_roi_mask)
-            os.system(cmd)
+            print_and_run(cmd)
 
     if controller['cut masks']:
         print('- cut masks {}'.format(sj))
@@ -125,7 +114,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
         cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_3d_thr, pfi_roi_mask,
                                                   pfi_3d_cropped_roi)
         print '\nCutting newly-created ciccione mask on the subject: subject {0}.\n'.format(sj)
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['step bfc']:
         print('- step bfc {}'.format(sj))
@@ -149,7 +138,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
         assert os.path.exists(pfi_3d_cropped_roi)
         pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
         cmd = 'cp {0} {1}'.format(pfi_3d_cropped_roi, pfi_3d_bias_field_corrected)
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['create lesion mask']:
         print('- create lesion mask {}'.format(sj))
@@ -174,7 +163,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
         pfi_registration_mask = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
         cmd = 'seg_maths {0} -sub {1} {2} '.format(pfi_roi_mask, pfi_lesion_mask,
                                                        pfi_registration_mask)  # until here seems correct.
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['save results']:
         print('- save results {}'.format(sj))
@@ -182,7 +171,7 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
         assert os.path.exists(pfi_3d_bias_field_corrected)
         pfi_3d_final_destination = jph(pfo_mod, sj + '_T1.nii.gz')
         cmd = 'cp {0} {1}'.format(pfi_3d_bias_field_corrected, pfi_3d_final_destination)
-        os.system(cmd)
+        print_and_run(cmd)
 
 
 def process_T1_per_group(controller, pfo_input_group_category, pfo_output_group_category, bypass_subjects=None):
@@ -254,7 +243,6 @@ if __name__ == '__main__':
     print('process T1, local run. ')
 
     controller_steps = {'orient to standard'  : False,
-                        # 'threshold'           : True,
                         'register roi masks'  : False,
                         'propagate roi masks' : False,
                         'adjust mask'         : False,
