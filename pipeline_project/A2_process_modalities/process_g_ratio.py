@@ -47,9 +47,9 @@ def process_g_ratio_per_subject(sj, pfo_input_sj_DWI, pfo_input_sj_MSME, pfo_out
         pfi_transposed_bvals = jph(pfo_tmp, sj + '_DWI_DwEffBval_T.txt')
         pfi_transposed_vects = jph(pfo_tmp, sj + '_DWI_DwGradVec_T.txt')
         m = np.loadtxt(pfi_bvals)
-        np.savetxt(fname=pfi_transposed_bvals, X=m.T)
+        np.savetxt(fname=pfi_transposed_bvals, X=m.T, delimiter=' ', newline=' ', fmt='%10.8f')
         m = np.loadtxt(pfi_bvects)
-        np.savetxt(fname=pfi_transposed_vects, X=m.T)
+        np.savetxt(fname=pfi_transposed_vects, X=m.T, fmt='%10.8f')
 
     if controller['noddi']:
 
@@ -69,27 +69,26 @@ def process_g_ratio_per_subject(sj, pfo_input_sj_DWI, pfo_input_sj_MSME, pfo_out
         print_and_run(cmd)
 
     if controller['save T2_times']:
-        if subject[0][1] == 'ex_vivo':
-            # TODO
-            t2_times = (0, 0, 0)  # myelin, GM, CSF default
+        if subject[sj][0][1] == 'ex_vivo':
+            t2_times = (15, 80, 110)
         elif subject[0][1] == 'in_vivo':
-            t2_times = (0, 0, 0)
+            t2_times = (15, 80, 110)
         else:
-            t2_times = (0, 0, 0)
+            t2_times = (15, 80, 110)
         pfi_T2_times = jph(pfo_tmp, sj + '_t2_times.txt')
-        np.savetxt(fname=pfi_T2_times, X=np.array(t2_times))
+        np.savetxt(fname=pfi_T2_times, X=np.array(t2_times), fmt='%10.10f', newline=' ')
 
     if controller['get acquisition echo time']:
         pfi_visu_pars = jph(pfo_input_sj_MSME, sj + '_MSME_visu_pars.npy')
         assert os.path.exists(pfi_visu_pars)
-        pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.nii.gz')
+        pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
         visu_pars_dict = np.load(pfi_visu_pars)
-        np.savetxt(fname=pfi_echo_times, X=visu_pars_dict[0]['VisuAcqEchoTime'])
+        np.savetxt(fname=pfi_echo_times, X=visu_pars_dict.item().get('VisuAcqEchoTime'), fmt='%10.2f', newline=' ')
 
     if controller['fit msme']:
         pfi_msme_up = jph(pfo_mod, sj + '_MSME_up.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
-        pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.nii.gz')
+        pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
         pfi_T2_times = jph(pfo_tmp, sj + '_t2_times.txt')
         assert os.path.exists(pfi_msme_up), 'Need to run process_MSME first?'
         assert os.path.exists(pfi_roi_mask)
@@ -152,6 +151,7 @@ def process_g_ratio_per_group(controller, pfo_input_group_category, pfo_output_g
                                                                           subj_list)
     for sj in subj_list:
         process_g_ratio_per_subject(sj,
+                                    jph(pfo_input_group_category, sj, sj + '_DWI'),
                                     jph(pfo_input_group_category, sj, sj + '_MSME'),
                                     jph(pfo_output_group_category, sj),
                                     controller)
@@ -199,13 +199,14 @@ def execute_processing_g_ratio(controller, rp):
 if __name__ == '__main__':
     print('process g-ratio, local run. ')
 
-    controller_steps = {'transpose b-vals b-vects'  : False,
-                        'noddi'                     : False,
-                        'save T2_times'             : False,
-                        'fit msme'                  : False,
-                        'extract first tp noddi'    : False,
-                        'compute g-ratio'           : False,
-                        'save results'              : False}
+    controller_steps = {'transpose b-vals b-vects'  : True,
+                        'noddi'                     : True,
+                        'save T2_times'             : True,
+                        'get acquisition echo time' : True,
+                        'fit msme'                  : True,
+                        'extract first tp noddi'    : True,
+                        'compute g-ratio'           : True,
+                        'save results'              : True}
 
     rpa = RunParameters()
 

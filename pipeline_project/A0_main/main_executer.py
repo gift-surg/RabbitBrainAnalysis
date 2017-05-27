@@ -34,7 +34,7 @@ if __name__ == '__main__':
     # rpa.execute_PTB_op_skull = False
     # rpa.execute_ACS_ex_vivo  = True
 
-    rpa.subjects = ['3505'] #['3505', '3507', '3602', '3604', '3606',]
+    rpa.subjects = ['3505', '3507', '3602', '3604', '3606',]
     #  '3307', '3404']  # '2608', '2702'
     rpa.update_params()
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     step_A2_T1   = False
     step_A2_MSME = False
     step_A2_DWI  = False
-    step_A3      = True
+    step_A3      = False
     step_A4      = True
     step_A5      = True
 
