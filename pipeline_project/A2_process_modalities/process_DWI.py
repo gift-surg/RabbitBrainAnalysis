@@ -37,9 +37,14 @@ Save results
 """
 
 
-def process_DWI_per_subject(sj, pfo_input_sj_DWI, pfo_output_sj, controller):
+def process_DWI_per_subject(sj, controller):
 
     print('\nProcessing DWI, subject {} started.\n'.format(sj))
+
+    group = subject[sj][0][0]
+    category = subject[sj][0][1]
+    pfo_input_sj_DWI = jph(root_study_rabbits, '01_nifti', group, category, sj, sj + '_DWI')
+    pfo_output_sj = jph(root_study_rabbits, 'A_data', group, category, sj)
 
     if sj not in subject.keys():
         raise IOError('Subject parameters not known')
@@ -318,10 +323,7 @@ def process_DWI_per_group(controller, pfo_input_group_category, pfo_output_group
                                                                           pfo_output_group_category,
                                                                           subj_list)
     for sj in subj_list:
-        process_DWI_per_subject(sj,
-                                jph(pfo_input_group_category, sj, sj + '_DWI'),
-                                jph(pfo_output_group_category, sj),
-                                controller)
+        process_DWI_per_subject(sj, controller)
 
 
 def execute_processing_DWI(controller, rp):

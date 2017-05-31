@@ -54,7 +54,7 @@ if __name__ == '__main__':
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
         print('\nStep A1\n')
-        execute_converter(rpa)
+        execute_converter(rpa)  # refactoring : invece di rpa deve essere sj_list, dove la lista viene creata da una classe analoga a RunParameters. Keep it simple!
         execute_cleaner(rpa)
         execute_generate_alias(rpa)
 
