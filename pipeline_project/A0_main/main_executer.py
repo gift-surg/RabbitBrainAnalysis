@@ -3,42 +3,42 @@ import os
 from pipeline_project.A0_main.main_controller import ListSubjectsManager, templ_subjects
 from definitions import root_study_rabbits, root_main_dropbox
 
-from pipeline_project.A1_convert_and_clean.apply_converter_to_all_data import execute_converter
-from pipeline_project.A1_convert_and_clean.clean_converted_data import execute_cleaner
-from pipeline_project.A1_convert_and_clean.z_create_aliases_in_data_folder import execute_generate_alias
+from pipeline_project.A1_convert_and_clean.apply_converter_to_all_data import convert_subjects_from_list
+from pipeline_project.A1_convert_and_clean.clean_converted_data import cleaner_converted_data_from_list
 
-from pipeline_project.A2_process_modalities.process_T1 import execute_processing_T1
-from pipeline_project.A2_process_modalities.process_DWI import execute_processing_DWI
-from pipeline_project.A2_process_modalities.process_MSME import execute_processing_MSME
-from pipeline_project.A2_process_modalities.process_g_ratio import execute_processing_g_ratio
+from pipeline_project.A2_process_modalities.process_T1 import process_T1_from_list
+from pipeline_project.A2_process_modalities.process_DWI import process_DWI_from_list
+from pipeline_project.A2_process_modalities.process_MSME import process_MSME_from_list
+from pipeline_project.A2_process_modalities.process_g_ratio import process_g_ratio_from_list
 
-from pipeline_project.A3_register_template_over_all_subjects.propagate_and_fuse_main import propagate_and_fuse_per_subject_list_over_all_modalities
+from pipeline_project.A3_register_template_over_all_subjects.propagate_and_fuse_main import \
+    propagate_and_fuse_per_subject_list_over_all_modalities
 
-from pipeline_project.A4_data_collection.collect_data_study_T1_and_DWI import compile_record_T1_DWI
-from pipeline_project.A4_data_collection.collect_data_study_g_ratio import compile_record_MSME
+from pipeline_project.A4_data_collection.collect_data_study_T1_and_DWI import compile_record_T1_DWI_from_subject_list
+from pipeline_project.A4_data_collection.collect_data_study_g_ratio import compile_record_g_ratio_from_subject_list
 
-from pipeline_project.U_utils.upate_shared_results import send_data_to_hannes
+from pipeline_project.U_utils.upate_shared_results import send_data_to_hannes_from_list
 from pipeline_project.U_utils.copy_to_excel_file import save_data_into_excel_file
 
 
 if __name__ == '__main__':
 
-    assert os.path.isdir(root_study_rabbits), 'Connect pantopolio!'
+    assert os.path.isdir(root_study_rabbits), 'Connect to cluster / Pantopolio!'
 
     ''' Set parameters per subjects or per group '''
 
     lsm = ListSubjectsManager()
 
-    lsm.execute_PTB_ex_skull = False
-    lsm.execute_PTB_ex_vivo  = True
-    lsm.execute_PTB_in_vivo  = False
-    lsm.execute_PTB_op_skull = False
-    lsm.execute_ACS_ex_vivo  = False
+    lsm.execute_PTB_ex_skull  = False
+    lsm.execute_PTB_ex_vivo   = False
+    lsm.execute_PTB_in_vivo   = False
+    lsm.execute_PTB_op_skull  = False
+    lsm.execute_ACS_ex_vivo   = False
 
-    lsm.subjects = ['2202t1', '2205t1', '2206t1']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
-    lsm.update_sl()
+    lsm.update_ls()
 
     print lsm.ls
 
@@ -56,9 +56,8 @@ if __name__ == '__main__':
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
         print('\nStep A1\n')
-        execute_converter(lsm.ls)  # refactoring : invece di rpa deve essere sj_list, dove la lista viene creata da una classe analoga a RunParameters. Keep it simple!
-        execute_cleaner(lsm.ls)
-        execute_generate_alias(lsm.ls)
+        convert_subjects_from_list(lsm.ls)
+        cleaner_converted_data_from_list(lsm.ls)
 
     ''' Step A2 - T1 '''
     if step_A2_T1:
@@ -73,7 +72,7 @@ if __name__ == '__main__':
                             'create reg masks'    : True,
                             'save results'        : True}
 
-        execute_processing_T1(controller_A2_T1, rpa)
+        process_T1_from_list(lsm.ls, controller_A2_T1)
 
     ''' Step A2 - DWI '''
     if step_A2_DWI:
@@ -94,12 +93,12 @@ if __name__ == '__main__':
                             'create reg masks'     : True,
                             'save results'         : True}
 
-        execute_processing_DWI(controller_DWI, rpa)
+        process_DWI_from_list(lsm.ls, controller_DWI)
 
     ''' Step A2 - MSME '''
     if step_A2_MSME:
         print('\nStep A2 MSME\n')
-        controller_MSME = { 'squeeze'                  : True,
+        controller_MSME = {'squeeze'                  : True,
                             'orient to standard'       : True,
                             'extract first timepoint'  : True,
                             'register tp0 to S0'       : True,
@@ -107,7 +106,7 @@ if __name__ == '__main__':
                             'extract first tp in s0 space' : True
                            }
 
-        execute_processing_MSME(controller_MSME, rpa)
+        process_MSME_from_list(lsm.ls, controller_MSME)
 
     ''' Step A2 - g-ratio '''
     if step_A2_g_ratio:
@@ -121,7 +120,7 @@ if __name__ == '__main__':
                               'compute g-ratio'           : True,
                               'save results'              : True}
 
-        execute_processing_g_ratio(controller_g_ratio, rpa)
+        process_g_ratio_from_list(lsm.ls, controller_g_ratio)
 
     ''' Step A3 - Propagate template '''
     if step_A3:
@@ -155,15 +154,15 @@ if __name__ == '__main__':
         pfo_templ_subjects_input = os.path.join(root_main_dropbox, 'study', 'A_internal_template')
         list_templ_subjects_input = templ_subjects
 
-        execute_propag_and_fuse_all(controller_fuser_, controller_propagator_, controller_inter_modality_propagator_,
-                                    pfo_templ_subjects_input, list_templ_subjects_input, rpa)
+        propagate_and_fuse_per_subject_list_over_all_modalities(lsm.ls, controller_fuser_, controller_propagator_,
+                                                                controller_inter_modality_propagator_)
 
     ''' Step A4 - Data collection '''
     if step_A4:
         print('\nStep A4\n')
-        compile_record_T1_DWI(rpa)
-        compile_record_MSME(rpa)
+        compile_record_T1_DWI_from_subject_list(lsm.ls)
+        compile_record_g_ratio_from_subject_list(lsm.ls)
 
     if step_A5:
-        send_data_to_hannes(rpa, records_only=False)
-        save_data_into_excel_file(rpa)
+        send_data_to_hannes_from_list(lsm.ls, records_only=False)
+        save_data_into_excel_file(lsm.ls)

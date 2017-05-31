@@ -88,6 +88,7 @@ def send_data_to_hannes_from_list(subj_list, records_only=False, erase_source=Fa
 
 
 if __name__ == '__main__':
+
     lsm = ListSubjectsManager()
 
     lsm.execute_PTB_ex_skull = False

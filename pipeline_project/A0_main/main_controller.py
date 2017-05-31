@@ -16,56 +16,6 @@ import numpy as np
 # Sagittal Angle sign from L to R from initial position to aligned with axis (roll)
 
 
-# class RunParameters(object):
-#     """
-#     one instance of the controller parameter has all the parameters to run the
-#     whole pipeline. If to process in group, or if to process a single subject.
-#     """
-#
-#     def __init__(self, execute_PTB_ex_skull=False, execute_PTB_ex_vivo=False, execute_PTB_in_vivo=False,
-#                  execute_PTB_op_skull=False, execute_ACS_ex_vivo=False, subjects=None):
-#
-#         self.execute_PTB_ex_skull = execute_PTB_ex_skull
-#         self.execute_PTB_ex_vivo = execute_PTB_ex_vivo
-#         self.execute_PTB_in_vivo = execute_PTB_in_vivo
-#         self.execute_PTB_op_skull = execute_PTB_op_skull
-#         self.execute_ACS_ex_vivo = execute_ACS_ex_vivo
-#
-#         self.subjects = subjects
-#
-#         self._check_sj()
-#
-#     def _check_sj(self):
-#         if isinstance(self.subjects, str):
-#             if str == 'all':
-#                 self.execute_PTB_ex_skull = True
-#                 self.execute_PTB_ex_vivo = True
-#                 self.execute_PTB_in_vivo = True
-#                 self.execute_PTB_op_skull = True
-#                 self.execute_ACS_ex_vivo = True
-#             else:
-#                 self.subjects = [self.subjects, ]
-#                 self.update_params()
-#
-#     def update_params(self):
-#         # Turn on flags of the groups where the parameters are.
-#         for sj in self.subjects:
-#             assert sj in subject.keys(), '{} Not in the subject list'.format(sj)
-#             group, category = subject[sj][0]
-#             if group == 'PTB':
-#                 if category == 'ex_skull':
-#                     self.execute_PTB_ex_skull = True
-#                 if category == 'ex_vivo':
-#                     self.execute_PTB_ex_vivo = True
-#                 if category == 'in_vivo':
-#                     self.execute_PTB_in_vivo = True
-#                 if category == 'op_skull':
-#                     self.execute_PTB_op_skull = True
-#             elif group == 'ACS':
-#                 if category == 'ex_vivo':
-#                     self.execute_ACS_ex_vivo = True
-
-
 class ListSubjectsManager(object):
     def __init__(self, execute_PTB_ex_skull=False, execute_PTB_ex_vivo=False, execute_PTB_in_vivo=False,
                  execute_PTB_op_skull=False, execute_ACS_ex_vivo=False, input_subjects=None):
@@ -83,7 +33,8 @@ class ListSubjectsManager(object):
     def update_ls(self):
 
         self.ls = []  # re initialise to remove duplicates.
-        prod_conditions = self.execute_PTB_ex_skull + self.execute_PTB_ex_vivo + self.execute_PTB_in_vivo + self.execute_PTB_op_skull + self.execute_ACS_ex_vivo
+        prod_conditions = self.execute_PTB_ex_skull + self.execute_PTB_ex_vivo + self.execute_PTB_in_vivo + \
+                            self.execute_PTB_op_skull + self.execute_ACS_ex_vivo
 
         if prod_conditions > 0:
             for k in subject.keys():
@@ -246,7 +197,7 @@ subject = {
              ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
              ],
     '2502': [['PTB', 'ex_vivo'],  # 0: study  - category
-             [np.pi /12, 0, 0, False],  # 1:  aircraft angles, in templ
+             [np.pi / 12, 0, 0, False],  # 1:  aircraft angles, in templ
              [25, 1, (15, 90)],  # 2: thr, erosion roi mask for T1
              bfp_fast,  # 3: Bias field parameters T1
              [1, False],  # 4: mask dilation factor, DWI is squeezed,
@@ -378,19 +329,19 @@ subject = {
     # PTB OP_skull:
     # ------------------------
     '0602': [['PTB', 'op_skull'],  # 0: study  - category
-               [np.pi / 4, 0, 0, False],  # 1:  aircraft angles, in templ
-               [25, 1],  # 2: thr, erosion roi mask for T1
-               bfp_fast,  # 3: Bias field parameters T1
-               [1, False],  # 4: mask dilation factor, DWI is squeezed,
-               ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
-               ],
+             [np.pi / 4, 0, 0, False],  # 1:  aircraft angles, in templ
+             [25, 1],  # 2: thr, erosion roi mask for T1
+             bfp_fast,  # 3: Bias field parameters T1
+             [1, False],  # 4: mask dilation factor, DWI is squeezed,
+             ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
+             ],
     '0603': [['PTB', 'op_skull'],  # 0: study  - category
-               [np.pi / 4, 0, 0, False],  # 1:  aircraft angles, in templ
-               [25, 1],  # 2: thr, erosion roi mask for T1
-               bfp_fast,  # 3: Bias field parameters T1
-               [1, False],  # 4: mask dilation factor, DWI is squeezed,
-               ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
-               ],
+             [np.pi / 4, 0, 0, False],  # 1:  aircraft angles, in templ
+             [25, 1],  # 2: thr, erosion roi mask for T1
+             bfp_fast,  # 3: Bias field parameters T1
+             [1, False],  # 4: mask dilation factor, DWI is squeezed,
+             ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
+             ],
     # ------------------------
     # ACS ex_vivo:
     # ------------------------
@@ -493,4 +444,3 @@ subject = {
              ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
              ],
 }
-

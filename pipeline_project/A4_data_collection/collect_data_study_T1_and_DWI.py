@@ -6,7 +6,7 @@ from pipeline_project.A0_main.main_controller import ListSubjectsManager, subjec
 from tools.measurements.compile_record import compile_record
 
 
-def compile_record_from_subject_list(subj_list):
+def compile_record_T1_DWI_from_subject_list(subj_list):
 
     print '\n\n Collecting data subjects in the list {}'.format(subj_list)
 
@@ -91,5 +91,5 @@ if __name__ == '__main__':
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()
 
-    compile_record_from_subject_list(lsm.ls)
+    compile_record_T1_DWI_from_subject_list(lsm.ls)
     # execute_processing_DWI(controller_steps, rpa_dwi)

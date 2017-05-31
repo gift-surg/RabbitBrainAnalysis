@@ -4,13 +4,13 @@ from os.path import join as jph
 
 from definitions import root_study_rabbits, pfi_excel_table_ACS, pfi_excel_table_PTB, pfi_excel_table_PTB_templ
 
-from pipeline_project.A0_main.main_controller import subject, RunParameters
+from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 
 
 def save_data_into_excel_file(sj):
 
 
-
+    visu_pars_dict.item().get('VisuAcqEchoTime')
 
     # grab excel table
     if subject[sj][0][0] == 'ACS':
@@ -23,7 +23,7 @@ def save_data_into_excel_file(sj):
     print rp
 
 
-def save_data_into_excel_file_for_group(pfo_group, bypass_subjects=None):
+def save_data_into_excel_file_for_list(pfo_group, bypass_subjects=None):
 
     assert os.path.exists(pfo_group)
 
@@ -42,59 +42,19 @@ def save_data_into_excel_file_for_group(pfo_group, bypass_subjects=None):
         save_data_into_excel_file(sj)
 
 
-def execute_saver_into_excel_file(rp):
-
-    assert isinstance(rp, RunParameters)
-    root_raw_data = jph(root_study_rabbits, '00_raw_data')
-    root_destination = jph(root_study_rabbits, 'A_data')
-
-    if rp.execute_PTB_ex_skull:
-        study = 'PTB'
-        category = 'ex_skull'
-        pfo_source = jph(root_raw_data, study, category)
-        assert os.path.isdir(pfo_source), pfo_source
-        save_data_into_excel_file_for_group(pfo_source,  bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_ex_vivo:
-        study = 'PTB'
-        category = 'ex_vivo'
-        pfo_source = jph(root_raw_data, study, category)
-        assert os.path.isdir(pfo_source), pfo_source
-        save_data_into_excel_file_for_group(pfo_source, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_in_vivo:
-        study = 'PTB'
-        category = 'in_vivo'
-        pfo_source = jph(root_raw_data, study, category)
-        assert os.path.isdir(pfo_source), pfo_source
-        save_data_into_excel_file_for_group(pfo_source, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_op_skull:
-        study = 'PTB'
-        category = 'op_skull'
-        pfo_source = jph(root_raw_data, study, category)
-        assert os.path.isdir(pfo_source), pfo_source
-        save_data_into_excel_file_for_group(pfo_source, bypass_subjects=rp.subjects)
-
-    if rp.execute_ACS_ex_vivo:
-        study = 'ACS'
-        category = 'ex_vivo'
-        pfo_source = jph(root_raw_data, study, category)
-        assert os.path.isdir(pfo_source), pfo_source
-        save_data_into_excel_file_for_group(pfo_source, bypass_subjects=rp.subjects)
-
-
 if __name__ == '__main__':
 
-    rpa = RunParameters()
+    lsm = ListSubjectsManager()
 
-    rpa.execute_PTB_ex_skull = True
-    rpa.execute_PTB_ex_vivo = True
-    rpa.execute_PTB_in_vivo = True
-    rpa.execute_PTB_op_skull = True
-    rpa.execute_ACS_ex_vivo = True
+    lsm.execute_PTB_ex_skull = False
+    lsm.execute_PTB_ex_vivo = False
+    lsm.execute_PTB_in_vivo = False
+    lsm.execute_PTB_op_skull = False
+    lsm.execute_ACS_ex_vivo = False
 
-    rpa.subjects = None
-    rpa.update_params()
+    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    # '2205t1', '2206t1', '2502bt1']
+    #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
+    lsm.update_ls()
 
-    execute_saver_into_excel_file(rpa)
+    save_data_into_excel_file_for_list(lsm.ls)

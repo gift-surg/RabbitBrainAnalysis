@@ -442,20 +442,6 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
         pfi_rigid_transf_to_s0 = jph(pfo_tmp, sj + 'rigid_T1_to_s0_aff.txt')
         pfi_rigid_warp_to_s0 = jph(pfo_tmp, sj + 'rigid_T1_to_s0_warp.nii.gz')
 
-        # if subject[sj][4][1]:  # is squashed! - use anti squash the transformation
-        #
-        #     pfi_T1_anti_sqash = jph(pfo_tmp, sj + '_T1_antisqash.nii.gz')
-        #     pfi_T1_reg_mask_anti_sqash = jph(pfo_tmp, sj + '_T1_antisqash_reg_mask.nii.gz')
-        #
-        #     scale_z_values(pfi_T1, pfi_T1_anti_sqash, squeeze_factor=2.218074656188605)
-        #     scale_z_values(pfi_reg_mask_T1, pfi_T1_reg_mask_anti_sqash, squeeze_factor=2.218074656188605)
-        #
-        #     cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly -speeeeed '.format(
-        #         pfi_S0, pfi_reg_mask_S0, pfi_T1_anti_sqash, pfi_T1_reg_mask_anti_sqash, pfi_rigid_transf_to_s0,
-        #         pfi_rigid_warp_to_s0)
-        #     os.system(cmd)
-        # else:
-
         cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly  '.format(
             pfi_S0, pfi_reg_mask_S0, pfi_T1, pfi_reg_mask_T1, pfi_rigid_transf_to_s0, pfi_rigid_warp_to_s0)
         print(cmd)
@@ -494,3 +480,7 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_MSME, pfi_segm_MSME_up, pfi_id_transf, pfi_segm_MSME)
         os.system(cmd)
+
+
+def propagate_and_fuse_multimodal():
+    pass
