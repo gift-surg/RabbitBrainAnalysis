@@ -2,10 +2,9 @@
 Propagate and fuse T1
 """
 
-import os
 from os.path import join as jph
 
-from definitions import root_study_pantopolium, root_study_dropbox
+from definitions import root_study_rabbits
 from pipeline_project.A0_main.main_controller import RunParameters
 from propagate_and_fuse_utils import propagate_and_fuse_per_group_over_all_modalities
 
@@ -17,10 +16,9 @@ def execute_propag_and_fuse_all(controller_fuser,
                                 list_templ_subjects,
                                 rp):
 
-    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
 
-    root_data = jph(root_study_pantopolium, 'A_data')
+    root_data = jph(root_study_rabbits, 'A_data')
 
     if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')
@@ -80,60 +78,3 @@ def execute_propag_and_fuse_all(controller_fuser,
 
 if __name__ == '__main__':
     print('Propagate and fuse, local run. ')
-
-    # controller_fuser_ = {'set header bicommissural'  : True,
-    #                      'aff alignment'             : True,
-    #                      'Propagate aff to segm'     : True,
-    #                      'Propagate aff to mask'     : True,
-    #                      'Get differential BFC'      : True,
-    #                      'N-rig alignment'           : True,
-    #                      'Propagate to target n-rig' : True,
-    #                      'Smooth result'             : True,
-    #                      'Stack warps and segm'      : True,
-    #                      'Fuse'                      : True,
-    #                      'save result'               : True
-    #                      }
-    #
-    # controller_propagator_ = {'set header bicommissural'   : True,
-    #                           'rig alignment'              : True,
-    #                           'Propagate aff to segm'      : True,
-    #                           'Propagate aff to mask'      : True,
-    #                           'Smooth'                     : True,
-    #                           'save result'                : True}
-    #
-    # controller_inter_modality_propagator_ = {'rig register to S0'       : True,
-    #                                          'rig propagate to S0'      : True,
-    #                                          'rig register to MSME_up'  : True,
-    #                                          'rig propagate to MSME_up' : True,
-    #                                          'MSME_up to MSME'          : True}
-    #
-    # pfo_templ_subjects_input = jph(root_study_dropbox, 'A_internal_template')
-    # list_templ_subjects_input = templ_subjects
-    #
-    # rpa = RunParameters()
-    #
-    # # rpa.execute_PTB_ex_skull = True
-    # # rpa.execute_PTB_ex_vivo = True
-    # # rpa.execute_PTB_in_vivo = True
-    # # rpa.execute_PTB_op_skull = True
-    # # rpa.execute_ACS_ex_vivo = True
-    #
-    # # rpa.subjects = ['0802t1']
-    # # rpa.update_params()
-    # # rpa.subjects = ['1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002', '2502', '2503',
-    # #                 '2608', '2702']
-    # rpa.subjects = ['2503', ] # '2608', '2702']
-    #
-    #
-    # # ['0904t1', '1501t1', '1504t1', '1508t1', '1509t1', '1511t1' ]
-    #                 #  '0904t1', '1501t1', '1504t1', '1508t1', '1509t1', '1511t1', '2502bt1', '2503t1',
-    #                 #'2605t1', '2702t1']  # '0802t1',
-    # rpa.update_params()
-
-    # execute_propag_and_fuse_all(controller_fuser_,
-    #                                controller_propagator_,
-    #                                controller_inter_modality_propagator_,
-    #                                pfo_templ_subjects_input,
-    #                                list_templ_subjects_input,
-    #                                rpa)
-

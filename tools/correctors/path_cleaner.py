@@ -100,7 +100,7 @@ def clean_a_study(pfo_study):
                 os.system('rm -r {}'.format(pfo_experiment_p))
             else:
                 # the experiment folder is not empty, but there is no name method inside. Raise a warning!
-                cmd = 'No acquisition_method.txt in the folder {}'.format(pfo_experiment_p)
+                cmd = 'No acquisition_method.txt in the folder {} - maybe already cleaned?'.format(pfo_experiment_p)
                 warnings.warn(cmd)
 
 # root = '/Users/sebastiano/Desktop/test_PV/'

@@ -7,11 +7,11 @@ from os.path import join as jph
 
 import numpy as np
 
-from definitions import root_study_dropbox, root_study_pantopolium
+from definitions import root_study_rabbits, root_shared_records
 from pipeline_project.A0_main.main_controller import RunParameters
 
 
-def send_or_erase(rp, pfo_source, pfo_destination, records_only=False, erase=False):
+def send_or_erase(rp, pfo_source, pfo_destination, records_only=False, erase_source=False, erase_destination=False):
 
     subj_list = np.sort(list(set(os.listdir(pfo_source)) - {'.DS_Store'}))
     if rp.subjects is not None:
@@ -19,8 +19,12 @@ def send_or_erase(rp, pfo_source, pfo_destination, records_only=False, erase=Fal
 
     for sj in subj_list:
 
-        if erase:
+        if erase_source:
             cmd = 'rm -r {}'.format(jph(pfo_source, sj))
+            os.system(cmd)
+            print(cmd)
+        elif erase_destination:
+            cmd = 'rm -r {}'.format(jph(pfo_destination, sj))
             os.system(cmd)
             print(cmd)
         else:
@@ -37,6 +41,17 @@ def send_or_erase(rp, pfo_source, pfo_destination, records_only=False, erase=Fal
             else:
                 print('REPORTS for subject {} not present'.format(sj))
                 return
+
+            # copy records template if any
+            folder_source_reports = jph(pfo_source, sj, 'records_template')
+            folder_destination_reports = jph(pfo_destination, sj)
+            cmd0 = 'mkdir -p {}'.format(folder_destination_reports)
+            os.system(cmd0)
+
+            if os.path.exists(folder_source_reports):
+                cmd1 = 'cp -r {} {} '.format(folder_source_reports, folder_destination_reports)
+                os.system(cmd1)
+                print(cmd1)
 
             if not records_only:
                 # copy mod
@@ -65,71 +80,74 @@ def send_or_erase(rp, pfo_source, pfo_destination, records_only=False, erase=Fal
                     print('REPORTS for subject {} not present'.format(sj))
 
 
-def send_data_to_hannes(rp, records_only=False, erase=False):
+def send_data_to_hannes(rp, records_only=False, erase_source=False, erase_destination=False):
 
-    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
 
-    root_data    = jph(root_study_pantopolium, 'A_data')
-    root_dropbox_reports = jph(root_study_dropbox, 'C_records')
+    root_data    = jph(root_study_rabbits, 'A_data')
 
     assert os.path.isdir(root_data)
-    assert os.path.isdir(root_dropbox_reports)
+    assert os.path.isdir(root_shared_records), root_shared_records
 
     if rp.execute_PTB_ex_skull:
         group = 'PTB'
         category = 'ex_skull'
         pfo_source = jph(root_data, group, category)
         assert os.path.exists(pfo_source)
-        pfo_destination = jph(root_dropbox_reports, group, category)
-        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase=erase)
+        pfo_destination = jph(root_shared_records, group, category)
+        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
+                      erase_destination=erase_destination)
 
     if rp.execute_PTB_ex_vivo:
         group = 'PTB'
         category = 'ex_vivo'
         pfo_source = jph(root_data, group, category)
         assert os.path.exists(pfo_source)
-        pfo_destination = jph(root_dropbox_reports, group, category)
-        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase=erase)
+        pfo_destination = jph(root_shared_records, group, category)
+        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
+                      erase_destination=erase_destination)
 
     if rp.execute_PTB_in_vivo:
         group = 'PTB'
         category = 'in_vivo'
         pfo_source = jph(root_data, group, category)
         assert os.path.exists(pfo_source)
-        pfo_destination = jph(root_dropbox_reports, group, category)
-        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase=erase)
+        pfo_destination = jph(root_shared_records, group, category)
+        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
+                      erase_destination=erase_destination)
 
     if rp.execute_PTB_op_skull:
         group = 'PTB'
         category = 'op_skull'
         pfo_source = jph(root_data, group, category)
         assert os.path.exists(pfo_source)
-        pfo_destination = jph(root_dropbox_reports, group, category)
-        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase=erase)
+        pfo_destination = jph(root_shared_records, group, category)
+        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
+                      erase_destination=erase_destination)
 
     if rp.execute_ACS_ex_vivo:
         group = 'ACS'
         category = 'ex_vivo'
         pfo_source = jph(root_data, group, category)
         assert os.path.exists(pfo_source)
-        pfo_destination = jph(root_dropbox_reports, group, category)
-        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase=erase)
+        pfo_destination = jph(root_shared_records, group, category)
+        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
+                      erase_destination=erase_destination)
 
 
 if __name__ == '__main__':
 
     rpa = RunParameters()
 
-    # rpa.execute_PTB_ex_skull = False
-    # rpa.execute_PTB_ex_vivo = True
-    # rpa.execute_PTB_in_vivo = True
-    # rpa.execute_PTB_op_skull = False
-    # rpa.execute_ACS_ex_vivo = False
+    rpa.execute_PTB_ex_skull = False
+    rpa.execute_PTB_ex_vivo = True
+    rpa.execute_PTB_in_vivo = False
+    rpa.execute_PTB_op_skull = False
+    rpa.execute_ACS_ex_vivo = False
 
     # rpa.subjects = None
     # rpa.update_params()
-    rpa.subjects = ['2702', ]
-    rpa.update_params()
+    # rpa.subjects = ['1201', ]
+    # rpa.update_params()
 
-    send_data_to_hannes(rpa)
+    send_data_to_hannes(rpa, records_only=True)

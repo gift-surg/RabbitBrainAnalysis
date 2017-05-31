@@ -2,7 +2,7 @@ import os
 import numpy as np
 from os.path import join as jph
 
-from definitions import root_study_pantopolium
+from definitions import root_study_rabbits
 from tools.auxiliary.utils import print_and_run
 from pipeline_project.A0_main.main_controller import subject, RunParameters
 
@@ -24,6 +24,7 @@ def process_g_ratio_per_subject(sj, pfo_input_sj_DWI, pfo_input_sj_MSME, pfo_out
         raise IOError('Input folder DWI does not exist.')
     if not os.path.exists(pfo_input_sj_MSME):
         raise IOError('Input folder MSME does not exist.')
+
     # --  Generate intermediate and output folder
 
     pfo_mod = jph(pfo_output_sj, 'mod')
@@ -159,11 +160,10 @@ def process_g_ratio_per_group(controller, pfo_input_group_category, pfo_output_g
 
 def execute_processing_g_ratio(controller, rp):
 
-    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
 
-    root_nifti = jph(root_study_pantopolium, '01_nifti')
-    root_data = jph(root_study_pantopolium, 'A_data')
+    root_nifti = jph(root_study_rabbits, '01_nifti')
+    root_data = jph(root_study_rabbits, 'A_data')
 
     if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull = jph(root_nifti, 'PTB', 'ex_skull')
@@ -220,6 +220,3 @@ if __name__ == '__main__':
     # rpa.update_params()
 
     execute_processing_g_ratio(controller_steps, rpa)
-
-
-

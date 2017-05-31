@@ -6,7 +6,7 @@ from os.path import join as jph
 
 import numpy as np
 
-from definitions import root_study_pantopolium
+from definitions import root_study_rabbits
 from pipeline_project.A0_main.main_controller import subject, RunParameters
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor, get_percentiles_range
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
@@ -64,14 +64,14 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
 
     if controller['register roi masks']:
         print('- register roi masks {}'.format(sj))
-        pfi_3d_thr = jph(pfo_tmp, sj + '_thr.nii.gz')
-        pfi_1305 = jph(root_study_pantopolium, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
-        assert os.path.exists(pfi_3d_thr)
+        pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
+        pfi_1305 = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
+        assert os.path.exists(pfi_std)
         assert os.path.exists(pfi_1305)
         pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '.txt')
         pfi_3d_warped_1305_on_subject = jph(pfo_tmp, 'warp_1305_on_' + sj + '.nii.gz')
         cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} ; '.format(
-            pfi_3d_thr,
+            pfi_std,
             pfi_1305,
             pfi_affine_transformation_1305_on_subject,
             pfi_3d_warped_1305_on_subject)
@@ -79,15 +79,15 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
 
     if controller['propagate roi masks']:
         print('- propagate roi masks {}'.format(sj))
-        pfi_3d_thr = jph(pfo_tmp, sj + '_thr.nii.gz')
-        pfi_1305_roi_mask = jph(root_study_pantopolium, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.gz')
+        pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
+        pfi_1305_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.gz')
         pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '.txt')
-        assert os.path.exists(pfi_3d_thr)
+        assert os.path.exists(pfi_std)
         assert os.path.exists(pfi_1305_roi_mask)
         assert os.path.exists(pfi_affine_transformation_1305_on_subject)
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-            pfi_3d_thr,
+            pfi_std,
             pfi_1305_roi_mask,
             pfi_affine_transformation_1305_on_subject,
             pfi_roi_mask)
@@ -106,12 +106,12 @@ def process_T1_per_subject(sj, pfo_input_sj_3D, pfo_output_sj, controller):
 
     if controller['cut masks']:
         print('- cut masks {}'.format(sj))
-        pfi_3d_thr = jph(pfo_tmp, sj + '_thr.nii.gz')
+        pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
-        assert os.path.exists(pfi_3d_thr)
+        assert os.path.exists(pfi_std)
         assert os.path.exists(pfi_roi_mask)
         pfi_3d_cropped_roi = jph(pfo_tmp, sj + '_cropped.nii.gz')
-        cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_3d_thr, pfi_roi_mask,
+        cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_std, pfi_roi_mask,
                                                   pfi_3d_cropped_roi)
         print '\nCutting newly-created ciccione mask on the subject: subject {0}.\n'.format(sj)
         print_and_run(cmd)
@@ -202,11 +202,10 @@ def process_T1_per_group(controller, pfo_input_group_category, pfo_output_group_
 
 def execute_processing_T1(controller, rp):
 
-    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
 
-    root_nifti = jph(root_study_pantopolium, '01_nifti')
-    root_data = jph(root_study_pantopolium, 'A_data')
+    root_nifti = jph(root_study_rabbits, '01_nifti')
+    root_data = jph(root_study_rabbits, 'A_data')
 
     if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull = jph(root_nifti, 'PTB', 'ex_skull')

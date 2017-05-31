@@ -1,7 +1,6 @@
 import numpy as np
 import os
 
-from bruker2nifti.scan_converter import convert_a_scan
 from bruker2nifti.study_converter import convert_a_study
 
 from tools.correctors.path_cleaner import clean_a_study

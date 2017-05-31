@@ -3,7 +3,7 @@ from os.path import join as jph
 
 import numpy as np
 
-from definitions import pfi_excel_table_ACS, root_study_pantopolium, pfi_excel_table_PTB
+from definitions import pfi_excel_table_ACS, root_study_rabbits, pfi_excel_table_PTB
 from pipeline_project.A0_main.main_controller import RunParameters, subject
 from tools.measurements.compile_record import compile_record
 
@@ -51,7 +51,7 @@ def compile_record_per_group(pfo_input_data, tuple_subjects=None):
             cmd = 'mkdir -p {}'.format(pfo_output_record_sj)
             os.system(cmd)
             # grab label descriptor
-            pfi_multi_labels_descr = jph(root_study_pantopolium, 'A_data', 'Utils', 'multi_label_descriptor.txt')
+            pfi_multi_labels_descr = jph(root_study_rabbits, 'A_data', 'Utils', 'multi_label_descriptor.txt')
             assert os.path.exists(pfi_multi_labels_descr)
             # grab excel table
             if subject[sj][0][0] == 'ACS':
@@ -82,10 +82,10 @@ def compile_record_per_group(pfo_input_data, tuple_subjects=None):
 
 def compile_record_T1_DWI(rp):
 
-    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
+    assert os.path.isdir(root_study_rabbits), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
 
-    root_data = jph(root_study_pantopolium, 'A_data')
+    root_data = jph(root_study_rabbits, 'A_data')
 
     if rp.execute_PTB_ex_skull:
         pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')

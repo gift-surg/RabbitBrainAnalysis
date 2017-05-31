@@ -3,16 +3,24 @@ from os.path import join as jph
 
 import numpy as np
 
-from definitions import root_study_pantopolium
+from definitions import root_study_rabbits
 from pipeline_project.A0_main.main_controller import RunParameters
 from tools.correctors.path_cleaner import clean_a_study
 
 
-def cleaner_converted_data(pfo_to_be_cleaned):
+def cleaner_converted_data(pfo_to_be_cleaned, bypass_subjects=None):
 
     assert os.path.exists(pfo_to_be_cleaned)
 
     subj_list = np.sort(list(set(os.listdir(pfo_to_be_cleaned)) - {'.DS_Store'}))
+
+    # allow to force the subj_list to be the input tuple bypass subject, chosen by the user.
+    if bypass_subjects is not None:
+
+        if set(bypass_subjects).intersection(set(subj_list)) == {}:
+            raise IOError
+        else:
+            subj_list = bypass_subjects
 
     print '\n\n SUBJECTS in {}\n {} \n'.format(pfo_to_be_cleaned, subj_list)
     print subj_list
@@ -25,35 +33,44 @@ def cleaner_converted_data(pfo_to_be_cleaned):
 
 def execute_cleaner(rp):
 
-    assert os.path.isdir(root_study_pantopolium), 'Connect pantopolio!'
     assert isinstance(rp, RunParameters)
 
-    root_nifti = jph(root_study_pantopolium, '01_nifti')
-    
+    root_nifti = jph(root_study_rabbits, '01_nifti')
+
     if rp.execute_PTB_ex_skull:
-        pfo_target = jph(root_nifti, 'PTB', 'ex_skull')
+        study = 'PTB'
+        category = 'ex_skull'
+        pfo_target = jph(root_nifti, study, category)
         assert os.path.exists(pfo_target)
-        cleaner_converted_data(pfo_target)
-        
+        cleaner_converted_data(pfo_target, bypass_subjects=rp.subjects)
+
     if rp.execute_PTB_ex_vivo:
-        pfo_target = jph(root_nifti, 'PTB', 'ex_vivo')
+        study = 'PTB'
+        category = 'ex_vivo'
+        pfo_target = jph(root_nifti, study, category)
         assert os.path.exists(pfo_target)
-        cleaner_converted_data(pfo_target)
-        
+        cleaner_converted_data(pfo_target, bypass_subjects=rp.subjects)
+
     if rp.execute_PTB_in_vivo:
-        pfo_target = jph(root_nifti, 'PTB', 'in_vivo')
+        study = 'PTB'
+        category = 'in_vivo'
+        pfo_target = jph(root_nifti, study, category)
         assert os.path.exists(pfo_target)
-        cleaner_converted_data(pfo_target)
+        cleaner_converted_data(pfo_target, bypass_subjects=rp.subjects)
 
     if rp.execute_PTB_op_skull:
-        pfo_target = jph(root_nifti, 'PTB', 'op_skull')
+        study = 'PTB'
+        category = 'op_skull'
+        pfo_target = jph(root_nifti, study, category)
         assert os.path.exists(pfo_target)
-        cleaner_converted_data(pfo_target)
-    
+        cleaner_converted_data(pfo_target, bypass_subjects=rp.subjects)
+
     if rp.execute_ACS_ex_vivo:
-        pfo_target = jph(root_nifti, 'ACS', 'ex_vivo')
+        study = 'ACS'
+        category = 'ex_vivo'
+        pfo_target = jph(root_nifti, study, category)
         assert os.path.exists(pfo_target)
-        cleaner_converted_data(pfo_target)
+        cleaner_converted_data(pfo_target, bypass_subjects=rp.subjects)
 
 
 if __name__ == '__main__':

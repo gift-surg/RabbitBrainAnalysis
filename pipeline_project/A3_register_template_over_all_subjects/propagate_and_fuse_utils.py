@@ -8,9 +8,9 @@ from os.path import join as jph
 import numpy as np
 from labels_manager.main import LabelsManager
 
-from definitions import root_study_pantopolium
+from definitions import root_study_rabbits
 from pipeline_project.A0_main.main_controller import subject, propagate_me_level, templ_subjects
-from tools.auxiliary.utils import adjust_header_from_transformations, scale_z_values
+from tools.auxiliary.utils import adjust_header_from_transformations
 
 """
 Disregarding the modality or other issues, various options are allowed.
@@ -466,21 +466,6 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
         print('- rig propagate to S0 {}'.format(sj))
         pfi_rigid_transf_to_s0 = jph(pfo_tmp, sj + 'rigid_T1_to_s0_aff.txt')
         assert os.path.exists(pfi_rigid_transf_to_s0)
-        # if subject[sj][4][1]:  # is squashed!
-        #
-        #     pfi_T1_anti_sqash = jph(pfo_tmp, sj + '_T1_antisqash.nii.gz')
-        #     pfi_T1_reg_mask_anti_sqash = jph(pfo_tmp, sj + '_T1_antisqash_reg_mask.nii.gz')
-        #     assert os.path.exists(pfi_T1_anti_sqash)
-        #     assert os.path.exists(pfi_T1_reg_mask_anti_sqash)
-        #
-        #     pfi_T1_segm_anti_squash = jph(pfo_tmp, sj + '_T1_antisqash_segm.nii.gz')
-        #
-        #     scale_z_values(pfi_segm_T1, pfi_T1_segm_anti_squash, squeeze_factor=2.218074656188605**2)
-        #
-        #     cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-        #         pfi_S0, pfi_T1_segm_anti_squash, pfi_rigid_transf_to_s0, pfi_segm_S0)
-        #     os.system(cmd)
-        # else:
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_S0, pfi_segm_T1, pfi_rigid_transf_to_s0, pfi_segm_S0)
         print(cmd)
@@ -505,7 +490,7 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
 
     if controller['MSME_up to MSME']:
         print('- MSME_up to MSME {}'.format(sj))
-        pfo_utils = jph(root_study_pantopolium, 'A_data', 'Utils')
+        pfo_utils = jph(root_study_rabbits, 'A_data', 'Utils')
         pfi_id_transf = jph(pfo_utils, 'aff_id.txt')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_MSME, pfi_segm_MSME_up, pfi_id_transf, pfi_segm_MSME)

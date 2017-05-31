@@ -277,6 +277,27 @@ subject = {
                [1, False],  # 4: mask dilation factor, DWI is squeezed,
                ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
                ],
+    '2202t1': [['PTB', 'in_vivo'],  # 0: study  - category
+               [np.pi / 6, 0, 0, False],  # 1:  aircraft angles, in templ
+               [25, 1, (10, 98)],  # 2: thr, erosion roi mask for T1
+               bfp_fast,  # 3: Bias field parameters T1
+               [1, False],  # 4: mask dilation factor, DWI is squeezed,
+               ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
+               ],
+    '2205t1': [['PTB', 'in_vivo'],  # 0: study  - category
+               [np.pi / 6, 0, 0, False],  # 1:  aircraft angles, in templ
+               [25, 1, (10, 98)],  # 2: thr, erosion roi mask for T1
+               bfp_fast,  # 3: Bias field parameters T1
+               [1, False],  # 4: mask dilation factor, DWI is squeezed,
+               ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
+               ],
+    '2206t1': [['PTB', 'in_vivo'],  # 0: study  - category
+               [np.pi / 6, 0, 0, False],  # 1:  aircraft angles, in templ
+               [25, 1, (10, 98)],  # 2: thr, erosion roi mask for T1
+               bfp_fast,  # 3: Bias field parameters T1
+               [1, False],  # 4: mask dilation factor, DWI is squeezed,
+               ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
+               ],
     '2502bt1': [['PTB', 'in_vivo'],  # 0: study  - category
                 [np.pi / 6, 0, 0, False],  # 1:  aircraft angles, in templ
                 [25, 1, (10, 98)],  # 2: thr, erosion roi mask for T1

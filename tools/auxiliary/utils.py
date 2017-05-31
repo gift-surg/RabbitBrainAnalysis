@@ -341,3 +341,46 @@ def scale_y_values(pfi_input, pfi_output, squeeze_factor=2.16481481481481):
 
     # save output image
     nib.save(new_image, pfi_output)
+
+
+def scale_y_value_and_trim(pfi_input, pfi_output, squeeze_factor=2.16481481481481):
+    # scale and trim as well.
+    im_input = nib.load(pfi_input)
+
+    assert np.count_nonzero(np.diag(im_input.get_affine())) == 4
+
+    # generate new affine transformation (from bicommissural to histological)
+    new_transf = np.copy(im_input.get_affine())
+    old_resolution = new_transf[0, 0]
+    new_resolution = old_resolution * squeeze_factor
+    new_transf[1, 1] = new_resolution
+
+    old_y_side = old_resolution * im_input.shape[1]
+    num_voxel_to_take = np.floor(old_y_side / float(new_resolution))
+
+    half = int(np.ceil(num_voxel_to_take/float(2)))
+    mid_point = int(im_input.shape[1] / float(2))
+    # create output image on the input
+    if im_input.header['sizeof_hdr'] == 348:
+        new_image = nib.Nifti1Image(im_input.get_data()[:, mid_point - half:mid_point + half, ...], new_transf,
+                                    header=im_input.get_header())
+    # if nifty2
+    elif im_input.header['sizeof_hdr'] == 540:
+        new_image = nib.Nifti2Image(im_input.get_data()[:, mid_point - half: mid_point + half, ...], new_transf,
+                                    header=im_input.get_header())
+    else:
+        raise IOError
+
+    # print intermediate results
+    print 'Unsquashing z coordinate:'
+    print 'Affine input image: \n'
+    print im_input.get_affine()
+    print 'Affine after transformation: \n'
+    print new_image.get_affine()
+
+    # save output image
+    nib.save(new_image, pfi_output)
+
+
+
+
