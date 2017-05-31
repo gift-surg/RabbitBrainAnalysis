@@ -1,102 +1,48 @@
 import os
 from os.path import join as jph
 
-import numpy as np
 from bruker2nifti.study_converter import convert_a_study
 
+from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import RunParameters
 
 
-def convert_a_group(pfo_group_to_convert, pfo_group_destination, bypass_subjects=None):
+def convert_subjects_from_list(subj_list):
 
-    assert os.path.exists(pfo_group_to_convert)
-    assert os.path.exists(pfo_group_destination)
-
-    subj_list = np.sort(list(set(os.listdir(pfo_group_to_convert)) - {'.DS_Store'}))
-
-    if bypass_subjects is not None:
-        if set(bypass_subjects).intersection(set(subj_list)) == {}:
-            raise IOError
-        else:
-            subj_list = bypass_subjects
-
-    print '\n\n SUBJECTS in {}\n {} \n'.format(pfo_group_to_convert, subj_list)
+    print '\n\n CONVERTING SUBJECTS {} \n'.format(subj_list)
 
     for sj in subj_list:
         print 'Subj {} conversion!\n'.format(sj)
 
-        study_in = os.path.join(pfo_group_to_convert, sj)
-        assert os.path.isdir(study_in)
+        group = subject[sj][0][0]
+        category = subject[sj][0][1]
+        pfo_input_sj = jph(root_study_rabbits, '00_raw_data', group, category, sj)
+        assert os.path.exists(pfo_input_sj)
+        pfo_output = jph(root_study_rabbits, '01_nifti', group, category)
+        pfo_output_sj = jph(root_study_rabbits, '01_nifti', group, category, sj)
 
-        # if the folder is not empty, eliminate it before doing the conversion
-        specific_dest_folder = jph(pfo_group_destination, sj)
-        if os.path.exists(specific_dest_folder):
-            cmd = 'rm -r {}'.format(specific_dest_folder)
-            print('Folder {} where to convert the study exists already... ERASED!'.format(specific_dest_folder))
+        if os.path.exists(pfo_output_sj):
+            cmd = 'rm -r {}'.format(pfo_output_sj)
+            print('Folder {} where to convert the study exists already... ERASED!'.format(pfo_output_sj))
             os.system(cmd)
 
-        convert_a_study(study_in, pfo_group_destination, verbose=0, correct_slope=True, study_name=sj)
-
-
-def execute_converter(rp):
-
-    assert isinstance(rp, RunParameters)
-    root_raw_data = jph(root_study_rabbits, '00_raw_data')
-    root_destination = jph(root_study_rabbits, '01_nifti')
-
-    if rp.execute_PTB_ex_skull:
-        study = 'PTB'
-        category = 'ex_skull'
-        pfo_source = jph(root_raw_data, study, category)
-        assert os.path.isdir(pfo_source), pfo_source
-        pfo_destination = jph(root_destination, study, category)
-        convert_a_group(pfo_source, pfo_destination, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_ex_vivo:
-        study = 'PTB'
-        category = 'ex_vivo'
-        pfo_source = jph(root_raw_data, study, category)
-        assert os.path.isdir(pfo_source), pfo_source
-        pfo_destination = jph(root_destination, study, category)
-        convert_a_group(pfo_source, pfo_destination, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_in_vivo:
-        study = 'PTB'
-        category = 'in_vivo'
-        pfo_source = jph(root_raw_data, study, category)
-        assert os.path.isdir(pfo_source), pfo_source
-        pfo_destination = jph(root_destination, study, category)
-        convert_a_group(pfo_source, pfo_destination, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_op_skull:
-        study = 'PTB'
-        category = 'op_skull'
-        pfo_source = jph(root_raw_data, study, category)
-        assert os.path.isdir(pfo_source), pfo_source
-        pfo_destination = jph(root_destination, study, category)
-        convert_a_group(pfo_source, pfo_destination, bypass_subjects=rp.subjects)
-
-    if rp.execute_ACS_ex_vivo:
-        study = 'ACS'
-        category = 'ex_vivo'
-        pfo_source = jph(root_raw_data, study, category)
-        assert os.path.isdir(pfo_source), pfo_source
-        pfo_destination = jph(root_destination, study, category)
-        convert_a_group(pfo_source, pfo_destination, bypass_subjects=rp.subjects)
-
+        convert_a_study(pfo_input_sj, pfo_output, verbose=0, correct_slope=True, study_name=sj)
 
 if __name__ == '__main__':
 
-    rpa = RunParameters()
+    lsm = ListSubjectsManager()
 
-    rpa.execute_PTB_ex_skull = True
-    rpa.execute_PTB_ex_vivo = True
-    rpa.execute_PTB_in_vivo = True
-    rpa.execute_PTB_op_skull = True
-    rpa.execute_ACS_ex_vivo = True
+    lsm.execute_PTB_ex_skull = False
+    lsm.execute_PTB_ex_vivo  = False
+    lsm.execute_PTB_in_vivo  = False
+    lsm.execute_PTB_op_skull = False
+    lsm.execute_ACS_ex_vivo  = False
 
-    rpa.subjects = None
-    rpa.update_params()
+    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    # '2205t1', '2206t1', '2502bt1']
+    #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
+    lsm.update_ls()
 
-    execute_converter(rpa)
+    print lsm.ls
+
+    convert_subjects_from_list(lsm.ls)

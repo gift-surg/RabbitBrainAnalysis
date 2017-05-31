@@ -5,11 +5,10 @@ Propagate subject 1,2,3 (source_subjects) on subject 4 (target_subject) and then
 import os
 from os.path import join as jph
 
-import numpy as np
 from labels_manager.main import LabelsManager
 
 from definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import subject, propagate_me_level, templ_subjects
+from pipeline_project.A0_main.main_controller import subject, propagate_me_level
 from tools.auxiliary.utils import adjust_header_from_transformations
 
 """
@@ -332,8 +331,8 @@ def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_
         print('- rig alignment {} '.format(sj_target))
         pfi_target = jph(pfo_mod, sj_target + '_T1.nii.gz')
         pfi_target_roi_registration_masks = jph(pfo_mask, sj_target + '_T1_reg_mask.nii.gz')
-        pfi_source_T1_bicomm_hd  = jph(pfo_tmp, sj_source + '_templ_bicomm_hd.nii.gz')
-        pfi_source_reg_mask_bicomm_hd  = jph(pfo_tmp, sj_source + '_templ_reg_mask_bicomm_hd.nii.gz')
+        pfi_source_T1_bicomm_hd = jph(pfo_tmp, sj_source + '_templ_bicomm_hd.nii.gz')
+        pfi_source_reg_mask_bicomm_hd = jph(pfo_tmp, sj_source + '_templ_reg_mask_bicomm_hd.nii.gz')
         assert os.path.exists(pfi_target)
         assert os.path.exists(pfi_target_roi_registration_masks)
         assert os.path.exists(pfi_source_T1_bicomm_hd)
@@ -495,46 +494,3 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_MSME, pfi_segm_MSME_up, pfi_id_transf, pfi_segm_MSME)
         os.system(cmd)
-
-
-def propagate_and_fuse_per_group_over_all_modalities(controller_fuser,
-                                                     controller_propagator,
-                                                     controller_inter_modality_propagator,
-                                                     pfo_target_group_category,
-                                                     pfo_templ_subjects,
-                                                     list_templ_subjects,
-                                                     bypass_subjects=None):
-    assert os.path.exists(pfo_target_group_category)
-    subj_list = np.sort(list(set(os.listdir(pfo_target_group_category)) - {'.DS_Store'}))
-    if bypass_subjects is not None:
-
-        if not set(bypass_subjects).intersection(set(subj_list)) == set(bypass_subjects):
-            raise IOError
-        else:
-            subj_list = bypass_subjects
-
-    print '\n\n Propagating and fusing per category. ' \
-          'Target group folder {0}\n' \
-          'Subjects {1}\n'.format(pfo_target_group_category, subj_list)
-
-    for sj_target in subj_list:
-
-        pfo_target = jph(pfo_target_group_category, sj_target)
-
-        if sj_target in templ_subjects:
-            print('\n\n{} is in the template, alignment of the manual segmentation'.format(sj_target))
-            sj_source = sj_target
-            pfo_source = jph(pfo_templ_subjects, sj_target)
-            # If the subject is a part of the template it has already been segmented.
-            rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_target, pfo_target,
-                                                              controller_propagator)
-        else:
-            print('\n\n{} is NOT in the template, Propagation started'.format(sj_target))
-            propagate_all_to_one(sj_target, pfo_target, pfo_templ_subjects, list_templ_subjects, controller_fuser)
-        if os.path.exists(jph(pfo_target, 'mod', sj_target + '_S0.nii.gz')):  # dwi have been computed. Ready to move
-            print('\n\nPropagation of the segmentation {} T1 to other modalities.'.format(sj_target))
-            # propagate within modalities
-            pfo_sj = jph(pfo_target_group_category, sj_target)
-            rigid_propagation_inter_modality(sj_target, pfo_sj, controller_inter_modality_propagator)
-        else:
-            print 'NO DWI for subject {} yet'.format(sj_target)

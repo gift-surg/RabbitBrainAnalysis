@@ -1,18 +1,18 @@
 import os
 
-from pipeline_project.A0_main.main_controller import RunParameters, templ_subjects
+from pipeline_project.A0_main.main_controller import ListSubjectsManager, templ_subjects
 from definitions import root_study_rabbits, root_main_dropbox
 
 from pipeline_project.A1_convert_and_clean.apply_converter_to_all_data import execute_converter
 from pipeline_project.A1_convert_and_clean.clean_converted_data import execute_cleaner
-from pipeline_project.A1_convert_and_clean.create_aliases_in_data_folder import execute_generate_alias
+from pipeline_project.A1_convert_and_clean.z_create_aliases_in_data_folder import execute_generate_alias
 
 from pipeline_project.A2_process_modalities.process_T1 import execute_processing_T1
 from pipeline_project.A2_process_modalities.process_DWI import execute_processing_DWI
 from pipeline_project.A2_process_modalities.process_MSME import execute_processing_MSME
 from pipeline_project.A2_process_modalities.process_g_ratio import execute_processing_g_ratio
 
-from pipeline_project.A3_register_template_over_all_subjects.propagate_and_fuse_main import execute_propag_and_fuse_all
+from pipeline_project.A3_register_template_over_all_subjects.propagate_and_fuse_main import propagate_and_fuse_per_subject_list_over_all_modalities
 
 from pipeline_project.A4_data_collection.collect_data_study_T1_and_DWI import compile_record_T1_DWI
 from pipeline_project.A4_data_collection.collect_data_study_g_ratio import compile_record_MSME
@@ -27,18 +27,20 @@ if __name__ == '__main__':
 
     ''' Set parameters per subjects or per group '''
 
-    rpa = RunParameters()
+    lsm = ListSubjectsManager()
 
-    # rpa.execute_PTB_ex_skull = False
-    # rpa.execute_PTB_ex_vivo  = True
-    # rpa.execute_PTB_in_vivo  = False
-    # rpa.execute_PTB_op_skull = False
-    # rpa.execute_ACS_ex_vivo  = False
+    lsm.execute_PTB_ex_skull = False
+    lsm.execute_PTB_ex_vivo  = True
+    lsm.execute_PTB_in_vivo  = False
+    lsm.execute_PTB_op_skull = False
+    lsm.execute_ACS_ex_vivo  = False
 
-    rpa.subjects = ['2202t1', '2205t1', '2206t1']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.subjects = ['2202t1', '2205t1', '2206t1']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
-    rpa.update_params()
+    lsm.update_sl()
+
+    print lsm.ls
 
     ''' Set steps '''
 
@@ -54,9 +56,9 @@ if __name__ == '__main__':
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
         print('\nStep A1\n')
-        execute_converter(rpa)  # refactoring : invece di rpa deve essere sj_list, dove la lista viene creata da una classe analoga a RunParameters. Keep it simple!
-        execute_cleaner(rpa)
-        execute_generate_alias(rpa)
+        execute_converter(lsm.ls)  # refactoring : invece di rpa deve essere sj_list, dove la lista viene creata da una classe analoga a RunParameters. Keep it simple!
+        execute_cleaner(lsm.ls)
+        execute_generate_alias(lsm.ls)
 
     ''' Step A2 - T1 '''
     if step_A2_T1:

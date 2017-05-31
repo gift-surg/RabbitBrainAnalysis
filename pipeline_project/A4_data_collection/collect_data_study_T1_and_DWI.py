@@ -1,25 +1,20 @@
 import os
 from os.path import join as jph
 
-import numpy as np
-
 from definitions import pfi_excel_table_ACS, root_study_rabbits, pfi_excel_table_PTB
-from pipeline_project.A0_main.main_controller import RunParameters, subject
+from pipeline_project.A0_main.main_controller import ListSubjectsManager, subject
 from tools.measurements.compile_record import compile_record
 
 
-def compile_record_per_group(pfo_input_data, tuple_subjects=None):
-    assert os.path.exists(pfo_input_data)
-    subj_list = np.sort(list(set(os.listdir(pfo_input_data)) - {'.DS_Store'}))
-    if tuple_subjects is not None:
-        subj_list = tuple_subjects
+def compile_record_from_subject_list(subj_list):
 
-    print '\n\n Collecting data for a group of subjects. ' \
-          'Target group folder {0}\n' \
-          'Subjects {1}\n'.format(pfo_input_data, subj_list)
+    print '\n\n Collecting data subjects in the list {}'.format(subj_list)
 
     for sj in subj_list:
         # grab modalities
+        group = subject[sj][0][0]
+        category = subject[sj][0][1]
+        pfo_input_data = jph(root_study_rabbits, 'A_data', group, category)
         pfo_sj = jph(pfo_input_data, sj)
         pfi_T1 = jph(pfo_sj, 'mod', sj + '_T1.nii.gz')
         pfi_FA = jph(pfo_sj, 'mod', sj + '_FA.nii.gz')
@@ -80,53 +75,21 @@ def compile_record_per_group(pfo_input_data, tuple_subjects=None):
                            )
 
 
-def compile_record_T1_DWI(rp):
-
-    assert os.path.isdir(root_study_rabbits), 'Connect pantopolio!'
-    assert isinstance(rp, RunParameters)
-
-    root_data = jph(root_study_rabbits, 'A_data')
-
-    if rp.execute_PTB_ex_skull:
-        pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')
-        assert os.path.exists(pfo_PTB_ex_skull_data)
-        compile_record_per_group(pfo_PTB_ex_skull_data, rp.subjects)
-
-    if rp.execute_PTB_ex_vivo:
-        pfo_PTB_ex_vivo_data = jph(root_data, 'PTB', 'ex_vivo')
-        assert os.path.exists(pfo_PTB_ex_vivo_data)
-        compile_record_per_group(pfo_PTB_ex_vivo_data, rp.subjects)
-
-    if rp.execute_PTB_in_vivo:
-        pfo_PTB_in_vivo_data = jph(root_data, 'PTB', 'in_vivo')
-        assert os.path.exists(pfo_PTB_in_vivo_data)
-        compile_record_per_group(pfo_PTB_in_vivo_data, rp.subjects)
-
-    if rp.execute_PTB_op_skull:
-        pfo_PTB_op_skull_data = jph(root_data, 'PTB', 'op_skull')
-        assert os.path.exists(pfo_PTB_op_skull_data)
-        compile_record_per_group(pfo_PTB_op_skull_data, rp.subjects)
-
-    if rp.execute_ACS_ex_vivo:
-        pfo_ACS_ex_vivo_data = jph(root_data, 'ACS', 'ex_vivo')
-        assert os.path.exists(pfo_ACS_ex_vivo_data)
-        compile_record_per_group(pfo_ACS_ex_vivo_data, rp.subjects)
-
-
 if __name__ == '__main__':
     print('Collect data, local run. ')
 
-    rpa = RunParameters()
+    lsm = ListSubjectsManager()
 
-    # rpa.execute_PTB_ex_skull = False
-    # rpa.execute_PTB_ex_vivo = True
-    # rpa.execute_PTB_in_vivo = True
-    # rpa.execute_PTB_op_skull = False
-    # rpa.execute_ACS_ex_vivo = False
+    lsm.execute_PTB_ex_skull = False
+    lsm.execute_PTB_ex_vivo = False
+    lsm.execute_PTB_in_vivo = False
+    lsm.execute_PTB_op_skull = False
+    lsm.execute_ACS_ex_vivo = False
 
-    # rpa.subjects = None
-    # rpa.update_params()
-    rpa.subjects = ['2702', ]
-    rpa.update_params()
+    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    # '2205t1', '2206t1', '2502bt1']
+    #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
+    lsm.update_ls()
 
-    compile_record_T1_DWI(rpa)
+    compile_record_from_subject_list(lsm.ls)
+    # execute_processing_DWI(controller_steps, rpa_dwi)

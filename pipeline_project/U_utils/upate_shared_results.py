@@ -5,149 +5,100 @@ Update results on the shared Dropbox folder with Hannes
 import os
 from os.path import join as jph
 
-import numpy as np
-
 from definitions import root_study_rabbits, root_shared_records
-from pipeline_project.A0_main.main_controller import RunParameters
+from pipeline_project.A0_main.main_controller import ListSubjectsManager, subject
 
 
-def send_or_erase(rp, pfo_source, pfo_destination, records_only=False, erase_source=False, erase_destination=False):
+def send_or_erase(sj, pfo_source, pfo_destination, records_only=False, erase_source=False, erase_destination=False):
 
-    subj_list = np.sort(list(set(os.listdir(pfo_source)) - {'.DS_Store'}))
-    if rp.subjects is not None:
-        subj_list = rp.subjects
+    if erase_source:
+        cmd = 'rm -r {}'.format(jph(pfo_source, sj))
+        os.system(cmd)
+        print(cmd)
+    elif erase_destination:
+        cmd = 'rm -r {}'.format(jph(pfo_destination, sj))
+        os.system(cmd)
+        print(cmd)
+    else:
+        # copy records
+        folder_source_reports = jph(pfo_source, sj, 'records')
+        folder_destination_reports = jph(pfo_destination, sj)
+        cmd0 = 'mkdir -p {}'.format(folder_destination_reports)
+        os.system(cmd0)
 
-    for sj in subj_list:
-
-        if erase_source:
-            cmd = 'rm -r {}'.format(jph(pfo_source, sj))
-            os.system(cmd)
-            print(cmd)
-        elif erase_destination:
-            cmd = 'rm -r {}'.format(jph(pfo_destination, sj))
-            os.system(cmd)
-            print(cmd)
+        if os.path.exists(folder_source_reports):
+            cmd1 = 'cp -r {} {} '.format(folder_source_reports, folder_destination_reports)
+            os.system(cmd1)
+            print(cmd1)
         else:
-            # copy records
-            folder_source_reports = jph(pfo_source, sj, 'records')
-            folder_destination_reports = jph(pfo_destination, sj)
-            cmd0 = 'mkdir -p {}'.format(folder_destination_reports)
+            print('REPORTS for subject {} not present'.format(sj))
+            return
+
+        # copy records template if any
+        folder_source_reports = jph(pfo_source, sj, 'records_template')
+        folder_destination_reports = jph(pfo_destination, sj)
+        cmd0 = 'mkdir -p {}'.format(folder_destination_reports)
+        os.system(cmd0)
+
+        if os.path.exists(folder_source_reports):
+            cmd1 = 'cp -r {} {} '.format(folder_source_reports, folder_destination_reports)
+            os.system(cmd1)
+            print(cmd1)
+
+        if not records_only:
+            # copy mod
+            folder_source_mod = jph(pfo_source, sj, 'mod')
+            folder_destination_mod = jph(pfo_destination, sj)
+            cmd0 = 'mkdir -p {}'.format(folder_destination_mod)
             os.system(cmd0)
 
-            if os.path.exists(folder_source_reports):
-                cmd1 = 'cp -r {} {} '.format(folder_source_reports, folder_destination_reports)
+            if os.path.exists(folder_source_mod):
+                cmd1 = 'cp -r {} {} '.format(folder_source_mod, folder_destination_mod)
+                os.system(cmd1)
+                print(cmd1)
+            else:
+                print('MOD for subject {} not present'.format(sj))
+            # copy segm
+            folder_source_segm = jph(pfo_source, sj, 'segm')
+            folder_destination_segm = jph(pfo_destination, sj)
+            cmd0 = 'mkdir -p {}'.format(folder_destination_segm)
+            os.system(cmd0)
+
+            if os.path.exists(folder_source_segm):
+                cmd1 = 'cp -r {} {} '.format(folder_source_segm, folder_destination_segm)
                 os.system(cmd1)
                 print(cmd1)
             else:
                 print('REPORTS for subject {} not present'.format(sj))
-                return
-
-            # copy records template if any
-            folder_source_reports = jph(pfo_source, sj, 'records_template')
-            folder_destination_reports = jph(pfo_destination, sj)
-            cmd0 = 'mkdir -p {}'.format(folder_destination_reports)
-            os.system(cmd0)
-
-            if os.path.exists(folder_source_reports):
-                cmd1 = 'cp -r {} {} '.format(folder_source_reports, folder_destination_reports)
-                os.system(cmd1)
-                print(cmd1)
-
-            if not records_only:
-                # copy mod
-                folder_source_mod = jph(pfo_source, sj, 'mod')
-                folder_destination_mod = jph(pfo_destination, sj)
-                cmd0 = 'mkdir -p {}'.format(folder_destination_mod)
-                os.system(cmd0)
-
-                if os.path.exists(folder_source_mod):
-                    cmd1 = 'cp -r {} {} '.format(folder_source_mod, folder_destination_mod)
-                    os.system(cmd1)
-                    print(cmd1)
-                else:
-                    print('MOD for subject {} not present'.format(sj))
-                # copy segm
-                folder_source_segm = jph(pfo_source, sj, 'segm')
-                folder_destination_segm = jph(pfo_destination, sj)
-                cmd0 = 'mkdir -p {}'.format(folder_destination_segm)
-                os.system(cmd0)
-
-                if os.path.exists(folder_source_segm):
-                    cmd1 = 'cp -r {} {} '.format(folder_source_segm, folder_destination_segm)
-                    os.system(cmd1)
-                    print(cmd1)
-                else:
-                    print('REPORTS for subject {} not present'.format(sj))
 
 
-def send_data_to_hannes(rp, records_only=False, erase_source=False, erase_destination=False):
-
-    assert isinstance(rp, RunParameters)
+def send_data_to_hannes_from_list(subj_list, records_only=False, erase_source=False, erase_destination=False):
 
     root_data    = jph(root_study_rabbits, 'A_data')
 
-    assert os.path.isdir(root_data)
-    assert os.path.isdir(root_shared_records), root_shared_records
+    for sj in subj_list:
 
-    if rp.execute_PTB_ex_skull:
-        group = 'PTB'
-        category = 'ex_skull'
+        group = subject[sj][0][0]
+        category = subject[sj][0][1]
         pfo_source = jph(root_data, group, category)
         assert os.path.exists(pfo_source)
         pfo_destination = jph(root_shared_records, group, category)
-        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
-                      erase_destination=erase_destination)
-
-    if rp.execute_PTB_ex_vivo:
-        group = 'PTB'
-        category = 'ex_vivo'
-        pfo_source = jph(root_data, group, category)
-        assert os.path.exists(pfo_source)
-        pfo_destination = jph(root_shared_records, group, category)
-        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
-                      erase_destination=erase_destination)
-
-    if rp.execute_PTB_in_vivo:
-        group = 'PTB'
-        category = 'in_vivo'
-        pfo_source = jph(root_data, group, category)
-        assert os.path.exists(pfo_source)
-        pfo_destination = jph(root_shared_records, group, category)
-        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
-                      erase_destination=erase_destination)
-
-    if rp.execute_PTB_op_skull:
-        group = 'PTB'
-        category = 'op_skull'
-        pfo_source = jph(root_data, group, category)
-        assert os.path.exists(pfo_source)
-        pfo_destination = jph(root_shared_records, group, category)
-        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
-                      erase_destination=erase_destination)
-
-    if rp.execute_ACS_ex_vivo:
-        group = 'ACS'
-        category = 'ex_vivo'
-        pfo_source = jph(root_data, group, category)
-        assert os.path.exists(pfo_source)
-        pfo_destination = jph(root_shared_records, group, category)
-        send_or_erase(rp, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
+        send_or_erase(sj, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
                       erase_destination=erase_destination)
 
 
 if __name__ == '__main__':
+    lsm = ListSubjectsManager()
 
-    rpa = RunParameters()
+    lsm.execute_PTB_ex_skull = False
+    lsm.execute_PTB_ex_vivo = False
+    lsm.execute_PTB_in_vivo = False
+    lsm.execute_PTB_op_skull = False
+    lsm.execute_ACS_ex_vivo = False
 
-    rpa.execute_PTB_ex_skull = False
-    rpa.execute_PTB_ex_vivo = True
-    rpa.execute_PTB_in_vivo = False
-    rpa.execute_PTB_op_skull = False
-    rpa.execute_ACS_ex_vivo = False
+    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    # '2205t1', '2206t1', '2502bt1']
+    #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
+    lsm.update_ls()
 
-    # rpa.subjects = None
-    # rpa.update_params()
-    # rpa.subjects = ['1201', ]
-    # rpa.update_params()
-
-    send_data_to_hannes(rpa, records_only=True)
+    send_data_to_hannes_from_list(lsm.ls, records_only=True)

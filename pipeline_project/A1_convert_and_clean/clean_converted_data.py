@@ -1,86 +1,42 @@
 import os
 from os.path import join as jph
 
-import numpy as np
-
 from definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import RunParameters
+from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from tools.correctors.path_cleaner import clean_a_study
 
 
-def cleaner_converted_data(pfo_to_be_cleaned, bypass_subjects=None):
+def cleaner_converted_data_from_list(subj_list):
 
-    assert os.path.exists(pfo_to_be_cleaned)
-
-    subj_list = np.sort(list(set(os.listdir(pfo_to_be_cleaned)) - {'.DS_Store'}))
-
-    # allow to force the subj_list to be the input tuple bypass subject, chosen by the user.
-    if bypass_subjects is not None:
-
-        if set(bypass_subjects).intersection(set(subj_list)) == {}:
-            raise IOError
-        else:
-            subj_list = bypass_subjects
-
-    print '\n\n SUBJECTS in {}\n {} \n'.format(pfo_to_be_cleaned, subj_list)
+    print '\n\n CLEANING CONVERTER SUBJECTS {} \n'.format(subj_list)
     print subj_list
 
     for sj in subj_list:
-        print 'Study subject {} cleaning!\n'.format(sj)
+        group = subject[sj][0][0]
+        category = subject[sj][0][1]
+        pfo_to_be_cleaned = jph(root_study_rabbits, '01_nifti', group, category, sj)
+        assert os.path.exists(pfo_to_be_cleaned)
 
-        clean_a_study(jph(pfo_to_be_cleaned, sj))
+        print 'Study subject {} cleaning. \n'.format(sj)
 
-
-def execute_cleaner(rp):
-
-    assert isinstance(rp, RunParameters)
-
-    root_nifti = jph(root_study_rabbits, '01_nifti')
-
-    if rp.execute_PTB_ex_skull:
-        study = 'PTB'
-        category = 'ex_skull'
-        pfo_target = jph(root_nifti, study, category)
-        assert os.path.exists(pfo_target)
-        cleaner_converted_data(pfo_target, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_ex_vivo:
-        study = 'PTB'
-        category = 'ex_vivo'
-        pfo_target = jph(root_nifti, study, category)
-        assert os.path.exists(pfo_target)
-        cleaner_converted_data(pfo_target, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_in_vivo:
-        study = 'PTB'
-        category = 'in_vivo'
-        pfo_target = jph(root_nifti, study, category)
-        assert os.path.exists(pfo_target)
-        cleaner_converted_data(pfo_target, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_op_skull:
-        study = 'PTB'
-        category = 'op_skull'
-        pfo_target = jph(root_nifti, study, category)
-        assert os.path.exists(pfo_target)
-        cleaner_converted_data(pfo_target, bypass_subjects=rp.subjects)
-
-    if rp.execute_ACS_ex_vivo:
-        study = 'ACS'
-        category = 'ex_vivo'
-        pfo_target = jph(root_nifti, study, category)
-        assert os.path.exists(pfo_target)
-        cleaner_converted_data(pfo_target, bypass_subjects=rp.subjects)
+        clean_a_study(pfo_to_be_cleaned)
 
 
 if __name__ == '__main__':
 
-    rpa = RunParameters()
+    lsm = ListSubjectsManager()
 
-    rpa.execute_PTB_ex_skull = True
-    rpa.execute_PTB_ex_vivo = True
-    rpa.execute_PTB_in_vivo = True
-    rpa.execute_PTB_op_skull = True
-    rpa.execute_ACS_ex_vivo = True
+    lsm.execute_PTB_ex_skull = False
+    lsm.execute_PTB_ex_vivo = False
+    lsm.execute_PTB_in_vivo = False
+    lsm.execute_PTB_op_skull = False
+    lsm.execute_ACS_ex_vivo = False
 
-    execute_cleaner(rpa)
+    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    # '2205t1', '2206t1', '2502bt1']
+    #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
+    lsm.update_ls()
+
+    print lsm.ls
+
+    cleaner_converted_data_from_list(lsm.ls)

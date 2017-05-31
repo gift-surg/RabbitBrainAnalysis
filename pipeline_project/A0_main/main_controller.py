@@ -16,14 +16,59 @@ import numpy as np
 # Sagittal Angle sign from L to R from initial position to aligned with axis (roll)
 
 
-class RunParameters(object):
-    """
-    one instance of the controller parameter has all the parameters to run the
-    whole pipeline. If to process in group, or if to process a single subject.
-    """
+# class RunParameters(object):
+#     """
+#     one instance of the controller parameter has all the parameters to run the
+#     whole pipeline. If to process in group, or if to process a single subject.
+#     """
+#
+#     def __init__(self, execute_PTB_ex_skull=False, execute_PTB_ex_vivo=False, execute_PTB_in_vivo=False,
+#                  execute_PTB_op_skull=False, execute_ACS_ex_vivo=False, subjects=None):
+#
+#         self.execute_PTB_ex_skull = execute_PTB_ex_skull
+#         self.execute_PTB_ex_vivo = execute_PTB_ex_vivo
+#         self.execute_PTB_in_vivo = execute_PTB_in_vivo
+#         self.execute_PTB_op_skull = execute_PTB_op_skull
+#         self.execute_ACS_ex_vivo = execute_ACS_ex_vivo
+#
+#         self.subjects = subjects
+#
+#         self._check_sj()
+#
+#     def _check_sj(self):
+#         if isinstance(self.subjects, str):
+#             if str == 'all':
+#                 self.execute_PTB_ex_skull = True
+#                 self.execute_PTB_ex_vivo = True
+#                 self.execute_PTB_in_vivo = True
+#                 self.execute_PTB_op_skull = True
+#                 self.execute_ACS_ex_vivo = True
+#             else:
+#                 self.subjects = [self.subjects, ]
+#                 self.update_params()
+#
+#     def update_params(self):
+#         # Turn on flags of the groups where the parameters are.
+#         for sj in self.subjects:
+#             assert sj in subject.keys(), '{} Not in the subject list'.format(sj)
+#             group, category = subject[sj][0]
+#             if group == 'PTB':
+#                 if category == 'ex_skull':
+#                     self.execute_PTB_ex_skull = True
+#                 if category == 'ex_vivo':
+#                     self.execute_PTB_ex_vivo = True
+#                 if category == 'in_vivo':
+#                     self.execute_PTB_in_vivo = True
+#                 if category == 'op_skull':
+#                     self.execute_PTB_op_skull = True
+#             elif group == 'ACS':
+#                 if category == 'ex_vivo':
+#                     self.execute_ACS_ex_vivo = True
 
+
+class ListSubjectsManager(object):
     def __init__(self, execute_PTB_ex_skull=False, execute_PTB_ex_vivo=False, execute_PTB_in_vivo=False,
-                 execute_PTB_op_skull=False, execute_ACS_ex_vivo=False, subjects=None):
+                 execute_PTB_op_skull=False, execute_ACS_ex_vivo=False, input_subjects=None):
 
         self.execute_PTB_ex_skull = execute_PTB_ex_skull
         self.execute_PTB_ex_vivo = execute_PTB_ex_vivo
@@ -31,39 +76,42 @@ class RunParameters(object):
         self.execute_PTB_op_skull = execute_PTB_op_skull
         self.execute_ACS_ex_vivo = execute_ACS_ex_vivo
 
-        self.subjects = subjects
+        self.input_subjects = input_subjects
+        # sl: subject list is the most important attirbute of the class
+        self.ls = []
 
-        self._check_sj()
+    def update_ls(self):
 
-    def _check_sj(self):
-        if isinstance(self.subjects, str):
-            if str == 'all':
-                self.execute_PTB_ex_skull = True
-                self.execute_PTB_ex_vivo = True
-                self.execute_PTB_in_vivo = True
-                self.execute_PTB_op_skull = True
-                self.execute_ACS_ex_vivo = True
-            else:
-                self.subjects = [self.subjects, ]
-                self.update_params()
+        self.ls = []  # re initialise to remove duplicates.
+        prod_conditions = self.execute_PTB_ex_skull + self.execute_PTB_ex_vivo + self.execute_PTB_in_vivo + self.execute_PTB_op_skull + self.execute_ACS_ex_vivo
 
-    def update_params(self):
-        # Turn on flags of the groups where the parameters are.
-        for sj in self.subjects:
-            assert sj in subject.keys(), '{} Not in the subject list'.format(sj)
-            group, category = subject[sj][0]
-            if group == 'PTB':
-                if category == 'ex_skull':
-                    self.execute_PTB_ex_skull = True
-                if category == 'ex_vivo':
-                    self.execute_PTB_ex_vivo = True
-                if category == 'in_vivo':
-                    self.execute_PTB_in_vivo = True
-                if category == 'op_skull':
-                    self.execute_PTB_op_skull = True
-            elif group == 'ACS':
-                if category == 'ex_vivo':
-                    self.execute_ACS_ex_vivo = True
+        if prod_conditions > 0:
+            for k in subject.keys():
+                if self.execute_PTB_ex_skull:
+                    if subject[k][0][0] == 'PTB' and subject[k][0][1] == 'ex_skull':
+                        self.ls.append(k)
+                if self.execute_PTB_ex_vivo:
+                    if subject[k][0][0] == 'PTB' and subject[k][0][1] == 'ex_vivo':
+                        self.ls.append(k)
+                if self.execute_PTB_in_vivo:
+                    if subject[k][0][0] == 'PTB' and subject[k][0][1] == 'in_vivo':
+                        self.ls.append(k)
+                if self.execute_PTB_op_skull:
+                    if subject[k][0][0] == 'PTB' and subject[k][0][1] == 'op_skull':
+                        self.ls.append(k)
+                if self.execute_ACS_ex_vivo:
+                    if subject[k][0][0] == 'ACS' and subject[k][0][1] == 'ex_vivo':
+                        self.ls.append(k)
+        if self.input_subjects is not None:
+            if isinstance(self.input_subjects, str):
+                self.ls.append(self.input_subjects)
+            elif isinstance(self.input_subjects, list):
+                self.ls += self.input_subjects
+        # elim duplicate and reorder:
+        if not self.ls == []:
+            sorted_ls = list(set(self.ls))
+            sorted_ls.sort()
+            self.ls = sorted_ls
 
 
 # snake round

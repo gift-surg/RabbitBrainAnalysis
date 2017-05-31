@@ -12,7 +12,7 @@ Data here are directly collected from the manual segmentation that constitutes t
 def compile_record_internal_template():
 
     # folders and data from the architecture:
-    pfi_labels_descriptor         = jph(root_internal_template, 'LabelsDescriptors', 'multi_labels_descriptor.txt')
+    pfi_labels_descriptor = jph(root_internal_template, 'LabelsDescriptors', 'multi_labels_descriptor.txt')
 
     for p in [pfi_labels_descriptor, pfi_excel_table_PTB]:
         if not os.path.exists(p):

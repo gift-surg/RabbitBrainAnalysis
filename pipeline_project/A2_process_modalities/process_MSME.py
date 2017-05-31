@@ -4,14 +4,10 @@ MSME processing in their original coordinate system
 import os
 from os.path import join as jph
 
-import numpy as np
-import nibabel as nib
-
 from definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import subject, RunParameters
+from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
-from tools.auxiliary.utils import set_new_data
 
 """
 
@@ -30,8 +26,13 @@ Downsample the mask
 """
 
 
-def process_MSME_per_subject(sj, pfo_input_sj, pfo_output_sj, controller):
+def process_MSME_per_subject(sj, controller):
     print('\nProcessing MSME, subject {} started.\n'.format(sj))
+
+    group = subject[sj][0][0]
+    category = subject[sj][0][1]
+    pfo_input_sj = jph(root_study_rabbits, '01_nifti', group, category, sj)
+    pfo_output_sj = jph(root_study_rabbits, 'A_data', group, category, sj)
 
     if sj not in subject.keys():
         raise IOError('Subject parameters not known')
@@ -169,89 +170,36 @@ def process_MSME_per_subject(sj, pfo_input_sj, pfo_output_sj, controller):
         os.system(cmd0)
 
 
-def process_MSME_per_group(controller, pfo_input_group_category, pfo_output_group_category, bypass_subjects=None):
+def process_MSME_from_list(subj_list, controller):
 
-    assert os.path.exists(pfo_input_group_category)
-    assert os.path.exists(pfo_output_group_category)
-
-    subj_list = np.sort(list(set(os.listdir(pfo_input_group_category)) - {'.DS_Store'}))
-
-    # allow to force the subj_list to be the input tuple bypass subject, chosen by the user.
-    if bypass_subjects is not None:
-
-        if set(bypass_subjects).intersection(set(subj_list)) == {}:
-            raise IOError
-        else:
-            subj_list = bypass_subjects
-
-    print '\n\n Processing MSME subjects  from {0} to {1} :\n {2}\n'.format(pfo_input_group_category,
-                                                                            pfo_output_group_category,
-                                                                            subj_list)
+    print '\n\n Processing MSME subjects from list {} \n'.format(subj_list)
     for sj in subj_list:
         
-        process_MSME_per_subject(sj,
-                                 jph(pfo_input_group_category, sj),
-                                 jph(pfo_output_group_category, sj),
-                                 controller)
-
-
-def execute_processing_MSME(controller, rp):
-
-    assert isinstance(rp, RunParameters)
-
-    root_nifti = jph(root_study_rabbits, '01_nifti')
-    root_data = jph(root_study_rabbits, 'A_data')
-
-    if rp.execute_PTB_ex_skull:
-        pfo_PTB_ex_skull = jph(root_nifti, 'PTB', 'ex_skull')
-        assert os.path.exists(pfo_PTB_ex_skull), pfo_PTB_ex_skull
-        pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')
-        process_MSME_per_group(controller, pfo_PTB_ex_skull, pfo_PTB_ex_skull_data, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_ex_vivo:
-        pfo_PTB_ex_vivo = jph(root_nifti, 'PTB', 'ex_vivo')
-        assert os.path.exists(pfo_PTB_ex_vivo), pfo_PTB_ex_vivo
-        pfo_PTB_ex_vivo_data = jph(root_data, 'PTB', 'ex_vivo')
-        process_MSME_per_group(controller, pfo_PTB_ex_vivo, pfo_PTB_ex_vivo_data, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_in_vivo:
-        pfo_PTB_in_vivo = jph(root_nifti, 'PTB', 'in_vivo')
-        assert os.path.exists(pfo_PTB_in_vivo), pfo_PTB_in_vivo
-        pfo_PTB_in_vivo_data = jph(root_data, 'PTB', 'in_vivo')
-        process_MSME_per_group(controller, pfo_PTB_in_vivo, pfo_PTB_in_vivo_data, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_op_skull:
-        pfo_PTB_op_skull = jph(root_nifti, 'PTB', 'op_skull')
-        assert os.path.exists(pfo_PTB_op_skull), pfo_PTB_op_skull
-        pfo_PTB_op_skull_data = jph(root_data, 'PTB', 'op_skull')
-        process_MSME_per_group(controller, pfo_PTB_op_skull, pfo_PTB_op_skull_data, bypass_subjects=rp.subjects)
-
-    if rp.execute_ACS_ex_vivo:
-        pfo_ACS_ex_vivo = jph(root_nifti, 'ACS', 'ex_vivo')
-        assert os.path.exists(pfo_ACS_ex_vivo), pfo_ACS_ex_vivo
-        pfo_ACS_ex_vivo_data = jph(root_data, 'ACS', 'ex_vivo')
-        process_MSME_per_group(controller, pfo_ACS_ex_vivo, pfo_ACS_ex_vivo_data, bypass_subjects=rp.subjects)
+        process_MSME_per_subject(sj, controller)
 
 
 if __name__ == '__main__':
     print('process MSME, local run. ')
 
-    # controller_steps = {'squeeze'              : True,
-    #                     'orient to standard'   : True,
-    #                     'oversample'           : True,
-    #                     'extract first layers' : True,
-    #                     'register roi masks'   : True,
-    #                     'propagate roi masks'  : True
-    #                     }
+    controller_MSME = {'squeeze'                       : True,
+                       'orient to standard'            : True,
+                       'extract first timepoint'       : True,
+                       'register tp0 to S0'            : True,
+                       'register msme to S0'           : True,
+                       'extract first tp in s0 space'  : True
+                       }
     #
-    # rpa_msme = RunParameters()
-    #
-    # rpa_msme.execute_PTB_ex_skull = False
-    # rpa_msme.execute_PTB_ex_vivo = False
-    # rpa_msme.execute_PTB_in_vivo = True
-    # rpa_msme.execute_PTB_op_skull = False
-    # rpa_msme.execute_ACS_ex_vivo = False
-    #
-    # rpa_msme.subjects = None
+    lsm = ListSubjectsManager()
 
-    # execute_processing_MSME(controller_steps, rpa_msme)
+    lsm.execute_PTB_ex_skull = False
+    lsm.execute_PTB_ex_vivo = False
+    lsm.execute_PTB_in_vivo = False
+    lsm.execute_PTB_op_skull = False
+    lsm.execute_ACS_ex_vivo = False
+
+    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    # '2205t1', '2206t1', '2502bt1']
+    #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
+    lsm.update_ls()
+
+    process_MSME_from_list(lsm.ls, controller_MSME)

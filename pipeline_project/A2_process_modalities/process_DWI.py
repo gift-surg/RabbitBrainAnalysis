@@ -7,12 +7,12 @@ from os.path import join as jph
 import numpy as np
 
 from definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import subject, RunParameters
+from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, \
-    reproduce_slice_fourth_dimension_path, scale_y_values, scale_y_value_and_trim
+    reproduce_slice_fourth_dimension_path, scale_y_value_and_trim
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.correctors.slope_corrector import slope_corrector_path
 
@@ -50,6 +50,8 @@ def process_DWI_per_subject(sj, controller):
         raise IOError('Subject parameters not known')
     if not os.path.exists(pfo_input_sj_DWI):
         raise IOError('Input folder DWI does not exist.')
+    if not os.path.exists(pfo_output_sj):
+        raise IOError('Output folder DWI does not exist.')
 
     # -- Generate intermediate and output folders:
 
@@ -288,7 +290,7 @@ def process_DWI_per_subject(sj, controller):
         assert os.path.exists(pfi_roi_mask)
         pfi_registration_mask = jph(pfo_mask, sj + '_b0_reg_mask.nii.gz')
         cmd = 'seg_maths {0} -sub {1} {2} '.format(pfi_roi_mask, pfi_lesion_mask,
-                                                       pfi_registration_mask)  # until here seems correct.
+                                                   pfi_registration_mask)  # until here seems correct.
         os.system(cmd)
 
     if controller['save results']:
@@ -309,89 +311,44 @@ def process_DWI_per_subject(sj, controller):
             os.system(cmd)
 
 
-def process_DWI_per_group(controller, pfo_input_group_category, pfo_output_group_category, bypass_subjects=None):
-    assert os.path.exists(pfo_input_group_category)
-    assert os.path.exists(pfo_output_group_category)
-    subj_list = np.sort(list(set(os.listdir(pfo_input_group_category)) - {'.DS_Store'}))
-    # allow to force the subj_list to be the input tuple bypass subject, chosen by the user.
-    if bypass_subjects is not None:
-        if not set(bypass_subjects).intersection(set(subj_list)) == set(bypass_subjects):
-            raise IOError
-        else:
-            subj_list = bypass_subjects
-    print '\n\n Processing T1 subjects  from {0} to {1} :\n {2}\n'.format(pfo_input_group_category,
-                                                                          pfo_output_group_category,
-                                                                          subj_list)
+def process_DWI_from_list(subj_list, controller):
+
+    print '\n\n Processing T1 subjects in {} \n'.format(subj_list)
     for sj in subj_list:
         process_DWI_per_subject(sj, controller)
-
-
-def execute_processing_DWI(controller, rp):
-
-    assert isinstance(rp, RunParameters)
-
-    root_nifti = jph(root_study_rabbits, '01_nifti')
-    root_data = jph(root_study_rabbits, 'A_data')
-
-    if rp.execute_PTB_ex_skull:
-        pfo_PTB_ex_skull = jph(root_nifti, 'PTB', 'ex_skull')
-        assert os.path.exists(pfo_PTB_ex_skull), pfo_PTB_ex_skull
-        pfo_PTB_ex_skull_data = jph(root_data, 'PTB', 'ex_skull')
-        process_DWI_per_group(controller, pfo_PTB_ex_skull, pfo_PTB_ex_skull_data, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_ex_vivo:
-        pfo_PTB_ex_vivo = jph(root_nifti, 'PTB', 'ex_vivo')
-        assert os.path.exists(pfo_PTB_ex_vivo), pfo_PTB_ex_vivo
-        pfo_PTB_ex_vivo_data = jph(root_data, 'PTB', 'ex_vivo')
-        process_DWI_per_group(controller, pfo_PTB_ex_vivo, pfo_PTB_ex_vivo_data, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_in_vivo:
-        pfo_PTB_in_vivo = jph(root_nifti, 'PTB', 'in_vivo')
-        assert os.path.exists(pfo_PTB_in_vivo), pfo_PTB_in_vivo
-        pfo_PTB_in_vivo_data = jph(root_data, 'PTB', 'in_vivo')
-        process_DWI_per_group(controller, pfo_PTB_in_vivo, pfo_PTB_in_vivo_data, bypass_subjects=rp.subjects)
-
-    if rp.execute_PTB_op_skull:
-        pfo_PTB_op_skull = jph(root_nifti, 'PTB', 'op_skull')
-        assert os.path.exists(pfo_PTB_op_skull), pfo_PTB_op_skull
-        pfo_PTB_op_skull_data = jph(root_data, 'PTB', 'op_skull')
-        process_DWI_per_group(controller, pfo_PTB_op_skull, pfo_PTB_op_skull_data, bypass_subjects=rp.subjects)
-
-    if rp.execute_ACS_ex_vivo:
-        pfo_ACS_ex_vivo = jph(root_nifti, 'ACS', 'ex_vivo')
-        assert os.path.exists(pfo_ACS_ex_vivo), pfo_ACS_ex_vivo
-        pfo_ACS_ex_vivo_data = jph(root_data, 'ACS', 'ex_vivo')
-        process_DWI_per_group(controller, pfo_ACS_ex_vivo, pfo_ACS_ex_vivo_data, bypass_subjects=rp.subjects)
 
 
 if __name__ == '__main__':
     print('process DWI, local run. ')
 
-    # controller_steps = {'squeeze'              : False,
-    #                     'orient to standard'   : True,
-    #                     'register roi masks'   : True,
-    #                     'propagate roi masks'  : True,
-    #                     'adjust mask'          : True,
-    #                     'cut mask dwi'         : True,
-    #                     'cut mask b0'          : True,
-    #                     'correct slope'        : True,
-    #                     'eddy current'         : False,
-    #                     'fsl tensor fitting'   : True,
-    #                     'adjust dti-based mod' : True,
-    #                     'bfc b0'               : False,
-    #                     'create lesion mask'   : True,
-    #                     'create reg masks'     : True,
-    #                     'save results'         : True}
-    #
-    # rpa_dwi = RunParameters()
-    #
-    # # rpa_dwi.execute_PTB_ex_skull = True
-    # # rpa_dwi.execute_PTB_ex_vivo = True
-    # # rpa_dwi.execute_PTB_in_vivo = True
-    # # rpa_dwi.execute_PTB_op_skull = True
-    # # rpa_dwi.execute_ACS_ex_vivo = True
-    #
-    # rpa_dwi.subjects = ['2503', '2608', '2702',]  #
-    # rpa_dwi.update_params()
+    controller_DWI = {'squeeze'               : False,
+                      'orient to standard'    : False,
+                      'register roi masks'    : False,
+                      'propagate roi masks'   : False,
+                      'adjust mask'           : False,
+                      'cut mask dwi'          : False,
+                      'cut mask b0'           : False,
+                      'correct slope'         : False,
+                      'eddy current'          : False,
+                      'fsl tensor fitting'    : False,
+                      'adjust dti-based mod'  : False,
+                      'bfc b0'                : False,
+                      'create lesion mask'    : True,
+                      'create reg masks'      : True,
+                      'save results'          : True}
 
+    lsm = ListSubjectsManager()
+
+    lsm.execute_PTB_ex_skull = False
+    lsm.execute_PTB_ex_vivo = False
+    lsm.execute_PTB_in_vivo = False
+    lsm.execute_PTB_op_skull = False
+    lsm.execute_ACS_ex_vivo = False
+
+    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    # '2205t1', '2206t1', '2502bt1']
+    #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
+    lsm.update_ls()
+
+    process_DWI_from_list(lsm.ls, controller_DWI)
     # execute_processing_DWI(controller_steps, rpa_dwi)
