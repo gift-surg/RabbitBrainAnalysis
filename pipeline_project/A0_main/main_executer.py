@@ -1,25 +1,19 @@
 import os
 
-from pipeline_project.A0_main.main_controller import ListSubjectsManager, templ_subjects
 from definitions import root_study_rabbits, root_main_dropbox
-
+from pipeline_project.A0_main.main_controller import ListSubjectsManager, templ_subjects
 from pipeline_project.A1_convert_and_clean.apply_converter_to_all_data import convert_subjects_from_list
 from pipeline_project.A1_convert_and_clean.clean_converted_data import cleaner_converted_data_from_list
-
-from pipeline_project.A2_process_modalities.process_T1 import process_T1_from_list
 from pipeline_project.A2_process_modalities.process_DWI import process_DWI_from_list
 from pipeline_project.A2_process_modalities.process_MSME import process_MSME_from_list
+from pipeline_project.A2_process_modalities.process_T1 import process_T1_from_list
 from pipeline_project.A2_process_modalities.process_g_ratio import process_g_ratio_from_list
-
 from pipeline_project.A3_register_template_over_all_subjects.propagate_and_fuse_main import \
     propagate_and_fuse_per_subject_list_over_all_modalities
-
 from pipeline_project.A4_data_collection.collect_data_study_T1_and_DWI import compile_record_T1_DWI_from_subject_list
 from pipeline_project.A4_data_collection.collect_data_study_g_ratio import compile_record_g_ratio_from_subject_list
-
+from pipeline_project.A4_data_collection.copy_to_excel_file import save_data_into_excel_file
 from pipeline_project.U_utils.upate_shared_results import send_data_to_hannes_from_list
-from pipeline_project.U_utils.copy_to_excel_file import save_data_into_excel_file
-
 
 if __name__ == '__main__':
 
@@ -44,7 +38,7 @@ if __name__ == '__main__':
 
     ''' Set steps '''
 
-    step_A1         = False
+    step_A1         = True
     step_A2_T1      = True
     step_A2_DWI     = True
     step_A2_MSME    = True
@@ -98,11 +92,11 @@ if __name__ == '__main__':
     ''' Step A2 - MSME '''
     if step_A2_MSME:
         print('\nStep A2 MSME\n')
-        controller_MSME = {'squeeze'                  : True,
-                            'orient to standard'       : True,
-                            'extract first timepoint'  : True,
-                            'register tp0 to S0'       : True,
-                            'register msme to S0'      : True,
+        controller_MSME = {'squeeze'                       : True,
+                            'orient to standard'           : True,
+                            'extract first timepoint'      : True,
+                            'register tp0 to S0'           : True,
+                            'register msme to S0'          : True,
                             'extract first tp in s0 space' : True
                            }
 
