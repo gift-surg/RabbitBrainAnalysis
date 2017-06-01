@@ -1,16 +1,17 @@
 import os
-from openpyxl import load_workbook
+import openpyxl as oxl
+import numpy as np
 
 
-def parse_excel_data_to_list(pfi_excel_file, min_col=0, max_col=12):
+def parse_excel_data_to_list(pfi_excel_file, worksheet_name, min_col=0, max_col=12):
 
     if not os.path.exists(pfi_excel_file):
         raise IOError('Input file {} does not exists'.format(pfi_excel_file))
     if not (pfi_excel_file.endswith('.xlsx') or pfi_excel_file.endswith('.xls')):
         raise IOError('Input file {} is not an excel file')
 
-    wb = load_workbook(pfi_excel_file)
-    ws = wb.active
+    wb = oxl.load_workbook(pfi_excel_file)
+    ws = wb[worksheet_name]
 
     ans = []
     for row in ws.iter_rows(min_col=min_col, max_col=max_col,):
@@ -81,7 +82,106 @@ def parse_multi_label_descriptor_in_a_list(pfi_multi_lab_descriptor):
 
     return label_descriptor_list
 
-#
-# pfi_multi_lab = '/Users/sebastiano/Desktop/test_main/Utils/multi_label_descriptor.txt'
-# li = parse_multi_label_descriptor_in_a_list(pfi_multi_lab)
-# print li
+
+def write_header_excel_tabs_from_record(pfi_excel, sheet_name, pfi_record):
+
+    assert os.path.exists(pfi_record)
+    assert os.path.exists(pfi_excel)
+
+    wb = oxl.load_workbook(pfi_excel)
+
+    assert sheet_name in wb.get_sheet_names()
+
+    ws = wb.get_sheet_by_name(sheet_name)
+
+    record_dict = np.load(pfi_record)
+    record_dict = record_dict.item()
+    regions = record_dict['Regions'][1:-1]
+
+    del record_dict  # save space
+
+    fixed_header = ['Age', 'ID Number', 'Delivery Gestation (g)', 'Weight PND1 (g)', 'Harvest Date',
+                    'Brain Weight (g)', 'Brain Volume (ml)', 'Sex', 'MRI Date', 'Acquisition', 'Invivo MRI isofluorane time',
+                    'MRI Number', 'MRI Acquisition Format', 'Brain Volume T1', 'Brain Volume FA', 'Brain Volume ADC',
+                    'Brain Volume g-ratio', 'ICV']
+    T1_header = [reg + ' Vol ' for reg in regions]
+    FA_header = [reg + ' FA ' for reg in regions]
+    ADC_header = [reg + ' ADC ' for reg in regions]
+    g_ratio_header = [reg + ' g-ratio ' for reg in regions]
+
+    hd = fixed_header + T1_header + FA_header + ADC_header + g_ratio_header
+    rows = ws.rows.next()
+    r = 0
+    for cell in rows:
+        cell.value = hd[r]
+        r += 1
+
+    wb.save(pfi_excel)
+
+
+def store_a_record_in_excel_table(pfi_record, pfi_excel, sj, sheet_name):
+
+    if sj == '2002':
+        print ''
+    # Very deliccate and very not robust... Assert will be everywhere to increase robustness!
+    assert os.path.exists(pfi_record)
+    assert os.path.exists(pfi_excel)
+    # load workbook and work sheet
+    wb = oxl.load_workbook(pfi_excel)
+    assert sheet_name in wb.get_sheet_names()
+    ws = wb.get_sheet_by_name(sheet_name)
+    # get excel file header
+    first_row = ws.rows.next()
+    first_row_starting_header = [g.value for g in first_row[:30]]
+    # get the column with all the ids and store it in a list in a list
+    id_numbers_col_num = first_row_starting_header.index('ID Number')
+    row_ids = ws.iter_rows(min_col=id_numbers_col_num + 1, max_col=id_numbers_col_num + 1)
+    id_nums = []
+    for p in row_ids:
+        # print p[0].value
+        id_nums.append(p[0].value.replace('.', ''))
+    # get the first column num of the row we want to populate
+    starting_col_num = first_row_starting_header.index('Brain Volume T1')
+    assert first_row_starting_header[starting_col_num] == 'Brain Volume T1'
+    assert sj in id_nums
+    # get row where the given id is stored
+    row_num_id = id_nums.index(sj)
+    assert ws.cell(row=row_num_id+1, column=id_numbers_col_num+1).value.replace('.', '') == sj
+    del first_row, first_row_starting_header, id_numbers_col_num, row_ids, id_nums, p  # spare space
+    # At this point we have the row where we want to write the stuff and the col from where we want to start writing it
+    # print row_num_id, starting_col_num
+    # now we need to store the stuff to write in a list:
+    record_dict = np.load(pfi_record)
+    record_dict = record_dict.item()
+    vols_T1 = list(record_dict['vols'][1:-1])
+    vals_FA = list(record_dict['FAs'][1:-1])
+    vals_ADC = list(record_dict['ADCs'][1:-1])
+    vals_g_ratio = list(record_dict['g_ratios'][1:-1])
+    row_vals = [record_dict['Info']['totVol T1'], record_dict['Info']['totVol FA'], record_dict['Info']['totVol ADC'],
+                record_dict['Info']['totVol g_ratio'], record_dict['Info']['ICV']]
+    row_vals += vols_T1 + vals_FA + vals_ADC + vals_g_ratio
+    # ...and to write it in the appropriate place:
+    cells_to_fill = ws.iter_cols(min_col=starting_col_num + 1, min_row=row_num_id + 1, max_row=row_num_id + 1)
+
+    k = 0
+    for p in cells_to_fill:
+        p[0].value = row_vals[k]
+        k += 1
+    # finally save the excel file
+    wb.save(pfi_excel)
+
+
+if __name__ == '__main__':
+
+    # update the header with the latests records.
+    from definitions import root_study_rabbits
+
+    pfi_record_for_a_subject = os.path.join(root_study_rabbits, 'A_data', 'PTB', 'ex_vivo', '1201', 'records',
+                                            '1201_record.npy')
+    pfi_excel_file = os.path.join(root_study_rabbits, 'A_data', 'Utils', 'REoP_Data.xlsx')
+    if 1:
+        write_header_excel_tabs_from_record(pfi_excel_file, 'ACS', pfi_record_for_a_subject)
+        write_header_excel_tabs_from_record(pfi_excel_file, 'PTB', pfi_record_for_a_subject)
+        write_header_excel_tabs_from_record(pfi_excel_file, 'Template', pfi_record_for_a_subject)
+    if 0:
+        store_a_record_in_excel_table(pfi_record_for_a_subject, pfi_excel_file, '1201', 'PTB')

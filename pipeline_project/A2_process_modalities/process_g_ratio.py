@@ -79,7 +79,7 @@ def process_g_ratio_per_subject(sj, controller):
     if controller['save T2_times']:
         if subject[sj][0][1] == 'ex_vivo':
             t2_times = (15, 80, 110)
-        elif subject[0][1] == 'in_vivo':
+        elif subject[sj][0][1] == 'in_vivo':
             t2_times = (15, 80, 110)
         else:
             t2_times = (15, 80, 110)
