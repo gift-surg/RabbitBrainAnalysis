@@ -5,12 +5,12 @@ from os.path import join as jph
 root_dir = os.path.abspath(os.path.dirname(__file__))
 
 
-if root_dir == '':
+if root_dir == '/cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/software/RabbitBrainAnalysis':
     # you are on the cluster:
-    root_main_cluster = ''
-    root_internal_template = jph(root_main_cluster, 'internal_template')
-    root_utils = jph(root_main_cluster, 'docs')
-    root_study_rabbits = jph(root_main_cluster, 'study')
+    root_main_cluster = '/cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/data'
+    root_internal_template = jph(root_main_cluster, 'A_internal_template')
+    root_utils = jph(root_main_cluster, 'A_data', 'Utils')
+    root_study_rabbits = root_main_cluster
 
 
 elif root_dir == '':
@@ -18,7 +18,7 @@ elif root_dir == '':
     root_main_hdd = '/Volumes/LC/rabbits'
     root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
     root_internal_template = jph(root_main_dropbox, 'study', 'A_internal_template')
-    root_utils = jph(root_main_dropbox, 'docs')
+    root_docs = jph(root_main_dropbox, 'docs')
     root_study_rabbits = jph(root_main_hdd, 'study')
     root_shared_records = jph(root_main_dropbox, 'study', 'C_records')
 
