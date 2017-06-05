@@ -7,7 +7,7 @@ from os.path import join as jph
 
 from labels_manager.main import LabelsManager
 
-from definitions import root_study_rabbits
+from definitions import root_study_rabbits, bfc_corrector_cmd
 from pipeline_project.A0_main.main_controller import subject, propagate_me_level
 from tools.auxiliary.utils import adjust_header_from_transformations
 
@@ -136,7 +136,6 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             assert os.path.exists(pfi_templ_reg_mask_sj_aff_registered)
             pfi_diff_bfc_target = jph(pfo_tmp, 'bfc' + sj_target + '.nii.gz')
             pfi_diff_bfc_subject = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '.nii.gz')
-            bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc '
             cmd = bfc_corrector_cmd + ' {0} {1} {2} {3} {4} {5} '.format(
                 pfi_target, pfi_target_roi_registration_masks, pfi_diff_bfc_target,
                 pfi_affine_warp_sj, pfi_templ_reg_mask_sj_aff_registered, pfi_diff_bfc_subject)
