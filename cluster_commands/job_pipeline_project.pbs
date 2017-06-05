@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# path to virtual env, to run python:
-/home/ferraris/Software/python_venv/v2/.../bin/python2.7 ./../pipeline_project/A0_main/main_executer.py
-

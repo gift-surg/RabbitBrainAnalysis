@@ -318,7 +318,7 @@ if __name__ == '__main__':
     print('process DWI, local run. ')
 
     controller_DWI = {'squeeze'               : False,
-                      'orient to standard'    : False,
+                      'orient to standard'    : True,
                       'register roi masks'    : False,
                       'propagate roi masks'   : False,
                       'adjust mask'           : False,
@@ -329,9 +329,9 @@ if __name__ == '__main__':
                       'fsl tensor fitting'    : False,
                       'adjust dti-based mod'  : False,
                       'bfc b0'                : False,
-                      'create lesion mask'    : True,
-                      'create reg masks'      : True,
-                      'save results'          : True}
+                      'create lesion mask'    : False,
+                      'create reg masks'      : False,
+                      'save results'          : False}
 
     lsm = ListSubjectsManager()
 
@@ -341,7 +341,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['1201', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

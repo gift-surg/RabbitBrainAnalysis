@@ -121,7 +121,8 @@ def process_MSME_per_subject(sj, controller):
             cmd0 = 'seg_maths {0} -tp {1} {2}'.format(pfi_msme_upsampled, tp, pfi_tp)
             os.system(cmd0)
         print('-- bias-field correct the first slice')
-        bfc_param = subject[sj][3]
+        # bfc_param = subject[sj][3]
+        bfc_param = [0.001, (50, 50, 50, 50), 0.15, 0.01, 400, (4, 4, 4), 3]
         pfi_tp0 = jph(pfo_tmp, sj + '_MSME_tp{}.nii.gz'.format(0))
         pfi_tp0_bfc = jph(pfo_tmp, sj + '_MSME_tp0_bfc.nii.gz')
         pfi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
@@ -194,7 +195,7 @@ if __name__ == '__main__':
                        'register tp0 to S0'            : False,
                        'register msme to S0'           : False,
                        'bfc'                           : True,
-                       'save results'                  : False
+                       'save results'                  : True
                        }
     #
     lsm = ListSubjectsManager()

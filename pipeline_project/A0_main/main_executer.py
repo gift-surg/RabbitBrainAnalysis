@@ -19,13 +19,13 @@ def main_runner(subj_list):
     # Set steps
 
     step_A1         = True
-    step_A2_T1      = False
-    step_A2_DWI     = False
-    step_A2_MSME    = False
-    step_A2_g_ratio = False
-    step_A3         = False
-    step_A4         = False
-    step_A5         = False
+    step_A2_T1      = True
+    step_A2_DWI     = True
+    step_A2_MSME    = True
+    step_A2_g_ratio = True
+    step_A3         = True
+    step_A4         = True
+    step_A5         = True
 
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
