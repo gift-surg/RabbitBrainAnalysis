@@ -8,7 +8,9 @@ def set_new_data(image, new_data, new_dtype=None, remove_nan=True):
     From a nibabel image and a numpy array it creates a new image with
     the same header of the image and the new_data as its data.
     :param image: nibabel image
-    :param new_data: numpy array
+    :apram new_data:
+    :param new_dtype: numpy array
+    :param remove_nan:
     :return: nibabel image
     """
     if remove_nan:
@@ -50,12 +52,13 @@ def set_new_dtype_path(pfi_in, pfi_out, new_dtype):
     print('image {0} saved to {1} with new datatype {2}'.format(pfi_in, pfi_out, new_dtype))
 
 
-def change_something_in_the_header(pfi_input, pfi_output, something='datatype', new_value_for_something=np.array(512, dtype=np.int16)):
+def change_something_in_the_header(pfi_input, pfi_output, something='datatype',
+                                   new_value_for_something=np.array(512, dtype=np.int16)):
     """
     default values to have the data converted in uint16
     """
     im_input = nib.load(pfi_input)
-    im_header= im_input.header
+    im_header = im_input.header
     im_header[something] = new_value_for_something
     nib.save(im_input, pfi_output)
 
@@ -69,11 +72,10 @@ def compose_aff_transf_from_paths(pfi_left_aff, pfi_right_aff, pfi_final):
     np.savetxt(pfi_final, left.dot(right))
 
 
-def compare_two_nib(im1, im2, toll=1e-3):
+def compare_two_nib(im1, im2):
     """
     :param im1: one nibabel image
     :param im2: another nibabel image
-    :param toll: tolerance to the dissimilarity in the data - if headers are different images are different.
     :return: true false and plot to console if the images are the same or not (up to a tollerance in the data)
     """
 
@@ -380,7 +382,3 @@ def scale_y_value_and_trim(pfi_input, pfi_output, squeeze_factor=2.1648148148148
 
     # save output image
     nib.save(new_image, pfi_output)
-
-
-
-

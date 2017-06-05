@@ -18,14 +18,14 @@ def main_runner(subj_list):
 
     # Set steps
 
-    step_A1         = False
+    step_A1         = True
     step_A2_T1      = False
     step_A2_DWI     = False
     step_A2_MSME    = False
     step_A2_g_ratio = False
-    step_A3         = True
-    step_A4         = True
-    step_A5         = True
+    step_A3         = False
+    step_A4         = False
+    step_A5         = False
 
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
@@ -85,8 +85,8 @@ def main_runner(subj_list):
     ''' Step A2 - g-ratio '''
     if step_A2_g_ratio:
         print('\nStep A2 g-ratio\n')
-        controller_g_ratio = {'transpose b-vals b-vects'  : False,
-                              'noddi'                     : False,
+        controller_g_ratio = {'transpose b-vals b-vects'  : True,
+                              'noddi'                     : True,
                               'save T2_times'             : True,
                               'get acquisition echo time' : True,
                               'fit msme'                  : True,
@@ -147,17 +147,17 @@ if __name__ == '__main__':
 
     lsm = ListSubjectsManager()
 
-    lsm.execute_PTB_ex_skull  = False
-    lsm.execute_PTB_ex_vivo   = False
-    lsm.execute_PTB_in_vivo   = False
-    lsm.execute_PTB_op_skull  = False
-    lsm.execute_ACS_ex_vivo   = False
+    lsm.execute_PTB_ex_skull  = True
+    lsm.execute_PTB_ex_vivo   = True
+    lsm.execute_PTB_in_vivo   = True
+    lsm.execute_PTB_op_skull  = True
+    lsm.execute_ACS_ex_vivo   = True
 
-    lsm.input_subjects = ['2206t1', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
-    # '2205t1', '2206t1', '2502bt1']
-    #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702', '2205t1', '2206t1'
+    # lsm.input_subjects = ['2702', ]  # 2502t1
+    # '2205t1', '2206t1', '2502bt1']2502t1
+    #  '3307', '3404']  # '2202t1', '2205t1', 3103'2206t1' -- '2503', '2608', '2702', '2205t1', '2206t1'
     lsm.update_ls()
 
-    print lsm.ls
+    print(lsm.ls)
 
     main_runner(lsm.ls)

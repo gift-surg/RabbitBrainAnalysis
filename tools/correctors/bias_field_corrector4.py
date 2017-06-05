@@ -39,24 +39,26 @@ def bias_field_correction_slicewise(volume_input,
 
     # compute BFC slicewise (with a silly chain of conversions and re-conversions...):
 
-    four_dims = volume_input.shape[3]
+    if not print_only:
 
-    for t in xrange(four_dims):
+        four_dims = volume_input.shape[3]
 
-        a_slice_of_input = volume_input[..., t]
-        a_slice_of_input_img = sitk.GetImageFromArray(a_slice_of_input)
+        for t in xrange(four_dims):
 
-        a_slice_of_input_img = sitk.Cast(a_slice_of_input_img, sitk.sitkFloat32)
+            a_slice_of_input = volume_input[..., t]
+            a_slice_of_input_img = sitk.GetImageFromArray(a_slice_of_input)
 
-        a_slice_of_mask_img = bth.Execute(a_slice_of_input_img)
-        a_slice_of_mask_img = -1 * (a_slice_of_mask_img - 1)
+            a_slice_of_input_img = sitk.Cast(a_slice_of_input_img, sitk.sitkFloat32)
 
-        print 'bfc started for slice t = ' + str(t)
-        img_no_bias = n4b.Execute(a_slice_of_input_img, a_slice_of_mask_img)
+            a_slice_of_mask_img = bth.Execute(a_slice_of_input_img)
+            a_slice_of_mask_img = -1 * (a_slice_of_mask_img - 1)
 
-        four_d_volume_output[..., t] = sitk.GetArrayFromImage(img_no_bias)
+            print 'bfc started for slice t = ' + str(t)
+            img_no_bias = n4b.Execute(a_slice_of_input_img, a_slice_of_mask_img)
 
-    return four_d_volume_output
+            four_d_volume_output[..., t] = sitk.GetArrayFromImage(img_no_bias)
+
+        return four_d_volume_output
 
 
 def bias_field_correction(pfi_input, pfi_output=None, pfi_mask=None, prefix='',
@@ -117,7 +119,7 @@ def bias_field_correction(pfi_input, pfi_output=None, pfi_mask=None, prefix='',
     if pfi_input.endswith('.nii') or pfi_input.endswith('.nii.gz'):
         img = sitk.ReadImage(pfi_input)
 
-        img = sitk.Cast(img, sitk.sitkFloat32)
+        img = sitk.Cast(img, sitk.sitkFloat64)
 
         # re-create bin if the mask is not defined
         if pfi_mask is None:
@@ -125,6 +127,7 @@ def bias_field_correction(pfi_input, pfi_output=None, pfi_mask=None, prefix='',
             img_mask = -1 * (img_mask - 1)
         else:
             img_mask = sitk.ReadImage(pfi_mask)
+            img_mask = sitk.Cast(img_mask, sitk.sitkInt8)
 
         if not print_only:
 
@@ -174,3 +177,9 @@ def bias_field_correction_list(list_pfi_input, list_pfi_mask=None, prefix='_bfc_
                               numberOfHistogramBins=numberOfHistogramBins,
                               numberOfControlPoints=numberOfControlPoints,
                               splineOrder=splineOrder)
+
+if __name__ == '__main__':
+    pfi_in = '/Users/sebastiano/Desktop/test/3103_msme_tp0.nii.gz'
+    pri_out = '/Users/sebastiano/Desktop/test/3103_msme_bfc.nii.gz'
+    pfi_mask = '/Users/sebastiano/Desktop/test/3103_segm.nii.gz'
+    bias_field_correction(pfi_in, pri_out, pfi_mask=pfi_mask)

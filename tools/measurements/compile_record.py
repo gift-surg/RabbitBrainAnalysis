@@ -1,17 +1,18 @@
 """
 Measurements on labels.
 """
-import numpy as np
-import os
-from tabulate import tabulate
 import codecs
 import csv
-from os.path import join as jph
-from labels_manager.caliber.segmentation_analyzer import SegmentationAnalyzer
 import datetime
+import os
+from os.path import join as jph
+
+import numpy as np
+from labels_manager.caliber.segmentation_analyzer import SegmentationAnalyzer
+from tabulate import tabulate
 
 from pipeline_project.A0_main.main_controller import subject
-from tools.measurements.parse_excel_tables_and_descriptors import parse_excel_data_to_list, \
+from tools.auxiliary.parse_excel_tables_and_descriptors import parse_excel_data_to_list, \
     parse_multi_label_descriptor_in_a_list
 
 

@@ -37,7 +37,7 @@ def process_g_ratio_per_subject(sj, controller):
     pfo_mod = jph(pfo_output_sj, 'mod')
     pfo_segm = jph(pfo_output_sj, 'segm')
     pfo_mask = jph(pfo_output_sj, 'z_mask')
-    pfo_tmp = jph(pfo_output_sj, 'z_tmp', 'z_g_ratio')
+    pfo_tmp = jph(pfo_output_sj, 'z_tmp', 'z_gr')
 
     os.system('mkdir -p {}'.format(pfo_output_sj))
     os.system('mkdir -p {}'.format(pfo_mod))
@@ -48,6 +48,7 @@ def process_g_ratio_per_subject(sj, controller):
     # --
 
     if controller['transpose b-vals b-vects']:
+        print('- Transpose b-vals and b-vects')
         pfi_bvals = jph(pfo_input_sj_DWI, sj + '_DWI_DwEffBval.txt')
         pfi_bvects = jph(pfo_input_sj_DWI, sj + '_DWI_DwGradVec.txt')
         assert os.path.exists(pfi_bvals)
@@ -60,7 +61,7 @@ def process_g_ratio_per_subject(sj, controller):
         np.savetxt(fname=pfi_transposed_vects, X=m.T, fmt='%10.8f')
 
     if controller['noddi']:
-
+        print('- Noddi execution')
         # check if there is a DWI already processed in the TMP folder of the same subject:
         pfo_tmp_dwi = jph(pfo_output_sj, 'z_tmp', 'z_DWI')
         pfi_dwi_eddy_corrected = jph(pfo_tmp_dwi, sj + '_DWI_eddy.nii.gz')
@@ -71,14 +72,14 @@ def process_g_ratio_per_subject(sj, controller):
         assert os.path.exists(pfi_transposed_bvals)
         assert os.path.exists(pfi_transposed_vects)
         assert os.path.exists(pfi_roi_mask)
-        pfi_output_noddi = jph(pfo_tmp, sj + '_noddi.nii.gz')
+        pfi_output_noddi = jph(pfo_tmp, sj + '_nod.nii.gz')
         cmd = 'fit_dwi -source {0} -mask {1} -bval {2} -bvec {3} -mcmap {4} -nod'.format(
             pfi_dwi_eddy_corrected, pfi_roi_mask, pfi_transposed_bvals, pfi_transposed_vects, pfi_output_noddi)
         print_and_run(cmd)
 
     if controller['save T2_times']:
         if subject[sj][0][1] == 'ex_vivo':
-            t2_times = (15, 80, 110)
+            t2_times = (15, 80, 110)  # (15, 80, 110) - proposed 3, 16, 22
         elif subject[sj][0][1] == 'in_vivo':
             t2_times = (15, 80, 110)
         else:
@@ -105,10 +106,14 @@ def process_g_ratio_per_subject(sj, controller):
         pfi_output_mwf = jph(pfo_tmp, sj + '_vmwf.nii.gz')
         cmd = 'fit_qt2 -source {0} -mask {1} -nc 3 -TElist {2} -T2list {3} -mwf {4}'.format(
             pfi_msme_up, pfi_roi_mask, pfi_echo_times, pfi_T2_times, pfi_output_mwf)
+        print cmd
         print_and_run(cmd)
 
+        if not os.path.exists(pfi_output_mwf):
+            raise IOError('Something went wrong in using fit_qt2...')
+
     if controller['extract first tp noddi']:
-        pfi_noddi = jph(pfo_tmp, sj + '_noddi.nii.gz')
+        pfi_noddi = jph(pfo_tmp, sj + '_nod.nii.gz')
         assert os.path.exists(pfi_noddi)
         pfi_vin = jph(pfo_tmp, sj + '_vin.nii.gz')
         cmd = 'seg_maths {0} -tp 0 {1}'.format(pfi_noddi, pfi_vin)
@@ -137,6 +142,13 @@ def process_g_ratio_per_subject(sj, controller):
         print_and_run(cmd6)
         print_and_run(cmd7)
         print_and_run(cmd8)
+
+    if controller['save results']:
+        pfi_g_ratio = jph(pfo_tmp, sj + '_g_ratio.nii.gz')
+        assert os.path.exists(pfi_g_ratio)
+        pfi_g_ratio_final = jph(pfo_mod, sj + '_g_ratio.nii.gz')
+        cmd = 'cp {} {} '.format(pfi_g_ratio, pfi_g_ratio_final)
+        os.system(cmd)
 
 
 def process_g_ratio_from_list(subj_list, controller):
@@ -167,9 +179,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
-    # '2205t1', '2206t1', '2502bt1']
-    #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
+    lsm.input_subjects = ['3103', ]
+
+
     lsm.update_ls()
 
     process_g_ratio_from_list(lsm.ls, controller_steps)

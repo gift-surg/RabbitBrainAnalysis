@@ -5,30 +5,30 @@ from tools.auxiliary.utils import set_new_data, eliminates_consecutive_duplicate
 from bruker2nifti._utils import slope_corrector
 
 
-def slope_corrector_old(slopes, im_input, eliminate_consec_duplicates=False):
-    """
-    Correct from the slopes from the slope array and the image.
-    :param slopes:
-    :param im_input:
-    :return:
-    """
-
-    if eliminate_consec_duplicates:
-        slopes = eliminates_consecutive_duplicates(list(np.loadtxt(slopes)))
-
-    im_data = im_input.get_data().astype(np.float64)
-    num_directions = len(slopes)
-
-    if not (im_data.shape[3] == num_directions):  #  or im_data.shape[4] == num_directions
-        err_msg = 'ERROR: Dimension of the given image scale not coherent with the given image.'
-        raise IOError(err_msg)
-
-    for j in xrange(num_directions):
-        print j
-        im_data[..., j] *= slopes[j]
-
-    im_output = set_new_data(im_input, im_data)
-    return im_output
+# def slope_corrector_old(slopes, im_input, eliminate_consec_duplicates=False):
+#     """
+#     Correct from the slopes from the slope array and the image.
+#     :param slopes:
+#     :param im_input:
+#     :return:
+#     """
+#
+#     if eliminate_consec_duplicates:
+#         slopes = eliminates_consecutive_duplicates(list(np.loadtxt(slopes)))
+#
+#     im_data = im_input.get_data().astype(np.float64)
+#     num_directions = len(slopes)
+#
+#     if not (im_data.shape[3] == num_directions):  #  or im_data.shape[4] == num_directions
+#         err_msg = 'ERROR: Dimension of the given image scale not coherent with the given image.'
+#         raise IOError(err_msg)
+#
+#     for j in xrange(num_directions):
+#         print j
+#         im_data[..., j] *= slopes[j]
+#
+#     im_output = set_new_data(im_input, im_data)
+#     return im_output
 
 
 def slope_corrector_path(slopes_array, path_im_input, path_im_output, eliminate_consec_duplicates=False):

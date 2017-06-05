@@ -103,26 +103,22 @@ def write_header_excel_tabs_from_record(pfi_excel, sheet_name, pfi_record):
     fixed_header = ['Age', 'ID Number', 'Delivery Gestation (g)', 'Weight PND1 (g)', 'Harvest Date',
                     'Brain Weight (g)', 'Brain Volume (ml)', 'Sex', 'MRI Date', 'Acquisition', 'Invivo MRI isofluorane time',
                     'MRI Number', 'MRI Acquisition Format', 'Brain Volume T1', 'Brain Volume FA', 'Brain Volume ADC',
-                    'Brain Volume g-ratio', 'ICV']
+                    'Brain Volume g-ratio', 'ICV', 'A-P', 'S-I', 'R-L']
     T1_header = [reg + ' Vol ' for reg in regions]
     FA_header = [reg + ' FA ' for reg in regions]
     ADC_header = [reg + ' ADC ' for reg in regions]
     g_ratio_header = [reg + ' g-ratio ' for reg in regions]
 
     hd = fixed_header + T1_header + FA_header + ADC_header + g_ratio_header
-    rows = ws.rows.next()
-    r = 0
-    for cell in rows:
-        cell.value = hd[r]
-        r += 1
+
+    for col, col_val in enumerate(hd):
+        ws.cell(row=1, column=col+1).value = hd[col]
 
     wb.save(pfi_excel)
 
 
 def store_a_record_in_excel_table(pfi_record, pfi_excel, sj, sheet_name):
 
-    if sj == '2002':
-        print ''
     # Very deliccate and very not robust... Assert will be everywhere to increase robustness!
     assert os.path.exists(pfi_record)
     assert os.path.exists(pfi_excel)
@@ -132,21 +128,21 @@ def store_a_record_in_excel_table(pfi_record, pfi_excel, sj, sheet_name):
     ws = wb.get_sheet_by_name(sheet_name)
     # get excel file header
     first_row = ws.rows.next()
-    first_row_starting_header = [g.value for g in first_row[:30]]
+    first_row_starting_header = [g.value for g in first_row[:33]]
     # get the column with all the ids and store it in a list in a list
     id_numbers_col_num = first_row_starting_header.index('ID Number')
-    row_ids = ws.iter_rows(min_col=id_numbers_col_num + 1, max_col=id_numbers_col_num + 1)
+    row_ids = ws.iter_rows(min_row=2, min_col=id_numbers_col_num + 1, max_col=id_numbers_col_num + 1)
     id_nums = []
     for p in row_ids:
-        # print p[0].value
-        id_nums.append(p[0].value.replace('.', ''))
+        if p[0].value is not None:
+            id_nums.append(str(p[0].value).replace('.', ''))
     # get the first column num of the row we want to populate
     starting_col_num = first_row_starting_header.index('Brain Volume T1')
     assert first_row_starting_header[starting_col_num] == 'Brain Volume T1'
     assert sj in id_nums
     # get row where the given id is stored
     row_num_id = id_nums.index(sj)
-    assert ws.cell(row=row_num_id+1, column=id_numbers_col_num+1).value.replace('.', '') == sj
+    assert str(ws.cell(row=row_num_id+2, column=id_numbers_col_num+1).value).replace('.', '') == sj
     del first_row, first_row_starting_header, id_numbers_col_num, row_ids, id_nums, p  # spare space
     # At this point we have the row where we want to write the stuff and the col from where we want to start writing it
     # print row_num_id, starting_col_num
@@ -157,16 +153,18 @@ def store_a_record_in_excel_table(pfi_record, pfi_excel, sj, sheet_name):
     vals_FA = list(record_dict['FAs'][1:-1])
     vals_ADC = list(record_dict['ADCs'][1:-1])
     vals_g_ratio = list(record_dict['g_ratios'][1:-1])
-    row_vals = [record_dict['Info']['totVol T1'], record_dict['Info']['totVol FA'], record_dict['Info']['totVol ADC'],
+    col_vals = [record_dict['Info']['totVol T1'], record_dict['Info']['totVol FA'], record_dict['Info']['totVol ADC'],
                 record_dict['Info']['totVol g_ratio'], record_dict['Info']['ICV']]
-    row_vals += vols_T1 + vals_FA + vals_ADC + vals_g_ratio
+    col_vals += vols_T1 + vals_FA + vals_ADC + vals_g_ratio
     # ...and to write it in the appropriate place:
-    cells_to_fill = ws.iter_cols(min_col=starting_col_num + 1, min_row=row_num_id + 1, max_row=row_num_id + 1)
+    for col_num, col_val in enumerate(col_vals):
+        ws.cell(column=starting_col_num + col_num + 1, row=row_num_id + 2).value = col_val
 
-    k = 0
-    for p in cells_to_fill:
-        p[0].value = row_vals[k]
-        k += 1
+    #
+    # k = 0
+    # for p in cells_to_fill:
+    #     p[0].value = row_vals[k]
+    #     k += 1
     # finally save the excel file
     wb.save(pfi_excel)
 

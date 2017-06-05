@@ -424,15 +424,15 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
     pfi_MSME = jph(pfo_mod, sj + '_MSME.nii.gz')
     pfi_reg_mask_T1 = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
     pfi_reg_mask_S0 = jph(pfo_mask, sj + '_b0_reg_mask.nii.gz')  # get also the registration mask other than the roi?
-    pfi_reg_mask_MSME_up = jph(pfo_mask, sj + '_MSME_roi_mask.nii.gz')
+    # pfi_reg_mask_MSME_up = jph(pfo_mask, sj + '_MSME_roi_mask.nii.gz')
     assert os.path.exists(pfi_T1)
     assert os.path.exists(pfi_segm_T1)
     assert os.path.exists(pfi_reg_mask_T1)
-    assert os.path.exists(pfi_reg_mask_S0)
-    assert os.path.exists(pfi_reg_mask_MSME_up)
+    assert os.path.exists(pfi_reg_mask_S0)  # same as mask msme_up
+    # assert os.path.exists(pfi_reg_mask_MSME_up)
     # Output
     pfi_segm_S0 = jph(pfo_segm, sj + '_S0_segm.nii.gz')
-    pfi_segm_MSME_up = jph(pfo_segm, sj + '_MSME_up_segm.nii.gz')
+    # pfi_segm_MSME_up = jph(pfo_segm, sj + '_MSME_up_segm.nii.gz')
     pfi_segm_MSME = jph(pfo_segm, sj + '_MSME_segm.nii.gz')
 
     print('Rigid propagator inter modality {}'.format(sj))
@@ -456,29 +456,31 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
         print(cmd)
         os.system(cmd)
 
-    if controller['rig register to MSME_up']:
-        print('- rig register to MSME_up {}'.format(sj))
-        pfi_rigid_transf_to_msme_up = jph(pfo_tmp, sj + 'rigid_T1_to_MSME_aff.txt')
-        pfi_rigid_warp_to_msme_up = jph(pfo_tmp, sj + 'rigid_T1_to_MSME_warp.nii.gz')
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly'.format(
-            pfi_MSME_up, pfi_reg_mask_MSME_up, pfi_T1, pfi_reg_mask_T1, pfi_rigid_transf_to_msme_up,
-            pfi_rigid_warp_to_msme_up)
-        os.system(cmd)
-
-    if controller['rig propagate to MSME_up']:
-        print('- rig propagate to MSME_up {}'.format(sj))
-        pfi_rigid_transf_to_msme_up = jph(pfo_tmp, sj + 'rigid_T1_to_MSME_aff.txt')
-        assert os.path.exists(pfi_rigid_transf_to_msme_up)
-        cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-            pfi_MSME_up, pfi_segm_T1, pfi_rigid_transf_to_msme_up, pfi_segm_MSME_up)
-        os.system(cmd)
+    # if controller['rig register to MSME_up']:
+    #     print('- rig register to MSME_up {}'.format(sj))
+    #     pfi_rigid_transf_to_msme_up = jph(pfo_tmp, sj + 'rigid_T1_to_MSME_aff.txt')
+    #     pfi_rigid_warp_to_msme_up = jph(pfo_tmp, sj + 'rigid_T1_to_MSME_warp.nii.gz')
+    #     cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly'.format(
+    #         pfi_MSME_up, pfi_reg_mask_S0, pfi_T1, pfi_reg_mask_T1, pfi_rigid_transf_to_msme_up,
+    #         pfi_rigid_warp_to_msme_up)
+    #     os.system(cmd)
+    #
+    # if controller['rig propagate to MSME_up']:
+    #     print('- rig propagate to MSME_up {}'.format(sj))
+    #     pfi_rigid_transf_to_msme_up = jph(pfo_tmp, sj + 'rigid_T1_to_MSME_aff.txt')
+    #     assert os.path.exists(pfi_rigid_transf_to_msme_up)
+    #     cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+    #         pfi_MSME_up, pfi_segm_T1, pfi_rigid_transf_to_msme_up, pfi_segm_MSME_up)
+    #     os.system(cmd)
 
     if controller['MSME_up to MSME']:
         print('- MSME_up to MSME {}'.format(sj))
+        # the MSME_up segmentation is the same as S0 segmentation., and it is the same as the g-ratio segmentation.
+
         pfo_utils = jph(root_study_rabbits, 'A_data', 'Utils')
         pfi_id_transf = jph(pfo_utils, 'aff_id.txt')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-            pfi_MSME, pfi_segm_MSME_up, pfi_id_transf, pfi_segm_MSME)
+            pfi_MSME, pfi_segm_S0, pfi_id_transf, pfi_segm_MSME)
         os.system(cmd)
 
 

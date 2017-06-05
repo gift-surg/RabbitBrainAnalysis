@@ -3,12 +3,15 @@ MSME processing in their original coordinate system
 """
 import os
 from os.path import join as jph
+import nibabel as nib
+import numpy as np
 
 from definitions import root_study_rabbits
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
-
+from tools.auxiliary.utils import set_new_data
+from tools.correctors.bias_field_corrector4 import bias_field_correction
 """
 
 Processing list for each MSME of each subject:
@@ -57,87 +60,32 @@ def process_MSME_per_subject(sj, controller):
 
     if controller['squeeze']:
         print('- Processing MSME: squeeze {}'.format(sj))
-        pfi_msme = jph(pfo_input_sj, sj + '_MSME', sj + '_MSME.nii.gz')
-        assert os.path.exists(pfi_msme)
-        pfi_msme_final = jph(pfo_output_sj, 'mod', sj + '_MSME.nii.gz')
-        squeeze_image_from_path(pfi_msme, pfi_msme_final, copy_anyway=True)
+        pfi_msme_nifti = jph(pfo_input_sj, sj + '_MSME', sj + '_MSME.nii.gz')
+        assert os.path.exists(pfi_msme_nifti)
+        pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
+        squeeze_image_from_path(pfi_msme_nifti, pfi_msme, copy_anyway=True)
 
     if controller['orient to standard']:
         print('- Processing MSME: orient to standard {}'.format(sj))
-        pfi_msme_final = jph(pfo_mod, sj + '_MSME.nii.gz')
-        assert os.path.exists(pfi_msme_final)
-        cmd = 'fslreorient2std {0} {0}'.format(pfi_msme_final)
+        pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
+        assert os.path.exists(pfi_msme)
+        cmd = 'fslreorient2std {0} {0}'.format(pfi_msme)
         os.system(cmd)
-        set_translational_part_to_zero(pfi_msme_final, pfi_msme_final)
+        set_translational_part_to_zero(pfi_msme, pfi_msme)
 
     if controller['extract first timepoint']:
         print('- Processing MSME: extract first layers {}'.format(sj))
-        pfi_msme = jph(pfo_mod, sj + '_MSME.nii.gz')
+        pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
         assert os.path.exists(pfi_msme)
-        pfi_msme_original_first_layer = jph(pfo_mod, sj + '_MSME_tp0.nii.gz')
+        pfi_msme_original_first_layer = jph(pfo_tmp, sj + '_MSME_tp0.nii.gz')
         cmd0 = 'seg_maths {0} -tp 0 {1}'.format(pfi_msme, pfi_msme_original_first_layer)
         os.system(cmd0)
-    #
-    # if controller['extract the mask']:
-    #     print('- Processing MSME: extract mask {}'.format(sj))
-    #     # --- Resampling on the S0:
-    #     pfi_affine_identity = jph(pfo_utils, 'aff_id.txt')
-    #     pfi_msme_tp0 = jph(pfo_mod, sj + '_MSME_tp0.nii.gz')
-    #     pfi_s0 = jph(pfo_output_sj, 'mod', sj + '_S0.nii.gz')
-    #     assert os.path.exists(pfi_msme_tp0)
-    #     assert os.path.exists(pfi_affine_identity)
-    #     assert os.path.exists(pfi_s0)
-    #     # Create ad hoc resampling grid from S0:
-    #     pfi_resampling_grid = jph(pfo_tmp, sj + '_resampling_grid.nii.gz')
-    #     im_s0 = nib.load(pfi_s0)
-    #     im_grid = set_new_data(im_s0, np.zeros_like(im_s0.get_data()))
-    #     nib.save(im_grid, filename=pfi_resampling_grid)
-    #     # Resample on the new grid:
-    #     assert os.path.exists(pfi_resampling_grid)
-    #     pfi_msme_tp0_up = jph(pfo_output_sj, 'mod', sj + '_MSME_tp0_up.nii.gz')
-    #     cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(pfi_resampling_grid,
-    #                                                                        pfi_msme_tp0,
-    #                                                                        pfi_affine_identity,
-    #                                                                        pfi_msme_tp0_up)
-    #     os.system(cmd0)
-    #     cmd1 = 'seg_maths {0} -thr 0 {0}'.format(pfi_msme_tp0_up)
-    #     os.system(cmd1)
-    #     # -- register 1305 on the up-sampled first layer MSME:
-    #     pfi_1305 = jph(root_study_pantopolium, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
-    #     assert os.path.exists(pfi_1305)
-    #     pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '.txt')
-    #     pfi_msme_warped_1305_on_subject = jph(pfo_tmp, 'warp_1305_on_' + sj + '.nii.gz')
-    #     cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} ; '.format(
-    #         pfi_msme_tp0_up,
-    #         pfi_1305,
-    #         pfi_affine_transformation_1305_on_subject,
-    #         pfi_msme_warped_1305_on_subject)
-    #     os.system(cmd)
-    #     # -- Propagate roi mask:
-    #     pfi_1305_roi_mask = jph(pfo_utils, '1305', '1305_T1_roi_mask.nii.gz')
-    #     pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '.txt')
-    #     assert os.path.exists(pfi_1305_roi_mask)
-    #     assert os.path.exists(pfi_affine_transformation_1305_on_subject)
-    #     pfi_up_roi_mask = jph(pfo_mask, sj + '_MSME_up_roi_mask.nii.gz')
-    #     cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-    #         pfi_msme_tp0_up,
-    #         pfi_1305_roi_mask,
-    #         pfi_affine_transformation_1305_on_subject,
-    #         pfi_up_roi_mask)
-    #     os.system(cmd)
-    #     # -- down_sampled roi mask
-    #     pfi_msme_roi_mask = jph(pfo_mask, sj + '_MSME_roi_mask.nii.gz')
-    #     cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(pfi_msme_tp0,
-    #                                                                        pfi_up_roi_mask,
-    #                                                                        pfi_affine_identity,
-    #                                                                        pfi_msme_roi_mask)
-    #     os.system(cmd0)
 
     if controller['register tp0 to S0']:
         print('- Processing MSME: register tp0 to S0 {}'.format(sj))
         pfi_s0 = jph(pfo_mod, sj + '_S0.nii.gz')
         pfi_s0_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
-        pfi_msme_tp0 = jph(pfo_output_sj, 'mod', sj + '_MSME_tp0.nii.gz')
+        pfi_msme_tp0 = jph(pfo_tmp, sj + '_MSME_tp0.nii.gz')
         assert os.path.exists(pfi_s0)
         assert os.path.exists(pfi_s0_mask)
         assert os.path.exists(pfi_msme_tp0)
@@ -150,24 +98,83 @@ def process_MSME_per_subject(sj, controller):
 
     if controller['register msme to S0']:
         pfi_s0 = jph(pfo_mod, sj + '_S0.nii.gz')
-        pfi_msme = jph(pfo_mod, sj + '_MSME.nii.gz')
+        pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
         pfi_transf_msme_on_s0 = jph(pfo_tmp, sj + '_msme_on_b0_rigid.txt')
         assert os.path.exists(pfi_s0)
         assert os.path.exists(pfi_msme)
         assert os.path.exists(pfi_transf_msme_on_s0)
-        pfi_msme_upsampled = jph(pfo_mod, sj + '_MSME_up.nii.gz')
+        pfi_msme_upsampled = jph(pfo_tmp, sj + '_MSME_up.nii.gz')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 1'.format(
             pfi_s0, pfi_msme, pfi_transf_msme_on_s0, pfi_msme_upsampled
         )
         os.system(cmd)
 
-    if controller['extract first tp in s0 space']:
-        print('- Processing MSME: extract first layers {}'.format(sj))
-        pfi_msme_upsampled = jph(pfo_mod, sj + '_MSME_up.nii.gz')
+    if controller['bfc']:
+        print('- get bfc correction each slice:')
+        pfi_msme_upsampled = jph(pfo_tmp, sj + '_MSME_up.nii.gz')
         assert os.path.exists(pfi_msme_upsampled)
-        pfi_msme_updampled_first_layer = jph(pfo_output_sj, 'mod', sj + '_MSME_tp0_up.nii.gz')
-        cmd0 = 'seg_maths {0} -tp 0 {1}'.format(pfi_msme_upsampled, pfi_msme_updampled_first_layer)
+        print('-- un-pack slices')
+        im = nib.load(pfi_msme_upsampled)
+        tps = im.shape[-1]
+        for tp in range(tps):
+            pfi_tp = jph(pfo_tmp, sj + '_MSME_tp{}.nii.gz'.format(tp))
+            cmd0 = 'seg_maths {0} -tp {1} {2}'.format(pfi_msme_upsampled, tp, pfi_tp)
+            os.system(cmd0)
+        print('-- bias-field correct the first slice')
+        bfc_param = subject[sj][3]
+        pfi_tp0 = jph(pfo_tmp, sj + '_MSME_tp{}.nii.gz'.format(0))
+        pfi_tp0_bfc = jph(pfo_tmp, sj + '_MSME_tp0_bfc.nii.gz')
+        pfi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
+        bias_field_correction(pfi_tp0, pfi_tp0_bfc,
+                              pfi_mask=pfi_mask,
+                              prefix='',
+                              convergenceThreshold=bfc_param[0],
+                              maximumNumberOfIterations=bfc_param[1],
+                              biasFieldFullWidthAtHalfMaximum=bfc_param[2],
+                              wienerFilterNoise=bfc_param[3],
+                              numberOfHistogramBins=bfc_param[4],
+                              numberOfControlPoints=bfc_param[5],
+                              splineOrder=bfc_param[6],
+                              print_only=False)
+        print('-- get the bias field from the bfc corrected')
+        bias_field = jph(pfo_tmp, sj + '_bfc.nii.gz')
+        cmd0 = 'seg_maths {0} -div {1} {2}'.format(pfi_tp0_bfc, pfi_tp0, bias_field)
+        cmd1 = 'seg_maths {0} -removenan {0}'.format(bias_field)
         os.system(cmd0)
+        os.system(cmd1)
+        print('-- correct all the remaining slices')
+        for tp in range(1, tps):
+            pfi_tp = jph(pfo_tmp, sj + '_MSME_tp{}.nii.gz'.format(tp))
+            pfi_tp_bfc = jph(pfo_tmp, sj + '_MSME_tp{}_bfc.nii.gz'.format(tp))
+            cmd0 = 'seg_maths {0} -mul {1} {2}'.format(pfi_tp, bias_field, pfi_tp_bfc)
+            os.system(cmd0)
+        print('-- pack together all the images in a stack')
+        cmd = 'seg_maths {0} -merge	{1} {2} '.format(pfi_tp0_bfc, tps-1, 4)
+        for tp in range(1, tps):
+            pfi_tp_bfc = jph(pfo_tmp, sj + '_MSME_tp{}_bfc.nii.gz'.format(tp))
+            print
+            print pfi_tp_bfc
+            print
+            cmd += pfi_tp_bfc + ' '
+        pfi_stack = jph(pfo_tmp, sj + '_MSME_up_bfc.nii.gz')
+        cmd += pfi_stack
+
+        print
+        print cmd
+        os.system(cmd)
+
+    if controller['save results']:
+        print('save results')
+        pfi_stack = jph(pfo_tmp, sj + '_MSME_up_bfc.nii.gz')
+        pfi_tp0_bfc = jph(pfo_tmp, sj + '_MSME_tp0_bfc.nii.gz')
+        assert os.path.exists(pfi_stack)
+        assert os.path.exists(pfi_tp0_bfc)
+        pfi_msme_updampled_and_bfc = jph(pfo_mod, sj + '_MSME_tp0_up.nii.gz')
+        pfi_msme_updampled_first_layer = jph(pfo_mod, sj + '_MSME_tp0_up.nii.gz')
+        cmd2 = 'cp {0} {1}'.format(pfi_stack, pfi_msme_updampled_and_bfc)
+        cmd3 = 'cp {0} {1}'.format(pfi_tp0_bfc, pfi_msme_updampled_first_layer)
+        os.system(cmd2)
+        os.system(cmd3)
 
 
 def process_MSME_from_list(subj_list, controller):
@@ -181,12 +188,13 @@ def process_MSME_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process MSME, local run. ')
 
-    controller_MSME = {'squeeze'                       : True,
-                       'orient to standard'            : True,
-                       'extract first timepoint'       : True,
-                       'register tp0 to S0'            : True,
-                       'register msme to S0'           : True,
-                       'extract first tp in s0 space'  : True
+    controller_MSME = {'squeeze'                       : False,
+                       'orient to standard'            : False,
+                       'extract first timepoint'       : False,
+                       'register tp0 to S0'            : False,
+                       'register msme to S0'           : False,
+                       'bfc'                           : True,
+                       'save results'                  : False
                        }
     #
     lsm = ListSubjectsManager()

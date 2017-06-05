@@ -5,6 +5,7 @@ import nibabel as nib
 from tools.auxiliary.utils import set_new_data
 
 
+# deprecated after converter!
 def corrector_MSME_T2_path(pfi_input, pfi_output, modality=None, swap_dim=None):
     """
     Remapping of the MSME T2 from paravision to a nifty format where

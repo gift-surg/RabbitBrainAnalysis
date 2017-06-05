@@ -96,46 +96,42 @@ def process_DWI_per_subject(sj, controller):
     if controller['register roi masks']:
         print('- register roi masks {}'.format(sj))
         pfi_b0 = jph(pfo_tmp, sj + '_DWI_b0_to_std.nii.gz')
-        pfi_1305 = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
-        assert os.path.exists(pfi_b0)
-        assert os.path.exists(pfi_1305)
-        pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '_b0.txt')
-        pfi_3d_warped_1305_on_subject = jph(pfo_tmp, 'warp_1305_on_' + sj + '_b0.nii.gz')
-        cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} ; '.format(
-            pfi_b0,
-            pfi_1305,
-            pfi_affine_transformation_1305_on_subject,
-            pfi_3d_warped_1305_on_subject)
-        os.system(cmd)
+        if subject[sj][0][1] in ['ex_vivo', 'op_skull']:
+            pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
+        elif subject[sj][0][1] == 'in_vivo':
+            pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
+        else:
+            raise IOError('ex_vivo, in_vivo or op_skull only.')
 
-    if controller['register roi masks']:
-        print('- register roi masks {}'.format(sj))
-        pfi_b0 = jph(pfo_tmp, sj + '_DWI_b0_to_std.nii.gz')
-        pfi_1305 = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
         assert os.path.exists(pfi_b0)
-        assert os.path.exists(pfi_1305)
-        pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '_b0.txt')
-        pfi_3d_warped_1305_on_subject = jph(pfo_tmp, 'warp_1305_on_' + sj + '_b0.nii.gz')
+        assert os.path.exists(pfi_sj_ref_coord_system)
+        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '_b0.txt')
+        pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '_b0.nii.gz')
         cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} ; '.format(
             pfi_b0,
-            pfi_1305,
-            pfi_affine_transformation_1305_on_subject,
-            pfi_3d_warped_1305_on_subject)
+            pfi_sj_ref_coord_system,
+            pfi_affine_transformation_ref_on_subject,
+            pfi_3d_warped_ref_on_subject)
         os.system(cmd)
 
     if controller['propagate roi masks']:
         print('- propagate roi masks {}'.format(sj))
         pfi_b0 = jph(pfo_tmp, sj + '_DWI_b0_to_std.nii.gz')
-        pfi_1305_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.gz')
-        pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '_b0.txt')
+        if subject[sj][0][1] in ['ex_vivo', 'op_skull']:
+            pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.gz')
+        elif subject[sj][0][1] == 'in_vivo':
+            pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_roi_mask.nii.gz')
+        else:
+            raise IOError('ex_vivo, in_vivo or op_skull only.')
+        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '_b0.txt')
         assert os.path.exists(pfi_b0)
-        assert os.path.exists(pfi_1305_roi_mask)
-        assert os.path.exists(pfi_affine_transformation_1305_on_subject)
+        assert os.path.exists(pfi_reference_roi_mask)
+        assert os.path.exists(pfi_affine_transformation_ref_on_subject)
         pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_b0,
-            pfi_1305_roi_mask,
-            pfi_affine_transformation_1305_on_subject,
+            pfi_reference_roi_mask,
+            pfi_affine_transformation_ref_on_subject,
             pfi_roi_mask)
         os.system(cmd)
 

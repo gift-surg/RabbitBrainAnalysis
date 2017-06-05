@@ -33,4 +33,4 @@ else:
     root_shared_records = jph(root_main_dropbox, 'study', 'C_records')
     assert os.path.isdir(root_study_rabbits), 'Connect pantopolio'
 
-pfi_excel_table_all_data = jph(root_utils, 'REoP_Data.xlsx')
+pfi_excel_table_all_data = jph(root_study_rabbits, 'A_data', 'DataSummary.xlsx')

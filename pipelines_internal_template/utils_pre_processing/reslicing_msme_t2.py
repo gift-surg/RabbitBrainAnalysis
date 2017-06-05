@@ -6,6 +6,8 @@ The 'unreadable' versions are not kept in the original folder, but can be found 
 First conversion from analyze to nifty happened with mrview.
 Second conversion to reshuffle the slices in the correct order is done in
 
+---
+DEPRECATED AFTER CONVERTER!
 """
 
 import numpy as np

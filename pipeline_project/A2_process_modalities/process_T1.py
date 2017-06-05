@@ -41,7 +41,7 @@ def process_T1_per_subject(sj, controller):
     if sj not in subject.keys():
         raise IOError('Subject parameters not known')
     if not os.path.exists(pfo_input_sj_3D):
-        raise IOError('Input folder T1 does not exist.')
+        raise IOError('Input folder T1 does not exist. {}'.format(pfo_input_sj_3D))
 
     # --  Generate intermediate and output folder
 
@@ -68,31 +68,41 @@ def process_T1_per_subject(sj, controller):
     if controller['register roi masks']:
         print('- register roi masks {}'.format(sj))
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
-        pfi_1305 = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
+        if subject[sj][0][1] in ['ex_vivo', 'op_skull']:
+            pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
+        elif subject[sj][0][1] == 'in_vivo':
+            pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
+        else:
+            raise IOError('ex_vivo, in_vivo or op_skull only.')
         assert os.path.exists(pfi_std)
-        assert os.path.exists(pfi_1305)
-        pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '.txt')
-        pfi_3d_warped_1305_on_subject = jph(pfo_tmp, 'warp_1305_on_' + sj + '.nii.gz')
+        assert os.path.exists(pfi_sj_ref_coord_system)
+        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '.txt')
+        pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '.nii.gz')
         cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} ; '.format(
             pfi_std,
-            pfi_1305,
-            pfi_affine_transformation_1305_on_subject,
-            pfi_3d_warped_1305_on_subject)
+            pfi_sj_ref_coord_system,
+            pfi_affine_transformation_ref_on_subject,
+            pfi_3d_warped_ref_on_subject)
         print_and_run(cmd)
 
     if controller['propagate roi masks']:
         print('- propagate roi masks {}'.format(sj))
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
-        pfi_1305_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.gz')
-        pfi_affine_transformation_1305_on_subject = jph(pfo_tmp, 'aff_1305_on_' + sj + '.txt')
+        if subject[sj][0][1] in ['ex_vivo', 'op_skull']:
+            pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.gz')
+        elif subject[sj][0][1] == 'in_vivo':
+            pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_roi_mask.nii.gz')
+        else:
+            raise IOError('ex_vivo, in_vivo or op_skull only.')
+        pfi_affine_transformation_reference_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '.txt')
         assert os.path.exists(pfi_std)
-        assert os.path.exists(pfi_1305_roi_mask)
-        assert os.path.exists(pfi_affine_transformation_1305_on_subject)
+        assert os.path.exists(pfi_reference_roi_mask)
+        assert os.path.exists(pfi_affine_transformation_reference_on_subject)
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_std,
-            pfi_1305_roi_mask,
-            pfi_affine_transformation_1305_on_subject,
+            pfi_reference_roi_mask,
+            pfi_affine_transformation_reference_on_subject,
             pfi_roi_mask)
         print_and_run(cmd)
 
@@ -125,8 +135,9 @@ def process_T1_per_subject(sj, controller):
         assert os.path.exists(pfi_3d_cropped_roi)
         pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
         bfc_param = subject[sj][3]
+        pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
         bias_field_correction(pfi_3d_cropped_roi, pfi_3d_bias_field_corrected,
-                              pfi_mask=None,
+                              pfi_mask=pfi_roi_mask,
                               prefix='',
                               convergenceThreshold=bfc_param[0],
                               maximumNumberOfIterations=bfc_param[1],
@@ -190,13 +201,13 @@ if __name__ == '__main__':
 
     controller_steps = {'orient to standard'  : False,
                         'register roi masks'  : False,
-                        'propagate roi masks' : False,
-                        'adjust mask'         : False,
-                        'cut masks'           : False,
-                        'step bfc'            : False,
+                        'propagate roi masks' : True,
+                        'adjust mask'         : True,
+                        'cut masks'           : True,
+                        'step bfc'            : True,
                         'create lesion mask'  : True,
-                        'create reg masks'    : False,
-                        'save results'        : False}
+                        'create reg masks'    : True,
+                        'save results'        : True}
 
     lsm = ListSubjectsManager()
 
@@ -206,7 +217,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['2502t1', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

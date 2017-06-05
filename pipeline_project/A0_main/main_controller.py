@@ -76,6 +76,7 @@ templ_subjects = ['1305', '1702', '1805', '2002', '1201', '1203', '1404', '1507'
 bfp_slow = [0.001, (50, 50, 50, 50), 0.15, 0.01, 200, (4, 4, 4), 3]
 bfp_fast = [0.01, (50, 40, 30, 20), 0.15, 0.01, 200, (4, 4, 4), 3]
 
+
 #
 subject = {
     # ------------------------
@@ -220,7 +221,7 @@ subject = {
     '2702': [['PTB', 'ex_vivo'],  # 0: study  - category
              [np.pi / 6, 0, 0, False],  # 1:  aircraft angles, in templ
              [0.001, 1, (15, 90)],  # 2: thr, erosion roi mask for T1
-             bfp_fast,  # 3: Bias field parameters T1
+             bfp_slow,  # 3: Bias field parameters T1
              [1, True],  # 4: mask dilation factor, DWI is squeezed,
              ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
              ],

@@ -39,8 +39,8 @@ def propagate_and_fuse_per_subject_list_over_all_modalities(subj_list,
         if os.path.exists(jph(pfo_target, 'mod', sj_target + '_S0.nii.gz')):  # dwi have been computed. Ready to move
             print('\n\nPropagation of the segmentation {} T1 to other modalities.'.format(sj_target))
             # propagate within modalities
-            pfo_sj = jph(pfo_target, sj_target)
-            rigid_propagation_inter_modality(sj_target, pfo_sj, controller_inter_modality_propagator)
+            # pfo_sj = jph(pfo_target, sj_target)
+            rigid_propagation_inter_modality(sj_target, pfo_target, controller_inter_modality_propagator)
         else:
             print 'NO DWI for subject {} yet'.format(sj_target)
 
