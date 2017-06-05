@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-./qsub_cell.sh ''
+../qsub_cell.sh ''
