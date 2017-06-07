@@ -13,6 +13,8 @@ import os
 import numpy as np
 import nibabel as nib
 
+from tools.auxiliary.utils import print_and_run
+
 
 def register_and_propagate_path(fixed_path, template_path, template_atlas_path,
                                 output_template_warped_path=None,
@@ -230,8 +232,8 @@ def register_and_propagate_path(fixed_path, template_path, template_atlas_path,
     # -- command execution -- #
 
     if not safety_on:
-        os.system(cmd_reg)
-        os.system(cmd_prop)
+        print_and_run(cmd_reg)
+        print_and_run(cmd_prop)
 
 
 

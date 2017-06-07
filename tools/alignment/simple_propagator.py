@@ -1,5 +1,7 @@
 import os
 
+from tools.auxiliary.utils import print_and_run
+
 
 def simple_propagator(ref_in,
                       flo_in,
@@ -40,6 +42,6 @@ def simple_propagator(ref_in,
                                                                             last_two(settings_interp))
 
     if not safety_on:
-        os.system(cmd_1 + cmd_2)
+        print_and_run(cmd_1 + cmd_2)
 
 

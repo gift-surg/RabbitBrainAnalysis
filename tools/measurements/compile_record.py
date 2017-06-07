@@ -15,6 +15,8 @@ from pipeline_project.A0_main.main_controller import subject
 from tools.auxiliary.parse_excel_tables_and_descriptors import parse_excel_data_to_list, \
     parse_multi_label_descriptor_in_a_list
 
+from tools.auxiliary.utils import print_and_run
+
 
 def compile_record(pfi_T1,
                    pfi_FA,
@@ -40,7 +42,7 @@ def compile_record(pfi_T1,
     # Create output folder or check if exists:
     if not os.path.exists(pfo_output):
         if create_output_folder_if_not_present:
-            os.system('mkdir -p {}'.format(pfo_output))
+            print_and_run('mkdir -p {}'.format(pfo_output))
         else:
             raise IOError('input file {} does not exists'.format(pfo_output))
 

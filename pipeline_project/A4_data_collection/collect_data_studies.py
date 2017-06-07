@@ -4,6 +4,7 @@ from os.path import join as jph
 from pipeline_project.A0_main.main_controller import ListSubjectsManager, subject
 from tools.definitions import root_study_rabbits, pfi_excel_table_all_data
 from tools.measurements.compile_record import compile_record
+from tools.auxiliary.utils import print_and_run
 
 
 def compile_records_from_subject_list(subj_list):
@@ -28,7 +29,7 @@ def compile_records_from_subject_list(subj_list):
 
         pfo_output_record_sj = jph(pfo_input_data, sj, 'records')
         cmd = 'mkdir -p {}'.format(pfo_output_record_sj)
-        os.system(cmd)
+        print_and_run(cmd)
         # grab label descriptor
         pfi_multi_labels_descr = jph(root_study_rabbits, 'A_data', 'Utils', 'multi_label_descriptor.txt')
         assert os.path.exists(pfi_multi_labels_descr)
@@ -65,7 +66,7 @@ if __name__ == '__main__':
     # lsm.execute_PTB_op_skull = False
     # lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['3103',]
+    lsm.input_subjects = ['3103', ]
     lsm.update_ls()
 
     compile_records_from_subject_list(lsm.ls)

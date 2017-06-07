@@ -243,7 +243,7 @@ if steps_map['Generate stack']:
 
     print '\n Generate stack \n\n'
 
-    os.system('mkdir -p {0}'.format(pfo_fused))
+    print_and_run('mkdir -p {0}'.format(pfo_fused))
 
     list_pfi_segmentations = [jph(pfo_intermediate, 'res_' + sj + '_T1_on_' + target_subject +
                                   '_sj_on_target_segm_smol' + test_tag + '.nii.gz')  # smol segmentation
@@ -292,13 +292,13 @@ if steps_map['Fuse']:
     # Majority voting:
     cmd_mv = 'seg_LabFusion -in {0} -out {1} -MV'.format(pfi_4d_seg, pfi_output_MV)
     print cmd_mv
-    os.system(cmd_mv)
+    print_and_run(cmd_mv)
 
     # # STAPLE:
     # pfi_output_STAPLE = jph(pfo_fused, 'output_STAPLE.nii.gz')
     # cmd_staple = 'seg_LabFusion -in {0} -STAPLE -out {1} '.format(pfi_4d_seg, pfi_output_STAPLE)
     # print cmd_staple
-    # os.system(cmd_staple)
+    # print_and_run(cmd_staple)
 
     # STEPS:
     cmd_steps = 'seg_LabFusion -in {0} -out {1} -STEPS {2} {3} {4} {5} -MRF_beta {6} -prop_update'.format(
@@ -310,13 +310,13 @@ if steps_map['Fuse']:
                                                                                                     pfi_4d_warp,
                                                                                                     str(4.0))  # 4.0
     print cmd_steps
-    os.system(cmd_steps)
+    print_and_run(cmd_steps)
 
 
 if steps_map['Send data to Dropbox']:
 
     pfo_automatic = jph(pfo_target_dropbox, 'segm', 'automatic' + snake_round)
-    os.system('mkdir -p {}'.format(pfo_automatic))
+    print_and_run('mkdir -p {}'.format(pfo_automatic))
 
     if os.path.exists(pfi_output_MV):
         pfi_copied_MV = jph(pfo_automatic, fin_MV)

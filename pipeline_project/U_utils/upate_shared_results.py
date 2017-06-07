@@ -7,6 +7,7 @@ from os.path import join as jph
 
 from tools.definitions import root_study_rabbits, root_shared_records, pfi_excel_table_all_data
 from pipeline_project.A0_main.main_controller import ListSubjectsManager, subject
+from tools.auxiliary.utils import print_and_run
 
 
 def send_or_erase(sj, pfo_source, pfo_destination, records_only=False,
@@ -14,27 +15,27 @@ def send_or_erase(sj, pfo_source, pfo_destination, records_only=False,
     # copy records template if any
     folder_destination_reports = jph(pfo_destination, sj)
     cmd0 = 'mkdir -p {}'.format(folder_destination_reports)
-    os.system(cmd0)
+    print_and_run(cmd0)
 
     if sj is not None:
         if erase_source:
             cmd = 'rm -r {}'.format(jph(pfo_source, sj))
-            os.system(cmd)
+            print_and_run(cmd)
             print(cmd)
         elif erase_destination:
             cmd = 'rm -r {}'.format(jph(pfo_destination, sj))
-            os.system(cmd)
+            print_and_run(cmd)
             print(cmd)
         else:
             # copy records
             folder_source_reports = jph(pfo_source, sj, 'records')
             folder_destination_reports = jph(pfo_destination, sj)
             cmd0 = 'mkdir -p {}'.format(folder_destination_reports)
-            os.system(cmd0)
+            print_and_run(cmd0)
 
             if os.path.exists(folder_source_reports):
                 cmd1 = 'cp -r {} {} '.format(folder_source_reports, folder_destination_reports)
-                os.system(cmd1)
+                print_and_run(cmd1)
                 print(cmd1)
             else:
                 print('REPORTS for subject {} not present'.format(sj))
@@ -43,7 +44,7 @@ def send_or_erase(sj, pfo_source, pfo_destination, records_only=False,
             folder_source_reports = jph(pfo_source, sj, 'records_template')
             if os.path.exists(folder_source_reports):
                 cmd1 = 'cp -r {} {} '.format(folder_source_reports, folder_destination_reports)
-                os.system(cmd1)
+                print_and_run(cmd1)
                 print(cmd1)
 
             if not records_only:
@@ -51,11 +52,11 @@ def send_or_erase(sj, pfo_source, pfo_destination, records_only=False,
                 folder_source_mod = jph(pfo_source, sj, 'mod')
                 folder_destination_mod = jph(pfo_destination, sj)
                 cmd0 = 'mkdir -p {}'.format(folder_destination_mod)
-                os.system(cmd0)
+                print_and_run(cmd0)
 
                 if os.path.exists(folder_source_mod):
                     cmd1 = 'cp -r {} {} '.format(folder_source_mod, folder_destination_mod)
-                    os.system(cmd1)
+                    print_and_run(cmd1)
                     print(cmd1)
                 else:
                     print('MOD for subject {} not present'.format(sj))
@@ -63,11 +64,11 @@ def send_or_erase(sj, pfo_source, pfo_destination, records_only=False,
                 folder_source_segm = jph(pfo_source, sj, 'segm')
                 folder_destination_segm = jph(pfo_destination, sj)
                 cmd0 = 'mkdir -p {}'.format(folder_destination_segm)
-                os.system(cmd0)
+                print_and_run(cmd0)
 
                 if os.path.exists(folder_source_segm):
                     cmd1 = 'cp -r {} {} '.format(folder_source_segm, folder_destination_segm)
-                    os.system(cmd1)
+                    print_and_run(cmd1)
                     print(cmd1)
                 else:
                     print('REPORTS for subject {} not present'.format(sj))
@@ -84,7 +85,7 @@ def send_data_to_hannes_from_list(subj_list, records_only=False, erase_source=Fa
         if send_excel_table:
             if os.path.exists(pfi_excel_table_all_data):
                 cmd1 = 'cp {} {} '.format(pfi_excel_table_all_data, jph(root_shared_records, 'REoP_Data.xlsx'))
-                os.system(cmd1)
+                print_and_run(cmd1)
                 print(cmd1)
 
         for sj in subj_list:

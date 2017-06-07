@@ -8,6 +8,8 @@ import os
 from os.path import join as jph
 import warnings
 
+from tools.auxiliary.utils import print_and_run
+
 
 def clean_a_study(pfo_study):
 
@@ -71,7 +73,7 @@ def clean_a_study(pfo_study):
                         raise IOError
 
                     if 'subscan_1' in fi_name:
-                        os.system('rm {}'.format(jph(pfo_experiment_p, fi)))
+                        print_and_run('rm {}'.format(jph(pfo_experiment_p, fi)))
                     else:
                         # replace the second element (experiment number) separated between '_' by the acquisition_method
                         fi_name_components = fi_name.split('_')
@@ -84,20 +86,20 @@ def clean_a_study(pfo_study):
                         new_fi = new_fi[:-1].replace('_subscan_0', '')
                         new_fi += extension
                         cmd = 'mv {} {}'.format(jph(pfo_experiment_p, fi), jph(pfo_experiment_p, new_fi))
-                        os.system(cmd)
+                        print_and_run(cmd)
 
             # rename the folder p containing the files:
             new_p = p.split('_')[0] + '_' + acquisition_method
             cmd = 'mv {} {}'.format(pfo_experiment_p, jph(pfo_study, new_p))
-            os.system(cmd)
+            print_and_run(cmd)
 
             cmd = 'rm {}'.format(jph(pfo_study, new_p, 'acquisition_method.txt'))
-            os.system(cmd)
+            print_and_run(cmd)
 
         else:
             if len(list(set(os.listdir(pfo_experiment_p)) - {'.DS_Store'})) == 0:
                 # the experiment is an empty folder: get rid of it!
-                os.system('rm -r {}'.format(pfo_experiment_p))
+                print_and_run('rm -r {}'.format(pfo_experiment_p))
             else:
                 # the experiment folder is not empty, but there is no name method inside. Raise a warning!
                 cmd = 'No acquisition_method.txt in the folder {} - maybe already cleaned?'.format(pfo_experiment_p)

@@ -5,6 +5,7 @@ from bruker2nifti.study_converter import convert_a_study
 
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from tools.definitions import root_study_rabbits
+from tools.auxiliary.utils import print_and_run
 
 
 def convert_subjects_from_list(subj_list):
@@ -24,7 +25,7 @@ def convert_subjects_from_list(subj_list):
         if os.path.exists(pfo_output_sj):
             cmd = 'rm -r {}'.format(pfo_output_sj)
             print('Folder {} where to convert the study exists already... ERASED!'.format(pfo_output_sj))
-            os.system(cmd)
+            print_and_run(cmd)
 
         convert_a_study(pfo_input_sj, pfo_output, verbose=0, correct_slope=True, study_name=sj)
 

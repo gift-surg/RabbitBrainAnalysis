@@ -16,6 +16,7 @@ from os.path import join as jph
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.correctors.MSME_T2_correctors import corrector_MSME_T2_path
 from tools.definitions import root_pilot_study
+from tools.auxiliary.utils import print_and_run
 
 ####################
 # Data processing: #
@@ -60,7 +61,7 @@ if ex_vivo_process:
               'fslorient -setqformcode 1 {1}; '.format(pfi_reshuffled, pfi_reshuffled_reoriented)
 
         print('Reorienting sliced images for subject ' + sj)
-        os.system(cmd)
+        print_and_run(cmd)
 
 if update_main_and_erase_intermediate_steps_ex_vivo:
 
@@ -80,8 +81,8 @@ if update_main_and_erase_intermediate_steps_ex_vivo:
         cmd1 = 'cp {0} {1}; '.format(reshuffled_reoriented_pfi, input_pfi)
         cmd2 = 'rm {0} & rm {1}'.format(reshuffled_reoriented_pfi, reshuffled_pfi)
 
-        os.system(cmd1)
-        os.system(cmd2)
+        print_and_run(cmd1)
+        print_and_run(cmd2)
 
 
 if in_vivo_process:

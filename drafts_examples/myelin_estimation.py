@@ -31,11 +31,11 @@ def process_MSME_per_subject(sj, pfo_input_sj_MSME, pfo_output_sj, controller):
     pfo_mask = jph(pfo_output_sj, 'z_mask')
     pfo_tmp = jph(pfo_output_sj, 'z_tmp', 'z_MSME')
 
-    os.system('mkdir -p {}'.format(pfo_output_sj))
-    os.system('mkdir -p {}'.format(pfo_mod))
-    os.system('mkdir -p {}'.format(pfo_segm))
-    os.system('mkdir -p {}'.format(pfo_mask))
-    os.system('mkdir -p {}'.format(pfo_tmp))
+    print_and_run('mkdir -p {}'.format(pfo_output_sj))
+    print_and_run('mkdir -p {}'.format(pfo_mod))
+    print_and_run('mkdir -p {}'.format(pfo_segm))
+    print_and_run('mkdir -p {}'.format(pfo_mask))
+    print_and_run('mkdir -p {}'.format(pfo_tmp))
 
     # --
 

@@ -8,7 +8,7 @@ from os.path import join as jph
 from labels_manager.main import LabelsManager
 
 from pipeline_project.A0_main.main_controller import subject, propagate_me_level
-from tools.auxiliary.utils import adjust_header_from_transformations
+from tools.auxiliary.utils import adjust_header_from_transformations, print_and_run
 from tools.definitions import root_study_rabbits, bfc_corrector_cmd
 
 """
@@ -39,7 +39,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
     for p in [pfo_mod, pfo_segm, pfo_mask]:
         assert os.path.exists(p)
     pfo_tmp = jph(pfo_to_target, 'z_tmp', 'z_templ')
-    os.system('mkdir -p {}'.format(pfo_tmp))
+    print_and_run('mkdir -p {}'.format(pfo_tmp))
 
     print('Propagate all manually segmented to {}'.format(sj_target))
 
@@ -60,9 +60,9 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             cmd0 = 'cp {0} {1}'.format(pfi_templ_sj, pfi_templ_sj_bicomm_header)
             cmd1 = 'cp {0} {1}'.format(pfi_templ_segm_sj, pfi_templ_segm_sj_bicomm_header)
             cmd2 = 'cp {0} {1}'.format(pfi_T1_roi_reg_mask_sj, pfi_templ_reg_mask_sj_bicomm_header)
-            os.system(cmd0)
-            os.system(cmd1)
-            os.system(cmd2)
+            print_and_run(cmd0)
+            print_and_run(cmd1)
+            print_and_run(cmd2)
             theta = subject[sj][1][0]
 
             adjust_header_from_transformations(pfi_templ_sj_bicomm_header, pfi_templ_sj_bicomm_header,
@@ -92,7 +92,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
                 pfi_target, pfi_target_roi_registration_masks,
                 pfi_templ_sj_bicomm_header, pfi_templ_reg_mask_sj_bicomm_header, 
                 pfi_affine_transf, pfi_affine_warp_sj, opt)
-            os.system(cmd)
+            print_and_run(cmd)
 
         if controller['Propagate aff to segm']:
             print('- Propagate aff to segm, {} over {} '.format(sj, sj_target))
@@ -107,7 +107,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
                 pfi_target, pfi_segm_sj_bicomm_header, pfi_affine_transf, pfi_templ_segm_aff_registered_on_sj_target)
 
-            os.system(cmd)
+            print_and_run(cmd)
 
         if controller['Propagate aff to mask']:
             print('-  Propagate aff to mask, {} over {} '.format(sj, sj_target))
@@ -121,7 +121,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0 '.format(
                 pfi_target, pfi_templ_reg_mask_sj_bicomm_header, pfi_affine_transf,
                 pfi_templ_reg_mask_sj_aff_registered)
-            os.system(cmd)
+            print_and_run(cmd)
 
         if controller['Get differential BFC'] and not subject[sj_target][0][1] == 'in_vivo':
             # for the in-vivo there is no need for the differential BFC
@@ -139,7 +139,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             cmd = bfc_corrector_cmd + ' {0} {1} {2} {3} {4} {5} '.format(
                 pfi_target, pfi_target_roi_registration_masks, pfi_diff_bfc_target,
                 pfi_affine_warp_sj, pfi_templ_reg_mask_sj_aff_registered, pfi_diff_bfc_subject)
-            os.system(cmd)
+            print_and_run(cmd)
         else:
             pfi_target = jph(pfo_mod, sj_target + '_T1.nii.gz')
             pfi_affine_warp_sj = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_warp_aff.nii.gz')
@@ -149,8 +149,8 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_diff_bfc_subject = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '.nii.gz')
             cmd0 = 'cp {0} {1}'.format(pfi_target, pfi_diff_bfc_target)
             cmd1 = 'cp {0} {1}'.format(pfi_affine_warp_sj, pfi_diff_bfc_subject)
-            os.system(cmd0)
-            os.system(cmd1)
+            print_and_run(cmd0)
+            print_and_run(cmd1)
 
         if controller['N-rig alignment']:
             print('- N-rig alignment, {} over {}'.format(sj, sj_target))
@@ -171,7 +171,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -cpp {4} -res {5} {6}'.format(
                 pfi_diff_bfc_target, pfi_target_roi_registration_masks, pfi_diff_bfc_subject,
                 pfi_templ_reg_mask_sj_aff_registered, pfi_diff_bfc_n_rig_cpp, pfi_diff_bfc_n_rig_res, options)
-            os.system(cmd)
+            print_and_run(cmd)
 
         if controller['Propagate to target n-rig']:
             print('- Propagate to target n-rig, {} over {} '.format(sj, sj_target))
@@ -191,8 +191,8 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
                 pfi_subject_propagated_on_target_segm)
             cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 2'.format(
                 pfi_target, pfi_affine_warp_sj, pfi_diff_bfc_n_rig_cpp, pfi_subject_propagated_on_target_warp)
-            os.system(cmd0)
-            os.system(cmd1)
+            print_and_run(cmd0)
+            print_and_run(cmd1)
 
         if controller['Smooth result']:
             print('- Smooth result, {} over {}'.format(sj, sj_target))
@@ -209,7 +209,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             else:
                 cmd = 'cp {0} {1}'.format(pfi_subject_propagated_on_target_segm,
                                           pfi_subject_propagated_on_target_segm_smol)
-            os.system(cmd)
+                print_and_run(cmd)
 
     # <end for>
 
@@ -256,10 +256,10 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
         # pfi_output_STAPLE = jph(pfo_tmp, 'RESULT_' + sj_target + '_STAPLE.nii.gz')
         # Majority voting:
         cmd_mv = 'seg_LabFusion -in {0} -out {1} -MV'.format(pfi_4d_seg, pfi_output_MV)
-        os.system(cmd_mv)
+        print_and_run(cmd_mv)
         # STAPLE:
         # cmd_staple = 'seg_LabFusion -in {0} -STAPLE -out {1} '.format(pfi_4d_seg, pfi_output_STAPLE)
-        # os.system(cmd_staple)
+        # print_and_run(cmd_staple)
         # STEPS:
         cmd_steps = 'seg_LabFusion -in {0} -out {1} -STEPS {2} {3} {4} {5} -MRF_beta {6} -prop_update'.format(
             pfi_4d_seg,
@@ -269,7 +269,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_target,
             pfi_4d_warp,
             str(4.0))
-        os.system(cmd_steps)
+        print_and_run(cmd_steps)
 
     if controller['save result']:
         print('- save result {}'.format(sj_target))
@@ -277,7 +277,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
         assert os.path.exists(pfi_segm_STEPS)
         pfi_final_result = jph(pfo_segm, sj_target + '_T1_segm.nii.gz')
         cmd = 'cp {0} {1}'.format(pfi_segm_STEPS, pfi_final_result)
-        os.system(cmd)
+        print_and_run(cmd)
 
 
 def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_target, pfo_target, controller):
@@ -296,7 +296,7 @@ def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_
     for p in [pfo_mod, pfo_segm, pfo_mask]:
         assert os.path.exists(p)
     pfo_tmp = jph(pfo_target, 'z_tmp', 'z_templ')
-    os.system('mkdir -p {}'.format(pfo_tmp))
+    print_and_run('mkdir -p {}'.format(pfo_tmp))
 
     print('Rigid orientation from histological to given coordinates. {}'.format(sj_target))
 
@@ -317,9 +317,9 @@ def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_
         cmd0 = 'cp {0} {1}'.format(pfi_source_T1, pfi_source_T1_bicomm_hd)
         cmd1 = 'cp {0} {1}'.format(pfi_source_segm, pfi_source_segm_bicomm_hd)
         cmd2 = 'cp {0} {1}'.format(pfi_source_reg_mask, pfi_source_reg_mask_bicomm_hd)
-        os.system(cmd0)
-        os.system(cmd1)
-        os.system(cmd2)
+        print_and_run(cmd0)
+        print_and_run(cmd1)
+        print_and_run(cmd2)
         adjust_header_from_transformations(pfi_source_T1_bicomm_hd, pfi_source_T1_bicomm_hd,
                                            theta=theta, trasl=(0, 0, 0))
         adjust_header_from_transformations(pfi_source_segm_bicomm_hd, pfi_source_segm_bicomm_hd,
@@ -342,7 +342,7 @@ def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_
             pfi_target, pfi_target_roi_registration_masks,
             pfi_source_T1_bicomm_hd, pfi_source_reg_mask_bicomm_hd,
             pfi_affine_transf, pfi_affine_warp_sj)
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['Propagate aff to segm']:
         print('- Propagate aff to segm {} '.format(sj_target))
@@ -357,7 +357,7 @@ def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_target, pfi_source_segm_bicomm_hd, pfi_affine_transf, pfi_templ_segm_aff_registered_on_sj_target)
 
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['Propagate aff to mask']:
         print('- Propagate aff to mask {} '.format(sj_target))
@@ -371,7 +371,7 @@ def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_
                                                    'templ' + sj_source + 'over' + sj_target + '_reg_mask.nii.gz')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_target, pfi_source_reg_mask_bicomm_hd, pfi_affine_transf, pfi_templ_reg_mask_sj_aff_registered)
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['Smooth']:
         print('- Smooth {} '.format(sj_target))
@@ -387,7 +387,7 @@ def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_
         else:
             cmd = 'cp {0} {1}'.format(pfi_templ_segm_aff_registered_on_sj_target,
                                       pfi_subject_propagated_on_target_segm_smol)
-        os.system(cmd)
+            print_and_run(cmd)
 
     if controller['save result']:
         print('- save result {} '.format(sj_target))
@@ -396,7 +396,7 @@ def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_
         assert os.path.exists(pfi_subject_propagated_on_target_segm_smol)
         pfi_final_result = jph(pfo_segm, sj_target + '_T1_segm.nii.gz')
         cmd = 'cp {0} {1}'.format(pfi_subject_propagated_on_target_segm_smol, pfi_final_result)
-        os.system(cmd)
+        print_and_run(cmd)
 
 
 def rigid_propagation_inter_modality(sj, pfo_sj, controller):
@@ -414,7 +414,7 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
     for p in [pfo_mod, pfo_segm, pfo_mask]:
         assert os.path.exists(p)
     pfo_tmp = jph(pfo_sj, 'z_tmp', 'z_inter_mod_propag')
-    os.system('mkdir -p {}'.format(pfo_tmp))
+    print_and_run('mkdir -p {}'.format(pfo_tmp))
     # Input
     pfi_T1 = jph(pfo_mod, sj + '_T1.nii.gz')
     pfi_segm_T1 = jph(pfo_segm, sj + '_T1_segm.nii.gz')
@@ -444,7 +444,7 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
         cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly  '.format(
             pfi_S0, pfi_reg_mask_S0, pfi_T1, pfi_reg_mask_T1, pfi_rigid_transf_to_s0, pfi_rigid_warp_to_s0)
         print(cmd)
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['rig propagate to S0']:
         print('- rig propagate to S0 {}'.format(sj))
@@ -453,7 +453,7 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_S0, pfi_segm_T1, pfi_rigid_transf_to_s0, pfi_segm_S0)
         print(cmd)
-        os.system(cmd)
+        print_and_run(cmd)
 
     # if controller['rig register to MSME_up']:
     #     print('- rig register to MSME_up {}'.format(sj))
@@ -480,7 +480,7 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
         pfi_id_transf = jph(pfo_utils, 'aff_id.txt')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_MSME, pfi_segm_S0, pfi_id_transf, pfi_segm_MSME)
-        os.system(cmd)
+        print_and_run(cmd)
 
 
 def propagate_and_fuse_multimodal():

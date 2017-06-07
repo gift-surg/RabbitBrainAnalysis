@@ -2,7 +2,7 @@ import os
 import numpy as np
 import nibabel as nib
 
-from tools.auxiliary.utils import set_new_data
+from tools.auxiliary.utils import set_new_data, print_and_run
 
 
 # deprecated after converter!
@@ -68,4 +68,4 @@ def corrector_MSME_T2_path(pfi_input, pfi_output, modality=None, swap_dim=None):
         cmd = 'fslorient -deleteorient {0}; ' \
               'fslswapdim {0} {1} {0}; ' \
               'fslorient -setqformcode 1 {0}; '.format(pfi_output, swap_dim)
-        os.system(cmd)
+        print_and_run(cmd)

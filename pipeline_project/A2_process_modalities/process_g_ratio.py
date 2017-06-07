@@ -39,11 +39,11 @@ def process_g_ratio_per_subject(sj, controller):
     pfo_mask = jph(pfo_output_sj, 'z_mask')
     pfo_tmp = jph(pfo_output_sj, 'z_tmp', 'z_gr')
 
-    os.system('mkdir -p {}'.format(pfo_output_sj))
-    os.system('mkdir -p {}'.format(pfo_mod))
-    os.system('mkdir -p {}'.format(pfo_segm))
-    os.system('mkdir -p {}'.format(pfo_mask))
-    os.system('mkdir -p {}'.format(pfo_tmp))
+    print_and_run('mkdir -p {}'.format(pfo_output_sj))
+    print_and_run('mkdir -p {}'.format(pfo_mod))
+    print_and_run('mkdir -p {}'.format(pfo_segm))
+    print_and_run('mkdir -p {}'.format(pfo_mask))
+    print_and_run('mkdir -p {}'.format(pfo_tmp))
 
     # --
 
@@ -148,7 +148,7 @@ def process_g_ratio_per_subject(sj, controller):
         assert os.path.exists(pfi_g_ratio)
         pfi_g_ratio_final = jph(pfo_mod, sj + '_g_ratio.nii.gz')
         cmd = 'cp {} {} '.format(pfi_g_ratio, pfi_g_ratio_final)
-        os.system(cmd)
+        print_and_run(cmd)
 
 
 def process_g_ratio_from_list(subj_list, controller):

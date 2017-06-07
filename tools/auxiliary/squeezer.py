@@ -2,7 +2,7 @@ import os
 import numpy as np
 import nibabel as nib
 
-from tools.auxiliary.utils import set_new_data
+from tools.auxiliary.utils import set_new_data, print_and_run
 
 
 def squeeze_image_from_path(pfi_in, pfi_out, copy_anyway=False):
@@ -24,7 +24,7 @@ def squeeze_image_from_path(pfi_in, pfi_out, copy_anyway=False):
         print('No need to squeeze the input image.')
         if copy_anyway:
             cmd = 'cp {0} {1} '.format(pfi_in, pfi_out)
-            os.system(cmd)
+            print_and_run(cmd)
             return 'Already squeezed image copied in {0} '.format(pfi_out)
 
 

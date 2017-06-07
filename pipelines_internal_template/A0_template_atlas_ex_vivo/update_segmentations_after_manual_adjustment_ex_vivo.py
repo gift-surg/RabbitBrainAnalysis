@@ -6,7 +6,7 @@ import os
 
 from tools.definitions import root_pilot_study
 from labels_manager.tools.manipulations.symmetrizer import sym_labels
-
+from tools.auxiliary.utils import print_and_run
 # Path manager:
 
 sj = '1305'
@@ -61,7 +61,7 @@ path_result_cropped = os.path.join(path_results_folder, 'y_1305_segmentation_cro
 if step_first_cropping:
     print 'Cropping the symmetrised segmentation with the brain maks.'
     cmd = 'seg_maths {0} -mul {1} {2} '.format(path_result_sym, path_cropping_mask, path_result_cropped)
-    os.system(cmd)
+    print_and_run(cmd)
 
 #####################
 # Initial smoothing #
@@ -72,7 +72,7 @@ path_final_result = os.path.join(path_results_folder, '1305_symetrised_segmentat
 if step_smoothing:
     print 'Perform an initial smoothing.'
     cmd = 'seg_maths {0} -smol 0.7 {1} '.format(path_result_cropped, path_final_result)
-    os.system(cmd)
+    print_and_run(cmd)
 
 
 ##############################
@@ -82,7 +82,7 @@ if step_smoothing:
 if step_second_cropping:
     print 'Crop again.'
     cmd = 'seg_maths {0} -mul {1} {2} '.format(path_final_result, path_final_result)
-    os.system(cmd)
+    print_and_run(cmd)
 
 ############
 # Cleaning #
@@ -90,4 +90,4 @@ if step_second_cropping:
 
 if final_cleaning:
     cmd = 'rm {0}/z_* & rm {0}/y_*'.format(path_results_folder)
-    os.system(cmd)
+    print_and_run(cmd)

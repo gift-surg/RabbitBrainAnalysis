@@ -4,13 +4,12 @@ MSME processing in their original coordinate system
 import os
 from os.path import join as jph
 import nibabel as nib
-import numpy as np
 
 from tools.definitions import root_study_rabbits
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
-from tools.auxiliary.utils import set_new_data
+from tools.auxiliary.utils import print_and_run
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 """
 
@@ -49,11 +48,11 @@ def process_MSME_per_subject(sj, controller):
     pfo_mask = jph(pfo_output_sj, 'z_mask')
     pfo_tmp = jph(pfo_output_sj, 'z_tmp', 'z_MSME')
 
-    os.system('mkdir -p {}'.format(pfo_output_sj))
-    os.system('mkdir -p {}'.format(pfo_mod))
-    os.system('mkdir -p {}'.format(pfo_segm))
-    os.system('mkdir -p {}'.format(pfo_mask))
-    os.system('mkdir -p {}'.format(pfo_tmp))
+    print_and_run('mkdir -p {}'.format(pfo_output_sj))
+    print_and_run('mkdir -p {}'.format(pfo_mod))
+    print_and_run('mkdir -p {}'.format(pfo_segm))
+    print_and_run('mkdir -p {}'.format(pfo_mask))
+    print_and_run('mkdir -p {}'.format(pfo_tmp))
 
     pfo_utils = jph(root_study_rabbits, 'A_data', 'Utils')
     assert os.path.exists(pfo_utils)
@@ -70,7 +69,7 @@ def process_MSME_per_subject(sj, controller):
         pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
         assert os.path.exists(pfi_msme)
         cmd = 'fslreorient2std {0} {0}'.format(pfi_msme)
-        os.system(cmd)
+        print_and_run(cmd)
         set_translational_part_to_zero(pfi_msme, pfi_msme)
 
     if controller['extract first timepoint']:
@@ -79,7 +78,7 @@ def process_MSME_per_subject(sj, controller):
         assert os.path.exists(pfi_msme)
         pfi_msme_original_first_layer = jph(pfo_tmp, sj + '_MSME_tp0.nii.gz')
         cmd0 = 'seg_maths {0} -tp 0 {1}'.format(pfi_msme, pfi_msme_original_first_layer)
-        os.system(cmd0)
+        print_and_run(cmd0)
 
     if controller['register tp0 to S0']:
         print('- Processing MSME: register tp0 to S0 {}'.format(sj))
@@ -94,7 +93,7 @@ def process_MSME_per_subject(sj, controller):
         cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -aff {3} -res {4} -rigOnly'.format(
             pfi_s0, pfi_s0_mask, pfi_msme_tp0, pfi_transf_msme_on_s0, pfi_warped_msme_on_s0
         )
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['register msme to S0']:
         pfi_s0 = jph(pfo_mod, sj + '_S0.nii.gz')
@@ -107,7 +106,7 @@ def process_MSME_per_subject(sj, controller):
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 1'.format(
             pfi_s0, pfi_msme, pfi_transf_msme_on_s0, pfi_msme_upsampled
         )
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['bfc']:
         print('- get bfc correction each slice:')
@@ -119,7 +118,7 @@ def process_MSME_per_subject(sj, controller):
         for tp in range(tps):
             pfi_tp = jph(pfo_tmp, sj + '_MSME_tp{}.nii.gz'.format(tp))
             cmd0 = 'seg_maths {0} -tp {1} {2}'.format(pfi_msme_upsampled, tp, pfi_tp)
-            os.system(cmd0)
+            print_and_run(cmd0)
         print('-- bias-field correct the first slice')
         # bfc_param = subject[sj][3]
         bfc_param = [0.001, (50, 50, 50, 50), 0.15, 0.01, 400, (4, 4, 4), 3]
@@ -141,14 +140,14 @@ def process_MSME_per_subject(sj, controller):
         bias_field = jph(pfo_tmp, sj + '_bfc.nii.gz')
         cmd0 = 'seg_maths {0} -div {1} {2}'.format(pfi_tp0_bfc, pfi_tp0, bias_field)
         cmd1 = 'seg_maths {0} -removenan {0}'.format(bias_field)
-        os.system(cmd0)
-        os.system(cmd1)
+        print_and_run(cmd0)
+        print_and_run(cmd1)
         print('-- correct all the remaining slices')
         for tp in range(1, tps):
             pfi_tp = jph(pfo_tmp, sj + '_MSME_tp{}.nii.gz'.format(tp))
             pfi_tp_bfc = jph(pfo_tmp, sj + '_MSME_tp{}_bfc.nii.gz'.format(tp))
             cmd0 = 'seg_maths {0} -mul {1} {2}'.format(pfi_tp, bias_field, pfi_tp_bfc)
-            os.system(cmd0)
+            print_and_run(cmd0)
         print('-- pack together all the images in a stack')
         cmd = 'seg_maths {0} -merge	{1} {2} '.format(pfi_tp0_bfc, tps-1, 4)
         for tp in range(1, tps):
@@ -162,7 +161,7 @@ def process_MSME_per_subject(sj, controller):
 
         print
         print cmd
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['save results']:
         print('save results')
@@ -174,8 +173,8 @@ def process_MSME_per_subject(sj, controller):
         pfi_msme_updampled_first_layer = jph(pfo_mod, sj + '_MSME_tp0_up.nii.gz')
         cmd2 = 'cp {0} {1}'.format(pfi_stack, pfi_msme_updampled_and_bfc)
         cmd3 = 'cp {0} {1}'.format(pfi_tp0_bfc, pfi_msme_updampled_first_layer)
-        os.system(cmd2)
-        os.system(cmd3)
+        print_and_run(cmd2)
+        print_and_run(cmd3)
 
 
 def process_MSME_from_list(subj_list, controller):

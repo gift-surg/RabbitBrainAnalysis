@@ -19,7 +19,7 @@ import os
 from os.path import join as jph
 
 from tools.definitions import root_pilot_study
-from tools.auxiliary.utils import set_new_data
+from tools.auxiliary.utils import set_new_data, print_and_run
 
 
 # paths to segmentations:
@@ -38,14 +38,14 @@ pfi_target  = jph(pfo_experiments, 'target.nii.gz')
 pfi_output_MV = jph(pfo_experiments, 'output_MV.nii.gz')
 cmd_mv = 'seg_LabFusion -in {0} -out {1} -MV'.format(pfi_stack_seg, pfi_output_MV)
 print cmd_mv
-os.system(cmd_mv)
+print_and_run(cmd_mv)
 
 
 # STAPLE:
 pfi_output_STAPLE = jph(pfo_experiments, 'output_STAPLE.nii.gz')
 cmd_staple = 'seg_LabFusion -in {0} -STAPLE -out {1} '.format(pfi_stack_seg, pfi_output_STAPLE)
 print cmd_staple
-os.system(cmd_staple)
+print_and_run(cmd_staple)
 
 # STEPS:
 pfi_output_STEPS = jph(pfo_experiments, 'fusion_STEPS_3_3_beta4p0_prop_update.nii.gz')
@@ -55,7 +55,7 @@ cmd_steps = 'seg_LabFusion -in {0} -out {1} -STEPS {2} {3} {4} {5} -MRF_beta {6}
                                                                              pfi_target,
                                                                              pfi_stack_warp, str(4.0))
 print cmd_steps
-os.system(cmd_steps)
+print_and_run(cmd_steps)
 
 
 

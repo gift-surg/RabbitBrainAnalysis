@@ -75,7 +75,7 @@ print '\n######################\n\n\n'
 
 
 cmd = 'mkdir -p {}'.format(pfo_intermediate_steps)
-os.system(cmd)
+print_and_run(cmd)
 
 if steps_map['Aff alignment']:
 

@@ -12,7 +12,7 @@ from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extract
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, \
-    reproduce_slice_fourth_dimension_path, scale_y_value_and_trim
+    reproduce_slice_fourth_dimension_path, scale_y_value_and_trim, print_and_run
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.correctors.slope_corrector import slope_corrector_path
 
@@ -60,11 +60,11 @@ def process_DWI_per_subject(sj, controller):
     pfo_mask = jph(pfo_output_sj, 'z_mask')
     pfo_tmp = jph(pfo_output_sj, 'z_tmp', 'z_DWI')
 
-    os.system('mkdir -p {}'.format(pfo_output_sj))
-    os.system('mkdir -p {}'.format(pfo_mod))
-    os.system('mkdir -p {}'.format(pfo_segm))
-    os.system('mkdir -p {}'.format(pfo_mask))
-    os.system('mkdir -p {}'.format(pfo_tmp))
+    print_and_run('mkdir -p {}'.format(pfo_output_sj))
+    print_and_run('mkdir -p {}'.format(pfo_mod))
+    print_and_run('mkdir -p {}'.format(pfo_segm))
+    print_and_run('mkdir -p {}'.format(pfo_mask))
+    print_and_run('mkdir -p {}'.format(pfo_tmp))
 
     if controller['squeeze']:
         print('- squeeze {}'.format(sj))
@@ -79,14 +79,14 @@ def process_DWI_per_subject(sj, controller):
         assert os.path.exists(pfi_dwi_original)
         pfi_dwi_std = jph(pfo_tmp, sj + '_DWI_to_std.nii.gz')
         cmd0 = 'fslreorient2std {0} {1}'.format(pfi_dwi_original, pfi_dwi_std)
-        os.system(cmd0)
+        print_and_run(cmd0)
         set_translational_part_to_zero(pfi_dwi_std, pfi_dwi_std)
         # b0
         pfi_b0_original = jph(pfo_input_sj_DWI, sj + '_DWI_b0.nii.gz')
         assert os.path.exists(pfi_b0_original)
         pfi_b0_std = jph(pfo_tmp, sj + '_DWI_b0_to_std.nii.gz')
         cmd1 = 'fslreorient2std {0} {1}'.format(pfi_b0_original, pfi_b0_std)
-        os.system(cmd1)
+        print_and_run(cmd1)
         set_translational_part_to_zero(pfi_b0_std, pfi_b0_std)
 
         if subject[sj][4][1]:
@@ -112,7 +112,7 @@ def process_DWI_per_subject(sj, controller):
             pfi_sj_ref_coord_system,
             pfi_affine_transformation_ref_on_subject,
             pfi_3d_warped_ref_on_subject)
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['propagate roi masks']:
         print('- propagate roi masks {}'.format(sj))
@@ -133,7 +133,7 @@ def process_DWI_per_subject(sj, controller):
             pfi_reference_roi_mask,
             pfi_affine_transformation_ref_on_subject,
             pfi_roi_mask)
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['adjust mask']:
         print('- adjust mask {}'.format(sj))
@@ -144,7 +144,7 @@ def process_DWI_per_subject(sj, controller):
         cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_roi_mask,
                                                   dil_factor,
                                                   pfi_roi_mask_dil)
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['cut mask dwi']:
         print('- cut mask dwi {}'.format(sj))
@@ -165,7 +165,7 @@ def process_DWI_per_subject(sj, controller):
         assert os.path.exists(pfi_roi_mask)
         pfi_b0_cropped = jph(pfo_tmp, sj + '_b0_cropped.nii.gz')
         cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_b0, pfi_roi_mask, pfi_b0_cropped)
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['correct slope']:
         print('- correct slope {}'.format(sj))
@@ -189,12 +189,12 @@ def process_DWI_per_subject(sj, controller):
         assert os.path.exists(pfi_dwi_slope_corrected)
         pfi_dwi_eddy_corrected = jph(pfo_tmp, sj + '_DWI_eddy.nii.gz')
         cmd = 'eddy_correct {0} {1} 0 '.format(pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected)
-        os.system(cmd)
+        print_and_run(cmd)
     else:
         pfi_dwi_slope_corrected = jph(pfo_tmp, sj + '_DWI_slope_corrected.nii.gz')
         pfi_dwi_eddy_corrected = jph(pfo_tmp, sj + '_DWI_eddy.nii.gz')
         cmd = 'cp {0} {1} '.format(pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected)
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['fsl tensor fitting']:
         print('- fsl tensor fitting {}'.format(sj))
@@ -216,9 +216,9 @@ def process_DWI_per_subject(sj, controller):
                                                 pfi_roi_mask,
                                                 pfi_analysis_fsl)
         cmd2 = 'cd {}'.format(here)
-        os.system(cmd0)
-        os.system(cmd1)
-        os.system(cmd2)
+        print_and_run(cmd0)
+        print_and_run(cmd1)
+        print_and_run(cmd2)
 
     if controller['adjust dti-based mod']:
         print('- adjust dti-based modalities {}'.format(sj))
@@ -233,19 +233,19 @@ def process_DWI_per_subject(sj, controller):
 
             if 'V1' in pfi_mod:
                 cmd0 = 'seg_maths {} -abs {}'.format(pfi_mod, pfi_mod)
-                os.system(cmd0)
+                print_and_run(cmd0)
                 reproduce_slice_fourth_dimension_path(pfi_roi_mask,
                                                       pfi_roi_mask_4d, num_slices=3)
                 cmd1 = 'seg_maths {0} -mul {1} {0}'.format(pfi_mod, pfi_roi_mask_4d, pfi_mod)
-                os.system(cmd1)
+                print_and_run(cmd1)
             else:
                 cmd0 = 'seg_maths {0} -mul {1} {0}'.format(pfi_mod, pfi_roi_mask, pfi_mod)
-                os.system(cmd0)
+                print_and_run(cmd0)
             
             cmd2 = 'seg_maths {0} -removenan {0}'.format(pfi_mod)
-            os.system(cmd2)
+            print_and_run(cmd2)
             cmd3 = 'seg_maths {0} -thr {1} {0}'.format(pfi_mod, '0')
-            os.system(cmd3)
+            print_and_run(cmd3)
 
     if controller['bfc b0']:
         print('- bfc b0 {}'.format(sj))
@@ -289,7 +289,7 @@ def process_DWI_per_subject(sj, controller):
         pfi_registration_mask = jph(pfo_mask, sj + '_b0_reg_mask.nii.gz')
         cmd = 'seg_maths {0} -sub {1} {2} '.format(pfi_roi_mask, pfi_lesion_mask,
                                                    pfi_registration_mask)  # until here seems correct.
-        os.system(cmd)
+        print_and_run(cmd)
 
     if controller['save results']:
         print('- save results {}'.format(sj))
@@ -306,7 +306,7 @@ def process_DWI_per_subject(sj, controller):
         
         for a, b in zip([pfi_v1, pfi_s0, pfi_FA, pfi_MD], [pfi_v1_new, pfi_s0_new, pfi_FA_new, pfi_MD_new]):
             cmd = 'cp {0} {1}'.format(a, b)
-            os.system(cmd)
+            print_and_run(cmd)
 
 
 def process_DWI_from_list(subj_list, controller):

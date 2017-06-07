@@ -1,6 +1,7 @@
 import numpy as np
 import nibabel as nib
 import os
+import subprocess
 
 
 def set_new_data(image, new_data, new_dtype=None, remove_nan=True):
@@ -242,7 +243,8 @@ def print_and_run(cmd, msg=None, safety_on=False, short_path_output=True):
         print '\n-> ' + path_free_cmd + '\n'
 
     if not safety_on:
-        os.system(cmd)
+        subprocess.Popen(cmd).wait()
+        # os.system(cmd)
 
 
 def adjust_header_from_transformations(pfi_input, pfi_output, theta, trasl):

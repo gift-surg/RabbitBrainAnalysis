@@ -12,6 +12,7 @@ results are stored in the pfo_results folder.
 import os
 from os.path import join as jph
 from tools.definitions import root_pilot_study
+from tools.auxiliary.utils import print_and_run
 
 
 ' commands manager '
@@ -34,7 +35,7 @@ pfo_results = jph(study_path, 'input_results')
 
 if step_create_masks:
 
-    os.system('mkdir -p {}'.format(pfo_masks))
+    print_and_run('mkdir -p {}'.format(pfo_masks))
 
     for (dirpath, dirnames, filenames) in os.walk(pfo_images):
             for filename in filenames:
@@ -49,11 +50,11 @@ if step_create_masks:
                     print cmd + '\n'
 
                     if not safety_on:
-                        os.system(cmd)
+                        print_and_run(cmd)
 
 if step_generate_template:
 
-    os.system('mkdir -p {}'.format(pfo_results))
+    print_and_run('mkdir -p {}'.format(pfo_results))
 
     here = os.getcwd()
     cmd1 = 'cd {0} ; {1}  {2}'.format(study_path,
@@ -66,5 +67,5 @@ if step_generate_template:
     print cmd2
 
     if not safety_on:
-        os.system(cmd1)
-        os.system(cmd2)
+        print_and_run(cmd1)
+        print_and_run(cmd2)

@@ -5,6 +5,7 @@ from scipy.stats import norm
 
 from tools.auxiliary.utils import set_new_data
 from tools.definitions import root_dir
+from tools.auxiliary.utils import print_and_run
 
 
 def filter_connected_components_by_volume(im_input, num_cc_to_filter=10):
@@ -70,7 +71,7 @@ def filter_connected_components_by_volume_path(im_input_path, im_output_path, nu
 def test_lesion_masks_extractor_for_simple_input():
     # Test for filter_connected_components.
     cmd = 'mkdir -p {0}'.format(os.path.join(root_dir, 'output'))
-    os.system(cmd)
+    print_and_run(cmd)
 
     dims = [105, 20, 20]
 
@@ -89,7 +90,7 @@ def test_lesion_masks_extractor_for_simple_input():
 
     # for the moment visual assessment test!
     nib.save(im_filtered, os.path.join(root_dir, 'output/test_fil.nii.gz'))
-    os.system('open {}'.format(os.path.join(root_dir, 'output/test_fil.nii.gz')))
+    print_and_run('open {}'.format(os.path.join(root_dir, 'output/test_fil.nii.gz')))
 
 
 def simple_lesion_mask_extractor_path(im_input_path, im_output_path, im_mask_foreground_path, safety_on=False):
@@ -108,7 +109,7 @@ def simple_lesion_mask_extractor_path(im_input_path, im_output_path, im_mask_for
     print cmd
 
     if not safety_on:
-        os.system(cmd)
+        print_and_run(cmd)
 
 
 # --- Auxiliaries
@@ -145,7 +146,7 @@ def normal_lesion_mask_extractor(im_input_path, im_output_path, im_mask_foregrou
           '''.format(im_input_path, im_output_path, im_mask_foreground_path, low_thr, up_thr)
     print cmd
     if not safety_on:
-        os.system(cmd)
+        print_and_run(cmd)
 
 
 def percentile_lesion_mask_extractor(im_input_path, im_output_path, im_mask_foreground_path, percentiles,
@@ -163,7 +164,7 @@ def percentile_lesion_mask_extractor(im_input_path, im_output_path, im_mask_fore
           '''.format(im_input_path, im_output_path, im_mask_foreground_path, low_thr, up_thr)
     print cmd
     if not safety_on:
-        os.system(cmd)
+        print_and_run(cmd)
 
 
 def lesion_masks_extractor_cc_based_path(im_input_path, im_output_path, im_mask_foreground_path, safety_on=False):
@@ -183,7 +184,7 @@ def lesion_masks_extractor_cc_based_path(im_input_path, im_output_path, im_mask_
           '''.format(im_input_path, im_output_path, im_mask_foreground_path)
     print cmd1
     if not safety_on:
-        os.system(cmd1)
+        print_and_run(cmd1)
 
     print "filtering connected components"
     filter_connected_components_by_volume_path(im_input_path, im_output_path, num_cc_to_filter=10)
@@ -199,5 +200,5 @@ def lesion_masks_extractor_cc_based_path(im_input_path, im_output_path, im_mask_
 
     print cmd2
     if not safety_on:
-        os.system(cmd2)
+        print_and_run(cmd2)
     pass

@@ -110,7 +110,7 @@ for sj in subjects:
 
     if steps_map['Create output folder']:
         cmd = 'mkdir -p {} '.format(pfo_atuomatic_segmentation)
-        os.system(cmd)
+        print_and_run(cmd)
 
     if steps_map['Propagate to template n-rig']:
 

@@ -50,11 +50,11 @@ def process_T1_per_subject(sj, controller):
     pfo_mask = jph(pfo_output_sj, 'z_mask')
     pfo_tmp = jph(pfo_output_sj, 'z_tmp', 'z_T1')
 
-    os.system('mkdir -p {}'.format(pfo_output_sj))
-    os.system('mkdir -p {}'.format(pfo_mod))
-    os.system('mkdir -p {}'.format(pfo_segm))
-    os.system('mkdir -p {}'.format(pfo_mask))
-    os.system('mkdir -p {}'.format(pfo_tmp))
+    print_and_run('mkdir -p {}'.format(pfo_output_sj))
+    print_and_run('mkdir -p {}'.format(pfo_mod))
+    print_and_run('mkdir -p {}'.format(pfo_segm))
+    print_and_run('mkdir -p {}'.format(pfo_mask))
+    print_and_run('mkdir -p {}'.format(pfo_tmp))
 
     if controller['orient to standard']:
         print('- orient to standard {}'.format(sj))
@@ -63,6 +63,7 @@ def process_T1_per_subject(sj, controller):
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
         cmd = 'fslreorient2std {0} {1}'.format(pfi_input_original, pfi_std)
         print_and_run(cmd)
+        assert os.path.exists(pfi_std)
         set_translational_part_to_zero(pfi_std, pfi_std)
 
     if controller['register roi masks']:
