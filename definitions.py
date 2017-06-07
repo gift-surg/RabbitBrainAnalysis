@@ -5,7 +5,7 @@ from os.path import join as jph
 root_dir = os.path.abspath(os.path.dirname(__file__))
 
 
-if root_dir == '/cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/software/RabbitBrainAnalysis':
+if os.path.exists('/cluster/project0'):
     # you are on the cluster:
     root_main_cluster = '/cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/data'
     root_internal_template = jph(root_main_cluster, 'A_internal_template')
@@ -14,7 +14,7 @@ if root_dir == '/cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model
     bfc_corrector_cmd = '/share/apps/cmic/NiftyMIDAS/bin/niftkMTPDbc '
 
 
-elif root_dir == '':
+elif os.path.exists('/Volumes/LC/rabbits'):
     # you are on the external hdd
     root_main_hdd = '/Volumes/LC/rabbits'
     root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
@@ -25,7 +25,7 @@ elif root_dir == '':
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc '
 
 
-else:
+elif os.path.exists('/Volumes/sebastianof/')
     # you are on pantopolium
     root_main_pantopolium = '/Volumes/sebastianof/'
     root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
@@ -35,5 +35,8 @@ else:
     root_shared_records = jph(root_main_dropbox, 'study', 'C_records')
     assert os.path.isdir(root_study_rabbits), 'Connect pantopolio'
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc '
+
+else:
+    raise IOError('No source data!')
 
 pfi_excel_table_all_data = jph(root_study_rabbits, 'A_data', 'DataSummary.xlsx')
