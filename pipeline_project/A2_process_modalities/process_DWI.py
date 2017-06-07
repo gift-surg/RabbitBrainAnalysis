@@ -250,11 +250,13 @@ def process_DWI_per_subject(sj, controller):
     if controller['bfc b0']:
         print('- bfc b0 {}'.format(sj))
         pfi_s0 = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
         assert os.path.exists(pfi_s0)
+        assert os.path.exists(pfi_roi_mask)
         bfc_param = subject[sj][3]
         pfi_s0_bfc = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0_bfc.nii.gz')
         bias_field_correction(pfi_s0, pfi_s0_bfc,
-                              pfi_mask=None,
+                              pfi_mask=pfi_roi_mask,
                               prefix='',
                               convergenceThreshold=bfc_param[0],
                               maximumNumberOfIterations=bfc_param[1],
@@ -309,7 +311,7 @@ def process_DWI_per_subject(sj, controller):
 
 def process_DWI_from_list(subj_list, controller):
 
-    print '\n\n Processing T1 subjects in {} \n'.format(subj_list)
+    print '\n\n Processing DWI subjects in {} \n'.format(subj_list)
     for sj in subj_list:
         process_DWI_per_subject(sj, controller)
 
@@ -318,7 +320,7 @@ if __name__ == '__main__':
     print('process DWI, local run. ')
 
     controller_DWI = {'squeeze'               : False,
-                      'orient to standard'    : True,
+                      'orient to standard'    : False,
                       'register roi masks'    : False,
                       'propagate roi masks'   : False,
                       'adjust mask'           : False,
@@ -328,7 +330,7 @@ if __name__ == '__main__':
                       'eddy current'          : False,
                       'fsl tensor fitting'    : False,
                       'adjust dti-based mod'  : False,
-                      'bfc b0'                : False,
+                      'bfc b0'                : True,
                       'create lesion mask'    : False,
                       'create reg masks'      : False,
                       'save results'          : False}
@@ -341,7 +343,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['1201', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['3108']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

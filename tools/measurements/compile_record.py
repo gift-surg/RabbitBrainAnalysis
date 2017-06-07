@@ -133,7 +133,7 @@ def compile_record(pfi_T1,
                                   pfi_scalar_im=pfi_g_ratio,
                                   icv_factor=None,
                                   return_mm3=True)
-        sa.labels_to_exclude = [153, ]
+        sa.labels_to_exclude = [153, ]  # exclude also olfactory bulbs for the g_ratios
         g_ratios = sa.get_average_below_labels(values_list)
         tot_vol_g_ratio = sa.get_total_volume()
     else:

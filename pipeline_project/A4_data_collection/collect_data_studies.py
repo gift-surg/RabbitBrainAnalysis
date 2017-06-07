@@ -24,7 +24,7 @@ def compile_records_from_subject_list(subj_list):
         # grab segmentations
         pfi_segm_T1_sj = jph(pfo_sj, 'segm', sj + '_T1_segm.nii.gz')
         pfi_segm_S0_sj = jph(pfo_sj, 'segm', sj + '_S0_segm.nii.gz')
-        pfi_segm_g_ratio = jph(pfo_sj, 'segm', sj + '_g_ratio.nii.gz')
+        pfi_segm_g_ratio = pfi_segm_S0_sj
 
         pfo_output_record_sj = jph(pfo_input_data, sj, 'records')
         cmd = 'mkdir -p {}'.format(pfo_output_record_sj)
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     # lsm.execute_PTB_op_skull = False
     # lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['2002', '2502']
+    lsm.input_subjects = ['3103',]
     lsm.update_ls()
 
     compile_records_from_subject_list(lsm.ls)

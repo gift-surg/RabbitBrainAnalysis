@@ -170,7 +170,7 @@ def process_MSME_per_subject(sj, controller):
         pfi_tp0_bfc = jph(pfo_tmp, sj + '_MSME_tp0_bfc.nii.gz')
         assert os.path.exists(pfi_stack)
         assert os.path.exists(pfi_tp0_bfc)
-        pfi_msme_updampled_and_bfc = jph(pfo_mod, sj + '_MSME_tp0_up.nii.gz')
+        pfi_msme_updampled_and_bfc = jph(pfo_mod, sj + '_MSME_up.nii.gz')
         pfi_msme_updampled_first_layer = jph(pfo_mod, sj + '_MSME_tp0_up.nii.gz')
         cmd2 = 'cp {0} {1}'.format(pfi_stack, pfi_msme_updampled_and_bfc)
         cmd3 = 'cp {0} {1}'.format(pfi_tp0_bfc, pfi_msme_updampled_first_layer)
@@ -194,7 +194,7 @@ if __name__ == '__main__':
                        'extract first timepoint'       : False,
                        'register tp0 to S0'            : False,
                        'register msme to S0'           : False,
-                       'bfc'                           : True,
+                       'bfc'                           : False,
                        'save results'                  : True
                        }
     #
@@ -206,7 +206,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['3103', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

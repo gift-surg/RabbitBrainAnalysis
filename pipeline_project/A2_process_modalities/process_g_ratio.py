@@ -14,7 +14,7 @@ def transpose_matrix_in_txt(pfi_input, pfi_output):
 
 def process_g_ratio_per_subject(sj, controller):
 
-    print('\nProcessing MSME {} started.\n'.format(sj))
+    print('\nProcessing g-ratio {} started.\n'.format(sj))
 
     group = subject[sj][0][0]
     category = subject[sj][0][1]
@@ -79,11 +79,11 @@ def process_g_ratio_per_subject(sj, controller):
 
     if controller['save T2_times']:
         if subject[sj][0][1] == 'ex_vivo':
-            t2_times = (15, 80, 110)  # (15, 80, 110) - proposed 3, 16, 22
+            t2_times = (14, 70, 100)  # (15, 80, 110) - proposed 3, 16, 22
         elif subject[sj][0][1] == 'in_vivo':
-            t2_times = (15, 80, 110)
+            t2_times = (14, 70, 100)
         else:
-            t2_times = (15, 80, 110)
+            t2_times = (14, 70, 100)
         pfi_T2_times = jph(pfo_tmp, sj + '_t2_times.txt')
         np.savetxt(fname=pfi_T2_times, X=np.array(t2_times), fmt='%10.10f', newline=' ')
 
@@ -103,13 +103,13 @@ def process_g_ratio_per_subject(sj, controller):
         assert os.path.exists(pfi_roi_mask)
         assert os.path.exists(pfi_echo_times)
         assert os.path.exists(pfi_T2_times)
-        pfi_output_mwf = jph(pfo_tmp, sj + '_vmwf.nii.gz')
+        pfi_mwf = jph(pfo_tmp, sj + '_vmvf.nii.gz')
         cmd = 'fit_qt2 -source {0} -mask {1} -nc 3 -TElist {2} -T2list {3} -mwf {4}'.format(
-            pfi_msme_up, pfi_roi_mask, pfi_echo_times, pfi_T2_times, pfi_output_mwf)
+            pfi_msme_up, pfi_roi_mask, pfi_echo_times, pfi_T2_times, pfi_mwf)
         print cmd
         print_and_run(cmd)
 
-        if not os.path.exists(pfi_output_mwf):
+        if not os.path.exists(pfi_mwf):
             raise IOError('Something went wrong in using fit_qt2...')
 
     if controller['extract first tp noddi']:
@@ -120,7 +120,7 @@ def process_g_ratio_per_subject(sj, controller):
         print_and_run(cmd)
 
     if controller['compute g-ratio']:
-        pfi_mwf = jph(pfo_tmp, sj + '_vmwf.nii.gz')
+        pfi_mwf = jph(pfo_tmp, sj + '_vmvf.nii.gz')
         pfi_vin = jph(pfo_tmp, sj + '_vin.nii.gz')
         assert os.path.exists(pfi_mwf)
         assert os.path.exists(pfi_vin)
@@ -153,7 +153,7 @@ def process_g_ratio_per_subject(sj, controller):
 
 def process_g_ratio_from_list(subj_list, controller):
 
-    print '\n\n Processing T1 subjects from list {0} \n'.format(subj_list)
+    print '\n\n Processing g-ratio subjects from list {0} \n'.format(subj_list)
 
     for sj in subj_list:
         process_g_ratio_per_subject(sj, controller)
@@ -162,8 +162,8 @@ def process_g_ratio_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process g-ratio, local run. ')
 
-    controller_steps = {'transpose b-vals b-vects'  : True,
-                        'noddi'                     : True,
+    controller_steps = {'transpose b-vals b-vects'  : False,
+                        'noddi'                     : False,
                         'save T2_times'             : True,
                         'get acquisition echo time' : True,
                         'fit msme'                  : True,
@@ -179,7 +179,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['2702', ]
+    lsm.input_subjects = ['3103', ]
 
 
     lsm.update_ls()

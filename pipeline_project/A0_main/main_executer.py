@@ -76,8 +76,9 @@ def main_runner(subj_list):
                             'orient to standard'           : True,
                             'extract first timepoint'      : True,
                             'register tp0 to S0'           : True,
-                            'register msme to S0'          : True,
-                            'extract first tp in s0 space' : True
+                           'register msme to S0'           : True,
+                            'bfc'                          : True,
+                            'save results'                 : True
                            }
 
         process_MSME_from_list(subj_list, controller_MSME)
@@ -141,23 +142,23 @@ def main_runner(subj_list):
 
 if __name__ == '__main__':
 
-    assert os.path.isdir(root_study_rabbits), 'Connect to cluster / Pantopolio!'
+    # assert os.path.isdir(root_study_rabbits), 'Connect to cluster / Pantopolio!'
 
     ''' Set parameters per subjects or per group '''
 
-    lsm = ListSubjectsManager()
-
-    lsm.execute_PTB_ex_skull  = True
-    lsm.execute_PTB_ex_vivo   = True
-    lsm.execute_PTB_in_vivo   = True
-    lsm.execute_PTB_op_skull  = True
-    lsm.execute_ACS_ex_vivo   = True
-
-    # lsm.input_subjects = ['2702', ]  # 2502t1
-    # '2205t1', '2206t1', '2502bt1']2502t1
-    #  '3307', '3404']  # '2202t1', '2205t1', 3103'2206t1' -- '2503', '2608', '2702', '2205t1', '2206t1'
-    lsm.update_ls()
-
-    print(lsm.ls)
-
-    main_runner(lsm.ls)
+    # lsm = ListSubjectsManager()
+    #
+    # lsm.execute_PTB_ex_skull  = False
+    # lsm.execute_PTB_ex_vivo   = False
+    # lsm.execute_PTB_in_vivo   = False
+    # lsm.execute_PTB_op_skull  = False
+    # lsm.execute_ACS_ex_vivo   = False
+    #
+    # lsm.input_subjects = ['3307', '3401']  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507', ]
+    # #  ['3405', '3501', '3505', '3507', ]  # [ '3108', '3401', '3403', '3404' ]
+    # #  '3307', '3404']  # '2202t1', '2205t1', 3103'2206t1' -- '2503', '2608', '2702', '2205t1', '2206t1'
+    # lsm.update_ls()
+    #
+    # print(lsm.ls)
+    #
+    # main_runner(lsm.ls)
