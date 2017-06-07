@@ -10,16 +10,12 @@ Second conversion to reshuffle the slices in the correct order is done in
 DEPRECATED AFTER CONVERTER!
 """
 
-import numpy as np
-import nibabel as nib
 import os
 from os.path import join as jph
 
-from tools.auxiliary.utils import set_new_data
 from tools.auxiliary.squeezer import squeeze_image_from_path
-from definitions import root_pilot_study
 from tools.correctors.MSME_T2_correctors import corrector_MSME_T2_path
-
+from tools.definitions import root_pilot_study
 
 ####################
 # Data processing: #

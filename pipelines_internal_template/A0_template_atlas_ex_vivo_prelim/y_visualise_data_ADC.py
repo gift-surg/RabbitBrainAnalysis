@@ -1,14 +1,17 @@
-import os
-import copy
 import numpy as np
 from os.path import join as jph
-from tabulate import tabulate
 import matplotlib.pyplot as plt
-from definitions import root_pilot_study
+from tools.definitions import root_pilot_study
 
-from pipelines_internal_template.A_template_atlas_ex_vivo_prelim.a_definitions_regions_subjects import regions, regions_lr, subjects, regions_values
+from pipelines_internal_template.A_template_atlas_ex_vivo_prelim.a_definitions_regions_subjects import regions_lr, subjects
+from os.path import join as jph
 
+import matplotlib.pyplot as plt
+import numpy as np
+from pipelines_internal_template.A_template_atlas_ex_vivo_prelim.a_definitions_regions_subjects import regions_lr, \
+    subjects
 
+from tools.definitions import root_pilot_study
 
 pfo_study = jph(root_pilot_study, 'A_template_atlas_ex_vivo')
 pfi_data = jph(pfo_study, 'Preliminary', 'outcomes', 'adc_per_regions_per_subject_no15.txt')

@@ -1,7 +1,7 @@
 import os
 from os.path import join as jph
 
-from definitions import root_study_rabbits
+from tools.definitions import root_study_rabbits
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from tools.correctors.path_cleaner import clean_a_study
 

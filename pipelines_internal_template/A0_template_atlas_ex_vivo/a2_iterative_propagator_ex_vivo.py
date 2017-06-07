@@ -9,10 +9,10 @@ majority voting.
 import os
 from os.path import join as jph
 
-from definitions import root_pilot_study_dropbox, root_pilot_study_pantopolium
-from tools.auxiliary.utils import print_and_run, grab_a_timepoint_path
 from labels_manager.main import LabelsManager
 
+from tools.auxiliary.utils import print_and_run, grab_a_timepoint_path
+from tools.definitions import root_pilot_study_dropbox, root_pilot_study_pantopolium
 
 source_subjects = ['1305', '1702', '1805', '2002', '1201', '1203', '1404', '1507', '1510', '2502']
 source_modalities = ['T1', 'FA', 'MD', 'S0', 'V1']

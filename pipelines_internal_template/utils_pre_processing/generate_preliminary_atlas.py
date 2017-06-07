@@ -4,9 +4,9 @@ Generate preliminary results from subject 1305.
 
 import os
 
-from definitions import root_pilot_study
 from tools.label_manager.symmetriser import sym_labels
 
+from tools.definitions import root_pilot_study
 
 # Path manager:
 

@@ -7,9 +7,9 @@ from os.path import join as jph
 
 from labels_manager.main import LabelsManager
 
-from definitions import root_study_rabbits, bfc_corrector_cmd
 from pipeline_project.A0_main.main_controller import subject, propagate_me_level
 from tools.auxiliary.utils import adjust_header_from_transformations
+from tools.definitions import root_study_rabbits, bfc_corrector_cmd
 
 """
 Disregarding the modality or other issues, various options are allowed.

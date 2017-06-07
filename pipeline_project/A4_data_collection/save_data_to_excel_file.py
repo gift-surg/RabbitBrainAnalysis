@@ -1,7 +1,7 @@
 import os
 from os.path import join as jph
 
-from definitions import root_study_rabbits, pfi_excel_table_all_data
+from tools.definitions import root_study_rabbits, pfi_excel_table_all_data
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager, templ_subjects
 from tools.auxiliary.parse_excel_tables_and_descriptors import store_a_record_in_excel_table
 

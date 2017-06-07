@@ -1,7 +1,7 @@
 import os
 import nibabel as nib
 
-from definitions import root_pilot_study
+from tools.definitions import root_pilot_study
 from tools.auxiliary.utils import set_new_data
 from tools.label_manager.relabeller import assign_all_other_labels_the_same_value
 

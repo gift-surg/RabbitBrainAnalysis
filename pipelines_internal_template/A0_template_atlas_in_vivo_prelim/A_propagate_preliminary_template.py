@@ -7,10 +7,9 @@ STEPS:
 """
 import os
 from os.path import join as jph
-from definitions import root_pilot_study_dropbox
 
 from tools.auxiliary.utils import print_and_run
-
+from tools.definitions import root_pilot_study_dropbox
 
 subjects = ['0802_t1', '0904_t1', '1501_t1', '1504_t1', '1508_t1', '1509_t1', '1511_t1']
 

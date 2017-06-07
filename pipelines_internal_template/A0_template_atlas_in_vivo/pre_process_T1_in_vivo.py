@@ -4,7 +4,7 @@ Align T1 in histological orientation after standard pre-processing.
 import os
 from os.path import join as jph
 
-from definitions import root_pilot_study
+from tools.definitions import root_pilot_study
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.auxiliary.utils import print_and_run
 from tools.correctors.normalisation import normalise_image_for_the_median

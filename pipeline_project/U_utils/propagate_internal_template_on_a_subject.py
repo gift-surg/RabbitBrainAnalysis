@@ -1,7 +1,7 @@
 import os
 from os.path import join as jph
 
-from definitions import root_study_rabbits, root_internal_template
+from tools.definitions import root_study_rabbits, root_internal_template
 from pipeline_project.A0_main.main_controller import subject, templ_subjects
 from pipeline_project.A3_register_template_over_all_subjects.propagate_and_fuse_utils import propagate_all_to_one
 

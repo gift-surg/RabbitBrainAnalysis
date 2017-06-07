@@ -3,7 +3,7 @@ from os.path import join as jph
 import nibabel as nib
 import numpy as np
 
-from definitions import root_pilot_study
+from tools.definitions import root_pilot_study
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, set_new_data, \

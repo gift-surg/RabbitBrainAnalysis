@@ -1,6 +1,6 @@
 import os
 from os.path import join as jph
-from definitions import root_pilot_study
+from tools.definitions import root_pilot_study
 
 from tools.auxiliary.utils import print_and_run
 

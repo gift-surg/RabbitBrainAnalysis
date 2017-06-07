@@ -7,7 +7,7 @@ import copy
 import nibabel as nib
 import os
 
-from definitions import root_pilot_study
+from tools.definitions import root_pilot_study
 
 from tools.auxiliary.multichannel import generate_multichannel_paths
 from tools.auxiliary.utils import reproduce_slice_fourth_dimension_path

@@ -5,7 +5,7 @@ import os
 from os.path import join as jph
 import numpy as np
 
-from definitions import root_pilot_study
+from tools.definitions import root_pilot_study
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.auxiliary.lesion_mask_extractor import simple_lesion_mask_extractor_path
 from tools.auxiliary.utils import print_and_run, adjust_header_from_transformations

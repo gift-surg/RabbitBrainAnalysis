@@ -4,7 +4,7 @@ Propagate and fuse T1
 import os
 from os.path import join as jph
 
-from definitions import root_study_rabbits, root_internal_template
+from tools.definitions import root_study_rabbits, root_internal_template
 from pipeline_project.A0_main.main_controller import ListSubjectsManager, subject, templ_subjects
 from propagate_and_fuse_utils import rigid_propagation_inter_modality, \
     rigid_orientation_from_histo_to_given_coordinates, propagate_all_to_one

@@ -4,7 +4,7 @@ import nibabel as nib
 from scipy.stats import norm
 
 from tools.auxiliary.utils import set_new_data
-from definitions import root_dir
+from tools.definitions import root_dir
 
 
 def filter_connected_components_by_volume(im_input, num_cc_to_filter=10):

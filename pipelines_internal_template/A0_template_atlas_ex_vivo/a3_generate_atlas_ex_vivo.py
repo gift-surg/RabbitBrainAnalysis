@@ -16,7 +16,7 @@ phase 2)
 
 from os.path import join as jph
 
-from definitions import root_pilot_study
+from tools.definitions import root_pilot_study
 
 source_subjects = ['1305', '1702', '1805']
 target_subject = '2002'

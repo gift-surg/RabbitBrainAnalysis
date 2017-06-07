@@ -1,8 +1,8 @@
 import os
 from os.path import join as jph
 
-from definitions import root_study_rabbits, pfi_excel_table_all_data
 from pipeline_project.A0_main.main_controller import ListSubjectsManager, subject
+from tools.definitions import root_study_rabbits, pfi_excel_table_all_data
 from tools.measurements.compile_record import compile_record
 
 

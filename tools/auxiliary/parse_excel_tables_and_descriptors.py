@@ -1,6 +1,7 @@
 import os
-import openpyxl as oxl
+
 import numpy as np
+import openpyxl as oxl
 
 
 def parse_excel_data_to_list(pfi_excel_file, worksheet_name, min_col=0, max_col=12):
@@ -172,7 +173,7 @@ def store_a_record_in_excel_table(pfi_record, pfi_excel, sj, sheet_name):
 if __name__ == '__main__':
 
     # update the header with the latests records.
-    from definitions import root_study_rabbits
+    from tools.definitions import root_study_rabbits
 
     pfi_record_for_a_subject = os.path.join(root_study_rabbits, 'A_data', 'PTB', 'ex_vivo', '1201', 'records',
                                             '1201_record.npy')

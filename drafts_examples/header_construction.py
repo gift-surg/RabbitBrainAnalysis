@@ -1,5 +1,5 @@
 import os
-from definitions import pfi_excel_table_all_data
+from tools.definitions import pfi_excel_table_all_data
 from tools.auxiliary.parse_excel_tables_and_descriptors import write_header_excel_tabs_from_record
 
 

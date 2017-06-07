@@ -4,7 +4,7 @@ from os.path import join as jph
 from bruker2nifti.study_converter import convert_a_study
 
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
-from definitions import root_study_rabbits
+from tools.definitions import root_study_rabbits
 
 
 def convert_subjects_from_list(subj_list):

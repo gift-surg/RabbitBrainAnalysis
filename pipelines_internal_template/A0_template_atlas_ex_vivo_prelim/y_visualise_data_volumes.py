@@ -4,7 +4,7 @@ import numpy as np
 from os.path import join as jph
 from tabulate import tabulate
 import matplotlib.pyplot as plt
-from definitions import root_pilot_study
+from tools.definitions import root_pilot_study
 
 from pipelines_internal_template.A_template_atlas_ex_vivo_prelim.a_definitions_regions_subjects import regions, regions_lr, subjects
 

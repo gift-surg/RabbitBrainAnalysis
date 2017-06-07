@@ -5,7 +5,7 @@ Update results on the shared Dropbox folder with Hannes
 import os
 from os.path import join as jph
 
-from definitions import root_study_rabbits, root_shared_records, pfi_excel_table_all_data
+from tools.definitions import root_study_rabbits, root_shared_records, pfi_excel_table_all_data
 from pipeline_project.A0_main.main_controller import ListSubjectsManager, subject
 
 

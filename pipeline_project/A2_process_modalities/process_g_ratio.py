@@ -2,7 +2,7 @@ import os
 import numpy as np
 from os.path import join as jph
 
-from definitions import root_study_rabbits
+from tools.definitions import root_study_rabbits
 from tools.auxiliary.utils import print_and_run
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 

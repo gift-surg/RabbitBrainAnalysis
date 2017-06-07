@@ -5,19 +5,12 @@ STEPS:
     2) Propagate atlas on sj.
     3)
 """
-import numpy as np
 from os.path import join as jph
-import copy
-import nibabel as nib
-
-from definitions import root_pilot_study
-
-from tools.auxiliary.multichannel import generate_multichannel_paths
-from tools.auxiliary.utils import reproduce_slice_fourth_dimension_path
-from tools.auxiliary.utils import set_new_data, print_and_run
 
 from pipelines_internal_template.A_template_atlas_ex_vivo_prelim.a_definitions_regions_subjects import subjects
 
+from tools.auxiliary.utils import print_and_run
+from tools.definitions import root_pilot_study
 
 pfo_preliminary = jph(root_pilot_study, 'A_template_atlas_ex_vivo', 'Preliminary')
 pfo_template_atlas_prelim = jph(pfo_preliminary, 'template_atlas_subregions')

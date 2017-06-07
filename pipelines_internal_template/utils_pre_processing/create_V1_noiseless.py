@@ -1,7 +1,7 @@
 import os
 from os.path import join as jph
 
-from definitions import root_pilot_study
+from tools.definitions import root_pilot_study
 from tools.auxiliary.utils import reproduce_slice_fourth_dimension_path, print_and_run
 
 

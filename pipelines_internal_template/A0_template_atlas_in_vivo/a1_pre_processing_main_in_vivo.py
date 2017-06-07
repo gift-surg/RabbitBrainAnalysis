@@ -18,7 +18,7 @@ Dlways process T1 before DWI.
 """
 import nibabel as nib
 from os.path import join as jph
-from definitions import root_pilot_study
+from tools.definitions import root_pilot_study
 
 
 from pipelines_internal_template.A0_template_atlas_in_vivo.pre_process_T1_in_vivo import process_T1
