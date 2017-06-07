@@ -6,7 +6,7 @@ root_dir = os.path.abspath(os.path.dirname(__file__))
 
 
 if os.path.exists('/cluster/project0'):
-    print('you are on the cluster:')
+    print('You are on the cluster')
     root_main_cluster = '/cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/data'
     root_internal_template = jph(root_main_cluster, 'A_internal_template')
     root_utils = jph(root_main_cluster, 'A_data', 'Utils')
@@ -16,7 +16,7 @@ if os.path.exists('/cluster/project0'):
 
 
 elif os.path.exists('/Volumes/LC/rabbits'):
-    print('you are on the external hdd')
+    print('You are on the external hdd')
     root_main_hdd = '/Volumes/LC/rabbits'
     root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
     root_internal_template = jph(root_main_dropbox, 'study', 'A_internal_template')
@@ -27,7 +27,7 @@ elif os.path.exists('/Volumes/LC/rabbits'):
 
 
 elif os.path.exists('/Volumes/sebastianof/'):
-    print('you are on pantopolium')
+    print('You are on pantopolium')
     root_main_pantopolium = '/Volumes/sebastianof/'
     root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
     root_internal_template = jph(root_main_dropbox, 'study', 'A_internal_template')
