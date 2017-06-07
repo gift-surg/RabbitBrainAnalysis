@@ -1,7 +1,3 @@
-import os
-
-from definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import ListSubjectsManager
 from pipeline_project.A1_convert_and_clean.apply_converter_to_all_data import convert_subjects_from_list
 from pipeline_project.A1_convert_and_clean.clean_converted_data import cleaner_converted_data_from_list
 from pipeline_project.A2_process_modalities.process_DWI import process_DWI_from_list
