@@ -2,6 +2,7 @@ import numpy as np
 import nibabel as nib
 import os
 import subprocess
+import time
 
 
 def set_new_data(image, new_data, new_dtype=None, remove_nan=True):
@@ -244,8 +245,7 @@ def print_and_run(cmd, msg=None, safety_on=False, short_path_output=True):
 
     if not safety_on:
         os.system(cmd)
-        os.wait()
-
+        time.sleep(5)  # very bad solution... Don't know how to make nibabel finishing to save an image on a file.
         # subprocess.call(cmd, shell=True)  # it is not waiting to have the image copied... for some reason...!
 
 
