@@ -61,26 +61,27 @@ def process_T1_per_subject(sj, controller):
         pfi_input_original = jph(pfo_input_sj_3D, sj + '_3D.nii.gz')
         assert os.path.exists(pfi_input_original)
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
+        pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
         cmd = 'fslreorient2std {0} {1}'.format(pfi_input_original, pfi_std)
         print_and_run(cmd)
         assert os.path.exists(pfi_std)
-        set_translational_part_to_zero(pfi_std, pfi_std)
+        set_translational_part_to_zero(pfi_std, pfi_std_not_transl)
 
     if controller['register roi masks']:
         print('- register roi masks {}'.format(sj))
-        pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
+        pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
         if subject[sj][0][1] in ['ex_vivo', 'op_skull']:
             pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
         elif subject[sj][0][1] == 'in_vivo':
             pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
         else:
             raise IOError('ex_vivo, in_vivo or op_skull only.')
-        assert os.path.exists(pfi_std)
+        assert os.path.exists(pfi_std_not_transl)
         assert os.path.exists(pfi_sj_ref_coord_system)
         pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '.txt')
         pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '.nii.gz')
         cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} ; '.format(
-            pfi_std,
+            pfi_std_not_transl,
             pfi_sj_ref_coord_system,
             pfi_affine_transformation_ref_on_subject,
             pfi_3d_warped_ref_on_subject)

@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import nibabel as nib
 
@@ -50,9 +51,11 @@ def set_translational_part_to_zero(pfi_input, pfi_output):
     # create output image on the input
     if im_input.header['sizeof_hdr'] == 348:
         new_image = nib.Nifti1Image(im_input.get_data(), new_transf, header=im_input.get_header())
+        # time.sleep(5)  # very bad solution... Don't know how to make nibabel finishing to save an image on a file.
     # if nifty2
     elif im_input.header['sizeof_hdr'] == 540:
         new_image = nib.Nifti2Image(im_input.get_data(), new_transf, header=im_input.get_header())
+        # time.sleep(5)  # very bad solution... Don't know how to make nibabel finishing to save an image on a file.
     else:
         raise IOError
 

@@ -244,9 +244,8 @@ def print_and_run(cmd, msg=None, safety_on=False, short_path_output=True):
         print '\n-> ' + path_free_cmd + '\n'
 
     if not safety_on:
-        os.system(cmd)
-        time.sleep(5)  # very bad solution... Don't know how to make nibabel finishing to save an image on a file.
-        # subprocess.call(cmd, shell=True)  # it is not waiting to have the image copied... for some reason...!
+        # os.system(cmd)
+        subprocess.call(cmd, shell=True)  # it is not waiting to have the image copied... for some reason...!
 
 
 def adjust_header_from_transformations(pfi_input, pfi_output, theta, trasl):
