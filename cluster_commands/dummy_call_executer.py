@@ -3,13 +3,9 @@ import os
 import sys
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-# sys.path.append(dir_path)
 sys.path.append(os.path.dirname(dir_path))
 
-print dir_path
-print os.path.dirname(dir_path)
 import pipeline_project.A0_main.main_executer as ma
-# from definitions import root_study_rabbits
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', dest='str_input', type=str, required=True)
