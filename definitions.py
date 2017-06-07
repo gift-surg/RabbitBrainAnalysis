@@ -25,7 +25,7 @@ elif os.path.exists('/Volumes/LC/rabbits'):
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc '
 
 
-elif os.path.exists('/Volumes/sebastianof/')
+elif os.path.exists('/Volumes/sebastianof/'):
     # you are on pantopolium
     root_main_pantopolium = '/Volumes/sebastianof/'
     root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
