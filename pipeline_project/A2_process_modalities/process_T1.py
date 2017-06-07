@@ -3,6 +3,7 @@ T1 processing in their original coordinate system.
 """
 import os
 from os.path import join as jph
+import time
 
 from tools.definitions import root_study_rabbits
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
@@ -64,6 +65,7 @@ def process_T1_per_subject(sj, controller):
         pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
         cmd = 'fslreorient2std {0} {1}'.format(pfi_input_original, pfi_std)
         print_and_run(cmd)
+        time.sleep(5)  # bad solution - temporary for the cluster?
         assert os.path.exists(pfi_std)
         set_translational_part_to_zero(pfi_std, pfi_std_not_transl)
 
