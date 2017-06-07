@@ -243,7 +243,10 @@ def print_and_run(cmd, msg=None, safety_on=False, short_path_output=True):
         print '\n-> ' + path_free_cmd + '\n'
 
     if not safety_on:
-        subprocess.call(cmd, shell=False)
+        os.system(cmd)
+        os.wait()
+
+        # subprocess.call(cmd, shell=True)  # it is not waiting to have the image copied... for some reason...!
 
 
 def adjust_header_from_transformations(pfi_input, pfi_output, theta, trasl):
