@@ -78,22 +78,24 @@ def send_data_to_hannes_from_list(subj_list, records_only=False, erase_source=Fa
 
     root_data    = jph(root_study_rabbits, 'A_data')
 
-    # copy excel file
-    if send_excel_table:
-        if os.path.exists(pfi_excel_table_all_data):
-            cmd1 = 'cp {} {} '.format(pfi_excel_table_all_data, jph(root_shared_records, 'REoP_Data.xlsx'))
-            os.system(cmd1)
-            print(cmd1)
+    if os.path.exists(root_shared_records):
 
-    for sj in subj_list:
+        # copy excel file
+        if send_excel_table:
+            if os.path.exists(pfi_excel_table_all_data):
+                cmd1 = 'cp {} {} '.format(pfi_excel_table_all_data, jph(root_shared_records, 'REoP_Data.xlsx'))
+                os.system(cmd1)
+                print(cmd1)
 
-        group = subject[sj][0][0]
-        category = subject[sj][0][1]
-        pfo_source = jph(root_data, group, category)
-        assert os.path.exists(pfo_source)
-        pfo_destination = jph(root_shared_records, group, category)
-        send_or_erase(sj, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
-                      erase_destination=erase_destination)
+        for sj in subj_list:
+
+            group = subject[sj][0][0]
+            category = subject[sj][0][1]
+            pfo_source = jph(root_data, group, category)
+            assert os.path.exists(pfo_source)
+            pfo_destination = jph(root_shared_records, group, category)
+            send_or_erase(sj, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
+                          erase_destination=erase_destination)
 
 
 if __name__ == '__main__':
