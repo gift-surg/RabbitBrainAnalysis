@@ -200,8 +200,8 @@ def process_T1_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process T1, local run. ')
 
-    controller_steps = {'orient to standard'  : False,
-                        'register roi masks'  : False,
+    controller_steps = {'orient to standard'  : True,
+                        'register roi masks'  : True,
                         'propagate roi masks' : True,
                         'adjust mask'         : True,
                         'cut masks'           : True,
@@ -218,7 +218,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['2502t1', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['1201', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()
