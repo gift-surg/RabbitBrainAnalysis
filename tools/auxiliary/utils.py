@@ -243,7 +243,7 @@ def print_and_run(cmd, msg=None, safety_on=False, short_path_output=True):
         print '\n-> ' + path_free_cmd + '\n'
 
     if not safety_on:
-        subprocess.call(cmd, shell=True)
+        subprocess.call(cmd, shell=False)
 
 
 def adjust_header_from_transformations(pfi_input, pfi_output, theta, trasl):
