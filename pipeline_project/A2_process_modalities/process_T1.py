@@ -9,7 +9,7 @@ from tools.definitions import root_study_rabbits
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
-from tools.auxiliary.utils import print_and_run
+from tools.auxiliary.utils import print_and_run, check_path
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 
 """
@@ -60,13 +60,12 @@ def process_T1_per_subject(sj, controller):
     if controller['orient to standard']:
         print('- orient to standard {}'.format(sj))
         pfi_input_original = jph(pfo_input_sj_3D, sj + '_3D.nii.gz')
-        assert os.path.exists(pfi_input_original)
+        check_path(pfi_input_original)
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
-        pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
         cmd = 'fslreorient2std {0} {1}'.format(pfi_input_original, pfi_std)
         print_and_run(cmd)
-        time.sleep(5)  # bad solution - temporary for the cluster?
-        assert os.path.exists(pfi_std)
+        pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
+        check_path(pfi_std)
         set_translational_part_to_zero(pfi_std, pfi_std_not_transl)
 
     if controller['register roi masks']:
@@ -78,8 +77,8 @@ def process_T1_per_subject(sj, controller):
             pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
         else:
             raise IOError('ex_vivo, in_vivo or op_skull only.')
-        assert os.path.exists(pfi_std_not_transl)
-        assert os.path.exists(pfi_sj_ref_coord_system)
+        check_path(pfi_std_not_transl)
+        check_path(pfi_sj_ref_coord_system)
         pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '.txt')
         pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '.nii.gz')
         cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} ; '.format(
@@ -99,9 +98,9 @@ def process_T1_per_subject(sj, controller):
         else:
             raise IOError('ex_vivo, in_vivo or op_skull only.')
         pfi_affine_transformation_reference_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '.txt')
-        assert os.path.exists(pfi_std)
-        assert os.path.exists(pfi_reference_roi_mask)
-        assert os.path.exists(pfi_affine_transformation_reference_on_subject)
+        check_path(pfi_std)
+        check_path(pfi_reference_roi_mask)
+        check_path(pfi_affine_transformation_reference_on_subject)
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_std,
@@ -113,7 +112,7 @@ def process_T1_per_subject(sj, controller):
     if controller['adjust mask']:
         print('- adjust mask {}'.format(sj))
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
-        assert os.path.exists(pfi_roi_mask)
+        check_path(pfi_roi_mask)
         erosion_param = subject[sj][2][1]
         if erosion_param > 0:
             cmd = 'seg_maths {0} -ero {1} {2}'.format(pfi_roi_mask,
@@ -125,8 +124,8 @@ def process_T1_per_subject(sj, controller):
         print('- cut masks {}'.format(sj))
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
-        assert os.path.exists(pfi_std)
-        assert os.path.exists(pfi_roi_mask)
+        check_path(pfi_std)
+        check_path(pfi_roi_mask)
         pfi_3d_cropped_roi = jph(pfo_tmp, sj + '_cropped.nii.gz')
         cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_std, pfi_roi_mask,
                                                   pfi_3d_cropped_roi)
@@ -136,7 +135,7 @@ def process_T1_per_subject(sj, controller):
     if controller['step bfc']:
         print('- step bfc {}'.format(sj))
         pfi_3d_cropped_roi = jph(pfo_tmp, sj + '_cropped.nii.gz')
-        assert os.path.exists(pfi_3d_cropped_roi)
+        check_path(pfi_3d_cropped_roi)
         pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
         bfc_param = subject[sj][3]
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
@@ -153,7 +152,7 @@ def process_T1_per_subject(sj, controller):
                               print_only=False)
     else:
         pfi_3d_cropped_roi = jph(pfo_tmp, sj + '_cropped.nii.gz')
-        assert os.path.exists(pfi_3d_cropped_roi)
+        check_path(pfi_3d_cropped_roi)
         pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
         cmd = 'cp {0} {1}'.format(pfi_3d_cropped_roi, pfi_3d_bias_field_corrected)
         print_and_run(cmd)
@@ -162,8 +161,8 @@ def process_T1_per_subject(sj, controller):
         print('- create lesion mask {}'.format(sj))
         pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
-        assert os.path.exists(pfi_3d_bias_field_corrected)
-        assert os.path.exists(pfi_roi_mask)
+        check_path(pfi_3d_bias_field_corrected)
+        check_path(pfi_roi_mask)
         pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
         percentile = subject[sj][2][2]
         percentile_lesion_mask_extractor(im_input_path=pfi_3d_bias_field_corrected,
@@ -176,8 +175,8 @@ def process_T1_per_subject(sj, controller):
         print('- create reg masks {}'.format(sj))
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
         pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
-        assert os.path.exists(pfi_roi_mask)
-        assert os.path.exists(pfi_roi_mask)
+        check_path(pfi_roi_mask)
+        check_path(pfi_roi_mask)
         pfi_registration_mask = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
         cmd = 'seg_maths {0} -sub {1} {2} '.format(pfi_roi_mask, pfi_lesion_mask,
                                                    pfi_registration_mask)  # until here seems correct.
@@ -186,7 +185,7 @@ def process_T1_per_subject(sj, controller):
     if controller['save results']:
         print('- save results {}'.format(sj))
         pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
-        assert os.path.exists(pfi_3d_bias_field_corrected)
+        check_path(pfi_3d_bias_field_corrected)
         pfi_3d_final_destination = jph(pfo_mod, sj + '_T1.nii.gz')
         cmd = 'cp {0} {1}'.format(pfi_3d_bias_field_corrected, pfi_3d_final_destination)
         print_and_run(cmd)
@@ -204,14 +203,14 @@ if __name__ == '__main__':
     print('process T1, local run. ')
 
     controller_steps = {'orient to standard'  : True,
-                        'register roi masks'  : True,
-                        'propagate roi masks' : True,
-                        'adjust mask'         : True,
-                        'cut masks'           : True,
-                        'step bfc'            : True,
-                        'create lesion mask'  : True,
-                        'create reg masks'    : True,
-                        'save results'        : True}
+                        'register roi masks'  : False,
+                        'propagate roi masks' : False,
+                        'adjust mask'         : False,
+                        'cut masks'           : False,
+                        'step bfc'            : False,
+                        'create lesion mask'  : False,
+                        'create reg masks'    : False,
+                        'save results'        : False}
 
     lsm = ListSubjectsManager()
 

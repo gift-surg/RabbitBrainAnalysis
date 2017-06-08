@@ -245,7 +245,27 @@ def print_and_run(cmd, msg=None, safety_on=False, short_path_output=True):
 
     if not safety_on:
         # os.system(cmd)
-        subprocess.call(cmd, shell=True)  # it is not waiting to have the image copied... for some reason...!
+        subprocess.call(cmd, shell=True)
+
+
+def check_path(pfi, interval=1, timeout=100):
+    if os.path.exists(pfi):
+        if pfi.endswith('.nii.gz'):
+            out = subprocess.check_output('gunzip -t {}'.format(pfi), shell=True)
+            if out == '':
+                return True
+            else:
+                mustend = time.time() + timeout
+                while time.time() < mustend:
+                    out = subprocess.check_output('gunzip -t {}'.format(pfi), shell=True)
+                    if out == 0:
+                        return True
+                    time.sleep(interval)
+                msg = 'File {0} corrupted. \n {1}'.format(pfi, out)
+                raise IOError(msg)
+    else:
+        msg = '{} does not exist!'.format(pfi)
+        raise IOError(msg)
 
 
 def adjust_header_from_transformations(pfi_input, pfi_output, theta, trasl):
