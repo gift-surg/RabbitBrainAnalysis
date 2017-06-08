@@ -251,18 +251,17 @@ def print_and_run(cmd, msg=None, safety_on=False, short_path_output=True):
 def check_path(pfi, interval=1, timeout=100):
     if os.path.exists(pfi):
         if pfi.endswith('.nii.gz'):
-            out = subprocess.check_output('gunzip -t {}'.format(pfi), shell=True)
-            if out == '':
-                return True
-            else:
-                mustend = time.time() + timeout
-                while time.time() < mustend:
-                    out = subprocess.check_output('gunzip -t {}'.format(pfi), shell=True)
-                    if out == 0:
-                        return True
-                    time.sleep(interval)
-                msg = 'File {0} corrupted. \n {1}'.format(pfi, out)
-                raise IOError(msg)
+            mustend = time.time() + timeout
+            while time.time() < mustend:
+                try:
+                    subprocess.check_output('gunzip -t {}'.format(pfi), shell=True)
+                except subprocess.CalledProcessError:
+                    print "Caught CalledProcessError"
+                else:
+                    return True
+                time.sleep(interval)
+            msg = 'File {0} corrupted after 100 tests. \n'.format(pfi)
+            raise IOError(msg)
     else:
         msg = '{} does not exist!'.format(pfi)
         raise IOError(msg)
