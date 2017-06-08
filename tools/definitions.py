@@ -7,6 +7,8 @@ root_dir = os.path.abspath(os.path.dirname(__file__))
 
 if os.path.exists('/cluster/project0'):
     print('You are on the cluster')
+    # call FSL
+    # set up the roots
     root_main_cluster = '/cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/data'
     root_internal_template = jph(root_main_cluster, 'A_internal_template')
     root_utils = jph(root_main_cluster, 'A_data', 'Utils')
