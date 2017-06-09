@@ -79,11 +79,11 @@ def process_g_ratio_per_subject(sj, controller):
 
     if controller['save T2_times']:
         if subject[sj][0][1] == 'ex_vivo':
-            t2_times = (14, 70, 100)  # (15, 80, 110) - proposed 3, 16, 22
+            t2_times = (8, 50, 60)  # (15, 80, 110) 30, 160, 200 - 14, 70, 100
         elif subject[sj][0][1] == 'in_vivo':
-            t2_times = (14, 70, 100)
+            t2_times = (10, 60, 80)
         else:
-            t2_times = (14, 70, 100)
+            t2_times = (10, 60, 80)
         pfi_T2_times = jph(pfo_tmp, sj + '_t2_times.txt')
         np.savetxt(fname=pfi_T2_times, X=np.array(t2_times), fmt='%10.10f', newline=' ')
 

@@ -5,7 +5,7 @@ from bruker2nifti.study_converter import convert_a_study
 
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from tools.definitions import root_study_rabbits
-from tools.auxiliary.utils import print_and_run
+from tools.auxiliary.utils import print_and_run, check_path
 
 
 def convert_subjects_from_list(subj_list):
@@ -18,7 +18,7 @@ def convert_subjects_from_list(subj_list):
         group = subject[sj][0][0]
         category = subject[sj][0][1]
         pfo_input_sj = jph(root_study_rabbits, '00_raw_data', group, category, sj)
-        assert os.path.exists(pfo_input_sj)
+        check_path(pfo_input_sj)
         pfo_output = jph(root_study_rabbits, '01_nifti', group, category)
         pfo_output_sj = jph(root_study_rabbits, '01_nifti', group, category, sj)
 

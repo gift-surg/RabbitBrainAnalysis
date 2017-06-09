@@ -118,10 +118,13 @@ def get_percentiles_range(pfi_im_input, percentiles=(15, 95)):
     im = nib.load(pfi_im_input)
     im_data = im.get_data().flatten()
     non_zero_data = im_data[np.where(im_data > 1e-6)]
-    low_p = np.percentile(non_zero_data, percentiles[0])
-    high_p = np.percentile(non_zero_data, percentiles[1])
-    return low_p, high_p
-
+    if len(non_zero_data) > 0:
+        low_p = np.percentile(non_zero_data, percentiles[0])
+        high_p = np.percentile(non_zero_data, percentiles[1])
+        return low_p, high_p
+    else:
+        print('Warning, image unexpectedly empthy!')
+        return 0, 0
 
 def get_normal_interval_range(pfi_im_input, k=1):
     assert os.path.exists(pfi_im_input)

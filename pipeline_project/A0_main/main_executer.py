@@ -1,3 +1,5 @@
+
+from pipeline_project.A0_main.main_controller import ListSubjectsManager
 from pipeline_project.A1_convert_and_clean.apply_converter_to_all_data import convert_subjects_from_list
 from pipeline_project.A1_convert_and_clean.clean_converted_data import cleaner_converted_data_from_list
 from pipeline_project.A2_process_modalities.process_DWI import process_DWI_from_list
@@ -15,10 +17,10 @@ def main_runner(subj_list):
     # Set steps
 
     step_A1         = False
-    step_A2_T1      = True
+    step_A2_T1      = False
     step_A2_DWI     = False
     step_A2_MSME    = False
-    step_A2_g_ratio = False
+    step_A2_g_ratio = True
     step_A3         = False
     step_A4         = False
     step_A5         = False
@@ -32,15 +34,15 @@ def main_runner(subj_list):
     ''' Step A2 - T1 '''
     if step_A2_T1:
         print('\nStep A2 T1\n')
-        controller_A2_T1 = {'orient to standard'  : True,
-                            'register roi masks'  : True,
-                            'propagate roi masks' : False,
-                            'adjust mask'         : False,
-                            'cut masks'           : False,
-                            'step bfc'            : False,
-                            'create lesion mask'  : False,
-                            'create reg masks'    : False,
-                            'save results'        : False}
+        controller_A2_T1 = {'orient to standard'  : False,
+                            'register roi masks'  : False,
+                            'propagate roi masks' : True,
+                            'adjust mask'         : True,
+                            'cut masks'           : True,
+                            'step bfc'            : True,
+                            'create lesion mask'  : True,
+                            'create reg masks'    : True,
+                            'save results'        : True}
 
         process_T1_from_list(subj_list, controller_A2_T1)
 
@@ -82,8 +84,8 @@ def main_runner(subj_list):
     ''' Step A2 - g-ratio '''
     if step_A2_g_ratio:
         print('\nStep A2 g-ratio\n')
-        controller_g_ratio = {'transpose b-vals b-vects'  : True,
-                              'noddi'                     : True,
+        controller_g_ratio = {'transpose b-vals b-vects'  : False,
+                              'noddi'                     : False,
                               'save T2_times'             : True,
                               'get acquisition echo time' : True,
                               'fit msme'                  : True,
@@ -142,19 +144,19 @@ if __name__ == '__main__':
 
     ''' Set parameters per subjects or per group '''
 
-    # lsm = ListSubjectsManager()
-    #
-    # lsm.execute_PTB_ex_skull  = False
-    # lsm.execute_PTB_ex_vivo   = False
-    # lsm.execute_PTB_in_vivo   = False
-    # lsm.execute_PTB_op_skull  = False
-    # lsm.execute_ACS_ex_vivo   = False
-    #
-    # lsm.input_subjects = ['3307', '3401']  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507', ]
-    # #  ['3405', '3501', '3505', '3507', ]  # [ '3108', '3401', '3403', '3404' ]
-    # #  '3307', '3404']  # '2202t1', '2205t1', 3103'2206t1' -- '2503', '2608', '2702', '2205t1', '2206t1'
-    # lsm.update_ls()
-    #
-    # print(lsm.ls)
-    #
-    # main_runner(lsm.ls)
+    lsm = ListSubjectsManager()
+
+    lsm.execute_PTB_ex_skull  = False
+    lsm.execute_PTB_ex_vivo   = False
+    lsm.execute_PTB_in_vivo   = False
+    lsm.execute_PTB_op_skull  = False
+    lsm.execute_ACS_ex_vivo   = False
+
+    lsm.input_subjects = ['3103',]  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507', ]
+    #  ['3405', '3501', '3505', '3507', ]  # [ '3108', '3401', '3403', '3404' ]
+    #  '3307', '3404']  # '2202t1', '2205t1', 3103'2206t1' -- '2503', '2608', '2702', '2205t1', '2206t1'
+    lsm.update_ls()
+
+    print(lsm.ls)
+
+    main_runner(lsm.ls)

@@ -17,13 +17,13 @@ if os.path.exists('/cluster/project0'):
     root_shared_records = ''
 
 
-elif os.path.exists('/Volumes/LC/rabbits'):
+elif os.path.exists('/Volumes/LC/sebastianof/rabbits/'):
     print('You are on the external hdd')
-    root_main_hdd = '/Volumes/LC/rabbits'
+    root_main_hdd = '/Volumes/LC/sebastianof'
     root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
     root_internal_template = jph(root_main_dropbox, 'study', 'A_internal_template')
     root_docs = jph(root_main_dropbox, 'docs')
-    root_study_rabbits = jph(root_main_hdd, 'study')
+    root_study_rabbits = jph(root_main_hdd, 'rabbits')
     root_shared_records = jph(root_main_dropbox, 'study', 'C_records')
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc '
 

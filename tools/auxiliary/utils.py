@@ -262,6 +262,8 @@ def check_path(pfi, interval=1, timeout=100):
                 time.sleep(interval)
             msg = 'File {0} corrupted after 100 tests. \n'.format(pfi)
             raise IOError(msg)
+        else:
+            return True
     else:
         msg = '{} does not exist!'.format(pfi)
         raise IOError(msg)
