@@ -1,9 +1,9 @@
 date
 hostname
 
-#$ -l h_rt=00:2:00
-#$ -l tmem=2G
-#$ -l h_vmem=2G
+#$ -l h_rt=12:00:00
+#$ -l tmem=50G
+#$ -l h_vmem=50G
 #$ -N "SimpleTest"
 #$ -S /bin/bash
 #$ -cwd
