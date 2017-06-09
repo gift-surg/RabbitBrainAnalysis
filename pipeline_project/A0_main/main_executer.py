@@ -17,13 +17,13 @@ def main_runner(subj_list):
     # Set steps
 
     step_A1         = False
-    step_A2_T1      = False
-    step_A2_DWI     = False
-    step_A2_MSME    = False
+    step_A2_T1      = True
+    step_A2_DWI     = True
+    step_A2_MSME    = True
     step_A2_g_ratio = True
-    step_A3         = False
-    step_A4         = False
-    step_A5         = False
+    step_A3         = True
+    step_A4         = True
+    step_A5         = True
 
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
@@ -34,8 +34,8 @@ def main_runner(subj_list):
     ''' Step A2 - T1 '''
     if step_A2_T1:
         print('\nStep A2 T1\n')
-        controller_A2_T1 = {'orient to standard'  : False,
-                            'register roi masks'  : False,
+        controller_A2_T1 = {'orient to standard'  : True,
+                            'register roi masks'  : True,
                             'propagate roi masks' : True,
                             'adjust mask'         : True,
                             'cut masks'           : True,
@@ -84,8 +84,8 @@ def main_runner(subj_list):
     ''' Step A2 - g-ratio '''
     if step_A2_g_ratio:
         print('\nStep A2 g-ratio\n')
-        controller_g_ratio = {'transpose b-vals b-vects'  : False,
-                              'noddi'                     : False,
+        controller_g_ratio = {'transpose b-vals b-vects'  : True,
+                              'noddi'                     : True,
                               'save T2_times'             : True,
                               'get acquisition echo time' : True,
                               'fit msme'                  : True,
