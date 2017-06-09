@@ -8,6 +8,8 @@ hostname
 #$ -S /bin/bash
 #$ -cwd
 #$ -t 1-2
+#$ -e ../z_output/
+#$ -o ../z_output/
 
 SUBJECT=`sed -n ${SGE_TASK_ID}p subjects.txt`
 
