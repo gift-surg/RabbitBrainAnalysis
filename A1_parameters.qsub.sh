@@ -7,7 +7,7 @@ hostname
 #$ -N "ImgBrainAnalysis"
 #$ -S /bin/bash
 #$ -cwd
-#$ -t 3-5
+#$ -t 1-4
 #$ -e ../z_output/
 #$ -o ../z_output/
 
