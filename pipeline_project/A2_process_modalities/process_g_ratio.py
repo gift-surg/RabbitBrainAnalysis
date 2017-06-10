@@ -3,7 +3,7 @@ import numpy as np
 from os.path import join as jph
 
 from tools.definitions import root_study_rabbits
-from tools.auxiliary.utils import print_and_run
+from tools.auxiliary.utils import print_and_run, check_path
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 
 
@@ -51,8 +51,8 @@ def process_g_ratio_per_subject(sj, controller):
         print('- Transpose b-vals and b-vects')
         pfi_bvals = jph(pfo_input_sj_DWI, sj + '_DWI_DwEffBval.txt')
         pfi_bvects = jph(pfo_input_sj_DWI, sj + '_DWI_DwGradVec.txt')
-        assert os.path.exists(pfi_bvals)
-        assert os.path.exists(pfi_bvects)
+        assert check_path(pfi_bvals)
+        assert check_path(pfi_bvects)
         pfi_transposed_bvals = jph(pfo_tmp, sj + '_DWI_DwEffBval_T.txt')
         pfi_transposed_vects = jph(pfo_tmp, sj + '_DWI_DwGradVec_T.txt')
         m = np.loadtxt(pfi_bvals)
@@ -68,10 +68,10 @@ def process_g_ratio_per_subject(sj, controller):
         pfi_transposed_bvals = jph(pfo_tmp, sj + '_DWI_DwEffBval_T.txt')
         pfi_transposed_vects = jph(pfo_tmp, sj + '_DWI_DwGradVec_T.txt')
         pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
-        assert os.path.exists(pfi_dwi_eddy_corrected), 'Need to run process_DWI first?'
-        assert os.path.exists(pfi_transposed_bvals)
-        assert os.path.exists(pfi_transposed_vects)
-        assert os.path.exists(pfi_roi_mask)
+        assert check_path(pfi_dwi_eddy_corrected), 'Need to run process_DWI first?'
+        assert check_path(pfi_transposed_bvals)
+        assert check_path(pfi_transposed_vects)
+        assert check_path(pfi_roi_mask)
         pfi_output_noddi = jph(pfo_tmp, sj + '_nod.nii.gz')
         cmd = 'fit_dwi -source {0} -mask {1} -bval {2} -bvec {3} -mcmap {4} -nod'.format(
             pfi_dwi_eddy_corrected, pfi_roi_mask, pfi_transposed_bvals, pfi_transposed_vects, pfi_output_noddi)
@@ -89,7 +89,7 @@ def process_g_ratio_per_subject(sj, controller):
 
     if controller['get acquisition echo time']:
         pfi_visu_pars = jph(pfo_input_sj_MSME, sj + '_MSME_visu_pars.npy')
-        assert os.path.exists(pfi_visu_pars)
+        assert check_path(pfi_visu_pars)
         pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
         visu_pars_dict = np.load(pfi_visu_pars)
         np.savetxt(fname=pfi_echo_times, X=visu_pars_dict.item().get('VisuAcqEchoTime'), fmt='%10.2f', newline=' ')
@@ -99,22 +99,22 @@ def process_g_ratio_per_subject(sj, controller):
         pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
         pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
         pfi_T2_times = jph(pfo_tmp, sj + '_t2_times.txt')
-        assert os.path.exists(pfi_msme_up), 'Need to run process_MSME first?'
-        assert os.path.exists(pfi_roi_mask)
-        assert os.path.exists(pfi_echo_times)
-        assert os.path.exists(pfi_T2_times)
+        assert check_path(pfi_msme_up), 'Need to run process_MSME first?'
+        assert check_path(pfi_roi_mask)
+        assert check_path(pfi_echo_times)
+        assert check_path(pfi_T2_times)
         pfi_mwf = jph(pfo_tmp, sj + '_vmvf.nii.gz')
         cmd = 'fit_qt2 -source {0} -mask {1} -nc 3 -TElist {2} -T2list {3} -mwf {4}'.format(
             pfi_msme_up, pfi_roi_mask, pfi_echo_times, pfi_T2_times, pfi_mwf)
         print cmd
         print_and_run(cmd)
-
+        assert check_path(pfi_mwf)
         if not os.path.exists(pfi_mwf):
             raise IOError('Something went wrong in using fit_qt2...')
 
     if controller['extract first tp noddi']:
         pfi_noddi = jph(pfo_tmp, sj + '_nod.nii.gz')
-        assert os.path.exists(pfi_noddi)
+        assert check_path(pfi_noddi)
         pfi_vin = jph(pfo_tmp, sj + '_vin.nii.gz')
         cmd = 'seg_maths {0} -tp 0 {1}'.format(pfi_noddi, pfi_vin)
         print_and_run(cmd)
@@ -122,8 +122,8 @@ def process_g_ratio_per_subject(sj, controller):
     if controller['compute g-ratio']:
         pfi_mwf = jph(pfo_tmp, sj + '_vmvf.nii.gz')
         pfi_vin = jph(pfo_tmp, sj + '_vin.nii.gz')
-        assert os.path.exists(pfi_mwf)
-        assert os.path.exists(pfi_vin)
+        assert check_path(pfi_mwf)
+        assert check_path(pfi_vin)
         pfi_tmp = jph(pfo_tmp, sj + '_tmp_g_ratio.nii.gz')
         pfi_g_ratio = jph(pfo_tmp, sj + '_g_ratio.nii.gz')
         cmd1 = 'fit_maths {0} -mul -1. {1}'.format(pfi_mwf, pfi_tmp)
@@ -145,7 +145,7 @@ def process_g_ratio_per_subject(sj, controller):
 
     if controller['save results']:
         pfi_g_ratio = jph(pfo_tmp, sj + '_g_ratio.nii.gz')
-        assert os.path.exists(pfi_g_ratio)
+        assert check_path(pfi_g_ratio)
         pfi_g_ratio_final = jph(pfo_mod, sj + '_g_ratio.nii.gz')
         cmd = 'cp {} {} '.format(pfi_g_ratio, pfi_g_ratio_final)
         print_and_run(cmd)
@@ -180,7 +180,6 @@ if __name__ == '__main__':
     lsm.execute_ACS_ex_vivo = False
 
     lsm.input_subjects = ['3103', ]
-
 
     lsm.update_ls()
 

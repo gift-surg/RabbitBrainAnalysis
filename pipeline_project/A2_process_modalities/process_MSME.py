@@ -9,7 +9,7 @@ from tools.definitions import root_study_rabbits
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
-from tools.auxiliary.utils import print_and_run
+from tools.auxiliary.utils import print_and_run, check_path
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 """
 
@@ -67,7 +67,7 @@ def process_MSME_per_subject(sj, controller):
     if controller['orient to standard']:
         print('- Processing MSME: orient to standard {}'.format(sj))
         pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
-        assert os.path.exists(pfi_msme)
+        assert check_path(pfi_msme)
         cmd = 'fslreorient2std {0} {0}'.format(pfi_msme)
         print_and_run(cmd)
         set_translational_part_to_zero(pfi_msme, pfi_msme)
@@ -87,7 +87,7 @@ def process_MSME_per_subject(sj, controller):
         pfi_msme_tp0 = jph(pfo_tmp, sj + '_MSME_tp0.nii.gz')
         assert os.path.exists(pfi_s0)
         assert os.path.exists(pfi_s0_mask)
-        assert os.path.exists(pfi_msme_tp0)
+        assert check_path(pfi_msme_tp0)
         pfi_transf_msme_on_s0 = jph(pfo_tmp, sj + '_msme_on_b0_rigid.txt')
         pfi_warped_msme_on_s0 = jph(pfo_mod, sj + '_MSME_tp0_up.nii.gz')
         cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -aff {3} -res {4} -rigOnly'.format(
@@ -101,7 +101,7 @@ def process_MSME_per_subject(sj, controller):
         pfi_transf_msme_on_s0 = jph(pfo_tmp, sj + '_msme_on_b0_rigid.txt')
         assert os.path.exists(pfi_s0)
         assert os.path.exists(pfi_msme)
-        assert os.path.exists(pfi_transf_msme_on_s0)
+        assert check_path(pfi_transf_msme_on_s0)
         pfi_msme_upsampled = jph(pfo_tmp, sj + '_MSME_up.nii.gz')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 1'.format(
             pfi_s0, pfi_msme, pfi_transf_msme_on_s0, pfi_msme_upsampled
@@ -111,7 +111,7 @@ def process_MSME_per_subject(sj, controller):
     if controller['bfc']:
         print('- get bfc correction each slice:')
         pfi_msme_upsampled = jph(pfo_tmp, sj + '_MSME_up.nii.gz')
-        assert os.path.exists(pfi_msme_upsampled)
+        assert check_path(pfi_msme_upsampled)
         print('-- un-pack slices')
         im = nib.load(pfi_msme_upsampled)
         tps = im.shape[-1]
@@ -142,33 +142,30 @@ def process_MSME_per_subject(sj, controller):
         cmd1 = 'seg_maths {0} -removenan {0}'.format(bias_field)
         print_and_run(cmd0)
         print_and_run(cmd1)
+        assert check_path(bias_field)
         print('-- correct all the remaining slices')
         for tp in range(1, tps):
             pfi_tp = jph(pfo_tmp, sj + '_MSME_tp{}.nii.gz'.format(tp))
             pfi_tp_bfc = jph(pfo_tmp, sj + '_MSME_tp{}_bfc.nii.gz'.format(tp))
             cmd0 = 'seg_maths {0} -mul {1} {2}'.format(pfi_tp, bias_field, pfi_tp_bfc)
             print_and_run(cmd0)
+            check_path(pfi_tp_bfc)
         print('-- pack together all the images in a stack')
         cmd = 'seg_maths {0} -merge	{1} {2} '.format(pfi_tp0_bfc, tps-1, 4)
         for tp in range(1, tps):
             pfi_tp_bfc = jph(pfo_tmp, sj + '_MSME_tp{}_bfc.nii.gz'.format(tp))
-            print
-            print pfi_tp_bfc
-            print
             cmd += pfi_tp_bfc + ' '
         pfi_stack = jph(pfo_tmp, sj + '_MSME_up_bfc.nii.gz')
         cmd += pfi_stack
 
-        print
-        print cmd
         print_and_run(cmd)
 
     if controller['save results']:
         print('save results')
         pfi_stack = jph(pfo_tmp, sj + '_MSME_up_bfc.nii.gz')
         pfi_tp0_bfc = jph(pfo_tmp, sj + '_MSME_tp0_bfc.nii.gz')
-        assert os.path.exists(pfi_stack)
-        assert os.path.exists(pfi_tp0_bfc)
+        assert check_path(pfi_stack)
+        assert check_path(pfi_tp0_bfc)
         pfi_msme_updampled_and_bfc = jph(pfo_mod, sj + '_MSME_up.nii.gz')
         pfi_msme_updampled_first_layer = jph(pfo_mod, sj + '_MSME_tp0_up.nii.gz')
         cmd2 = 'cp {0} {1}'.format(pfi_stack, pfi_msme_updampled_and_bfc)
