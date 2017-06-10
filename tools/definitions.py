@@ -14,7 +14,7 @@ if os.path.exists('/cluster/project0'):
     root_utils = jph(root_main_cluster, 'A_data', 'Utils')
     root_study_rabbits = root_main_cluster
     bfc_corrector_cmd = '/share/apps/cmic/NiftyMIDAS/bin/niftkMTPDbc '
-    root_shared_records = ''
+    root_shared_records = None
 
 
 elif os.path.exists('/Volumes/LC/sebastianof/rabbits/'):
