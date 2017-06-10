@@ -140,6 +140,8 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
                 pfi_target, pfi_target_roi_registration_masks, pfi_diff_bfc_target,
                 pfi_affine_warp_sj, pfi_templ_reg_mask_sj_aff_registered, pfi_diff_bfc_subject)
             print_and_run(cmd)
+            assert check_path(pfi_diff_bfc_target)
+            assert check_path(pfi_diff_bfc_subject)
         else:
             pfi_target = jph(pfo_mod, sj_target + '_T1.nii.gz')
             pfi_affine_warp_sj = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_warp_aff.nii.gz')
