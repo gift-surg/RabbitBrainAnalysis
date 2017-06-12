@@ -162,14 +162,14 @@ def process_g_ratio_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process g-ratio, local run. ')
 
-    controller_steps = {'transpose b-vals b-vects'  : False,
-                        'noddi'                     : False,
-                        'save T2_times'             : True,
-                        'get acquisition echo time' : True,
-                        'fit msme'                  : True,
-                        'extract first tp noddi'    : True,
-                        'compute g-ratio'           : True,
-                        'save results'              : True}
+    controller_steps = {'transpose b-vals b-vects'  : True,
+                        'noddi'                     : True,
+                        'save T2_times'             : False,
+                        'get acquisition echo time' : False,
+                        'fit msme'                  : False,
+                        'extract first tp noddi'    : False,
+                        'compute g-ratio'           : False,
+                        'save results'              : False}
 
     lsm = ListSubjectsManager()
 
@@ -179,7 +179,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['3103', ]
+    lsm.input_subjects = ['3301', ]
 
     lsm.update_ls()
 

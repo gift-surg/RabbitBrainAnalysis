@@ -17,9 +17,9 @@ def main_runner(subj_list):
     # Set steps
 
     step_A1         = False
-    step_A2_T1      = False
-    step_A2_DWI     = False
-    step_A2_MSME    = False
+    step_A2_T1      = True
+    step_A2_DWI     = True
+    step_A2_MSME    = True
     step_A2_g_ratio = True
     step_A3         = True
     step_A4         = True
