@@ -2,7 +2,7 @@ import os
 import numpy as np
 from os.path import join as jph
 
-from tools.definitions import root_study_rabbits
+from tools.definitions import root_study_rabbits, root_fit_apps
 from tools.auxiliary.utils import print_and_run
 from tools.auxiliary.sanity_checks import check_path
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
@@ -74,7 +74,7 @@ def process_g_ratio_per_subject(sj, controller):
         assert check_path(pfi_transposed_vects)
         assert check_path(pfi_roi_mask)
         pfi_output_noddi = jph(pfo_tmp, sj + '_nod.nii.gz')
-        cmd = 'fit_dwi -source {0} -mask {1} -bval {2} -bvec {3} -mcmap {4} -nod'.format(
+        cmd = root_fit_apps + 'fit_dwi -source {0} -mask {1} -bval {2} -bvec {3} -mcmap {4} -nod'.format(
             pfi_dwi_eddy_corrected, pfi_roi_mask, pfi_transposed_bvals, pfi_transposed_vects, pfi_output_noddi)
         print_and_run(cmd)
 
@@ -105,7 +105,7 @@ def process_g_ratio_per_subject(sj, controller):
         assert check_path(pfi_echo_times)
         assert check_path(pfi_T2_times)
         pfi_mwf = jph(pfo_tmp, sj + '_vmvf.nii.gz')
-        cmd = 'fit_qt2 -source {0} -mask {1} -nc 3 -TElist {2} -T2list {3} -mwf {4}'.format(
+        cmd = root_fit_apps + 'fit_qt2 -source {0} -mask {1} -nc 3 -TElist {2} -T2list {3} -mwf {4}'.format(
             pfi_msme_up, pfi_roi_mask, pfi_echo_times, pfi_T2_times, pfi_mwf)
         print cmd
         print_and_run(cmd)
@@ -127,13 +127,13 @@ def process_g_ratio_per_subject(sj, controller):
         assert check_path(pfi_vin)
         pfi_tmp = jph(pfo_tmp, sj + '_tmp_g_ratio.nii.gz')
         pfi_g_ratio = jph(pfo_tmp, sj + '_g_ratio.nii.gz')
-        cmd1 = 'fit_maths {0} -mul -1. {1}'.format(pfi_mwf, pfi_tmp)
-        cmd2 = 'fit_maths {0} -add 1.0 {0}'.format(pfi_tmp)
-        cmd3 = 'fit_maths {0} -mul {1} {0}'.format(pfi_tmp, pfi_vin)
-        cmd4 = 'fit_maths {0} -div {1} {1}'.format(pfi_mwf, pfi_tmp)
-        cmd5 = 'fit_maths {0} -add 1.0 {0}'.format(pfi_tmp)
-        cmd6 = 'fit_maths {0} -recip {0}'.format(pfi_tmp)
-        cmd7 = 'fit_maths {0} -sqrt {0}'.format(pfi_tmp)
+        cmd1 = 'seg_maths {0} -mul -1. {1}'.format(pfi_mwf, pfi_tmp)
+        cmd2 = 'seg_maths {0} -add 1.0 {0}'.format(pfi_tmp)
+        cmd3 = 'seg_maths {0} -mul {1} {0}'.format(pfi_tmp, pfi_vin)
+        cmd4 = 'seg_maths {0} -div {1} {1}'.format(pfi_mwf, pfi_tmp)
+        cmd5 = 'seg_maths {0} -add 1.0 {0}'.format(pfi_tmp)
+        cmd6 = 'seg_maths {0} -recip {0}'.format(pfi_tmp)
+        cmd7 = 'seg_maths {0} -sqrt {0}'.format(pfi_tmp)
         cmd8 = 'seg_maths {0} -uthr 0.999999999 {1}'.format(pfi_tmp, pfi_g_ratio)
         print_and_run(cmd1)
         print_and_run(cmd2)
