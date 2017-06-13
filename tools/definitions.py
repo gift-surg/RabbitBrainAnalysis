@@ -15,6 +15,7 @@ if os.path.exists('/cluster/project0'):
     root_study_rabbits = root_main_cluster
     bfc_corrector_cmd = '/share/apps/cmic/NiftyMIDAS/bin/niftkMTPDbc '
     root_shared_records = None
+    root_fit_apps = '/home/ferraris/software_lib/NiftyFit2/niftyfit-build/fit-apps/'
 
 
 elif os.path.exists('/Volumes/LC/sebastianof/rabbits/'):
@@ -26,6 +27,7 @@ elif os.path.exists('/Volumes/LC/sebastianof/rabbits/'):
     root_study_rabbits = jph(root_main_hdd, 'rabbits')
     root_shared_records = jph(root_main_dropbox, 'study', 'C_records')
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc '
+    root_fit_apps = ''
 
 
 elif os.path.exists('/Volumes/sebastianof/'):
@@ -38,6 +40,7 @@ elif os.path.exists('/Volumes/sebastianof/'):
     root_shared_records = jph(root_main_dropbox, 'study', 'C_records')
     assert os.path.isdir(root_study_rabbits), 'Connect pantopolio'
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc '
+    root_fit_apps = ''
 
 else:
     raise IOError('No source data!')
