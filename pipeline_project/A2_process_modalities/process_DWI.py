@@ -12,7 +12,8 @@ from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extract
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, \
-    reproduce_slice_fourth_dimension_path, scale_y_value_and_trim, print_and_run, check_path
+    reproduce_slice_fourth_dimension_path, scale_y_value_and_trim, print_and_run
+from tools.auxiliary.sanity_checks import check_path
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.correctors.slope_corrector import slope_corrector_path
 

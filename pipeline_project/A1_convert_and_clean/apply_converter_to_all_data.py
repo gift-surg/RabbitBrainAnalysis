@@ -5,7 +5,8 @@ from bruker2nifti.study_converter import convert_a_study
 
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from tools.definitions import root_study_rabbits
-from tools.auxiliary.utils import print_and_run, check_path
+from tools.auxiliary.utils import print_and_run
+from tools.auxiliary.sanity_checks import check_path
 
 
 def convert_subjects_from_list(subj_list):

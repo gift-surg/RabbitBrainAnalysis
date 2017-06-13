@@ -1,3 +1,4 @@
+from tools.auxiliary.sanity_checks import check_libraries
 
 from pipeline_project.A0_main.main_controller import ListSubjectsManager
 from pipeline_project.A1_convert_and_clean.apply_converter_to_all_data import convert_subjects_from_list
@@ -13,6 +14,8 @@ from pipeline_project.U_utils.upate_shared_results import send_data_to_hannes_fr
 
 
 def main_runner(subj_list):
+
+    check_libraries()
 
     # Set steps
 

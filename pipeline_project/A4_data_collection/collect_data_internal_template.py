@@ -3,7 +3,7 @@ from os.path import join as jph
 
 from tools.measurements.compile_record import compile_record
 from tools.definitions import root_internal_template, root_study_rabbits, pfi_excel_table_all_data
-from tools.auxiliary.utils import check_path
+from tools.auxiliary.sanity_checks import check_path
 '''
 Data here are directly collected from the manual segmentation that constitutes the internal template.
 This file is not called in the main pipeline but it is important as way of computing the error of

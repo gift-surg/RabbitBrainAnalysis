@@ -8,7 +8,8 @@ from os.path import join as jph
 from labels_manager.main import LabelsManager
 
 from pipeline_project.A0_main.main_controller import subject, propagate_me_level
-from tools.auxiliary.utils import adjust_header_from_transformations, print_and_run, check_path
+from tools.auxiliary.utils import adjust_header_from_transformations, print_and_run
+from tools.auxiliary.sanity_checks import check_path
 from tools.definitions import root_study_rabbits, bfc_corrector_cmd
 
 """

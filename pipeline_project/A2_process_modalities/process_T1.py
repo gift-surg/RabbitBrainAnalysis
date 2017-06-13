@@ -9,7 +9,8 @@ from tools.definitions import root_study_rabbits
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
-from tools.auxiliary.utils import print_and_run, check_path
+from tools.auxiliary.utils import print_and_run
+from tools.auxiliary.sanity_checks import check_path
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 
 """
