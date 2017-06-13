@@ -2,8 +2,8 @@ date
 hostname
 
 #$ -l h_rt=12:00:00
-#$ -l tmem=10G
-#$ -l h_vmem=10G
+#$ -l tmem=8G
+#$ -l h_vmem=8G
 #$ -N "ImgBrainAnalysis"
 #$ -S /bin/bash
 #$ -cwd

@@ -17,5 +17,3 @@ f.writelines(args.str_input + '\n')
 # f.writelines(root_study_rabbits + '\n')
 f.writelines(ma.__file__ + '\n')
 f.close()
-
-
