@@ -27,13 +27,15 @@ def check_path(pfi, interval=1, timeout=100):
 
 
 def check_libraries():
+
     def cmd_exists(cmd, msg):
         if subprocess.call("type " + cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
             return True
         else:
             raise EnvironmentError(msg)
 
-    cmd_exists(bfc_corrector_cmd, 'No niftk installed')
-    cmd_exists('seg_maths', 'No Nifty Seg installed')
-    cmd_exists('reg_aladin', 'No Nifty Reg installed')
-    cmd_exists('fslhd', 'No fsl installed')
+    assert cmd_exists(bfc_corrector_cmd, 'No niftk installed')
+    assert cmd_exists('seg_maths', 'No Nifty Seg installed')
+    assert cmd_exists('reg_aladin', 'No Nifty Reg installed')
+    assert cmd_exists('fit_maths', 'No Nifty Fit installed')
+    assert cmd_exists('fslhd', 'No fsl installed')
