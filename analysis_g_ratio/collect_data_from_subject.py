@@ -118,7 +118,7 @@ def plot_fancy_histogram(df_g_ratio, regions=None, modalities=None):
     # Dimensions
     width = 1200
     height = 1200
-    font_size = "12pt"
+    font_size = "16pt"
     inner_radius = 136  # corresponds to 0.4
     outer_radius = 340  # corresponds to 1.0
     x_center, y_center = 0, 0
@@ -136,7 +136,7 @@ def plot_fancy_histogram(df_g_ratio, regions=None, modalities=None):
 
     # FIGURE specs
 
-    p = figure(plot_width=width, plot_height=height, title="G-ratio estimation comparisons",
+    p = figure(plot_width=width, plot_height=height,
                x_axis_type=None, y_axis_type=None,
                x_range=(-420, 420), y_range=(-420, 420),
                min_border=0, outline_line_color="black",
@@ -173,13 +173,16 @@ def plot_fancy_histogram(df_g_ratio, regions=None, modalities=None):
             # wedge mean
             p.annular_wedge(x_center, y_center, inner_radius, mu,
                             starting_angle_b, ending_angle_b, color=color_b,  direction="clock")
-            # wdge standard deviation
-            p.annular_wedge(x_center, y_center, mu-std, mu+std,
-                            mean_angle, mean_angle, color="#838683", direction="clock")
-
+            # wdge standard deviation: main bar
+            p.annular_wedge(x_center, y_center, mu-std, mu+std, mean_angle, mean_angle, color="#838683",
+                            direction="clock")
+            # wdge standard deviation: sides
+            p.annular_wedge(x_center, y_center, mu - std, mu - std, mean_angle + beta/4, mean_angle - beta/4,
+                            color="#838683", direction="clock")
+            p.annular_wedge(x_center, y_center, mu + std, mu + std, mean_angle + beta/4, mean_angle - beta/4,
+                            color="#838683", direction="clock")
     # Radial axis, final one
-    p.annular_wedge(0, 0, inner_radius, outer_radius,
-                    ending_angle_a, ending_angle_a, color="black")
+    p.annular_wedge(0, 0, inner_radius, outer_radius, ending_angle_a, ending_angle_a, color="black")
 
     # Circle with the scale values:
     g_ratio_values = np.linspace(0.4, 1.1, 8)[:-1]
@@ -215,21 +218,34 @@ def plot_fancy_histogram(df_g_ratio, regions=None, modalities=None):
     show(p)
 
 
-def save_latex_tables(input_df, selected_regions=None):
+def save_latex_tables(input_df, selected_regions=None, file_name='regions_data.tex'):
+    # copy for safety reasons:
+    df = input_df.copy(deep=True)
     if selected_regions is not None:
+        df = df.loc[list(selected_regions), :]
 
-    pass
+    series_mean = df.mean(axis=1)
+    series_stdev = df.std(axis=1)
+    df_mean_stdev = pd.DataFrame({'mean': series_mean, 'std': series_stdev})
+    df_mean_stdev = df_mean_stdev.T
+    dat = df_mean_stdev.to_latex()
+    f = open(jph(pfo_local_output, file_name), 'w+')
+    f.write(dat)
+    f.close()
 
 # ---
 
 if __name__ == '__main__':
     # ---- some initial examples: as taking information from 5 different resources:
 
-    regions = ('Retrosplenium', 'Hippocampus', 'Putamen', 'Septum', 'Midbrain', 'Pons', 'Anterior commissure', 'Corpus callosum', 'Ippocampi')
+    regions = ('Retrosplenium', 'Hippocampi', 'Putamen', 'Septum', 'Midbrain', 'Pons', 'Anterior commissure', 'Corpus callosum', 'Something')
     modalities = ('histo', 'histo+', 'dwi', 'dwi+', 'humans')
 
-    df_g_ratios = generate_dummy_data_frame(num_subjects=10, modalities=modalities, regions=regions)
+    df_g_ratios = generate_dummy_data_frame(num_subjects=4, modalities=modalities, regions=regions)
 
-    plot_histogram(df_g_ratios, regions=regions, modalities=modalities)
+    # plot_histogram(df_g_ratios, regions=regions, modalities=modalities)
     plot_fancy_histogram(df_g_ratios, regions=regions, modalities=modalities)
-    save_latex_tables(df_g_ratios)
+    # save_latex_tables(df_g_ratios, selected_regions=('Retrosplenium'), file_name='regions_data_1.tex')
+    # save_latex_tables(df_g_ratios, selected_regions=('Corpus callosum'),  file_name='regions_data_2.tex')
+    # save_latex_tables(df_g_ratios, selected_regions=('Midbrain',), file_name='regions_data_3.tex')
+    # save_latex_tables(df_g_ratios, selected_regions=('Something',), file_name='regions_data_4.tex')
