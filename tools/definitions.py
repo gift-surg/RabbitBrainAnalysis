@@ -3,7 +3,7 @@ from os.path import join as jph
 
 
 root_dir = os.path.abspath(os.path.dirname(__file__))
-
+pfo_local_output = jph(os.path.dirname(root_dir), 'output')
 
 if os.path.exists('/cluster/project0'):
     print('You are on the cluster')

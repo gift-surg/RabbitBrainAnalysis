@@ -390,7 +390,7 @@ def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_
         else:
             cmd = 'cp {0} {1}'.format(pfi_templ_segm_aff_registered_on_sj_target,
                                       pfi_subject_propagated_on_target_segm_smol)
-            print_and_run(cmd)
+        print_and_run(cmd)
 
     if controller['save result']:
         print('- save result {} '.format(sj_target))
