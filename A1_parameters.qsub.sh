@@ -11,7 +11,7 @@ hostname
 #$ -e ../z_output/
 #$ -o ../z_output/
 
-SUBJECT=`sed -n ${SGE_TASK_ID}p subjects.txt`
+SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_all.txt`
 
 echo $SUBJECT
 
