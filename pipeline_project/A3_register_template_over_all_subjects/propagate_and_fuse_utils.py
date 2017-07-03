@@ -422,7 +422,6 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
     pfi_T1 = jph(pfo_mod, sj + '_T1.nii.gz')
     pfi_segm_T1 = jph(pfo_segm, sj + '_T1_segm.nii.gz')
     pfi_S0 = jph(pfo_mod, sj + '_S0.nii.gz')
-    pfi_MSME_up = jph(pfo_mod, sj + '_MSME_up_1st.nii.gz')
     pfi_MSME = jph(pfo_mod, sj + '_MSME.nii.gz')
     pfi_reg_mask_T1 = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
     pfi_reg_mask_S0 = jph(pfo_mask, sj + '_b0_reg_mask.nii.gz')  # get also the registration mask other than the roi?

@@ -43,6 +43,7 @@ elif os.path.exists('/Volumes/sebastianof/'):
     root_fit_apps = ''
 
 else:
-    raise IOError('No source data!')
+    print('No source data! YOU ARE WORKING IN LOCAL!')
+    root_study_rabbits = ''
 
 pfi_excel_table_all_data = jph(root_study_rabbits, 'A_data', 'DataSummary.xlsx')

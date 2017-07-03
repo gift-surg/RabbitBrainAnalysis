@@ -6,6 +6,7 @@ from pipeline_project.A1_convert_and_clean.clean_converted_data import cleaner_c
 from pipeline_project.A2_process_modalities.process_DWI import process_DWI_from_list
 from pipeline_project.A2_process_modalities.process_MSME import process_MSME_from_list
 from pipeline_project.A2_process_modalities.process_T1 import process_T1_from_list
+from pipeline_project.A2_process_modalities.process_T2_map import process_t2_maps_from_list
 from pipeline_project.A2_process_modalities.process_g_ratio import process_g_ratio_from_list
 from pipeline_project.A3_register_template_over_all_subjects.propagate_and_fuse_main import \
     propagate_and_fuse_per_subject_list_over_all_modalities
@@ -20,9 +21,10 @@ def main_runner(subj_list):
     # Set steps
 
     step_A1         = False
-    step_A2_T1      = False
-    step_A2_DWI     = False
-    step_A2_MSME    = False
+    step_A2_T1      = True
+    step_A2_DWI     = True
+    step_A2_MSME    = True
+    step_A2_T2maps  = True
     step_A2_g_ratio = True
     step_A3         = True
     step_A4         = True
@@ -74,15 +76,26 @@ def main_runner(subj_list):
     if step_A2_MSME:
         print('\nStep A2 MSME\n')
         controller_MSME = {'squeeze'                       : True,
-                            'orient to standard'           : True,
-                            'extract first timepoint'      : True,
-                            'register tp0 to S0'           : True,
+                           'orient to standard'            : True,
+                           'extract first timepoint'       : True,
+                           'register tp0 to S0'            : True,
                            'register msme to S0'           : True,
-                            'bfc'                          : True,
-                            'save results'                 : True
+                           'get mask for original msme'    : True,
+                           'bfc'                           : True,
+                           'bfc up'                        : True,
+                           'save results'                  : True,
+                           'save results tp0'              : True
                            }
 
         process_MSME_from_list(subj_list, controller_MSME)
+
+    ''' Step A2 - T2Maps '''
+    if step_A2_T2maps:
+        print('\nStep T2 maps\n')
+        controller_T2maps = {'get acquisition echo time': True,
+                            'process each MSME input': True}
+
+        process_t2_maps_from_list(subj_list, controller_T2maps)
 
     ''' Step A2 - g-ratio '''
     if step_A2_g_ratio:

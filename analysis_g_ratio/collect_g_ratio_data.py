@@ -1,8 +1,6 @@
 import os
 import numpy as np
 from os.path import join as jph
-from tabulate import tabulate
-import matplotlib.pyplot as plt
 import pandas as pd
 from bokeh.plotting import figure, show, output_file
 
@@ -73,7 +71,6 @@ def get_g_ratio_per_subjects_as_data_frame(input_subjects_list):
               'g_ratios'  : g_ratios}
 
     :param input_subjects_list:
-    :param get_table:
     :return: regions_over_g_ratio, a matrix num_regions x subjects having
         regions_over_g_ratio[reg_i, subj_j] = g_ratio per region reg_i of the subject subj_j
     """
@@ -149,6 +146,7 @@ def plot_fancy_histogram(df_g_ratio, regions=None, modalities=None):
     alpha = 2.0 * np.pi / float(number_regions + 1)  # big angle
     beta = alpha / float(2*number_modalities + 1)  # small angle
 
+    ending_angle_a = 0
     # Regions
     for a in range(number_regions):
         starting_angle_a = np.pi/2 - alpha/2 - a * alpha
