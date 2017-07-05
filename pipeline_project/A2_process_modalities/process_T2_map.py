@@ -23,11 +23,13 @@ OUTPUT are the four corresponding estimated T2maps.
 import os
 from os.path import join as jph
 import numpy as np
+import nibabel as nib
 
 from tools.definitions import root_study_rabbits
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
 from tools.auxiliary.utils import print_and_run
 from tools.auxiliary.sanity_checks import check_path
+from tools.definitions import bfc_corrector_cmd, root_fit_apps
 
 
 def process_T2_map_per_subject(sj, controller):
@@ -56,6 +58,8 @@ def process_T2_map_per_subject(sj, controller):
 
     print_and_run('mkdir -p {}'.format(pfo_tmp))
 
+    suffix = ['', '_bfc', '_up', '_bfc_up']
+
     if controller['get acquisition echo time']:
         pfi_visu_pars = jph(pfo_input_sj_MSME, sj + '_MSME_visu_pars.npy')
         assert check_path(pfi_visu_pars)
@@ -68,20 +72,36 @@ def process_T2_map_per_subject(sj, controller):
         assert os.path.exists(pfi_echo_times)
         TE = np.loadtxt(pfi_echo_times)
         echo_delta = TE[2] - TE[1]
-        # make the output folder as mod subfolder:
-        pfo_mod_T2map = jph(pfo_mod, 'T2_maps')
-        cmd = 'mkdir -p {}'.format(pfo_mod_T2map)
-        print_and_run(cmd)
-
         # original
-        suffix = ['', '_bfc', '_up', '_bfc_up']
         for s in suffix:
             pfi_original_MSME = jph(pfo_mod, sj + '_MSME{}.nii.gz'.format(s))
             check_path(pfi_original_MSME)
-            pfi_T2map = jph(pfo_mod_T2map, sj + '_T2map{}.nii.gz'.format(s))
-            cmd1 = 'fit_qt2 -source {0} -TE {1} -t2map {2}'.format(pfi_original_MSME, echo_delta, pfi_T2map)
+            pfi_T2map = jph(pfo_tmp, sj + '_T2map{}.nii.gz'.format(s))
+            cmd1 = root_fit_apps + 'fit_qt2 -source {0} -TE {1} -t2map {2}'.format(pfi_original_MSME,
+                                                                                   echo_delta, pfi_T2map)
             print cmd1
             print_and_run(cmd1)
+
+    if controller['correct origin']:  # some versions of niftyfit for fit_qt2 are dividing by 0 in the origin.
+        for s in suffix:
+            pfi_T2map = jph(pfo_tmp, sj + '_T2map{}.nii.gz'.format(s))
+            check_path(pfi_T2map)
+            pfi_T2map_corrected = jph(pfo_tmp, sj + '_T2map{}_hf.nii.gz'.format(s))
+            # clean origin:
+            im_s = nib.load(pfi_T2map)
+            im_s.get_data()[0, 0, 0] = np.mean(im_s.get_data()[1:, 1:, 1:])
+            nib.save(im_s, pfi_T2map_corrected)
+
+    if controller['save results']:
+        pfo_mod_T2map = jph(pfo_mod, 'T2_maps')
+        cmd = 'mkdir -p {}'.format(pfo_mod_T2map)
+        print_and_run(cmd)
+        for s in suffix:
+            pfi_T2map_corrected = jph(pfo_tmp, sj + '_T2map{}_hf.nii.gz'.format(s))
+            check_path(pfi_T2map_corrected)
+            pfi_T2map = jph(pfo_mod_T2map, sj + '_T2map{}.nii.gz'.format(s))
+            cmd = 'cp {0} {1}'.format(pfi_T2map_corrected, pfi_T2map)
+            print_and_run(cmd)
 
 
 def process_t2_maps_from_list(subj_list, controller):
@@ -97,7 +117,9 @@ if __name__ == '__main__':
     print('process T2Maps, local run. ')
 
     controller_steps = {'get acquisition echo time'  : True,
-                        'process each MSME input'    : True}
+                        'process each MSME input'    : True,
+                        'correct origin'             : True,
+                        'save results'               : True}
 
     lsm = ListSubjectsManager()
 

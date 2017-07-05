@@ -34,11 +34,12 @@ def check_libraries():
         else:
             raise EnvironmentError(msg)
     #
-    # aa = 'export PATH=/home/ferraris/software_lib/NiftyFit2/niftyfit-build/fit-apps/:${PATH}'
-    # os.system(aa)
+    aa = 'export PATH=/home/ferraris/software_lib/NiftyFit2/niftyfit-build/fit-apps/:${PATH}'
+    os.system(aa)
 
     assert cmd_exists(bfc_corrector_cmd, 'No niftk installed')
     assert cmd_exists('seg_maths', 'No Nifty Seg installed')
     assert cmd_exists('reg_aladin', 'No Nifty Reg installed')
     assert cmd_exists('fslhd', 'No fsl installed')
     assert cmd_exists(root_fit_apps + 'fit_maths', 'No Nifty Fit installed')
+    assert cmd_exists(root_fit_apps + 'fit_qt2', 'No Nifty Fit fit_qt2 installed')

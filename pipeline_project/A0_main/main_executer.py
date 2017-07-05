@@ -21,11 +21,11 @@ def main_runner(subj_list):
     # Set steps
 
     step_A1         = False
-    step_A2_T1      = True
-    step_A2_DWI     = True
-    step_A2_MSME    = True
-    step_A2_T2maps  = True
-    step_A2_g_ratio = True
+    step_A2_T1      = False
+    step_A2_DWI     = False
+    step_A2_MSME    = False
+    step_A2_T2maps  = False
+    step_A2_g_ratio = False
     step_A3         = True
     step_A4         = True
     step_A5         = False
@@ -92,8 +92,10 @@ def main_runner(subj_list):
     ''' Step A2 - T2Maps '''
     if step_A2_T2maps:
         print('\nStep T2 maps\n')
-        controller_T2maps = {'get acquisition echo time': True,
-                            'process each MSME input': True}
+        controller_T2maps = {'get acquisition echo time'  : True,
+                             'process each MSME input'    : True,
+                             'correct origin'             : True,
+                             'save results'               : True}
 
         process_t2_maps_from_list(subj_list, controller_T2maps)
 

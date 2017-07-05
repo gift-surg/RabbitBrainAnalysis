@@ -74,10 +74,12 @@ def compose_aff_transf_from_paths(pfi_left_aff, pfi_right_aff, pfi_final):
     np.savetxt(pfi_final, left.dot(right))
 
 
-def compare_two_nib(im1, im2):
+def compare_two_nib(im1, im2, compare_headers_only=True, toll=10e-4):
     """
     :param im1: one nibabel image
     :param im2: another nibabel image
+    :param compare_headers_only: if False check also the values [True]
+    :param toll: tollerance in the decimals differences between the data [10e-4]
     :return: true false and plot to console if the images are the same or not (up to a tollerance in the data)
     """
 
@@ -117,19 +119,19 @@ def compare_two_nib(im1, im2):
             images_are_equals = False
             print(k, hd1[k])
 
-    '''
-    # Compare values and type:
+    if not compare_headers_only:
+        # Compare values and type:
 
-    im1_data = im1.get_data()
-    im2_data = im2.get_data()
+        im1_data = im1.get_data()
+        im2_data = im2.get_data()
 
-    if not im1_data.dtype == im2_data.dtype:
-        images_are_equals = False
+        if not im1_data.dtype == im2_data.dtype:
+            images_are_equals = False
 
-    # Compare values
-    if np.max(im1_data - im2_data) > toll:
-        images_are_equals = False
-    '''
+        # Compare values
+        if np.max(im1_data - im2_data) > toll:
+            images_are_equals = False
+
 
     return images_are_equals
 

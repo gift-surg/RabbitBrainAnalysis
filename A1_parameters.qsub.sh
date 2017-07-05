@@ -2,16 +2,16 @@ date
 hostname
 
 #$ -l h_rt=12:00:00
-#$ -l tmem=8G
-#$ -l h_vmem=8G
+#$ -l tmem=25G
+#$ -l h_vmem=25G
 #$ -N "ImgBrainAnalysis"
 #$ -S /bin/bash
 #$ -cwd
-#$ -t 6-6
+#$ -t 1-3
 #$ -e ../z_output/
 #$ -o ../z_output/
 
-SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_all.txt`
+SUBJECT=`sed -n ${SGE_TASK_ID}p subjects.txt`
 
 echo $SUBJECT
 
