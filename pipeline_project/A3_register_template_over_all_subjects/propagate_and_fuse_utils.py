@@ -137,6 +137,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             assert check_path(pfi_templ_reg_mask_sj_aff_registered)
             pfi_diff_bfc_target = jph(pfo_tmp, 'bfc' + sj_target + '.nii.gz')
             pfi_diff_bfc_subject = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '.nii.gz')
+            os.system('export LD_LIBRARY_PATH=/share/apps/cmic/NiftyMIDAS/bin/:${LD_LIBRARY_PATH}')  # if on cluster.
             cmd = bfc_corrector_cmd + ' {0} {1} {2} {3} {4} {5} '.format(
                 pfi_target, pfi_target_roi_registration_masks, pfi_diff_bfc_target,
                 pfi_affine_warp_sj, pfi_templ_reg_mask_sj_aff_registered, pfi_diff_bfc_subject)
