@@ -25,7 +25,7 @@ def propagate_and_fuse_per_subject_list_over_all_modalities(subj_list,
         pfo_target = jph(root_study_rabbits, 'A_data', group, category, sj_target)
 
         assert os.path.isdir(pfo_target)
-        # If sj_atrget belongs to the template simply reorient the manual segmentation constituting the template.
+        # If sj_target belongs to the template simply reorient the manual segmentation constituting the template.
         if sj_target in templ_subjects:
             print('\n\n{} is in the template, alignment of the manual segmentation'.format(sj_target))
             sj_source = sj_target
@@ -35,7 +35,7 @@ def propagate_and_fuse_per_subject_list_over_all_modalities(subj_list,
         else:
             print('\n\n{} is NOT in the template, Propagation started'.format(sj_target))
             propagate_all_to_one(sj_target, pfo_target, root_internal_template, templ_subjects, controller_fuser)
-        # if the S0 is available you can move to propagate the obtained template on other modalities.
+        # if the S0 is available you can transfer the obtained segmentation on other modalities.
         if os.path.exists(jph(pfo_target, 'mod', sj_target + '_S0.nii.gz')):  # dwi have been computed. Ready to move
             print('\n\nPropagation of the segmentation {} T1 to other modalities.'.format(sj_target))
             # propagate within modalities

@@ -213,7 +213,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             else:
                 cmd = 'cp {0} {1}'.format(pfi_subject_propagated_on_target_segm,
                                           pfi_subject_propagated_on_target_segm_smol)
-                print_and_run(cmd)
+            print_and_run(cmd)
 
     # <end for>
 

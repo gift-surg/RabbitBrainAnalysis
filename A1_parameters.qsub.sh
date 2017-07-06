@@ -7,12 +7,22 @@ hostname
 #$ -N "ImgBrainAnalysis"
 #$ -S /bin/bash
 #$ -cwd
-#$ -t 1-3
+#$ -t 3-14
 #$ -e ../z_output/
 #$ -o ../z_output/
 
 SUBJECT=`sed -n ${SGE_TASK_ID}p subjects.txt`
 
-echo $SUBJECT
 
-./A2_run_python.sh $SUBJECT
+export PATH=/share/apps/fsl-5.0.8/bin/:${PATH}
+export PATH=/home/ferraris/software_lib/NiftyFit2/niftyfit-build/fit-apps/:${PATH}
+export LD_LIBRARY_PATH=/share/apps/cmic/NiftyMIDAS/bin/:${LD_LIBRARY_PATH}
+
+EXEC=/home/ferraris/py_venvs/v2/bin/python
+CALLER=cluster_commands/call_executer.py
+
+echo $EXEC $CALLER -i $SUBJECT
+
+$EXEC $CALLER -i $SUBJECT
+
+
