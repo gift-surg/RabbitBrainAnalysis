@@ -84,6 +84,29 @@ def parse_multi_label_descriptor_in_a_list(pfi_multi_lab_descriptor):
     return label_descriptor_list
 
 
+def parse_multi_label_descriptor_in_a_dict(pfi_multi_lab_descriptor):
+    """
+    Parse the multi-label descriptor (created on the idea of the label descriptor) in a list.
+    :param pfi_multi_lab_descriptor:
+    :return:
+    """
+    if not os.path.exists(pfi_multi_lab_descriptor):
+        msg = 'Label descriptor file {} does not exist'.format(pfi_multi_lab_descriptor)
+        raise IOError(msg)
+
+    f = open(pfi_multi_lab_descriptor, 'r')
+    lines = f.readlines()
+
+    label_descriptor_dict = {}
+
+    for l in lines:
+        if not l.startswith('#'):
+            parsed_line = [j.strip() for j in l.split('&')]
+            label_descriptor_dict.update({parsed_line[0]: [int(k) for k in parsed_line[1:]]})
+
+    return label_descriptor_dict
+
+
 def write_header_excel_tabs_from_record(pfi_excel, sheet_name, pfi_record):
 
     assert os.path.exists(pfi_record)

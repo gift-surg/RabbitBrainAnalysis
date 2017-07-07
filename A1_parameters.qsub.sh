@@ -2,16 +2,16 @@ date
 hostname
 
 #$ -l h_rt=12:00:00
-#$ -l tmem=25G
-#$ -l h_vmem=25G
-#$ -N "ImgBrainAnalysis"
+#$ -l tmem=30G
+#$ -l h_vmem=30G
+#$ -N "ImgBrainAnalysisPTB_all"
 #$ -S /bin/bash
 #$ -cwd
-#$ -t 3-14
+#$ -t 1-14
 #$ -e ../z_output/
 #$ -o ../z_output/
 
-SUBJECT=`sed -n ${SGE_TASK_ID}p subjects.txt`
+SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_PTB_ex_vivo.txt`
 
 
 export PATH=/share/apps/fsl-5.0.8/bin/:${PATH}

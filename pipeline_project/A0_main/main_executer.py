@@ -28,7 +28,7 @@ def main_runner(subj_list):
     step_A2_g_ratio = True
     step_A3         = True
     step_A4         = True
-    step_A5         = False
+    step_A5         = True
 
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
@@ -168,9 +168,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_ex_vivo   = False
     lsm.execute_PTB_in_vivo   = False
     lsm.execute_PTB_op_skull  = False
-    lsm.execute_ACS_ex_vivo   = False
+    lsm.execute_ACS_ex_vivo   = True
 
-    lsm.input_subjects = ['3103',]  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507', ]
+    # lsm.input_subjects = ['3103',]  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507', ]
     #  ['3405', '3501', '3505', '3507', ]  # [ '3108', '3401', '3403', '3404' ]
     #  '3307', '3404']  # '2202t1', '2205t1', 3103'2206t1' -- '2503', '2608', '2702', '2205t1', '2206t1'
     lsm.update_ls()

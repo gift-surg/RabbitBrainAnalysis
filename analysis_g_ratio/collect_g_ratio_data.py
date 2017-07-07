@@ -59,6 +59,10 @@ def get_g_ratio_per_subjects_as_data_frame(input_subjects_list):
     """
     Each subject has to be provided with a record in the appropriate folder
     From the records of a range of subjects it extracts the data frame with the g-ratio, for the required modalities.
+
+    NOTE: for the g-ratio, the data should be collected individually and not from the record, as
+    there is an experimentation phase in progress...
+
     A record is a data structure as:
 
     record = {'Info'      : subject_info,
@@ -92,6 +96,8 @@ def get_g_ratio_per_subjects_as_data_frame(input_subjects_list):
 
     # --  get the matrix:
     regions_over_g_ratio = np.zeros([len(regions_sj0), len(input_subjects_list)], dtype=np.float64)
+
+    # TODO
 
     # --  create the table and the header:
 

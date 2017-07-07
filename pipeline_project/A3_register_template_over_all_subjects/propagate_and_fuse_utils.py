@@ -15,7 +15,6 @@ from tools.definitions import root_study_rabbits, bfc_corrector_cmd
 """
 Disregarding the modality or other issues, various options are allowed.
 The parameters are provided subject-wise and are stored in the Utils file subjects.
-
 """
 
 

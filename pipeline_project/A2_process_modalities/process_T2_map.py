@@ -27,7 +27,7 @@ import nibabel as nib
 
 from tools.definitions import root_study_rabbits
 from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
-from tools.auxiliary.utils import print_and_run
+from tools.auxiliary.utils import print_and_run, set_new_data
 from tools.auxiliary.sanity_checks import check_path
 from tools.definitions import bfc_corrector_cmd, root_fit_apps
 
@@ -86,18 +86,20 @@ def process_T2_map_per_subject(sj, controller):
         for s in suffix:
             pfi_T2map = jph(pfo_tmp, sj + '_T2map{}.nii.gz'.format(s))
             check_path(pfi_T2map)
-            pfi_T2map_corrected = jph(pfo_tmp, sj + '_T2map{}_hf.nii.gz'.format(s))
-            # clean origin:
+            pfi_T2map_corrected = jph(pfo_tmp, sj + '_corrected_T2map{}.nii.gz'.format(s))
+            # clean upper outliers (Mean + 2 * StandardDeviation) ... They are more than outliers!
             im_s = nib.load(pfi_T2map)
-            im_s.get_data()[0, 0, 0] = np.mean(im_s.get_data()[1:, 1:, 1:])
-            nib.save(im_s, pfi_T2map_corrected)
+            places_not_outliers = im_s.get_data() < 1000  # np.mean(im_s.get_data()) + 2 * np.std(im_s.get_data())
+            im_s.get_data()[:] = places_not_outliers * im_s.get_data()
+            im_corrected = set_new_data(im_s, places_not_outliers * im_s.get_data())
+            nib.save(im_corrected, pfi_T2map_corrected)
 
     if controller['save results']:
         pfo_mod_T2map = jph(pfo_mod, 'T2_maps')
         cmd = 'mkdir -p {}'.format(pfo_mod_T2map)
         print_and_run(cmd)
         for s in suffix:
-            pfi_T2map_corrected = jph(pfo_tmp, sj + '_T2map{}_hf.nii.gz'.format(s))
+            pfi_T2map_corrected = jph(pfo_tmp, sj + '_corrected_T2map{}.nii.gz'.format(s))
             check_path(pfi_T2map_corrected)
             pfi_T2map = jph(pfo_mod_T2map, sj + '_T2map{}.nii.gz'.format(s))
             cmd = 'cp {0} {1}'.format(pfi_T2map_corrected, pfi_T2map)
@@ -106,7 +108,7 @@ def process_T2_map_per_subject(sj, controller):
 
 def process_t2_maps_from_list(subj_list, controller):
 
-    print '\n\n Processing g-ratio subjects from list {0} \n'.format(subj_list)
+    print '\n\n Processing t2 subjects from list {0} \n'.format(subj_list)
 
     for sj in subj_list:
         process_T2_map_per_subject(sj, controller)
@@ -116,8 +118,8 @@ if __name__ == '__main__':
 
     print('process T2Maps, local run. ')
 
-    controller_steps = {'get acquisition echo time'  : True,
-                        'process each MSME input'    : True,
+    controller_steps = {'get acquisition echo time'  : False,
+                        'process each MSME input'    : False,
                         'correct origin'             : True,
                         'save results'               : True}
 

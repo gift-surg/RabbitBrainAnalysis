@@ -142,6 +142,21 @@ def compile_record(pfi_T1,
         g_ratios = np.array([0, ] * len(regions))
         tot_vol_g_ratio = -1
 
+    # T2_map
+    # if verbose > 0:
+    #     print('T2 map - get_average_below_labels')
+    # if os.path.exists(pfi_segm_T2_map) and os.path.exists(pfi_T2_map):
+    #     sa = SegmentationAnalyzer(pfi_segmentation=pfi_segm_T2_map,
+    #                               pfi_scalar_im=pfi_T2_map,
+    #                               icv_factor=None,
+    #                               return_mm3=True)
+    #     sa.labels_to_exclude = [153, ]
+    #     T2_maps = sa.get_average_below_labels(values_list)
+    #     tot_vol_T2_maps = sa.get_total_volume()
+    # else:
+    #     T2_maps = np.array([0, ] * len(regions))
+    #     tot_vol_T2_maps = -1
+
     # Add total volume to the subjects info
     if False:  # if the ICV is stored somewhere, grab it...
         pass
@@ -150,6 +165,7 @@ def compile_record(pfi_T1,
         subject_info.update({'totVol FA': tot_vol_FA})
         subject_info.update({'totVol ADC': tot_vol_ADC})
         subject_info.update({'totVol g_ratio': tot_vol_g_ratio})
+        # subject_info.update({'totVol T2_maps': tot_vol_T2_maps})
 
     # Add ICV estimation to the subject info
     if False:  # if the ICV is stored somewhere, grab it...
@@ -167,7 +183,9 @@ def compile_record(pfi_T1,
               'vols'      : vols,
               'FAs'       : FAs,
               'ADCs'      : ADCs,
-              'g_ratios'  : g_ratios}
+              'g_ratios'  : g_ratios,
+              # 'T2_maps'   : T2_maps
+              }
 
     # -- save python dictionary
     np.save(jph(pfo_output, subject_name + '_record.npy') , record)
@@ -212,6 +230,7 @@ def compile_record(pfi_T1,
         fi.write('totVol FA               : {}\n'.format(subject_info['totVol FA']))
         fi.write('totVol ADC              : {}\n'.format(subject_info['totVol ADC']))
         fi.write('totVol g_ratio          : {}\n'.format(subject_info['totVol g_ratio']))
+        # fi.write('totVol T2 map           : {}\n'.format(subject_info['totVol T2_maps']))
         fi.write('Estimated ICV           : {}\n'.format(subject_info['ICV']))
 
         # append empty lines
