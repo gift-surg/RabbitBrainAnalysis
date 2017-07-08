@@ -14,7 +14,7 @@ if os.path.exists('/cluster/project0'):
     root_utils = jph(root_main_cluster, 'A_data', 'Utils')
     root_study_rabbits = root_main_cluster
     bfc_corrector_cmd = '/share/apps/cmic/NiftyMIDAS/bin/niftkMTPDbc '
-    root_shared_records = None
+    root_shared_records = ''
     root_fit_apps = '/home/ferraris/software_lib/NiftyFit2/niftyfit-build/fit-apps/'
 
 
@@ -45,5 +45,6 @@ elif os.path.exists('/Volumes/sebastianof/'):
 else:
     print('No source data! YOU ARE WORKING IN LOCAL!')
     root_study_rabbits = ''
+    root_utils = ''
 
 pfi_excel_table_all_data = jph(root_study_rabbits, 'A_data', 'DataSummary.xlsx')

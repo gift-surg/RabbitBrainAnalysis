@@ -21,14 +21,14 @@ def main_runner(subj_list):
     # Set steps
 
     step_A1         = False
-    step_A2_T1      = True
+    step_A2_T1      = False
     step_A2_DWI     = True
     step_A2_MSME    = True
     step_A2_T2maps  = True
-    step_A2_g_ratio = True
+    step_A2_g_ratio = False
     step_A3         = True
     step_A4         = True
-    step_A5         = True
+    step_A5         = False
 
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
@@ -136,12 +136,11 @@ def main_runner(subj_list):
                                   'Smooth'                   : True,
                                   'save result'              : True}
 
-        controller_inter_modality_propagator_ = {'compensate squeezing'     : True,
-                                                 'rig register to S0'       : True,
-                                                 'rig propagate to S0'      : True,
-                                                 'rig register to MSME_up'  : True,
-                                                 'rig propagate to MSME_up' : True,
-                                                 'MSME_up to MSME'          : True}
+        controller_inter_modality_propagator_ = {'compensate squeezing'           : True,
+                                                 'rig register to S0'             : True,
+                                                 'rig propagate to S0'            : True,
+                                                 'rig register MSME_up to MSME'   : True,
+                                                 'rig propagate segm_S0 to MSME'  : True}
 
         propagate_and_fuse_per_subject_list_over_all_modalities(subj_list, controller_fuser_, controller_propagator_,
                                                                 controller_inter_modality_propagator_)
@@ -168,9 +167,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_ex_vivo   = False
     lsm.execute_PTB_in_vivo   = False
     lsm.execute_PTB_op_skull  = False
-    lsm.execute_ACS_ex_vivo   = True
+    lsm.execute_ACS_ex_vivo   = False
 
-    # lsm.input_subjects = ['3103',]  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507', ]
+    lsm.input_subjects = ['3307',]  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507', ]
     #  ['3405', '3501', '3505', '3507', ]  # [ '3108', '3401', '3403', '3404' ]
     #  '3307', '3404']  # '2202t1', '2205t1', 3103'2206t1' -- '2503', '2608', '2702', '2205t1', '2206t1'
     lsm.update_ls()

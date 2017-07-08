@@ -8,21 +8,23 @@ from pipeline_project.A0_main.main_controller import subject
 from tools.auxiliary.parse_excel_tables_and_descriptors import parse_multi_label_descriptor_in_a_dict
 
 
+''' INPUT structures '''
+
+# subjects selection
+subjects_ACS = [3103]  #, 3108, 3301, 3307, 3401, 3403, 3404, 3405, 3501, 3505, 3507, 3602, 3604, 3606]
+subjects_template = []  #[1201, 1203, 1305, 1404, 1505, 1507, 1510, 1702, 1805, 2002, 2502, 2503, 2608, 2702]
+subjects_in_vivo = []
+
+# multi label description
+labels = {'WM'  : ['Midbrain', 'Globus Pallidus', 'Putamen', 'Thalamus'],  # In-prograss myelination
+          'GM'  : ['Frontal', 'Occipital', 'Parietal'],
+          'CSF' : ['Ventricular system', 'Periventricular area']}   # PBS for the ex - vivo rather than CSF
+
+ld_dict = parse_multi_label_descriptor_in_a_dict(jph(root_utils, 'multi_label_descriptor.txt'))
+
+
 if __name__ == '__main__':
 
-    ''' INPUT structures '''
-
-    # subjects selection
-    subjects_ACS = [3103, 3108, 3301, 3307, 3401, 3403, 3404, 3405, 3501, 3505, 3507, 3602, 3604, 3606]
-    subjects_template = [1201, 1203, 1305, 1404, 1505, 1507, 1510, 1702, 1805, 2002, 2502, 2503, 2608, 2702]
-    subjects_in_vivo = []
-
-    # multi label description
-    labels = {'WM'  : ['Midbrain', 'Globus Pallidus', 'Putamen', 'Thalamus'],  # In-prograss myelination
-              'GM'  : ['Frontal', 'occipital', 'Parietal'],
-              'CSF' : ['Ventricular system', 'Periventricular area']}   # PBS for the ex - vivo rather than CSF
-
-    ld_dict = parse_multi_label_descriptor_in_a_dict(jph(root_utils, 'multi_label_descriptor.txt'))
     ''' OUTPUT structures '''
 
     indexes = [np.array(['WM'] * len(labels['WM']) + ['GM'] * len(labels['GM']) + ['CSF'] * len(labels['CSF'])),
@@ -67,23 +69,30 @@ if __name__ == '__main__':
 
         for k in labels.keys():
             for region in labels[k]:
+                region_id = ld_dict[region]
+                if len(region_id) > 1:
+                    region_id = [region_id]
                 # original
-                av = sa_original.get_average_below_labels(ld_dict[region])
+                av = sa_original.get_average_below_labels(region_id)
                 assert len(av) == 1
-                se_T2_maps_original[k][region] = av
+                se_T2_maps_original.ix[k, region] = av[0]
                 # original bfc
-                av = sa_original_bfc.get_average_below_labels(ld_dict[region])
+                av = sa_original_bfc.get_average_below_labels(region_id)
                 assert len(av) == 1
-                se_T2_maps_original_bfc[k][region] = av
+                se_T2_maps_original_bfc.ix[k, region] = av[0]
                 # upsampled
-                av = sa_upsampled.get_average_below_labels(ld_dict[region])
+                av = sa_upsampled.get_average_below_labels(region_id)
                 assert len(av) == 1
-                se_T2_maps_upsampled[k][region]  = av
+                se_T2_maps_upsampled.ix[k, region] = av[0]
                 # upsampled bfc
-                av = sa_upsampled_bfc.get_average_below_labels(ld_dict[region])
+                av = sa_upsampled_bfc.get_average_below_labels(region_id)
                 assert len(av) == 1
-                se_T2_maps_upsampled_bfc[k][region]  = av
+                se_T2_maps_upsampled_bfc.ix[k, region] = av[0]
 
+        print se_T2_maps_original
+        print se_T2_maps_original_bfc
+        print se_T2_maps_upsampled
+        print se_T2_maps_upsampled_bfc
         # save the structures in the report folder:
         se_T2_maps_original.     to_pickle(jph(pfo_input_data, sj, 'records', sj + '_T2_maps_original.pkl'))
         se_T2_maps_original_bfc. to_pickle(jph(pfo_input_data, sj, 'records', sj + '_T2_maps_original_bfc.pkl'))

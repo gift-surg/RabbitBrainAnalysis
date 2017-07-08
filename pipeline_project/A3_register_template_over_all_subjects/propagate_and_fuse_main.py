@@ -49,32 +49,31 @@ if __name__ == '__main__':
 
     print('Propagate and fuse, local run. ')
 
-    controller_fuser_ = {'set header bicommissural'    : True,
-                         'aff alignment'               : True,
-                         'Propagate aff to segm'       : True,
-                         'Propagate aff to mask'       : True,
-                         'Get differential BFC'        : True,
-                         'N-rig alignment'             : True,
-                         'Propagate to target n-rig'   : True,
-                         'Smooth result'               : True,
-                         'Stack warps and segm'        : True,
+    controller_fuser_ = {'set header bicommissural'    : False,
+                         'aff alignment'               : False,
+                         'Propagate aff to segm'       : False,
+                         'Propagate aff to mask'       : False,
+                         'Get differential BFC'        : False,
+                         'N-rig alignment'             : False,
+                         'Propagate to target n-rig'   : False,
+                         'Smooth result'               : False,
+                         'Stack warps and segm'        : False,
                          'Fuse'                        : True,
                          'save result'                 : True
                          }
 
-    controller_propagator_ = {'set header bicommissural'  : True,
-                              'rig alignment'             : True,
-                              'Propagate aff to segm'     : True,
-                              'Propagate aff to mask'     : True,
-                              'Smooth'                    : True,
-                              'save result'               : True}
+    controller_propagator_ = {'set header bicommissural'  : False,
+                              'rig alignment'             : False,
+                              'Propagate aff to segm'     : False,
+                              'Propagate aff to mask'     : False,
+                              'Smooth'                    : False,
+                              'save result'               : False}
 
-    controller_inter_modality_propagator_ = {'compensate squeezing'      : True,
-                                             'rig register to S0'        : True,
-                                             'rig propagate to S0'       : True,
-                                             'rig register to MSME_up'   : True,
-                                             'rig propagate to MSME_up'  : True,
-                                             'MSME_up to MSME'           : True}
+    controller_inter_modality_propagator_ = {'compensate squeezing'           : False,
+                                             'rig register to S0'             : False,
+                                             'rig propagate to S0'            : False,
+                                             'rig register MSME_up to MSME'   : False,
+                                             'rig propagate segm_S0 to MSME'  : False}
 
     lsm = ListSubjectsManager()
 
@@ -84,7 +83,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['3301', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

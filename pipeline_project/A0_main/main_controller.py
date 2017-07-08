@@ -365,13 +365,14 @@ subject = {
              [1, True],  # 4: mask dilation factor, DWI is squeezed,
              ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
              ],
-    '3307': [['ACS', 'ex_vivo'],  # 0: study  - category
-             [np.pi / 20, 0, 0, False],  # 1:  aircraft angles, in templ
-             [18, 0, (5, 98)],  # 2: thr, erosion roi mask for T1
-             bfp_slow,  # 3: Bias field parameters T1
-             [1, True],  # 4: mask dilation factor, DWI is squeezed,
-             ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
-             ],
+    # DUMPED - desperately low quality DWI.
+    # '3307': [['ACS', 'ex_vivo'],  # 0: study  - category
+    #          [np.pi / 20, 0, 0, False],  # 1:  aircraft angles, in templ
+    #          [18, 0, (10, 90)],  # 2: thr, erosion roi mask for T1
+    #          bfp_slow,  # 3: Bias field parameters T1
+    #          [1, True],  # 4: mask dilation factor, DWI is squeezed,
+    #          ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
+    #          ],
     '3401': [['ACS', 'ex_vivo'],  # 0: study  - category
              [0, 0, 0, True],  # 1:  aircraft angles, in templ
              [18, 0, (5, 98)],  # 2: thr, erosion roi mask for T1

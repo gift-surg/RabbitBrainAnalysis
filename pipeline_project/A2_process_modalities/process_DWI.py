@@ -4,6 +4,7 @@ DWI processing in their original coordinate system.
 import os
 from os.path import join as jph
 
+
 import numpy as np
 
 from tools.definitions import root_study_rabbits
@@ -12,7 +13,7 @@ from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extract
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, \
-    reproduce_slice_fourth_dimension_path, scale_y_value_and_trim, print_and_run
+    reproduce_slice_fourth_dimension_path, scale_y_value_and_trim, print_and_run, set_new_data_path
 from tools.auxiliary.sanity_checks import check_path
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.correctors.slope_corrector import slope_corrector_path
@@ -255,6 +256,9 @@ def process_DWI_per_subject(sj, controller):
         pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
         assert check_path(pfi_s0)
         assert check_path(pfi_roi_mask)
+        set_new_data_path(pfi_target_im=pfi_s0,
+                          pfi_image_where_the_new_data=pfi_roi_mask,
+                          pfi_result=pfi_roi_mask)
         bfc_param = subject[sj][3]
         pfi_s0_bfc = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0_bfc.nii.gz')
         bias_field_correction(pfi_s0, pfi_s0_bfc,
@@ -345,7 +349,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['3108']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['3606']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()
