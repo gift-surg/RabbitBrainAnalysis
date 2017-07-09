@@ -255,16 +255,16 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
         assert check_path(pfi_4d_warp)
         assert check_path(pfi_target)
         pfi_output_MV = jph(pfo_tmp, 'result_' + sj_target + '_MV.nii.gz')
-        pfi_output_STEPS = jph(pfo_tmp, 'result_' + sj_target + '_STEPS.nii.gz')
-        # pfi_output_STAPLE = jph(pfo_tmp, 'RESULT_' + sj_target + '_STAPLE.nii.gz')
         # Majority voting:
         cmd_mv = 'seg_LabFusion -in {0} -out {1} -MV'.format(pfi_4d_seg, pfi_output_MV)
         print_and_run(cmd_mv)
         assert check_path(pfi_output_MV, timeout=1000, interval=2)
         # STAPLE:
+        pfi_output_STAPLE = jph(pfo_tmp, 'RESULT_' + sj_target + '_STAPLE.nii.gz')
         # cmd_staple = 'seg_LabFusion -in {0} -STAPLE -out {1} '.format(pfi_4d_seg, pfi_output_STAPLE)
         # print_and_run(cmd_staple)
         # STEPS:
+        pfi_output_STEPS = jph(pfo_tmp, 'result_' + sj_target + '_STEPS.nii.gz')
         cmd_steps = 'seg_LabFusion -in {0} -out {1} -STEPS {2} {3} {4} {5} -MRF_beta {6} -prop_update'.format(
             pfi_4d_seg,
             pfi_output_STEPS,

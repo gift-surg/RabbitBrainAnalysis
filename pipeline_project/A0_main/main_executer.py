@@ -22,9 +22,9 @@ def main_runner(subj_list):
 
     step_A1         = False
     step_A2_T1      = False
-    step_A2_DWI     = True
-    step_A2_MSME    = True
-    step_A2_T2maps  = True
+    step_A2_DWI     = False
+    step_A2_MSME    = False
+    step_A2_T2maps  = False
     step_A2_g_ratio = False
     step_A3         = True
     step_A4         = True
@@ -116,15 +116,15 @@ def main_runner(subj_list):
     ''' Step A3 - Propagate template '''
     if step_A3:
         print('\nStep A3\n')
-        controller_fuser_ = {'set header bicommissural'  : True,
-                             'aff alignment'             : True,
-                             'Propagate aff to segm'     : True,
-                             'Propagate aff to mask'     : True,
-                             'Get differential BFC'      : True,
-                             'N-rig alignment'           : True,
-                             'Propagate to target n-rig' : True,
-                             'Smooth result'             : True,
-                             'Stack warps and segm'      : True,
+        controller_fuser_ = {'set header bicommissural'  : False,
+                             'aff alignment'             : False,
+                             'Propagate aff to segm'     : False,
+                             'Propagate aff to mask'     : False,
+                             'Get differential BFC'      : False,
+                             'N-rig alignment'           : False,
+                             'Propagate to target n-rig' : False,
+                             'Smooth result'             : False,
+                             'Stack warps and segm'      : False,
                              'Fuse'                      : True,
                              'save result'               : True
                              }

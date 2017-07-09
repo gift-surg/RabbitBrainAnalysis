@@ -4,10 +4,10 @@ hostname
 #$ -l h_rt=12:00:00
 #$ -l tmem=20G
 #$ -l h_vmem=20G
-#$ -N "ImgBrainAnalysis3307"
+#$ -N "ImgR3606"
 #$ -S /bin/bash
 #$ -cwd
-#$ -t 1-13
+#$ -t 13-13
 #$ -e ../z_output/
 #$ -o ../z_output/
 
