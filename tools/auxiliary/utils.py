@@ -214,7 +214,7 @@ def eliminates_consecutive_duplicates(input_list):
 
 def scan_and_remove_path(msg):
     """
-    Take a string with paths and removes all the paths.
+    Take a string with a series of paths separated by a space and keeps only the base-names of each path.
     """
     a = [os.path.basename(p) for p in msg.split(' ')]
     return ' '.join(a)

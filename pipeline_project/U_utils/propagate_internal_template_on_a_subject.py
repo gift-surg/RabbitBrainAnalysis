@@ -3,7 +3,7 @@ from os.path import join as jph
 
 from tools.definitions import root_study_rabbits, root_internal_template
 from pipeline_project.A0_main.main_controller import subject, templ_subjects
-from pipeline_project.A3_register_template_over_all_subjects.propagate_and_fuse_utils import propagate_all_to_one
+from pipeline_project.A3_register_template_over_all_subjects.template_registration_utils import propagate_all_to_one
 
 
 def propagate_and_fuse_over_new_subject(subj_list, controller_fuser):
