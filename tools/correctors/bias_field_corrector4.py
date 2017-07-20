@@ -3,6 +3,7 @@ import numpy as np
 import time
 
 import SimpleITK as sitk
+from tools.auxiliary.utils import set_new_data_path
 
 
 def bias_field_correction_slicewise(volume_input,
@@ -69,7 +70,8 @@ def bias_field_correction(pfi_input, pfi_output=None, pfi_mask=None, prefix='',
                           numberOfHistogramBins=200,
                           numberOfControlPoints=(4, 4, 4),
                           splineOrder=3,
-                          print_only=False):
+                          print_only=False,
+                          use_original_header=True):
     """
     Bias field correction with N4BFC.
     Does what he can to not overwrite the input files.
@@ -141,6 +143,10 @@ def bias_field_correction(pfi_input, pfi_output=None, pfi_mask=None, prefix='',
 
             sitk.WriteImage(img_no_bias, pfi_output)
             print 'Image saved in ' + pfi_output
+
+            if use_original_header:
+                set_new_data_path(pfi_target_im=pfi_input, pfi_image_where_the_new_data=pfi_output,
+                                  pfi_result=pfi_output)
 
     else:
         raise IOError('input image must be in .nii or .nii.gz format.')

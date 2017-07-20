@@ -18,6 +18,10 @@ def set_new_data(image, new_data, new_dtype=None, remove_nan=True):
     if remove_nan:
         new_data = np.nan_to_num(new_data)
 
+    # update data type:
+    if new_dtype is not None:
+        new_data.astype(new_dtype)
+
     # if nifty1
     if image.header['sizeof_hdr'] == 348:
         new_image = nib.Nifti1Image(new_data, image.affine, header=image.header)
@@ -27,17 +31,19 @@ def set_new_data(image, new_data, new_dtype=None, remove_nan=True):
     else:
         raise IOError('Input image header problem')
 
-    # update data type:
-    if new_dtype is None:
-        new_image.set_data_dtype(new_data.dtype)
-    else:
-        new_image.set_data_dtype(new_dtype)
+    # # update data type:
+    # if new_dtype is None:
+    #     new_image.set_data_dtype(new_data.dtype)
+    # else:
+    #     new_image.set_data_dtype(new_dtype)
 
     return new_image
 
 
 def set_new_data_path(pfi_target_im, pfi_image_where_the_new_data, pfi_result, new_dtype=None, remove_nan=True):
 
+    # if pfi_image_where_the_new_data == pfi_result:
+    #     raise IOError('pfi_image_where_the_new_data must be different from pfi_result to avoid bugs')
     image = nib.load(pfi_target_im)
     new_data = nib.load(pfi_image_where_the_new_data).get_data()
     new_image = set_new_data(image, new_data, new_dtype=new_dtype, remove_nan=remove_nan)

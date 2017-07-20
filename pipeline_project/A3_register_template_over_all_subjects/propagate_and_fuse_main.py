@@ -59,8 +59,8 @@ if __name__ == '__main__':
                          'Propagate to target n-rig'   : False,
                          'Smooth result'               : False,
                          'Stack warps and segm'        : False,
-                         'Fuse'                        : True,
-                         'save result'                 : True,
+                         'Fuse'                        : False,
+                         'save result'                 : False,
                          'dominant method'             : 'STEPS'
                          }
 
@@ -71,11 +71,11 @@ if __name__ == '__main__':
                               'Smooth'                    : False,
                               'save result'               : False}
 
-    controller_inter_modality_propagator_ = {'compensate squeezing'           : False,
-                                             'rig register to S0'             : False,
-                                             'rig propagate to S0'            : False,
-                                             'rig register MSME_up to MSME'   : False,
-                                             'rig propagate segm_S0 to MSME'  : False}
+    controller_inter_modality_propagator_ = {'compensate squeezing'           : True,
+                                             'rig register to S0'             : True,
+                                             'rig propagate to S0'            : True,
+                                             'rig register MSME_up to MSME'   : True,
+                                             'rig propagate segm_S0 to MSME'  : True}
 
     lsm = ListSubjectsManager()
 
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['3301', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['3103', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()
