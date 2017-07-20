@@ -126,7 +126,8 @@ def main_runner(subj_list):
                              'Smooth result'             : False,
                              'Stack warps and segm'      : False,
                              'Fuse'                      : True,
-                             'save result'               : True
+                             'save result'               : True,
+                             'dominant method'           : 'STEPS'
                              }
 
         controller_propagator_ = {'set header bicommissural' : True,
@@ -167,9 +168,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_ex_vivo   = False
     lsm.execute_PTB_in_vivo   = False
     lsm.execute_PTB_op_skull  = False
-    lsm.execute_ACS_ex_vivo   = False
+    lsm.execute_ACS_ex_vivo   = True
 
-    lsm.input_subjects = ['3307',]  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507', ]
+    # lsm.input_subjects = ['3301', ]  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507', ]
     #  ['3405', '3501', '3505', '3507', ]  # [ '3108', '3401', '3403', '3404' ]
     #  '3307', '3404']  # '2202t1', '2205t1', 3103'2206t1' -- '2503', '2608', '2702', '2205t1', '2206t1'
     lsm.update_ls()

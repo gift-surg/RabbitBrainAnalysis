@@ -6,7 +6,7 @@ from os.path import join as jph
 
 from tools.definitions import root_study_rabbits, root_internal_template
 from pipeline_project.A0_main.main_controller import ListSubjectsManager, subject, templ_subjects
-from template_registration_utils import rigid_propagation_inter_modality, \
+from propagate_and_fuse_utils import rigid_propagation_inter_modality, \
     rigid_orientation_from_histo_to_given_coordinates
 from propagator import propagate_all_to_one
 
@@ -60,7 +60,8 @@ if __name__ == '__main__':
                          'Smooth result'               : False,
                          'Stack warps and segm'        : False,
                          'Fuse'                        : True,
-                         'save result'                 : True
+                         'save result'                 : True,
+                         'dominant method'             : 'STEPS'
                          }
 
     controller_propagator_ = {'set header bicommissural'  : False,

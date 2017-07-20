@@ -158,8 +158,8 @@ def rigid_propagation_inter_modality(sj, pfo_sj, controller):
     assert os.path.exists(pfi_reg_mask_S0)  # same as mask msme_up
     # assert os.path.exists(pfi_reg_mask_MSME_up)
     # Output
-    pfi_segm_S0 = jph(pfo_segm, sj + '_S0_segm.nii.gz')
-    pfi_segm_MSME = jph(pfo_segm, sj + '_MSME_segm.nii.gz')
+    pfi_segm_S0      = jph(pfo_segm, sj + '_S0_segm.nii.gz')
+    pfi_segm_MSME    = jph(pfo_segm, sj + '_MSME_segm.nii.gz')
 
     print('Rigid propagator inter modality {}'.format(sj))
 

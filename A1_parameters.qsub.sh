@@ -4,10 +4,10 @@ hostname
 #$ -l h_rt=12:00:00
 #$ -l tmem=20G
 #$ -l h_vmem=20G
-#$ -N "ImgR3606"
+#$ -N "ImgACS_1_5"
 #$ -S /bin/bash
 #$ -cwd
-#$ -t 13-13
+#$ -t 1-5
 #$ -e ../z_output/
 #$ -o ../z_output/
 

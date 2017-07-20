@@ -129,7 +129,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             print_and_run(cmd)
             assert check_path(pfi_diff_bfc_target)
             assert check_path(pfi_diff_bfc_subject)
-        else:
+        elif controller['N-rig alignment']:  # if it has to create the element for the next step without BFC.
             pfi_target = jph(pfo_mod, sj_target + '_T1.nii.gz')
             pfi_affine_warp_sj = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_warp_aff.nii.gz')
             assert os.path.exists(pfi_target)
@@ -233,39 +233,59 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
         print pfi_target, pfi_result, pfi_4d_seg, pfi_4d_warp
 
     if controller['Fuse']:
+
         print('- Fuse {} '.format(sj_target))
-        pfi_target = jph(pfo_mod, sj_target + '_T1.nii.gz')
-        pfi_4d_seg = jph(pfo_tmp, 'res_4d_seg.nii.gz')
-        pfi_4d_warp = jph(pfo_tmp, 'res_4d_warp.nii.gz')
-        assert check_path(pfi_4d_seg)
-        assert check_path(pfi_4d_warp)
-        assert check_path(pfi_target)
-        pfi_output_MV = jph(pfo_tmp, 'result_' + sj_target + '_MV.nii.gz')
+        # move to relative path to avoid too long paths.
+        here = os.getcwd()
+        os.chdir(pfo_to_target)
+
+        rel_pfi_target = jph('mod', sj_target + '_T1.nii.gz')
+        rel_pfi_4d_seg = jph('z_tmp', 'z_templ', 'res_4d_seg.nii.gz')
+        rel_pfi_4d_warp = jph('z_tmp', 'z_templ', 'res_4d_warp.nii.gz')
+        assert check_path(jph(pfo_to_target, rel_pfi_4d_seg))
+        assert check_path(jph(pfo_to_target, rel_pfi_4d_warp))
+        assert check_path(jph(pfo_to_target, rel_pfi_target))
+        rel_pfi_output_MV = jph('z_tmp', 'z_templ', 'result_' + sj_target + '_MV.nii.gz')
         # Majority voting:
-        cmd_mv = 'seg_LabFusion -in {0} -out {1} -MV'.format(pfi_4d_seg, pfi_output_MV)
-        print_and_run(cmd_mv)
-        assert check_path(pfi_output_MV, timeout=1000, interval=2)
+        cmd_mv = 'seg_LabFusion -in {0} -out {1} -MV'.format(rel_pfi_4d_seg, rel_pfi_output_MV)
+        print_and_run(cmd_mv, short_path_output=False)
+        # assert check_path(pfi_output_MV, timeout=1000, interval=2)
         # STAPLE:
-        pfi_output_STAPLE = jph(pfo_tmp, 'RESULT_' + sj_target + '_STAPLE.nii.gz')
-        # cmd_staple = 'seg_LabFusion -in {0} -STAPLE -out {1} '.format(pfi_4d_seg, pfi_output_STAPLE)
-        # print_and_run(cmd_staple)
+        rel_pfi_output_STAPLE = jph('z_tmp', 'z_templ', 'result_' + sj_target + '_STAPLE.nii.gz')
+        cmd_staple = 'seg_LabFusion -in {0} -STAPLE -out {1} '.format(rel_pfi_4d_seg, rel_pfi_output_STAPLE)
+        print_and_run(cmd_staple, short_path_output=False)
+        assert check_path(jph(pfo_to_target, rel_pfi_output_STAPLE), timeout=1000, interval=2)
         # STEPS:
-        pfi_output_STEPS = jph(pfo_tmp, 'result_' + sj_target + '_STEPS.nii.gz')
+        rel_pfi_output_STEPS = jph('z_tmp', 'z_templ', 'result_' + sj_target + '_STEPS.nii.gz')
         cmd_steps = 'seg_LabFusion -in {0} -out {1} -STEPS {2} {3} {4} {5} -MRF_beta {6} -prop_update'.format(
-            pfi_4d_seg,
-            pfi_output_STEPS,
+            rel_pfi_4d_seg,
+            rel_pfi_output_STEPS,
             str(3),
             str(3),
-            pfi_target,
-            pfi_4d_warp,
+            rel_pfi_target,
+            rel_pfi_4d_warp,
             str(4.0))
-        print_and_run(cmd_steps)
-        assert check_path(pfi_output_STEPS, timeout=1000, interval=2)
+        print_and_run(cmd_steps, short_path_output=False)
+        assert check_path(jph(pfo_to_target, rel_pfi_output_STEPS), timeout=1000, interval=2)
+        # go back where it has started.
+        os.chdir(here)
 
     if controller['save result']:
         print('- save result {}'.format(sj_target))
-        pfi_segm_STEPS = jph(pfo_tmp, 'result_' + sj_target + '_STEPS.nii.gz')
-        assert check_path(pfi_segm_STEPS)
+
+        print('Selected segmentation : {}'.format(controller['dominant method']))
+
+        if controller['dominant method'] == 'MV':
+            pfi_segm = jph(pfo_tmp, 'result_' + sj_target + '_MV.nii.gz')
+        elif controller['dominant method'] == 'STAPLE':
+            pfi_segm = jph(pfo_tmp, 'result_' + sj_target + '_STAPLE.nii.gz')
+        elif controller['dominant method'] == 'STEPS':
+            pfi_segm = jph(pfo_tmp, 'result_' + sj_target + '_STEPS.nii.gz')
+        else:
+            pfi_segm = jph(pfo_tmp, 'result_' + sj_target + '_MV.nii.gz')
+            print('Selected segmentation not specified - default MV used')
+
+        assert check_path(pfi_segm)
         pfi_final_result = jph(pfo_segm, sj_target + '_T1_segm.nii.gz')
-        cmd = 'cp {0} {1}'.format(pfi_segm_STEPS, pfi_final_result)
+        cmd = 'cp {0} {1}'.format(pfi_segm, pfi_final_result)
         print_and_run(cmd)
