@@ -8,13 +8,14 @@ from tools.auxiliary.utils import set_new_data_path
 
 def bias_field_correction_slicewise(volume_input,
                                     convergenceThreshold=0.001,
-                                      maximumNumberOfIterations=(50,50,50,50),
-                                      biasFieldFullWidthAtHalfMaximum=0.15,
-                                      wienerFilterNoise=0.01,
-                                      numberOfHistogramBins=200,
-                                      numberOfControlPoints=(4, 4, 4),
-                                      splineOrder=3,
-                                      print_only=False):
+                                    maximumNumberOfIterations=(50,50,50,50),
+                                    biasFieldFullWidthAtHalfMaximum=0.15,
+                                    wienerFilterNoise=0.01,
+                                    numberOfHistogramBins=200,
+                                    numberOfControlPoints=(4, 4, 4),
+                                    splineOrder=3,
+                                    print_only=False):
+    # works on volumes
 
     four_d_volume_output = np.zeros_like(volume_input[:])
 
@@ -89,6 +90,7 @@ def bias_field_correction(pfi_input, pfi_output=None, pfi_mask=None, prefix='',
     :param print_only: only print the command to console instead of executing it
     :return:
     """
+    # works on images paths.
 
     if pfi_input == pfi_output or pfi_output is None:
         prefix=''
@@ -159,7 +161,8 @@ def bias_field_correction_list(list_pfi_input, list_pfi_mask=None, prefix='_bfc_
                                 wienerFilterNoise=0.01,
                                 numberOfHistogramBins=200,
                                 numberOfControlPoints=(4, 4, 4),
-                                splineOrder=3):
+                                splineOrder=3,
+                               use_original_header=True):
 
     if list_pfi_mask is not None:
         if not len(list_pfi_input) == len(list_pfi_mask):
@@ -182,7 +185,8 @@ def bias_field_correction_list(list_pfi_input, list_pfi_mask=None, prefix='_bfc_
                               wienerFilterNoise=wienerFilterNoise,
                               numberOfHistogramBins=numberOfHistogramBins,
                               numberOfControlPoints=numberOfControlPoints,
-                              splineOrder=splineOrder)
+                              splineOrder=splineOrder,
+                              use_original_header=use_original_header)
 
 if __name__ == '__main__':
     pfi_in = '/Users/sebastiano/Desktop/test/3103_msme_tp0.nii.gz'

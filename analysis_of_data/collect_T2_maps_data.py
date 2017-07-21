@@ -13,7 +13,7 @@ from tools.auxiliary.utils import set_new_data_path
 ''' INPUT structures '''
 
 # subjects selection
-subjects_ACS = [3103, ] #3108, 3301, 3401, 3403, 3404, 3405, 3501, 3505, 3507, 3602, 3606]  #, 3604, 3606]
+subjects_ACS = [3103, 3108, 3301, 3401, 3403, 3404, 3405, 3501, 3505, 3507, 3602, 3606]  #, 3604, 3606]
 subjects_template = []  #[1201, 1203, 1305, 1404, 1505, 1507, 1510, 1702, 1805, 2002, 2502, 2503, 2608, 2702]
 subjects_in_vivo = []
 
@@ -66,9 +66,9 @@ if __name__ == '__main__':
         # HEADERS needs to be corrected in the whole code. Here we try at least to have consistencies between
         # segmentation and anatomical headers
 
-        # im = nib.load(pfi_T2_maps_original)
-        # im.set_qform(im.get_qform(), code=2)
-        # nib.save(im, pfi_T2_maps_original)
+        im = nib.load(pfi_T2_maps_original)
+        im.set_qform(im.get_qform(), code=2)
+        nib.save(im, pfi_T2_maps_original)
 
         pfi_tmp = jph(pfo_input_data, sj, 'segm', 'z_' + sj + '_TMP_segm.nii.gz')
         set_new_data_path(pfi_target_im=pfi_T2_maps_original, pfi_image_where_the_new_data=pfi_T2_map_segm_original,

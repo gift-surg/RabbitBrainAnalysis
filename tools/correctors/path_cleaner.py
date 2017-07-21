@@ -104,11 +104,3 @@ def clean_a_study(pfo_study):
                 # the experiment folder is not empty, but there is no name method inside. Raise a warning!
                 cmd = 'No acquisition_method.txt in the folder {} - maybe already cleaned?'.format(pfo_experiment_p)
                 warnings.warn(cmd)
-
-# root = '/Users/sebastiano/Desktop/test_PV/'
-# study_out = jph(root, 'nifti')
-# assert os.path.isdir(study_out)
-#
-# for sj in ['1702']:
-#
-#     clean_a_study(jph(study_out, sj))
