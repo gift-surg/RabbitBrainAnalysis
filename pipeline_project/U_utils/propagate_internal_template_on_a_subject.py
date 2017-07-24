@@ -2,7 +2,7 @@ import os
 from os.path import join as jph
 
 from tools.definitions import root_study_rabbits, root_internal_template
-from pipeline_project.A0_main.main_controller import subject, templ_subjects
+from pipeline_project.A0_main.main_controller import subjects_controller, templ_subjects
 from pipeline_project.A3_register_template_over_all_subjects.propagate_and_fuse_utils import propagate_all_to_one
 
 
@@ -10,8 +10,8 @@ def propagate_and_fuse_over_new_subject(subj_list, controller_fuser):
 
     for sj_target in subj_list:
 
-        group = subject[sj_target][0][0]
-        category = subject[sj_target][0][1]
+        group = subjects_controller[sj_target][0][0]
+        category = subjects_controller[sj_target][0][1]
         pfo_target = jph(root_study_rabbits, 'A_data', group, category, sj_target)
 
         assert os.path.isdir(pfo_target)

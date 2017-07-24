@@ -6,7 +6,7 @@ import os
 
 from tools.definitions import root_study_rabbits, root_utils
 from labels_manager.caliber.segmentation_analyzer import SegmentationAnalyzer
-from pipeline_project.A0_main.main_controller import subject
+from pipeline_project.A0_main.main_controller import subjects_controller
 from tools.auxiliary.parse_excel_tables_and_descriptors import parse_multi_label_descriptor_in_a_dict
 from tools.auxiliary.utils import set_new_data_path
 
@@ -48,8 +48,8 @@ if __name__ == '__main__':
 
         sj = str(sj)
 
-        group = subject[sj][0][0]
-        category = subject[sj][0][1]
+        group = subjects_controller[sj][0][0]
+        category = subjects_controller[sj][0][1]
         pfo_input_data = jph(root_study_rabbits, 'A_data', group, category)
 
         pfo_sj_T2 = jph(pfo_input_data, sj, 'mod', 'T2_maps')

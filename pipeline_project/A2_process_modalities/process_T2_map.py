@@ -26,7 +26,7 @@ import numpy as np
 import nibabel as nib
 
 from tools.definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
+from pipeline_project.A0_main.main_controller import subjects_controller, ListSubjectsManager
 from tools.auxiliary.utils import print_and_run, set_new_data
 from tools.auxiliary.sanity_checks import check_path
 from tools.definitions import bfc_corrector_cmd, root_fit_apps
@@ -36,15 +36,15 @@ def process_T2_map_per_subject(sj, controller):
 
     print('\nProcessing T2 map {} started.\n'.format(sj))
 
-    group = subject[sj][0][0]
-    category = subject[sj][0][1]
+    group = subjects_controller[sj][0][0]
+    category = subjects_controller[sj][0][1]
 
     pfo_input_sj_MSME = jph(root_study_rabbits, '01_nifti', group, category, sj, sj + '_MSME')
     pfo_output_sj = jph(root_study_rabbits, 'A_data', group, category, sj)
     pfo_mod = jph(pfo_output_sj, 'mod')
 
     # input sanity check:
-    if sj not in subject.keys():
+    if sj not in subjects_controller.keys():
         raise IOError('Subject parameters not known')
     if not os.path.exists(pfo_input_sj_MSME):
         raise IOError('Input folder MSME does not exist.')

@@ -48,3 +48,4 @@ else:
     root_utils = ''
 
 pfi_excel_table_all_data = jph(root_study_rabbits, 'A_data', 'DataSummary.xlsx')
+pfo_subjects_parameters = jph(root_study_rabbits, '01_nifti', 'Utils', 'subjects_parameters')

@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import nibabel as nib
-from pipeline_project.A0_main.main_controller import subject
+from pipeline_project.A0_main.main_controller import subjects_controller
 
 from os.path import join as jph
 from tools.auxiliary.utils import print_and_run
@@ -19,7 +19,7 @@ def process_MSME_per_subject(sj, pfo_input_sj_MSME, pfo_output_sj, controller):
 
     # input sanity check:
 
-    if sj not in subject.keys():
+    if sj not in subjects_controller.keys():
         raise IOError('Subject parameters not known')
     if not os.path.exists(pfo_input_sj_MSME):
         raise IOError('Input folder T1 does not exist.')
@@ -62,9 +62,9 @@ def process_MSME_per_subject(sj, pfo_input_sj_MSME, pfo_output_sj, controller):
         print_and_run(cmd)
 
     if controller['save T2_times']:
-        if subject[0][1] == 'ex_vivo':
+        if subjects_controller[0][1] == 'ex_vivo':
             t2_times = (0, 0, 0)  # myelin, GM, CSF default
-        elif subject[0][1] == 'in_vivo':
+        elif subjects_controller[0][1] == 'in_vivo':
             t2_times = (0, 0, 0)
         else:
             t2_times = (0, 0, 0)

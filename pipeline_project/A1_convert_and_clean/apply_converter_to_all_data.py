@@ -1,9 +1,9 @@
 import os
 from os.path import join as jph
 
-from bruker2nifti.study_converter import convert_a_study
+from bruker2nifti.converter import Bruker2Nifti
 
-from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
+from pipeline_project.A0_main.main_controller import subjects_controller, ListSubjectsManager
 from tools.definitions import root_study_rabbits
 from tools.auxiliary.utils import print_and_run
 from tools.auxiliary.sanity_checks import check_path
@@ -16,8 +16,8 @@ def convert_subjects_from_list(subj_list):
     for sj in subj_list:
         print 'Subj {} conversion!\n'.format(sj)
 
-        group = subject[sj][0][0]
-        category = subject[sj][0][1]
+        group = subjects_controller[sj][0][0]
+        category = subjects_controller[sj][0][1]
         pfo_input_sj = jph(root_study_rabbits, '00_raw_data', group, category, sj)
         check_path(pfo_input_sj)
         pfo_output = jph(root_study_rabbits, '01_nifti', group, category)
@@ -28,7 +28,11 @@ def convert_subjects_from_list(subj_list):
             print('Folder {} where to convert the study exists already... ERASED!'.format(pfo_output_sj))
             print_and_run(cmd)
 
-        convert_a_study(pfo_input_sj, pfo_output, verbose=0, correct_slope=True, study_name=sj)
+        conv = Bruker2Nifti(pfo_input_sj, pfo_output, study_name=sj)
+        conv.correct_slope = True
+        conv.verbose = 0
+        conv.convert()
+
 
 if __name__ == '__main__':
 

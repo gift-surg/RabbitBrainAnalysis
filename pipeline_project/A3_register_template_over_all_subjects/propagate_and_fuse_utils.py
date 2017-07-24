@@ -4,7 +4,7 @@ Propagate subject 1,2,3 (source_subjects) on subject 4 (target_subject) and then
 import os
 from os.path import join as jph
 
-from pipeline_project.A0_main.main_controller import subject, propagate_me_level
+from pipeline_project.A0_main.main_controller import subjects_controller, propagate_me_level
 from tools.auxiliary.utils import adjust_header_from_transformations, print_and_run
 
 
@@ -16,7 +16,7 @@ def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_
     """
     assert os.path.exists(pfo_source)
     assert os.path.exists(pfo_target)
-    if sj_target not in subject.keys():
+    if sj_target not in subjects_controller.keys():
         raise IOError('Subject parameters not known')
     pfo_mod = jph(pfo_target, 'mod')
     pfo_segm = jph(pfo_target, 'segm')
@@ -38,7 +38,7 @@ def rigid_orientation_from_histo_to_given_coordinates(sj_source, pfo_source, sj_
         assert os.path.exists(pfi_source_T1), pfi_source_T1
         assert os.path.exists(pfi_source_segm), pfi_source_segm
         assert os.path.exists(pfi_source_reg_mask), pfi_source_reg_mask
-        theta = subject[sj_source][1][0]
+        theta = subjects_controller[sj_source][1][0]
         pfi_source_T1_bicomm_hd = jph(pfo_tmp, sj_source + '_templ_bicomm_hd.nii.gz')
         pfi_source_segm_bicomm_hd = jph(pfo_tmp, sj_source + '_templ_segm_bicomm_hd.nii.gz')
         pfi_source_reg_mask_bicomm_hd = jph(pfo_tmp, sj_source + '_templ_reg_mask_bicomm_hd.nii.gz')

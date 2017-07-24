@@ -11,7 +11,7 @@ import numpy as np
 from labels_manager.caliber.segmentation_analyzer import SegmentationAnalyzer
 from tabulate import tabulate
 
-from pipeline_project.A0_main.main_controller import subject
+from pipeline_project.A0_main.main_controller import subjects_controller
 from tools.auxiliary.parse_excel_tables_and_descriptors import parse_excel_data_to_list, \
     parse_multi_label_descriptor_in_a_list
 
@@ -60,7 +60,7 @@ def compile_record(pfi_T1,
     ''' Collect rabbit data from excel files'''
 
     # Parse excel table
-    group = subject[subject_name][0][0]
+    group = subjects_controller[subject_name][0][0]
     excel_tab_list = parse_excel_data_to_list(pfi_excel_table, worksheet_name=group)
     # Get subjects ID Number from excel table
     pos_id_number = excel_tab_list[0].index('ID Number')

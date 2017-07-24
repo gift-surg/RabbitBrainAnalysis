@@ -2,13 +2,13 @@ import os
 from os.path import join as jph
 
 from tools.definitions import root_study_rabbits, pfi_excel_table_all_data
-from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager, templ_subjects
+from pipeline_project.A0_main.main_controller import subjects_controller, ListSubjectsManager, templ_subjects
 from tools.auxiliary.parse_excel_tables_and_descriptors import store_a_record_in_excel_table
 
 
 def save_data_into_excel_file_per_subject(sj):
-    group = subject[sj][0][0]
-    category = subject[sj][0][1]
+    group = subjects_controller[sj][0][0]
+    category = subjects_controller[sj][0][1]
     pfo_records = jph(root_study_rabbits, 'A_data', group, category, sj, 'records')
     records_exists = False
     if os.path.exists(pfo_records):

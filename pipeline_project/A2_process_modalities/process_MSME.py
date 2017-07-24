@@ -6,7 +6,7 @@ from os.path import join as jph
 import nibabel as nib
 
 from tools.definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
+from pipeline_project.A0_main.main_controller import subjects_controller, ListSubjectsManager
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import print_and_run
@@ -43,12 +43,12 @@ save results
 def process_MSME_per_subject(sj, controller):
     print('\nProcessing MSME, subject {} started.\n'.format(sj))
 
-    group = subject[sj][0][0]
-    category = subject[sj][0][1]
+    group = subjects_controller[sj][0][0]
+    category = subjects_controller[sj][0][1]
     pfo_input_sj = jph(root_study_rabbits, '01_nifti', group, category, sj)
     pfo_output_sj = jph(root_study_rabbits, 'A_data', group, category, sj)
 
-    if sj not in subject.keys():
+    if sj not in subjects_controller.keys():
         raise IOError('Subject parameters not known')
     if not os.path.exists(pfo_input_sj):
         raise IOError('Input folder DWI does not exist.')

@@ -5,7 +5,7 @@ import os
 from os.path import join as jph
 
 from tools.definitions import root_study_rabbits, root_internal_template
-from pipeline_project.A0_main.main_controller import ListSubjectsManager, subject, templ_subjects
+from pipeline_project.A0_main.main_controller import ListSubjectsManager, subjects_controller, templ_subjects
 from propagate_and_fuse_utils import rigid_propagation_inter_modality, \
     rigid_orientation_from_histo_to_given_coordinates
 from propagator import propagate_all_to_one
@@ -21,8 +21,8 @@ def propagate_and_fuse_per_subject_list_over_all_modalities(subj_list,
 
     for sj_target in subj_list:
 
-        group = subject[sj_target][0][0]
-        category = subject[sj_target][0][1]
+        group = subjects_controller[sj_target][0][0]
+        category = subjects_controller[sj_target][0][1]
         pfo_target = jph(root_study_rabbits, 'A_data', group, category, sj_target)
 
         assert os.path.isdir(pfo_target)

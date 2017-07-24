@@ -6,7 +6,7 @@ import os
 from os.path import join as jph
 
 from tools.definitions import root_study_rabbits, root_shared_records, pfi_excel_table_all_data
-from pipeline_project.A0_main.main_controller import ListSubjectsManager, subject
+from pipeline_project.A0_main.main_controller import ListSubjectsManager, subjects_controller
 from tools.auxiliary.utils import print_and_run
 
 
@@ -90,8 +90,8 @@ def send_data_to_hannes_from_list(subj_list, records_only=False, erase_source=Fa
 
         for sj in subj_list:
 
-            group = subject[sj][0][0]
-            category = subject[sj][0][1]
+            group = subjects_controller[sj][0][0]
+            category = subjects_controller[sj][0][1]
             pfo_source = jph(root_data, group, category)
             assert os.path.exists(pfo_source)
             pfo_destination = jph(root_shared_records, group, category)

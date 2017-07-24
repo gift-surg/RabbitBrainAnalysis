@@ -8,7 +8,7 @@ from os.path import join as jph
 import numpy as np
 
 from tools.definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import subject, ListSubjectsManager
+from pipeline_project.A0_main.main_controller import subjects_controller, ListSubjectsManager
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
@@ -43,12 +43,12 @@ def process_DWI_per_subject(sj, controller):
 
     print('\nProcessing DWI, subject {} started.\n'.format(sj))
 
-    group = subject[sj][0][0]
-    category = subject[sj][0][1]
+    group = subjects_controller[sj][0][0]
+    category = subjects_controller[sj][0][1]
     pfo_input_sj_DWI = jph(root_study_rabbits, '01_nifti', group, category, sj, sj + '_DWI')
     pfo_output_sj = jph(root_study_rabbits, 'A_data', group, category, sj)
 
-    if sj not in subject.keys():
+    if sj not in subjects_controller.keys():
         raise IOError('Subject parameters not known')
     if not os.path.exists(pfo_input_sj_DWI):
         raise IOError('Input folder DWI does not exist.')
@@ -91,16 +91,16 @@ def process_DWI_per_subject(sj, controller):
         print_and_run(cmd1)
         set_translational_part_to_zero(pfi_b0_std, pfi_b0_std)
 
-        if subject[sj][4][1]:
+        if subjects_controller[sj][4][1]:
             scale_y_value_and_trim(pfi_dwi_std, pfi_dwi_std, squeeze_factor=2.218074656188605)
             scale_y_value_and_trim(pfi_b0_std, pfi_b0_std, squeeze_factor=2.218074656188605)
 
     if controller['register roi masks']:
         print('- register roi masks {}'.format(sj))
         pfi_b0 = jph(pfo_tmp, sj + '_DWI_b0_to_std.nii.gz')
-        if subject[sj][0][1] in ['ex_vivo', 'op_skull']:
+        if subjects_controller[sj][0][1] in ['ex_vivo', 'op_skull']:
             pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
-        elif subject[sj][0][1] == 'in_vivo':
+        elif subjects_controller[sj][0][1] == 'in_vivo':
             pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
         else:
             raise IOError('ex_vivo, in_vivo or op_skull only.')
@@ -119,9 +119,9 @@ def process_DWI_per_subject(sj, controller):
     if controller['propagate roi masks']:
         print('- propagate roi masks {}'.format(sj))
         pfi_b0 = jph(pfo_tmp, sj + '_DWI_b0_to_std.nii.gz')
-        if subject[sj][0][1] in ['ex_vivo', 'op_skull']:
+        if subjects_controller[sj][0][1] in ['ex_vivo', 'op_skull']:
             pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.gz')
-        elif subject[sj][0][1] == 'in_vivo':
+        elif subjects_controller[sj][0][1] == 'in_vivo':
             pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_roi_mask.nii.gz')
         else:
             raise IOError('ex_vivo, in_vivo or op_skull only.')
@@ -142,7 +142,7 @@ def process_DWI_per_subject(sj, controller):
         pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
         assert check_path(pfi_roi_mask)
         pfi_roi_mask_dil = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
-        dil_factor = subject[sj][4][0]
+        dil_factor = subjects_controller[sj][4][0]
         cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_roi_mask,
                                                   dil_factor,
                                                   pfi_roi_mask_dil)
@@ -259,7 +259,7 @@ def process_DWI_per_subject(sj, controller):
         set_new_data_path(pfi_target_im=pfi_s0,
                           pfi_image_where_the_new_data=pfi_roi_mask,
                           pfi_result=pfi_roi_mask)
-        bfc_param = subject[sj][3]
+        bfc_param = subjects_controller[sj][3]
         pfi_s0_bfc = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0_bfc.nii.gz')
         bias_field_correction(pfi_s0, pfi_s0_bfc,
                               pfi_mask=pfi_roi_mask,

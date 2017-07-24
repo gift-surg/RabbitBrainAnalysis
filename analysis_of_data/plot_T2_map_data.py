@@ -6,7 +6,7 @@ from os.path import join as jph
 
 from analysis_of_data.collect_T2_maps_data import subjects_ACS, subjects_template
 from tools.definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import subject
+from pipeline_project.A0_main.main_controller import subjects_controller
 from tools.auxiliary.utils import eliminates_consecutive_duplicates
 
 
@@ -79,8 +79,8 @@ if __name__ == '__main__':
 
         sj = str(sj)
 
-        group = subject[sj][0][0]
-        category = subject[sj][0][1]
+        group = subjects_controller[sj][0][0]
+        category = subjects_controller[sj][0][1]
         pfo_input_data = jph(root_study_rabbits, 'A_data', group, category)
 
         pfi_se_T2_maps_original     = jph(pfo_input_data, sj, 'records', sj + '_T2_maps_original.pkl')

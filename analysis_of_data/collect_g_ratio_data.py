@@ -5,7 +5,7 @@ import pandas as pd
 from bokeh.plotting import figure, show, output_file
 
 from tools.definitions import root_study_rabbits, pfo_local_output
-from pipeline_project.A0_main.main_controller import subject
+from pipeline_project.A0_main.main_controller import subjects_controller
 
 
 def from_g_ratio_data_to_data_frame(list_subjects_names, list_regions_names, list_modality_names, g_ratio_array):
@@ -82,8 +82,8 @@ def get_g_ratio_per_subjects_as_data_frame(input_subjects_list):
     records = []
 
     for sj in input_subjects_list:
-        group = subject[sj][0][0]
-        category = subject[sj][0][1]
+        group = subjects_controller[sj][0][0]
+        category = subjects_controller[sj][0][1]
         pfi_record_sj = jph(root_study_rabbits, 'A_data', group, category, sj, 'records', sj + '_records.npy')
         assert os.path.exists(pfi_record_sj), 'Subject {} has no record available'.format(sj)
         records.append(np.load(pfi_record_sj).item())

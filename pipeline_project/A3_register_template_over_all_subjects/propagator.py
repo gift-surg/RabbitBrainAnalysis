@@ -3,8 +3,8 @@ from os.path import join as jph
 
 from labels_manager.main import LabelsManager
 
-from pipeline_project.A0_main.main_controller import subject, propagate_me_level
-from tools.auxiliary.utils import adjust_header_from_transformations, print_and_run
+from pipeline_project.A0_main.main_controller import subjects_controller, propagate_me_level
+from labels_manager.tools.aux_methods.utils import adjust_affine_header, print_and_run
 from tools.auxiliary.sanity_checks import check_path
 from tools.definitions import bfc_corrector_cmd
 
@@ -19,7 +19,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
     :param controller:
     :return:
     """
-    if sj_target not in subject.keys():
+    if sj_target not in subjects_controller.keys():
         raise IOError('Subject parameters not known')
     for sj_source in list_templ_subjects:
         assert os.path.exists(jph(pfo_templ_subjects, sj_source))
@@ -54,13 +54,13 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             print_and_run(cmd0)
             print_and_run(cmd1)
             print_and_run(cmd2)
-            theta = subject[sj][1][0]
+            theta = subjects_controller[sj][1][0]
 
-            adjust_header_from_transformations(pfi_templ_sj_bicomm_header, pfi_templ_sj_bicomm_header,
+            adjust_affine_header(pfi_templ_sj_bicomm_header, pfi_templ_sj_bicomm_header,
                                                theta=theta, trasl=(0, 0, 0))
-            adjust_header_from_transformations(pfi_templ_segm_sj_bicomm_header, pfi_templ_segm_sj_bicomm_header,
+            adjust_affine_header(pfi_templ_segm_sj_bicomm_header, pfi_templ_segm_sj_bicomm_header,
                                                theta=theta, trasl=(0, 0, 0))
-            adjust_header_from_transformations(pfi_templ_reg_mask_sj_bicomm_header, pfi_templ_reg_mask_sj_bicomm_header,
+            adjust_affine_header(pfi_templ_reg_mask_sj_bicomm_header, pfi_templ_reg_mask_sj_bicomm_header,
                                                theta=theta, trasl=(0, 0, 0))
         if controller['aff alignment']:
             opt = ''
@@ -110,7 +110,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
                 pfi_templ_reg_mask_sj_aff_registered)
             print_and_run(cmd)
 
-        if controller['Get differential BFC'] and not subject[sj_target][0][1] == 'in_vivo':
+        if controller['Get differential BFC'] and not subjects_controller[sj_target][0][1] == 'in_vivo':
             # for the in-vivo there is no need for the differential BFC
             print('- Get differential BFC, {} over {} '.format(sj, sj_target))
             pfi_target = jph(pfo_mod, sj_target + '_T1.nii.gz')
@@ -154,7 +154,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_diff_bfc_n_rig_cpp = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '_cpp.nii.gz')
             pfi_diff_bfc_n_rig_res = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '_warp.nii.gz')
             options = '-ln 2 -be 0.5'
-            if subject[sj_target][0][1] == 'in_vivo':
+            if subjects_controller[sj_target][0][1] == 'in_vivo':
                 options = '-ln 2 -be 0.8'
 
             cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -cpp {4} -res {5} {6}'.format(
@@ -190,7 +190,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_subject_propagated_on_target_segm_smol = jph(pfo_tmp,
                                                              'final' + sj + 'over' + sj_target + '_segm_smol.nii.gz')
             smol = 0.2
-            if subject[sj_target][0][1] == 'in_vivo':
+            if subjects_controller[sj_target][0][1] == 'in_vivo':
                 smol = 0
             if smol > 0:
                 cmd = 'seg_maths {0} -smol {1} {2}'.format(pfi_subject_propagated_on_target_segm, smol,
@@ -248,13 +248,15 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
         rel_pfi_output_MV = jph('z_tmp', 'z_templ', 'result_' + sj_target + '_MV.nii.gz')
         # Majority voting:
         cmd_mv = 'seg_LabFusion -in {0} -out {1} -MV'.format(rel_pfi_4d_seg, rel_pfi_output_MV)
-        print_and_run(cmd_mv, short_path_output=False)
-        # assert check_path(pfi_output_MV, timeout=1000, interval=2)
+        # print_and_run(cmd_mv, short_path_output=False)
+        os.system(cmd_mv)
+        assert check_path(rel_pfi_output_MV, timeout=1000, interval=2)
         # STAPLE:
         rel_pfi_output_STAPLE = jph('z_tmp', 'z_templ', 'result_' + sj_target + '_STAPLE.nii.gz')
         cmd_staple = 'seg_LabFusion -in {0} -STAPLE -out {1} '.format(rel_pfi_4d_seg, rel_pfi_output_STAPLE)
-        print_and_run(cmd_staple, short_path_output=False)
-        assert check_path(jph(pfo_to_target, rel_pfi_output_STAPLE), timeout=1000, interval=2)
+        os.system(cmd_staple)
+        # print_and_run(cmd_staple, short_path_output=False)
+        assert check_path(jph(pfo_to_target, rel_pfi_output_STAPLE), timeout=5000, interval=5)
         # STEPS:
         rel_pfi_output_STEPS = jph('z_tmp', 'z_templ', 'result_' + sj_target + '_STEPS.nii.gz')
         cmd_steps = 'seg_LabFusion -in {0} -out {1} -STEPS {2} {3} {4} {5} -MRF_beta {6} -prop_update'.format(
@@ -265,7 +267,8 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             rel_pfi_target,
             rel_pfi_4d_warp,
             str(4.0))
-        print_and_run(cmd_steps, short_path_output=False)
+        os.system(cmd_steps)
+        # print_and_run(cmd_steps, short_path_output=False)
         assert check_path(jph(pfo_to_target, rel_pfi_output_STEPS), timeout=1000, interval=2)
         # go back where it has started.
         os.chdir(here)
