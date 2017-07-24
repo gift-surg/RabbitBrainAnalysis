@@ -46,7 +46,7 @@ class ListSubjectsManager(object):
             
             for k in list_subjects:
 
-                subj_k_parameters = pickle.load(pfo_subjects_parameters, k)
+                subj_k_parameters = pickle.load(open(os.path.join(pfo_subjects_parameters, k), 'r'))
                 
                 if self.execute_PTB_ex_skull:
                     if subj_k_parameters['study'] == 'PTB' and subj_k_parameters['category'] == 'ex_skull':
