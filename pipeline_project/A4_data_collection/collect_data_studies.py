@@ -1,8 +1,9 @@
 import os
 from os.path import join as jph
+import pickle
 
-from pipeline_project.A0_main.main_controller import ListSubjectsManager, subjects_controller
-from tools.definitions import root_study_rabbits, pfi_excel_table_all_data
+from pipeline_project.A0_main.main_controller import ListSubjectsManager
+from tools.definitions import root_study_rabbits, pfi_excel_table_all_data, pfo_subjects_parameters
 from tools.measurements.compile_record import compile_record
 from tools.auxiliary.utils import print_and_run
 
@@ -13,8 +14,10 @@ def compile_records_from_subject_list(subj_list):
 
     for sj in subj_list:
         # grab modalities
-        group = subjects_controller[sj][0][0]
-        category = subjects_controller[sj][0][1]
+        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+        group = sj_parameters['group']
+        category = sj_parameters['category']
         pfo_input_data = jph(root_study_rabbits, 'A_data', group, category)
         pfo_sj = jph(pfo_input_data, sj)
         pfi_T1 = jph(pfo_sj, 'mod', sj + '_T1.nii.gz')

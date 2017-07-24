@@ -3,14 +3,14 @@ T1 processing in their original coordinate system.
 """
 import os
 from os.path import join as jph
-import time
+import pickle
 
-from tools.definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import subjects_controller, ListSubjectsManager
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters
+from pipeline_project.A0_main.main_controller import ListSubjectsManager
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.utils import print_and_run
-from tools.auxiliary.sanity_checks import check_path
+from labels_manager.tools.aux_methods.sanity_checks import check_path
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 
 """
@@ -33,15 +33,15 @@ def process_T1_per_subject(sj, controller):
 
     print('\nProcessing T1 {} started.\n'.format(sj))
 
-    group = subjects_controller[sj][0][0]
-    category = subjects_controller[sj][0][1]
+    sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+    group = sj_parameters['group']
+    category = sj_parameters['category']
+
     pfo_input_sj_3D = jph(root_study_rabbits, '01_nifti', group, category, sj, sj + '_3D')
     pfo_output_sj = jph(root_study_rabbits, 'A_data', group, category, sj)
 
     # input sanity check:
-
-    if sj not in subjects_controller.keys():
-        raise IOError('Subject parameters not known')
     if not os.path.exists(pfo_input_sj_3D):
         raise IOError('Input folder T1 does not exist. {}'.format(pfo_input_sj_3D))
 
@@ -72,9 +72,9 @@ def process_T1_per_subject(sj, controller):
     if controller['register roi masks']:
         print('- register roi masks {}'.format(sj))
         pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
-        if subjects_controller[sj][0][1] in ['ex_vivo', 'op_skull']:
+        if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
             pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
-        elif subjects_controller[sj][0][1] == 'in_vivo':
+        elif sj_parameters['category'] == 'in_vivo':
             pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
         else:
             raise IOError('ex_vivo, in_vivo or op_skull only.')
@@ -92,9 +92,9 @@ def process_T1_per_subject(sj, controller):
     if controller['propagate roi masks']:
         print('- propagate roi masks {}'.format(sj))
         pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
-        if subjects_controller[sj][0][1] in ['ex_vivo', 'op_skull']:
+        if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
             pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.gz')
-        elif subjects_controller[sj][0][1] == 'in_vivo':
+        elif sj_parameters['category'] == 'in_vivo':
             pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_roi_mask.nii.gz')
         else:
             raise IOError('ex_vivo, in_vivo or op_skull only.')
@@ -114,7 +114,7 @@ def process_T1_per_subject(sj, controller):
         print('- adjust mask {}'.format(sj))
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
         assert check_path(pfi_roi_mask)
-        erosion_param = subjects_controller[sj][2][1]
+        erosion_param = sj_parameters['erosion_roi_mask']
         if erosion_param > 0:
             cmd = 'seg_maths {0} -ero {1} {2}'.format(pfi_roi_mask,
                                                       erosion_param,
@@ -137,7 +137,7 @@ def process_T1_per_subject(sj, controller):
         pfi_3d_cropped_roi = jph(pfo_tmp, sj + '_cropped.nii.gz')
         assert check_path(pfi_3d_cropped_roi)
         pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
-        bfc_param = subjects_controller[sj][3]
+        bfc_param = sj_parameters['bias_field_parameters']
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
         bias_field_correction(pfi_3d_cropped_roi, pfi_3d_bias_field_corrected,
                               pfi_mask=pfi_roi_mask,
@@ -164,7 +164,7 @@ def process_T1_per_subject(sj, controller):
         assert check_path(pfi_3d_bias_field_corrected)
         assert check_path(pfi_roi_mask)
         pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
-        percentile = subjects_controller[sj][2][2]
+        percentile = sj_parameters['intensities_percentile']
         percentile_lesion_mask_extractor(im_input_path=pfi_3d_bias_field_corrected,
                                          im_output_path=pfi_lesion_mask,
                                          im_mask_foreground_path=pfi_roi_mask,

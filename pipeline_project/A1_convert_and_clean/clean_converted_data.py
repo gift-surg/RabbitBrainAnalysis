@@ -2,13 +2,12 @@ import numpy as np
 import os
 from os.path import join as jph
 import warnings
+import pickle
 
 from tools.auxiliary.utils import print_and_run
 
-
-from tools.definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import subjects_controller, ListSubjectsManager
-# from tools.correctors.path_cleaner import clean_a_study
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters
+from pipeline_project.A0_main.main_controller import ListSubjectsManager
 
 
 def clean_a_study(pfo_study):
@@ -112,8 +111,9 @@ def cleaner_converted_data_from_list(subj_list):
     print subj_list
 
     for sj in subj_list:
-        group = subjects_controller[sj][0][0]
-        category = subjects_controller[sj][0][1]
+        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+        group = sj_parameters['group']
+        category = sj_parameters['category']
         pfo_to_be_cleaned = jph(root_study_rabbits, '01_nifti', group, category, sj)
         assert os.path.exists(pfo_to_be_cleaned)
 

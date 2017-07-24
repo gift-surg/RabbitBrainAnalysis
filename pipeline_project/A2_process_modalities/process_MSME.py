@@ -4,14 +4,17 @@ MSME processing in their original coordinate system
 import os
 from os.path import join as jph
 import nibabel as nib
+import pickle
 
-from tools.definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import subjects_controller, ListSubjectsManager
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters
+from pipeline_project.A0_main.main_controller import ListSubjectsManager
+from pipeline_project.A0_main.subject_parameters_manager import list_all_subjects
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import print_and_run
-from tools.auxiliary.sanity_checks import check_path
+from labels_manager.tools.aux_methods.sanity_checks import check_path
 from tools.correctors.bias_field_corrector4 import bias_field_correction
+
 """
 
 Processing list for each MSME of each subject:
@@ -43,12 +46,15 @@ save results
 def process_MSME_per_subject(sj, controller):
     print('\nProcessing MSME, subject {} started.\n'.format(sj))
 
-    group = subjects_controller[sj][0][0]
-    category = subjects_controller[sj][0][1]
+    sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+    group = sj_parameters['group']
+    category = sj_parameters['category']
+
     pfo_input_sj = jph(root_study_rabbits, '01_nifti', group, category, sj)
     pfo_output_sj = jph(root_study_rabbits, 'A_data', group, category, sj)
 
-    if sj not in subjects_controller.keys():
+    if sj not in list_all_subjects(pfo_subjects_parameters):
         raise IOError('Subject parameters not known')
     if not os.path.exists(pfo_input_sj):
         raise IOError('Input folder DWI does not exist.')

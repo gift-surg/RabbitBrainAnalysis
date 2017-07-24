@@ -104,6 +104,11 @@ bfp_fast = [0.01, (50, 40, 30, 20), 0.15, 0.01, 200, (4, 4, 4), 3]
 #              ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
 #              ],
 
+def list_all_subjects(pfo_where_parameter_files_are_stored):
+
+    return [file_name for file_name in os.listdir(pfo_where_parameter_files_are_stored)
+            if not file_name.endswith(".txt")]
+
 
 def get_list_names_subjects_in_template(pfo_where_parameter_files_are_stored):
 

@@ -1,14 +1,18 @@
 import os
 from os.path import join as jph
-
-from tools.definitions import root_study_rabbits, pfi_excel_table_all_data
-from pipeline_project.A0_main.main_controller import subjects_controller, ListSubjectsManager, templ_subjects
+import pickle
+from tools.definitions import root_study_rabbits, pfi_excel_table_all_data, pfo_subjects_parameters
+from pipeline_project.A0_main.main_controller import ListSubjectsManager
+from pipeline_project.A0_main.subject_parameters_manager import get_list_names_subjects_in_template
 from tools.auxiliary.parse_excel_tables_and_descriptors import store_a_record_in_excel_table
 
 
 def save_data_into_excel_file_per_subject(sj):
-    group = subjects_controller[sj][0][0]
-    category = subjects_controller[sj][0][1]
+
+    sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+    group = sj_parameters['group']
+    category = sj_parameters['category']
     pfo_records = jph(root_study_rabbits, 'A_data', group, category, sj, 'records')
     records_exists = False
     if os.path.exists(pfo_records):
@@ -20,7 +24,7 @@ def save_data_into_excel_file_per_subject(sj):
         # ---------
         store_a_record_in_excel_table(pfi_record, pfi_excel_table_all_data, sj, group)
         # ---------
-        if sj in templ_subjects:
+        if sj in get_list_names_subjects_in_template(pfo_subjects_parameters):
             pfi_record_template = jph(root_study_rabbits, 'A_data', group, category, sj, 'records_template',
                                       sj + '_record.npy')
             if os.path.exists(pfi_record_template):

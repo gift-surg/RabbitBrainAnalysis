@@ -1,12 +1,13 @@
 import os
 from os.path import join as jph
+import pickle
 
 from labels_manager.main import LabelsManager
 
-from pipeline_project.A0_main.main_controller import subjects_controller, propagate_me_level
+from pipeline_project.A0_main.subject_parameters_manager import propagate_me_level
 from labels_manager.tools.aux_methods.utils import adjust_affine_header, print_and_run
-from tools.auxiliary.sanity_checks import check_path
-from tools.definitions import bfc_corrector_cmd
+from labels_manager.tools.aux_methods.sanity_checks import check_path
+from tools.definitions import bfc_corrector_cmd, pfo_subjects_parameters
 
 
 def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_templ_subjects, controller):
@@ -19,8 +20,8 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
     :param controller:
     :return:
     """
-    if sj_target not in subjects_controller.keys():
-        raise IOError('Subject parameters not known')
+    sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj_target), 'r'))
+
     for sj_source in list_templ_subjects:
         assert os.path.exists(jph(pfo_templ_subjects, sj_source))
     # -- Generate intermediate and output folders:
@@ -54,7 +55,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             print_and_run(cmd0)
             print_and_run(cmd1)
             print_and_run(cmd2)
-            theta = subjects_controller[sj][1][0]
+            theta = sj_parameters['angles'][1]
 
             adjust_affine_header(pfi_templ_sj_bicomm_header, pfi_templ_sj_bicomm_header,
                                                theta=theta, trasl=(0, 0, 0))
@@ -110,7 +111,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
                 pfi_templ_reg_mask_sj_aff_registered)
             print_and_run(cmd)
 
-        if controller['Get differential BFC'] and not subjects_controller[sj_target][0][1] == 'in_vivo':
+        if controller['Get differential BFC'] and not sj_parameters['category'] == 'in_vivo':
             # for the in-vivo there is no need for the differential BFC
             print('- Get differential BFC, {} over {} '.format(sj, sj_target))
             pfi_target = jph(pfo_mod, sj_target + '_T1.nii.gz')
@@ -154,7 +155,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_diff_bfc_n_rig_cpp = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '_cpp.nii.gz')
             pfi_diff_bfc_n_rig_res = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '_warp.nii.gz')
             options = '-ln 2 -be 0.5'
-            if subjects_controller[sj_target][0][1] == 'in_vivo':
+            if sj_parameters['category'] == 'in_vivo':
                 options = '-ln 2 -be 0.8'
 
             cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -cpp {4} -res {5} {6}'.format(
@@ -190,7 +191,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_subject_propagated_on_target_segm_smol = jph(pfo_tmp,
                                                              'final' + sj + 'over' + sj_target + '_segm_smol.nii.gz')
             smol = 0.2
-            if subjects_controller[sj_target][0][1] == 'in_vivo':
+            if sj_parameters['category'] == 'in_vivo':
                 smol = 0
             if smol > 0:
                 cmd = 'seg_maths {0} -smol {1} {2}'.format(pfi_subject_propagated_on_target_segm, smol,

@@ -1,12 +1,13 @@
 import os
 from os.path import join as jph
-
+import pickle
 from bruker2nifti.converter import Bruker2Nifti
 
-from pipeline_project.A0_main.main_controller import subjects_controller, ListSubjectsManager
+from tools.definitions import pfo_subjects_parameters
+from pipeline_project.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits
 from tools.auxiliary.utils import print_and_run
-from tools.auxiliary.sanity_checks import check_path
+from labels_manager.tools.aux_methods.sanity_checks import check_path
 
 
 def convert_subjects_from_list(subj_list):
@@ -16,8 +17,11 @@ def convert_subjects_from_list(subj_list):
     for sj in subj_list:
         print 'Subj {} conversion!\n'.format(sj)
 
-        group = subjects_controller[sj][0][0]
-        category = subjects_controller[sj][0][1]
+        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+        group = sj_parameters['group']
+        category = sj_parameters['category']
+
         pfo_input_sj = jph(root_study_rabbits, '00_raw_data', group, category, sj)
         check_path(pfo_input_sj)
         pfo_output = jph(root_study_rabbits, '01_nifti', group, category)
