@@ -19,13 +19,13 @@ def convert_subjects_from_list(subj_list):
 
         sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-        group = sj_parameters['group']
+        study = sj_parameters['study']
         category = sj_parameters['category']
 
-        pfo_input_sj = jph(root_study_rabbits, '00_raw_data', group, category, sj)
+        pfo_input_sj = jph(root_study_rabbits, '00_raw_data', study, category, sj)
         check_path_validity(pfo_input_sj)
-        pfo_output = jph(root_study_rabbits, '01_nifti', group, category)
-        pfo_output_sj = jph(root_study_rabbits, '01_nifti', group, category, sj)
+        pfo_output = jph(root_study_rabbits, '01_nifti', study, category)
+        pfo_output_sj = jph(root_study_rabbits, '01_nifti', study, category, sj)
 
         if os.path.exists(pfo_output_sj):
             cmd = 'rm -r {}'.format(pfo_output_sj)

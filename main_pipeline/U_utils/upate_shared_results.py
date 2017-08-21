@@ -93,12 +93,12 @@ def send_data_to_hannes_from_list(subj_list, records_only=False, erase_source=Fa
 
             sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-            group = sj_parameters['group']
+            study = sj_parameters['study']
             category = sj_parameters['category']
-            pfo_source = jph(root_data, group, category)
+            pfo_source = jph(root_data, study, category)
 
             assert os.path.exists(pfo_source)
-            pfo_destination = jph(root_shared_records, group, category)
+            pfo_destination = jph(root_shared_records, study, category)
             send_or_erase(sj, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,
                           erase_destination=erase_destination)
 

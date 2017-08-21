@@ -27,10 +27,10 @@ def propagate_and_fuse_per_subject_list_over_all_modalities(subj_list,
 
         sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj_target), 'r'))
 
-        group = sj_parameters['group']
+        study = sj_parameters['study']
         category = sj_parameters['category']
 
-        pfo_target = jph(root_study_rabbits, 'A_data', group, category, sj_target)
+        pfo_target = jph(root_study_rabbits, 'A_data', study, category, sj_target)
 
         assert os.path.isdir(pfo_target)
         # If sj_target belongs to the template simply reorient the manual segmentation constituting the template.

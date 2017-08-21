@@ -85,10 +85,10 @@ def get_g_ratio_per_subjects_as_data_frame(input_subjects_list):
 
         sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-        group = sj_parameters['group']
+        study = sj_parameters['study']
         category = sj_parameters['category']
 
-        pfi_record_sj = jph(root_study_rabbits, 'A_data', group, category, sj, 'records', sj + '_records.npy')
+        pfi_record_sj = jph(root_study_rabbits, 'A_data', study, category, sj, 'records', sj + '_records.npy')
         assert os.path.exists(pfi_record_sj), 'Subject {} has no record available'.format(sj)
         records.append(np.load(pfi_record_sj).item())
 

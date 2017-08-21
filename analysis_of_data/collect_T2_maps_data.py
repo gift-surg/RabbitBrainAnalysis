@@ -51,10 +51,10 @@ if __name__ == '__main__':
 
         sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-        group = sj_parameters['group']
+        study = sj_parameters['study']
         category = sj_parameters['category']
 
-        pfo_input_data = jph(root_study_rabbits, 'A_data', group, category)
+        pfo_input_data = jph(root_study_rabbits, 'A_data', study, category)
 
         pfo_sj_T2 = jph(pfo_input_data, sj, 'mod', 'T2_maps')
 

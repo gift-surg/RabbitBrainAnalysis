@@ -21,12 +21,12 @@ def process_g_ratio_per_subject(sj, controller):
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-    group = sj_parameters['group']
+    study = sj_parameters['study']
     category = sj_parameters['category']
 
-    pfo_input_sj_DWI = jph(root_study_rabbits, '01_nifti', group, category, sj, sj + '_DWI')
-    pfo_input_sj_MSME = jph(root_study_rabbits, '01_nifti', group, category, sj, sj + '_MSME')
-    pfo_output_sj = jph(root_study_rabbits, 'A_data', group, category, sj)
+    pfo_input_sj_DWI = jph(root_study_rabbits, '01_nifti', study, category, sj, sj + '_DWI')
+    pfo_input_sj_MSME = jph(root_study_rabbits, '01_nifti', study, category, sj, sj + '_MSME')
+    pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
 
     # input sanity check:
     if sj not in list_all_subjects(pfo_subjects_parameters):

@@ -112,9 +112,9 @@ def cleaner_converted_data_from_list(subj_list):
 
     for sj in subj_list:
         sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
-        group = sj_parameters['group']
+        study = sj_parameters['study']
         category = sj_parameters['category']
-        pfo_to_be_cleaned = jph(root_study_rabbits, '01_nifti', group, category, sj)
+        pfo_to_be_cleaned = jph(root_study_rabbits, '01_nifti', study, category, sj)
         assert os.path.exists(pfo_to_be_cleaned)
 
         print 'Study subject {} cleaning. \n'.format(sj)

@@ -16,9 +16,9 @@ def compile_records_from_subject_list(subj_list):
         # grab modalities
         sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-        group = sj_parameters['group']
+        study = sj_parameters['study']
         category = sj_parameters['category']
-        pfo_input_data = jph(root_study_rabbits, 'A_data', group, category)
+        pfo_input_data = jph(root_study_rabbits, 'A_data', study, category)
         pfo_sj = jph(pfo_input_data, sj)
         pfi_T1 = jph(pfo_sj, 'mod', sj + '_T1.nii.gz')
         pfi_FA = jph(pfo_sj, 'mod', sj + '_FA.nii.gz')

@@ -5,9 +5,11 @@ import pickle
 from labels_manager.main import LabelsManager
 
 from main_pipeline.A0_main.subject_parameters_manager import propagate_me_level
-from labels_manager.tools.aux_methods.utils import adjust_affine_header, print_and_run
+from labels_manager.tools.aux_methods.utils import print_and_run
 from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
 from tools.definitions import bfc_corrector_cmd, pfo_subjects_parameters
+
+from tools.correctors.tmp import adjust_affine_header
 
 
 def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_templ_subjects, controller):

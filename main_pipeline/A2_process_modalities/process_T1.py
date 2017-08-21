@@ -35,11 +35,11 @@ def process_T1_per_subject(sj, controller):
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-    group = sj_parameters['group']
+    study = sj_parameters['study']
     category = sj_parameters['category']
 
-    pfo_input_sj_3D = jph(root_study_rabbits, '01_nifti', group, category, sj, sj + '_3D')
-    pfo_output_sj = jph(root_study_rabbits, 'A_data', group, category, sj)
+    pfo_input_sj_3D = jph(root_study_rabbits, '01_nifti', study, category, sj, sj + '_3D')
+    pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
 
     # input sanity check:
     if not os.path.exists(pfo_input_sj_3D):
@@ -219,7 +219,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['1201', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['1305', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

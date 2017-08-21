@@ -11,9 +11,9 @@ def save_data_into_excel_file_per_subject(sj):
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-    group = sj_parameters['group']
+    study = sj_parameters['study']
     category = sj_parameters['category']
-    pfo_records = jph(root_study_rabbits, 'A_data', group, category, sj, 'records')
+    pfo_records = jph(root_study_rabbits, 'A_data', study, category, sj, 'records')
     records_exists = False
     if os.path.exists(pfo_records):
         records_exists = True
