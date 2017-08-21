@@ -1,6 +1,5 @@
 import numpy as np
 import nibabel as nib
-import itertools
 
 from tools.auxiliary.utils import set_new_data
 

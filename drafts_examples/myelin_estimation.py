@@ -28,7 +28,7 @@ def process_MSME_per_subject(sj, pfo_input_sj_MSME, pfo_output_sj, controller):
 
     pfo_mod = jph(pfo_output_sj, 'mod')
     pfo_segm = jph(pfo_output_sj, 'segm')
-    pfo_mask = jph(pfo_output_sj, 'z_mask')
+    pfo_mask = jph(pfo_output_sj, 'masks')
     pfo_tmp = jph(pfo_output_sj, 'z_tmp', 'z_MSME')
 
     print_and_run('mkdir -p {}'.format(pfo_output_sj))

@@ -8,7 +8,7 @@ from main_pipeline.A2_process_modalities.process_MSME import process_MSME_from_l
 from main_pipeline.A2_process_modalities.process_T1 import process_T1_from_list
 from main_pipeline.A2_process_modalities.process_T2_map import process_t2_maps_from_list
 from main_pipeline.A2_process_modalities.process_g_ratio import process_g_ratio_from_list
-from main_pipeline.A3_register_template_over_all_subjects.propagate_and_fuse_main import \
+from main_pipeline.A3_register_template_over_all_subjects.z_propagate_and_fuse_main import \
     propagate_and_fuse_per_subject_list_over_all_modalities
 from main_pipeline.A4_data_collection.collect_data_studies import compile_records_from_subject_list
 from main_pipeline.U_utils.upate_shared_results import send_data_to_hannes_from_list
@@ -27,7 +27,7 @@ def main_runner(subj_list):
     step_A2_T2maps  = False
     step_A2_g_ratio = False
     step_A3         = False
-    step_A4         = True
+    step_A4         = False
     step_A5         = False
 
     ''' Step A1 - convert, clean and create aliases '''
