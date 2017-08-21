@@ -16,7 +16,7 @@ from tools.definitions import pfo_subjects_parameters
 
 # Axial Angle, angle of the axial orientation sign from L to R,
 # from initial position to aligned with axis (yaw).
-# Bicomm (or coronal) Angle is the opening angle from bicomm to histological in rad (pitch).
+# Bicomm (or coronal) Angle is the opening angle from histological away from it (bicommissural positive) in rad (pitch).
 # Sagittal Angle sign from L to R from initial position to aligned with axis (roll)
 
 

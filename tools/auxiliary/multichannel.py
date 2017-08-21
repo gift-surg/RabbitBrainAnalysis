@@ -12,7 +12,7 @@ def generate_multichannel(list_data, channels_axis=3, normalize=True):
     :param list_data: [data1, data2, ...]
     :param channels_axis:
     :param normalize:
-    :return: data so that data[1] = data1, data[2] = data2, ...
+    :return: data so that data[..., 0] = data0, data[... , 1] = data1, ...
     """
     def flatten(l):
         return flatten(l[0]) + (flatten(l[1:]) if len(l) > 1 else []) if type(l) is list else [l]

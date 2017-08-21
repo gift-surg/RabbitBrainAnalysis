@@ -7,7 +7,7 @@ from tools.definitions import pfo_subjects_parameters
 from pipeline_project.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits
 from tools.auxiliary.utils import print_and_run
-from labels_manager.tools.aux_methods.sanity_checks import check_path
+from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
 
 
 def convert_subjects_from_list(subj_list):
@@ -23,7 +23,7 @@ def convert_subjects_from_list(subj_list):
         category = sj_parameters['category']
 
         pfo_input_sj = jph(root_study_rabbits, '00_raw_data', group, category, sj)
-        check_path(pfo_input_sj)
+        check_path_validity(pfo_input_sj)
         pfo_output = jph(root_study_rabbits, '01_nifti', group, category)
         pfo_output_sj = jph(root_study_rabbits, '01_nifti', group, category, sj)
 

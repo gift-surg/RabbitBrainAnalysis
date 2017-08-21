@@ -3,7 +3,7 @@ from os.path import join as jph
 
 from tools.measurements.compile_record import compile_record
 from tools.definitions import root_internal_template, root_study_rabbits, pfi_excel_table_all_data
-from labels_manager.tools.aux_methods.sanity_checks import check_path
+from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
 '''
 Data here are directly collected from the manual segmentation that constitutes the internal template.
 This file is not called in the main pipeline but it is important as way of computing the error of
@@ -17,7 +17,7 @@ def compile_record_internal_template(bypass=None):
     pfi_multi_labels_descr = jph(root_internal_template, 'LabelsDescriptors', 'multi_labels_descriptor.txt')
 
     for p in [pfi_multi_labels_descr, pfi_excel_table_all_data]:
-        if not check_path(p):
+        if not check_path_validity(p):
             msg = 'Folder {} of the structure does not exists'.format(p)
             raise IOError(msg)
 

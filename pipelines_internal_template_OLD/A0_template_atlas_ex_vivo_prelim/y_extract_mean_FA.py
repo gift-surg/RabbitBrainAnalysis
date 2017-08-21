@@ -2,7 +2,7 @@ import os
 from os.path import join as jph
 
 import numpy as np
-from pipelines_internal_template.A_template_atlas_ex_vivo_prelim.a_definitions_regions_subjects import subjects, \
+from pipelines_internal_template_OLD.A_template_atlas_ex_vivo_prelim.a_definitions_regions_subjects import subjects, \
     regions_values
 from tabulate import tabulate
 

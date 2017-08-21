@@ -4,9 +4,10 @@ Update results on the shared Dropbox folder with Hannes
 
 import os
 from os.path import join as jph
+import pickle
 
-from tools.definitions import root_study_rabbits, root_shared_records, pfi_excel_table_all_data
-from pipeline_project.A0_main.main_controller import ListSubjectsManager, subjects_controller
+from tools.definitions import root_study_rabbits, root_shared_records, pfi_excel_table_all_data, pfo_subjects_parameters
+from pipeline_project.A0_main.main_controller import ListSubjectsManager
 from tools.auxiliary.utils import print_and_run
 
 
@@ -90,9 +91,12 @@ def send_data_to_hannes_from_list(subj_list, records_only=False, erase_source=Fa
 
         for sj in subj_list:
 
-            group = subjects_controller[sj][0][0]
-            category = subjects_controller[sj][0][1]
+            sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+            group = sj_parameters['group']
+            category = sj_parameters['category']
             pfo_source = jph(root_data, group, category)
+
             assert os.path.exists(pfo_source)
             pfo_destination = jph(root_shared_records, group, category)
             send_or_erase(sj, pfo_source, pfo_destination, records_only=records_only, erase_source=erase_source,

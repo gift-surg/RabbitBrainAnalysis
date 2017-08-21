@@ -2,10 +2,10 @@ import os
 import numpy as np
 from os.path import join as jph
 import pandas as pd
+import pickle
 from bokeh.plotting import figure, show, output_file
 
-from tools.definitions import root_study_rabbits, pfo_local_output
-from pipeline_project.A0_main.main_controller import subjects_controller
+from tools.definitions import root_study_rabbits, pfo_local_output, pfo_subjects_parameters
 
 
 def from_g_ratio_data_to_data_frame(list_subjects_names, list_regions_names, list_modality_names, g_ratio_array):
@@ -82,8 +82,12 @@ def get_g_ratio_per_subjects_as_data_frame(input_subjects_list):
     records = []
 
     for sj in input_subjects_list:
-        group = subjects_controller[sj][0][0]
-        category = subjects_controller[sj][0][1]
+
+        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+        group = sj_parameters['group']
+        category = sj_parameters['category']
+
         pfi_record_sj = jph(root_study_rabbits, 'A_data', group, category, sj, 'records', sj + '_records.npy')
         assert os.path.exists(pfi_record_sj), 'Subject {} has no record available'.format(sj)
         records.append(np.load(pfi_record_sj).item())

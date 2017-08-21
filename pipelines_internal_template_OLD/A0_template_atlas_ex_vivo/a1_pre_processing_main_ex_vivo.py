@@ -17,8 +17,8 @@ Dlways process T1 before DWI.
 
 """
 
-from pipelines_internal_template.A_template_atlas_ex_vivo.pre_process_T1_ex_vivo_pv6 import process_T1_pv6
-from pipelines_internal_template.A_template_atlas_ex_vivo.pre_process_DWI_fsl_ex_vivo_pv6 import process_DWI_fsl_pv6
+from pipelines_internal_template_OLD.A_template_atlas_ex_vivo.pre_process_T1_ex_vivo_pv6 import process_T1_pv6
+from pipelines_internal_template_OLD.A_template_atlas_ex_vivo.pre_process_DWI_fsl_ex_vivo_pv6 import process_DWI_fsl_pv6
 
 
 # all:

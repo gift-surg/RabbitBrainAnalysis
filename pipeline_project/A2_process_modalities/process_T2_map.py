@@ -29,8 +29,10 @@ import pickle
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 from pipeline_project.A0_main.main_controller import ListSubjectsManager
 from pipeline_project.A0_main.subject_parameters_manager import list_all_subjects
-from tools.auxiliary.utils import print_and_run, set_new_data
-from labels_manager.tools.aux_methods.sanity_checks import check_path
+
+from labels_manager.tools.aux_methods.utils import print_and_run
+from labels_manager.tools.aux_methods.utils_nib import set_new_data
+from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
 from tools.definitions import root_fit_apps
 
 
@@ -66,7 +68,7 @@ def process_T2_map_per_subject(sj, controller):
 
     if controller['get acquisition echo time']:
         pfi_visu_pars = jph(pfo_input_sj_MSME, sj + '_MSME_visu_pars.npy')
-        assert check_path(pfi_visu_pars)
+        assert check_path_validity(pfi_visu_pars)
         pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
         visu_pars_dict = np.load(pfi_visu_pars)
         np.savetxt(fname=pfi_echo_times, X=visu_pars_dict.item().get('VisuAcqEchoTime'), fmt='%10.2f', newline=' ')
@@ -79,7 +81,7 @@ def process_T2_map_per_subject(sj, controller):
         # original
         for s in suffix:
             pfi_original_MSME = jph(pfo_mod, sj + '_MSME{}.nii.gz'.format(s))
-            check_path(pfi_original_MSME)
+            check_path_validity(pfi_original_MSME)
             pfi_T2map = jph(pfo_tmp, sj + '_T2map{}.nii.gz'.format(s))
             cmd1 = root_fit_apps + 'fit_qt2 -source {0} -TE {1} -t2map {2}'.format(pfi_original_MSME,
                                                                                    echo_delta, pfi_T2map)
@@ -89,7 +91,7 @@ def process_T2_map_per_subject(sj, controller):
     if controller['correct origin']:  # some versions of niftyfit for fit_qt2 are dividing by 0 in the origin.
         for s in suffix:
             pfi_T2map = jph(pfo_tmp, sj + '_T2map{}.nii.gz'.format(s))
-            check_path(pfi_T2map)
+            check_path_validity(pfi_T2map)
             pfi_T2map_corrected = jph(pfo_tmp, sj + '_corrected_T2map{}.nii.gz'.format(s))
             # clean upper outliers (Mean + 2 * StandardDeviation) ... They are more than outliers!
             im_s = nib.load(pfi_T2map)
@@ -104,7 +106,7 @@ def process_T2_map_per_subject(sj, controller):
         print_and_run(cmd)
         for s in suffix:
             pfi_T2map_corrected = jph(pfo_tmp, sj + '_corrected_T2map{}.nii.gz'.format(s))
-            check_path(pfi_T2map_corrected)
+            check_path_validity(pfi_T2map_corrected)
             pfi_T2map = jph(pfo_mod_T2map, sj + '_T2map{}.nii.gz'.format(s))
             cmd = 'cp {0} {1}'.format(pfi_T2map_corrected, pfi_T2map)
             print_and_run(cmd)

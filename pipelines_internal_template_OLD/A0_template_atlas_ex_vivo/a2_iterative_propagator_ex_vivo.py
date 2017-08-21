@@ -1,6 +1,7 @@
 # draft code. To be optimised for a varied number of subjects.
 
 """
+MAIN PART CODE OF THE DRAFT PART
 Propagate subject 1,2,3 on subject 4 and then select the best with a
 majority voting.
 

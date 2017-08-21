@@ -126,6 +126,7 @@ def get_percentiles_range(pfi_im_input, percentiles=(15, 95)):
         print('Warning, image unexpectedly empthy!')
         return 0, 0
 
+
 def get_normal_interval_range(pfi_im_input, k=1):
     assert os.path.exists(pfi_im_input)
     im = nib.load(pfi_im_input)

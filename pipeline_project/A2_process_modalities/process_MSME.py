@@ -12,7 +12,7 @@ from pipeline_project.A0_main.subject_parameters_manager import list_all_subject
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import print_and_run
-from labels_manager.tools.aux_methods.sanity_checks import check_path
+from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 
 """
@@ -85,7 +85,7 @@ def process_MSME_per_subject(sj, controller):
     if controller['orient to standard']:
         print('- Processing MSME: orient to standard {}'.format(sj))
         pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
-        assert check_path(pfi_msme)
+        assert check_path_validity(pfi_msme)
         cmd = 'fslreorient2std {0} {0}'.format(pfi_msme)
         print_and_run(cmd)
         set_translational_part_to_zero(pfi_msme, pfi_msme)
@@ -105,7 +105,7 @@ def process_MSME_per_subject(sj, controller):
         pfi_msme_tp0 = jph(pfo_tmp, sj + '_MSME_tp0.nii.gz')
         assert os.path.exists(pfi_s0)
         assert os.path.exists(pfi_s0_mask)
-        assert check_path(pfi_msme_tp0)
+        assert check_path_validity(pfi_msme_tp0)
         pfi_transf_msme_on_s0 = jph(pfo_tmp, sj + '_msme_on_b0_rigid.txt')
         pfi_warped_msme_on_s0 = jph(pfo_tmp, sj + '_MSME_tp0_up.nii.gz')
         cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -aff {3} -res {4} -rigOnly'.format(
@@ -119,7 +119,7 @@ def process_MSME_per_subject(sj, controller):
         pfi_transf_msme_on_s0 = jph(pfo_tmp, sj + '_msme_on_b0_rigid.txt')
         assert os.path.exists(pfi_s0)
         assert os.path.exists(pfi_msme)
-        assert check_path(pfi_transf_msme_on_s0)
+        assert check_path_validity(pfi_transf_msme_on_s0)
         pfi_msme_upsampled = jph(pfo_tmp, sj + '_MSME_up.nii.gz')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 1'.format(
             pfi_s0, pfi_msme, pfi_transf_msme_on_s0, pfi_msme_upsampled
@@ -143,7 +143,7 @@ def process_MSME_per_subject(sj, controller):
             pfi_msme, pfi_b0_mask, pfi_inv_aff, pfi_mask_on_msme)
         print_and_run(cmd1)
         print('Dilate:')
-        assert check_path(pfi_mask_on_msme)
+        assert check_path_validity(pfi_mask_on_msme)
         dil_factor = 0
         cmd0 = 'seg_maths {0} -dil {1} {2}'.format(pfi_mask_on_msme, dil_factor, pfi_mask_on_msme)
         print_and_run(cmd0)
@@ -151,7 +151,7 @@ def process_MSME_per_subject(sj, controller):
     if controller['bfc']:
         print('- get bfc correction each slice:')
         pfi_msme_original = jph(pfo_tmp, sj + '_MSME.nii.gz')
-        assert check_path(pfi_msme_original)
+        assert check_path_validity(pfi_msme_original)
         print('-- un-pack slices')
         im = nib.load(pfi_msme_original)
         tps = im.shape[-1]
@@ -183,14 +183,14 @@ def process_MSME_per_subject(sj, controller):
         cmd1 = 'seg_maths {0} -removenan {0}'.format(bias_field)
         print_and_run(cmd0)
         print_and_run(cmd1)
-        assert check_path(bias_field)
+        assert check_path_validity(bias_field)
         print('-- correct all the remaining slices')
         for tp in range(1, tps):
             pfi_tp = jph(pfo_tmp, sj + '_MSME_tp{}.nii.gz'.format(tp))
             pfi_tp_bfc = jph(pfo_tmp, sj + '_MSME_tp{}_bfc.nii.gz'.format(tp))
             cmd0 = 'seg_maths {0} -mul {1} {2}'.format(pfi_tp, bias_field, pfi_tp_bfc)
             print_and_run(cmd0)
-            check_path(pfi_tp_bfc)
+            check_path_validity(pfi_tp_bfc)
         print('-- pack together all the images in a stack')
         cmd = 'seg_maths {0} -merge	{1} {2} '.format(pfi_tp0_bfc, tps-1, 4)
         for tp in range(1, tps):
@@ -204,7 +204,7 @@ def process_MSME_per_subject(sj, controller):
     if controller['bfc up']:
         print('- get bfc correction each slice:')
         pfi_msme_upsampled = jph(pfo_tmp, sj + '_MSME_up.nii.gz')
-        assert check_path(pfi_msme_upsampled)
+        assert check_path_validity(pfi_msme_upsampled)
         print('-- un-pack slices')
         im = nib.load(pfi_msme_upsampled)
         tps = im.shape[-1]
@@ -235,14 +235,14 @@ def process_MSME_per_subject(sj, controller):
         cmd1 = 'seg_maths {0} -removenan {0}'.format(bias_field_up)
         print_and_run(cmd0)
         print_and_run(cmd1)
-        assert check_path(bias_field_up)
+        assert check_path_validity(bias_field_up)
         print('-- correct all the remaining slices')
         for tp in range(1, tps):
             pfi_up_tp = jph(pfo_tmp, sj + '_MSME_up_tp{}.nii.gz'.format(tp))
             pfi_up_tp_bfc = jph(pfo_tmp, sj + '_MSME_up_tp{}_bfc.nii.gz'.format(tp))
             cmd0 = 'seg_maths {0} -mul {1} {2}'.format(pfi_up_tp, bias_field_up, pfi_up_tp_bfc)
             print_and_run(cmd0)
-            check_path(pfi_up_tp_bfc)
+            check_path_validity(pfi_up_tp_bfc)
         print('-- pack together all the images in a stack')
         cmd_merge = 'seg_maths {0} -merge	{1} {2} '.format(pfi_up_tp0_bfc, tps-1, 4)
         for tp in range(1, tps):
@@ -259,10 +259,10 @@ def process_MSME_per_subject(sj, controller):
         pfi_msme_bfc    = jph(pfo_tmp, sj + '_MSME_bfc.nii.gz')  # original bfc
         pfi_msme_up     = jph(pfo_tmp, sj + '_MSME_up.nii.gz')  # up
         pfi_msme_up_bfc = jph(pfo_tmp, sj + '_MSME_up_bfc.nii.gz')  # up bfc
-        assert check_path(pfi_msme_nifti)
-        assert check_path(pfi_msme_bfc)
-        assert check_path(pfi_msme_up)
-        assert check_path(pfi_msme_up_bfc)
+        assert check_path_validity(pfi_msme_nifti)
+        assert check_path_validity(pfi_msme_bfc)
+        assert check_path_validity(pfi_msme_up)
+        assert check_path_validity(pfi_msme_up_bfc)
         pfi_final        = jph(pfo_mod, sj + '_MSME.nii.gz')
         pfi_final_bfc    = jph(pfo_mod, sj + '_MSME_bfc.nii.gz')
         pfi_final_up     = jph(pfo_mod, sj + '_MSME_up.nii.gz')
@@ -282,10 +282,10 @@ def process_MSME_per_subject(sj, controller):
         pfi_msme_bfc    = jph(pfo_tmp, sj + '_MSME_bfc.nii.gz')  # original bfc
         pfi_msme_up     = jph(pfo_tmp, sj + '_MSME_up.nii.gz')  # up
         pfi_msme_up_bfc = jph(pfo_tmp, sj + '_MSME_up_bfc.nii.gz')  # up bfc
-        assert check_path(pfi_msme_nifti)
-        assert check_path(pfi_msme_bfc)
-        assert check_path(pfi_msme_up)
-        assert check_path(pfi_msme_up_bfc)
+        assert check_path_validity(pfi_msme_nifti)
+        assert check_path_validity(pfi_msme_bfc)
+        assert check_path_validity(pfi_msme_up)
+        assert check_path_validity(pfi_msme_up_bfc)
         pfo_tp0 = jph(pfo_mod, 'MSME_tp0')
         pfi_final_tp0        = jph(pfo_tp0, sj + '_MSME_tp0.nii.gz')
         pfi_final_bfc_tp0    = jph(pfo_tp0, sj + '_MSME_bfc_tp0.nii.gz')

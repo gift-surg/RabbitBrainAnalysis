@@ -6,7 +6,7 @@ from labels_manager.main import LabelsManager
 
 from pipeline_project.A0_main.subject_parameters_manager import propagate_me_level
 from labels_manager.tools.aux_methods.utils import adjust_affine_header, print_and_run
-from labels_manager.tools.aux_methods.sanity_checks import check_path
+from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
 from tools.definitions import bfc_corrector_cmd, pfo_subjects_parameters
 
 
@@ -70,10 +70,10 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_target_roi_registration_masks = jph(pfo_mask, sj_target + '_T1_reg_mask.nii.gz')
             pfi_templ_sj_bicomm_header = jph(pfo_tmp, sj + '_templ_bicomm_hd.nii.gz')
             pfi_templ_reg_mask_sj_bicomm_header = jph(pfo_tmp, sj + '_templ_reg_mask_bicomm_hd.nii.gz')
-            assert check_path(pfi_target)
-            assert check_path(pfi_target_roi_registration_masks)
-            assert check_path(pfi_templ_sj_bicomm_header)
-            assert check_path(pfi_templ_reg_mask_sj_bicomm_header)
+            assert check_path_validity(pfi_target)
+            assert check_path_validity(pfi_target_roi_registration_masks)
+            assert check_path_validity(pfi_templ_sj_bicomm_header)
+            assert check_path_validity(pfi_templ_reg_mask_sj_bicomm_header)
             pfi_affine_transf = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_transf_aff.txt')
             pfi_affine_warp_sj = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_warp_aff.nii.gz')
             cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} {6}'.format(
@@ -87,9 +87,9 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_target = jph(pfo_mod, sj_target + '_T1.nii.gz')
             pfi_segm_sj_bicomm_header = jph(pfo_tmp, sj + '_templ_segm_bicomm_hd.nii.gz')
             pfi_affine_transf = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_transf_aff.txt')
-            assert check_path(pfi_target)
-            assert check_path(pfi_segm_sj_bicomm_header)
-            assert check_path(pfi_affine_transf)
+            assert check_path_validity(pfi_target)
+            assert check_path_validity(pfi_segm_sj_bicomm_header)
+            assert check_path_validity(pfi_affine_transf)
             pfi_templ_segm_aff_registered_on_sj_target = jph(pfo_tmp,
                                                              'templ' + sj + 'over' + sj_target + '_segm.nii.gz')
             cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
@@ -102,9 +102,9 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_target = jph(pfo_mod, sj_target + '_T1.nii.gz')
             pfi_templ_reg_mask_sj_bicomm_header = jph(pfo_tmp, sj + '_templ_reg_mask_bicomm_hd.nii.gz')
             pfi_affine_transf = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_transf_aff.txt')
-            assert check_path(pfi_target)
-            assert check_path(pfi_templ_reg_mask_sj_bicomm_header)
-            assert check_path(pfi_affine_transf)
+            assert check_path_validity(pfi_target)
+            assert check_path_validity(pfi_templ_reg_mask_sj_bicomm_header)
+            assert check_path_validity(pfi_affine_transf)
             pfi_templ_reg_mask_sj_aff_registered = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_reg_mask.nii.gz')
             cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0 '.format(
                 pfi_target, pfi_templ_reg_mask_sj_bicomm_header, pfi_affine_transf,
@@ -119,22 +119,22 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_affine_warp_sj = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_warp_aff.nii.gz')
             pfi_templ_reg_mask_sj_aff_registered = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_reg_mask.nii.gz')
             assert os.path.exists(pfi_target)
-            assert check_path(pfi_target_roi_registration_masks)
+            assert check_path_validity(pfi_target_roi_registration_masks)
             assert os.path.exists(pfi_affine_warp_sj)
-            assert check_path(pfi_templ_reg_mask_sj_aff_registered)
+            assert check_path_validity(pfi_templ_reg_mask_sj_aff_registered)
             pfi_diff_bfc_target = jph(pfo_tmp, 'bfc' + sj_target + '.nii.gz')
             pfi_diff_bfc_subject = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '.nii.gz')
             cmd = bfc_corrector_cmd + ' {0} {1} {2} {3} {4} {5} '.format(
                 pfi_target, pfi_target_roi_registration_masks, pfi_diff_bfc_target,
                 pfi_affine_warp_sj, pfi_templ_reg_mask_sj_aff_registered, pfi_diff_bfc_subject)
             print_and_run(cmd)
-            assert check_path(pfi_diff_bfc_target)
-            assert check_path(pfi_diff_bfc_subject)
+            assert check_path_validity(pfi_diff_bfc_target)
+            assert check_path_validity(pfi_diff_bfc_subject)
         elif controller['N-rig alignment']:  # if it has to create the element for the next step without BFC.
             pfi_target = jph(pfo_mod, sj_target + '_T1.nii.gz')
             pfi_affine_warp_sj = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_warp_aff.nii.gz')
             assert os.path.exists(pfi_target)
-            assert check_path(pfi_affine_warp_sj)
+            assert check_path_validity(pfi_affine_warp_sj)
             pfi_diff_bfc_target = jph(pfo_tmp, 'bfc' + sj_target + '.nii.gz')
             pfi_diff_bfc_subject = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '.nii.gz')
             cmd0 = 'cp {0} {1}'.format(pfi_target, pfi_diff_bfc_target)
@@ -148,9 +148,9 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_target_roi_registration_masks = jph(pfo_mask, sj_target + '_T1_reg_mask.nii.gz')
             pfi_diff_bfc_subject = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '.nii.gz')
             pfi_templ_reg_mask_sj_aff_registered = jph(pfo_tmp, 'templ' + sj + 'over' + sj_target + '_reg_mask.nii.gz')
-            assert check_path(pfi_diff_bfc_target)
+            assert check_path_validity(pfi_diff_bfc_target)
             assert os.path.exists(pfi_target_roi_registration_masks)
-            assert check_path(pfi_diff_bfc_subject)
+            assert check_path_validity(pfi_diff_bfc_subject)
             assert os.path.exists(pfi_templ_reg_mask_sj_aff_registered)
             pfi_diff_bfc_n_rig_cpp = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '_cpp.nii.gz')
             pfi_diff_bfc_n_rig_res = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '_warp.nii.gz')
@@ -172,8 +172,8 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_diff_bfc_n_rig_cpp = jph(pfo_tmp, 'bfc' + sj + 'over' + sj_target + '_cpp.nii.gz')
             assert os.path.exists(pfi_target)
             assert os.path.exists(pfi_templ_segm_aff_registered_on_sj_target)
-            assert check_path(pfi_affine_warp_sj)
-            assert check_path(pfi_diff_bfc_n_rig_cpp)
+            assert check_path_validity(pfi_affine_warp_sj)
+            assert check_path_validity(pfi_diff_bfc_n_rig_cpp)
             pfi_subject_propagated_on_target_segm = jph(pfo_tmp, 'final' + sj + 'over' + sj_target + '_segm.nii.gz')
             pfi_subject_propagated_on_target_warp = jph(pfo_tmp, 'final' + sj + 'over' + sj_target + '_warp.nii.gz')
             cmd0 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
@@ -187,7 +187,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
         if controller['Smooth result']:
             print('- Smooth result, {} over {}'.format(sj, sj_target))
             pfi_subject_propagated_on_target_segm = jph(pfo_tmp, 'final' + sj + 'over' + sj_target + '_segm.nii.gz')
-            assert check_path(pfi_subject_propagated_on_target_segm)
+            assert check_path_validity(pfi_subject_propagated_on_target_segm)
             pfi_subject_propagated_on_target_segm_smol = jph(pfo_tmp,
                                                              'final' + sj + 'over' + sj_target + '_segm_smol.nii.gz')
             smol = 0.2
@@ -243,21 +243,21 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
         rel_pfi_target = jph('mod', sj_target + '_T1.nii.gz')
         rel_pfi_4d_seg = jph('z_tmp', 'z_templ', 'res_4d_seg.nii.gz')
         rel_pfi_4d_warp = jph('z_tmp', 'z_templ', 'res_4d_warp.nii.gz')
-        assert check_path(jph(pfo_to_target, rel_pfi_4d_seg))
-        assert check_path(jph(pfo_to_target, rel_pfi_4d_warp))
-        assert check_path(jph(pfo_to_target, rel_pfi_target))
+        assert check_path_validity(jph(pfo_to_target, rel_pfi_4d_seg))
+        assert check_path_validity(jph(pfo_to_target, rel_pfi_4d_warp))
+        assert check_path_validity(jph(pfo_to_target, rel_pfi_target))
         rel_pfi_output_MV = jph('z_tmp', 'z_templ', 'result_' + sj_target + '_MV.nii.gz')
         # Majority voting:
         cmd_mv = 'seg_LabFusion -in {0} -out {1} -MV'.format(rel_pfi_4d_seg, rel_pfi_output_MV)
         # print_and_run(cmd_mv, short_path_output=False)
         os.system(cmd_mv)
-        assert check_path(rel_pfi_output_MV, timeout=1000, interval=2)
+        assert check_path_validity(rel_pfi_output_MV, timeout=1000, interval=2)
         # STAPLE:
         rel_pfi_output_STAPLE = jph('z_tmp', 'z_templ', 'result_' + sj_target + '_STAPLE.nii.gz')
         cmd_staple = 'seg_LabFusion -in {0} -STAPLE -out {1} '.format(rel_pfi_4d_seg, rel_pfi_output_STAPLE)
         os.system(cmd_staple)
         # print_and_run(cmd_staple, short_path_output=False)
-        assert check_path(jph(pfo_to_target, rel_pfi_output_STAPLE), timeout=5000, interval=5)
+        assert check_path_validity(jph(pfo_to_target, rel_pfi_output_STAPLE), timeout=5000, interval=5)
         # STEPS:
         rel_pfi_output_STEPS = jph('z_tmp', 'z_templ', 'result_' + sj_target + '_STEPS.nii.gz')
         cmd_steps = 'seg_LabFusion -in {0} -out {1} -STEPS {2} {3} {4} {5} -MRF_beta {6} -prop_update'.format(
@@ -270,7 +270,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             str(4.0))
         os.system(cmd_steps)
         # print_and_run(cmd_steps, short_path_output=False)
-        assert check_path(jph(pfo_to_target, rel_pfi_output_STEPS), timeout=1000, interval=2)
+        assert check_path_validity(jph(pfo_to_target, rel_pfi_output_STEPS), timeout=1000, interval=2)
         # go back where it has started.
         os.chdir(here)
 
@@ -289,7 +289,7 @@ def propagate_all_to_one(sj_target, pfo_to_target, pfo_templ_subjects, list_temp
             pfi_segm = jph(pfo_tmp, 'result_' + sj_target + '_MV.nii.gz')
             print('Selected segmentation not specified - default MV used')
 
-        assert check_path(pfi_segm)
+        assert check_path_validity(pfi_segm)
         pfi_final_result = jph(pfo_segm, sj_target + '_T1_segm.nii.gz')
         cmd = 'cp {0} {1}'.format(pfi_segm, pfi_final_result)
         print_and_run(cmd)

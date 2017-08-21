@@ -3,10 +3,11 @@ import pandas as pd
 from os.path import join as jph
 import nibabel as nib
 import os
+import pickle
 
-from tools.definitions import root_study_rabbits, root_utils
-from labels_manager.caliber.segmentation_analyzer import SegmentationAnalyzer
-from pipeline_project.A0_main.main_controller import subjects_controller
+from tools.definitions import root_utils
+from labels_manager.agents.measurer import LabelsManagerMeasure
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 from tools.auxiliary.parse_excel_tables_and_descriptors import parse_multi_label_descriptor_in_a_dict
 from tools.auxiliary.utils import set_new_data_path
 
@@ -48,8 +49,11 @@ if __name__ == '__main__':
 
         sj = str(sj)
 
-        group = subjects_controller[sj][0][0]
-        category = subjects_controller[sj][0][1]
+        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+        group = sj_parameters['group']
+        category = sj_parameters['category']
+
         pfo_input_data = jph(root_study_rabbits, 'A_data', group, category)
 
         pfo_sj_T2 = jph(pfo_input_data, sj, 'mod', 'T2_maps')
@@ -86,9 +90,31 @@ if __name__ == '__main__':
                           pfi_result=pfi_tmp, new_dtype=np.uint8, remove_nan=True)
         os.system('mv {0} {1}'.format(pfi_tmp, pfi_T2_maps_up_bfc))
 
+        lmm = LabelsManagerMeasure(return_mm3=True, verbose=1)
+        lmm_original_bfc = LabelsManagerMeasure(return_mm3=True, verbose=1)
+
+        # original:
+        lmm.volume(pfi_T2_map_segm_original, labels='all', anatomy_filename=pfi_T2_maps_original,
+                   tot_volume_prior=None,
+                   where_to_save=jph(pfo_input_data, sj, 'records', sj + '_T2_maps_original.pkl'))
+        # original bias field corrected:
+        lmm.volume(pfi_T2_map_segm_original, labels='all', anatomy_filename=pfi_T2_maps_original_bfc,
+                   tot_volume_prior=None,
+                   where_to_save=jph(pfo_input_data, sj, 'records', sj + '_T2_maps_original_bfc.pkl'))
+        # upsampled:
+        lmm.volume(pfi_T2_map_segm_up, labels='all', anatomy_filename=pfi_T2_map_segm_up,
+                   tot_volume_prior=None,
+                   where_to_save=jph(pfo_input_data, sj, 'records', sj + '_T2_maps_upsampled.pkl'))
+        # upsampled_bfc
+        lmm.volume(pfi_T2_map_segm_up, labels='all', anatomy_filename=pfi_T2_maps_up_bfc,
+                   tot_volume_prior=None,
+                   where_to_save=jph(pfo_input_data, sj, 'records', sj + '_T2_maps_upsampled_bfc.pkl'))
+
+        # above still need to be corrected...
+        '''
         sa_original      = SegmentationAnalyzer(pfi_T2_map_segm_original, pfi_scalar_im=pfi_T2_maps_original)
         sa_original_bfc  = SegmentationAnalyzer(pfi_T2_map_segm_original, pfi_scalar_im=pfi_T2_maps_original_bfc)
-        sa_upsampled     = SegmentationAnalyzer(pfi_T2_map_segm_up, pfi_scalar_im=pfi_T2_maps_up)
+        sa_upsampled     = SegmentationAnalyzer(pfi_T2_map_segm_up, pfi_scalar_im=pfi_T2_map_segm_up)
         sa_upsampled_bfc = SegmentationAnalyzer(pfi_T2_map_segm_up, pfi_scalar_im=pfi_T2_maps_up_bfc)
 
         for k in labels_per_group.keys():
@@ -127,3 +153,4 @@ if __name__ == '__main__':
         se_T2_maps_original_bfc. to_pickle(jph(pfo_input_data, sj, 'records', sj + '_T2_maps_original_bfc.pkl'))
         se_T2_maps_upsampled.    to_pickle(jph(pfo_input_data, sj, 'records', sj + '_T2_maps_upsampled.pkl'))
         se_T2_maps_upsampled_bfc.to_pickle(jph(pfo_input_data, sj, 'records', sj + '_T2_maps_upsampled_bfc.pkl'))
+        '''

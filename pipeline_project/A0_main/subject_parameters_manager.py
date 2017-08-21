@@ -19,6 +19,7 @@ class SubjectParameters(object):
 
         self.study = study
         self.category = category
+        self.leading_modality = 'T1'
         self.angles = angles
         self.translation = translation
         self.threshold = threshold
@@ -34,6 +35,7 @@ class SubjectParameters(object):
     def get_as_dict(self):
         return {'study'                  : self.study,
                 'category'               : self.category,
+                'leading modality'       : self.leading_modality,
                 'angles'                 : self.angles,
                 'translation'            : self.translation,
                 'threshold'              : self.threshold,
@@ -51,6 +53,7 @@ class SubjectParameters(object):
         text_to_save = '''
         study                  : {0} 
         category               : {1} 
+        leading modality       : {13}
         angles                 : {2} 
         translation            : {3} 
         threshold              : {4} 
@@ -73,7 +76,8 @@ class SubjectParameters(object):
                                                 self.mask_dilation,
                                                 self.MSME_acquisition,
                                                 self.comment,
-                                                self.in_template)
+                                                self.in_template,
+                                                self.leading_modality)
 
         with open(pfi_txt_file, "w") as text_file:
             text_file.write(text_to_save)
@@ -88,21 +92,6 @@ propagate_me_level = 2
 bfp_slow = [0.001, (50, 50, 50, 50), 0.15, 0.01, 200, (4, 4, 4), 3]
 bfp_fast = [0.01, (50, 40, 30, 20), 0.15, 0.01, 200, (4, 4, 4), 3]
 
-
-# '0209': [['PTB', 'ex_skull'],  # 0: study  - category
-#          [0, 0, 0, False],  # 1:  bicomm angle, axial angle, sagittal angle in templ
-#          [300, 1],  # 2: thr, erosion roi mask for T1
-#          bfp_fast,  # 3: Bias field parameters T1
-#          [1, False],  # 4: mask dilation factor, DWI is squeezed,
-#          ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
-#          ],
-
-#              [np.pi / 4, 0, 0, True],  # 1:  aircraft angles, in templ
-#              [25, 1, (15, 90)],  # 2: thr, erosion roi mask for T1,  percentile
-#              bfp_fast,  # 3: Bias field parameters T1
-#              [1, False],  # 4: mask dilation factor, DWI is squeezed,
-#              ['high_res', ]  # 5: MSME acquisition - some have the low res protocol even if ex_vivo.
-#              ],
 
 def list_all_subjects(pfo_where_parameter_files_are_stored):
 
@@ -1113,7 +1102,7 @@ def reset_parameters_files(pfo_where_to_save):
 
 
 if __name__ == '__main__':
-    print 'ARGH!'
+
     reset_parameters_files(pfo_subjects_parameters)
     sjs = get_list_names_subjects_in_template(pfo_subjects_parameters)
 

@@ -7,7 +7,7 @@ STEPS:
 """
 from os.path import join as jph
 
-from pipelines_internal_template.A_template_atlas_ex_vivo_prelim.a_definitions_regions_subjects import subjects
+from pipelines_internal_template_OLD.A_template_atlas_ex_vivo_prelim.a_definitions_regions_subjects import subjects
 
 from tools.auxiliary.utils import print_and_run
 from tools.definitions import root_pilot_study

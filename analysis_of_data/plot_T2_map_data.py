@@ -3,11 +3,11 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as seb
 from os.path import join as jph
+import pickle
 
 from analysis_of_data.collect_T2_maps_data import subjects_ACS, subjects_template
-from tools.definitions import root_study_rabbits
-from pipeline_project.A0_main.main_controller import subjects_controller
 from tools.auxiliary.utils import eliminates_consecutive_duplicates
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 
 
 def plot_boxplot_from_data_frame(data_frame, plot_by_first_index=False, annotate=True, title='', fig_id=0,
@@ -79,8 +79,11 @@ if __name__ == '__main__':
 
         sj = str(sj)
 
-        group = subjects_controller[sj][0][0]
-        category = subjects_controller[sj][0][1]
+        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+        group = sj_parameters['group']
+        category = sj_parameters['category']
+
         pfo_input_data = jph(root_study_rabbits, 'A_data', group, category)
 
         pfi_se_T2_maps_original     = jph(pfo_input_data, sj, 'records', sj + '_T2_maps_original.pkl')

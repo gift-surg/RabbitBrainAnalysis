@@ -1,12 +1,12 @@
 import os
 import numpy as np
-import nibabel as nib
-from pipeline_project.A0_main.main_controller import subjects_controller
+import pickle
 
+from tools.definitions import pfo_subjects_parameters
 from os.path import join as jph
 from tools.auxiliary.utils import print_and_run
 
-zzz
+from pipeline_project.A0_main.subject_parameters_manager import list_all_subjects
 
 def transpose_matrix_in_txt(pfi_input, pfi_output):
     m = np.loadtxt(pfi_input)
@@ -18,8 +18,8 @@ def process_MSME_per_subject(sj, pfo_input_sj_MSME, pfo_output_sj, controller):
     print('\nProcessing MSME {} started.\n'.format(sj))
 
     # input sanity check:
-
-    if sj not in subjects_controller.keys():
+    all_sj = list_all_subjects(pfo_subjects_parameters)
+    if sj not in all_sj:
         raise IOError('Subject parameters not known')
     if not os.path.exists(pfo_input_sj_MSME):
         raise IOError('Input folder T1 does not exist.')
@@ -62,9 +62,12 @@ def process_MSME_per_subject(sj, pfo_input_sj_MSME, pfo_output_sj, controller):
         print_and_run(cmd)
 
     if controller['save T2_times']:
-        if subjects_controller[0][1] == 'ex_vivo':
+
+        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+        if sj_parameters['category'] == 'ex_vivo':
             t2_times = (0, 0, 0)  # myelin, GM, CSF default
-        elif subjects_controller[0][1] == 'in_vivo':
+        elif sj_parameters['category'] == 'in_vivo':
             t2_times = (0, 0, 0)
         else:
             t2_times = (0, 0, 0)
