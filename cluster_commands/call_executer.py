@@ -6,8 +6,8 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.dirname(dir_path))
 
 from tools.definitions import pfo_subjects_parameters
-from pipeline_project.A0_main.subject_parameters_manager import list_all_subjects
-from pipeline_project.A0_main.main_executer import main_runner
+from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
+from main_pipeline.A0_main.main_executer import main_runner
 
 
 parser = argparse.ArgumentParser()

@@ -5,7 +5,7 @@ import sys
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.dirname(dir_path))
 
-import pipeline_project.A0_main.main_executer as ma
+import main_pipeline.A0_main.main_executer as ma
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', dest='str_input', type=str, required=True)

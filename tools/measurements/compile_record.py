@@ -11,7 +11,7 @@ import numpy as np
 from labels_manager.caliber.segmentation_analyzer import SegmentationAnalyzer
 from tabulate import tabulate
 
-from pipeline_project.A0_main.main_controller import subjects_controller
+from main_pipeline.A0_main.main_controller import subjects_controller
 from tools.auxiliary.parse_excel_tables_and_descriptors import parse_excel_data_to_list, \
     parse_multi_label_descriptor_in_a_list
 

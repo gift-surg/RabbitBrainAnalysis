@@ -6,7 +6,7 @@ from tools.definitions import pfo_subjects_parameters
 from os.path import join as jph
 from tools.auxiliary.utils import print_and_run
 
-from pipeline_project.A0_main.subject_parameters_manager import list_all_subjects
+from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 
 def transpose_matrix_in_txt(pfi_input, pfi_output):
     m = np.loadtxt(pfi_input)
