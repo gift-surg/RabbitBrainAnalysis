@@ -1,7 +1,8 @@
 import numpy as np
 import nibabel as nib
 
-from tools.auxiliary.utils import set_new_data, eliminates_consecutive_duplicates
+from labels_manager.tools.aux_methods.utils import eliminates_consecutive_duplicates
+from labels_manager.tools.aux_methods.utils_nib import set_new_data
 from bruker2nifti._utils import slope_corrector
 
 
@@ -34,9 +35,10 @@ from bruker2nifti._utils import slope_corrector
 def slope_corrector_path(slopes_array, path_im_input, path_im_output, eliminate_consec_duplicates=False):
     """
     Correct for the slope from the path of the elements
-    :param slopes_txt_path:
+    :param slopes_array:
     :param path_im_input:
     :param path_im_output:
+    :param eliminate_consec_duplicates:
     :return:
     """
     im_input = nib.load(path_im_input)

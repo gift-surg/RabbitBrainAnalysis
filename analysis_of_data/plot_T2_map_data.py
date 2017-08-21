@@ -6,7 +6,7 @@ from os.path import join as jph
 import pickle
 
 from analysis_of_data.collect_T2_maps_data import subjects_ACS, subjects_template
-from tools.auxiliary.utils import eliminates_consecutive_duplicates
+from labels_manager.tools.aux_methods.utils import eliminates_consecutive_duplicates
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 
 
