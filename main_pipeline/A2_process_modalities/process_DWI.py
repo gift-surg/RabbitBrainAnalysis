@@ -29,12 +29,12 @@ Orient to standard
 Get roi masks -  steps
 Adjust mask
 Cut mask DWI
-Cut mask B0
+Cut mask S0
 Correct the Slope
 Eddy current correction
 DWI analysis with FSL
 Adjust dti-based modalities
-Bfc B0
+Bfc S0
 Save results
 """
 
@@ -85,21 +85,21 @@ def process_DWI_per_subject(sj, controller):
         cmd0 = 'fslreorient2std {0} {1}'.format(pfi_dwi_original, pfi_dwi_std)
         print_and_run(cmd0)
         set_translational_part_to_zero(pfi_dwi_std, pfi_dwi_std)
-        # b0
-        pfi_b0_original = jph(pfo_input_sj_DWI, sj + '_DWI_b0.nii.gz')
-        assert check_path_validity(pfi_b0_original)
-        pfi_b0_std = jph(pfo_tmp, sj + '_DWI_b0_to_std.nii.gz')
-        cmd1 = 'fslreorient2std {0} {1}'.format(pfi_b0_original, pfi_b0_std)
+        # S0
+        pfi_S0_original = jph(pfo_input_sj_DWI, sj + '_DWI_S0.nii.gz')
+        assert check_path_validity(pfi_S0_original)
+        pfi_S0_std = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
+        cmd1 = 'fslreorient2std {0} {1}'.format(pfi_S0_original, pfi_S0_std)
         print_and_run(cmd1)
-        set_translational_part_to_zero(pfi_b0_std, pfi_b0_std)
+        set_translational_part_to_zero(pfi_S0_std, pfi_S0_std)
 
         if sj_parameters['DWI_squeezed']:
             scale_y_value_and_trim(pfi_dwi_std, pfi_dwi_std, squeeze_factor=2.218074656188605)
-            scale_y_value_and_trim(pfi_b0_std, pfi_b0_std, squeeze_factor=2.218074656188605)
+            scale_y_value_and_trim(pfi_S0_std, pfi_S0_std, squeeze_factor=2.218074656188605)
 
     if controller['register roi masks']:
         print('- register roi masks {}'.format(sj))
-        pfi_b0 = jph(pfo_tmp, sj + '_DWI_b0_to_std.nii.gz')
+        pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
         if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
             pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
         elif sj_parameters['category'] == 'in_vivo':
@@ -107,12 +107,12 @@ def process_DWI_per_subject(sj, controller):
         else:
             raise IOError('ex_vivo, in_vivo or op_skull only.')
 
-        assert check_path_validity(pfi_b0)
+        assert check_path_validity(pfi_S0)
         assert check_path_validity(pfi_sj_ref_coord_system)
-        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '_b0.txt')
-        pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '_b0.nii.gz')
+        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '_S0.txt')
+        pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '_S0.nii.gz')
         cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} ; '.format(
-            pfi_b0,
+            pfi_S0,
             pfi_sj_ref_coord_system,
             pfi_affine_transformation_ref_on_subject,
             pfi_3d_warped_ref_on_subject)
@@ -120,20 +120,20 @@ def process_DWI_per_subject(sj, controller):
 
     if controller['propagate roi masks']:
         print('- propagate roi masks {}'.format(sj))
-        pfi_b0 = jph(pfo_tmp, sj + '_DWI_b0_to_std.nii.gz')
+        pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
         if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
             pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.gz')
         elif sj_parameters['category'] == 'in_vivo':
             pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_roi_mask.nii.gz')
         else:
             raise IOError('ex_vivo, in_vivo or op_skull only.')
-        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '_b0.txt')
-        assert check_path_validity(pfi_b0)
+        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '_S0.txt')
+        assert check_path_validity(pfi_S0)
         assert check_path_validity(pfi_reference_roi_mask)
         assert check_path_validity(pfi_affine_transformation_ref_on_subject)
-        pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-            pfi_b0,
+            pfi_S0,
             pfi_reference_roi_mask,
             pfi_affine_transformation_ref_on_subject,
             pfi_roi_mask)
@@ -141,9 +141,9 @@ def process_DWI_per_subject(sj, controller):
 
     if controller['adjust mask']:
         print('- adjust mask {}'.format(sj))
-        pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         assert check_path_validity(pfi_roi_mask)
-        pfi_roi_mask_dil = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
+        pfi_roi_mask_dil = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         dil_factor = sj_parameters['mask_dilation']
         cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_roi_mask,
                                                   dil_factor,
@@ -153,7 +153,7 @@ def process_DWI_per_subject(sj, controller):
     if controller['cut mask dwi']:
         print('- cut mask dwi {}'.format(sj))
         pfi_dwi = jph(pfo_tmp, sj + '_DWI_to_std.nii.gz')
-        pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         assert check_path_validity(pfi_dwi)
         assert check_path_validity(pfi_roi_mask)
         pfi_dwi_cropped = jph(pfo_tmp, sj + '_DWI_cropped.nii.gz')
@@ -161,14 +161,14 @@ def process_DWI_per_subject(sj, controller):
                                                  pfi_roi_mask,
                                                  pfi_dwi_cropped)
 
-    if controller['cut mask b0']:
-        print('- cut mask b0 {}'.format(sj))
-        pfi_b0 = jph(pfo_tmp, sj + '_DWI_b0_to_std.nii.gz')
-        pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
-        assert check_path_validity(pfi_b0)
+    if controller['cut mask S0']:
+        print('- cut mask S0 {}'.format(sj))
+        pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
+        assert check_path_validity(pfi_S0)
         assert check_path_validity(pfi_roi_mask)
-        pfi_b0_cropped = jph(pfo_tmp, sj + '_b0_cropped.nii.gz')
-        cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_b0, pfi_roi_mask, pfi_b0_cropped)
+        pfi_S0_cropped = jph(pfo_tmp, sj + '_S0_cropped.nii.gz')
+        cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_S0, pfi_roi_mask, pfi_S0_cropped)
         print_and_run(cmd)
 
     if controller['correct slope']:
@@ -182,10 +182,10 @@ def process_DWI_per_subject(sj, controller):
         slopes = np.loadtxt(pfi_slope_txt)
         slope_corrector_path(slopes, pfi_dwi_cropped, pfi_dwi_slope_corrected)
         # --
-        pfi_b0_cropped = jph(pfo_tmp, sj + '_b0_cropped.nii.gz')
-        assert check_path_validity(pfi_b0_cropped)
-        pfi_b0_slope_corrected = jph(pfo_tmp, sj + '_b0_slope_corrected.nii.gz')
-        slope_corrector_path(slopes[0], pfi_b0_cropped, pfi_b0_slope_corrected)
+        pfi_S0_cropped = jph(pfo_tmp, sj + '_S0_cropped.nii.gz')
+        assert check_path_validity(pfi_S0_cropped)
+        pfi_S0_slope_corrected = jph(pfo_tmp, sj + '_S0_slope_corrected.nii.gz')
+        slope_corrector_path(slopes[0], pfi_S0_cropped, pfi_S0_slope_corrected)
 
     if controller['eddy current']:
         print('- eddy current {}'.format(sj))
@@ -206,7 +206,7 @@ def process_DWI_per_subject(sj, controller):
         pfi_dwi_eddy_corrected = jph(pfo_tmp, sj + '_DWI_eddy.nii.gz')
         pfi_bvals = jph(pfo_input_sj_DWI, sj + '_DWI_DwEffBval.txt')
         pfi_bvects = jph(pfo_input_sj_DWI, sj + '_DWI_DwGradVec.txt')
-        pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         assert check_path_validity(pfi_dwi_eddy_corrected)
         assert os.path.exists(pfi_bvals)
         assert os.path.exists(pfi_bvects)
@@ -227,8 +227,8 @@ def process_DWI_per_subject(sj, controller):
 
     if controller['adjust dti-based mod']:
         print('- adjust dti-based modalities {}'.format(sj))
-        pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
-        pfi_roi_mask_4d = jph(pfo_mask, sj + '_b0_roi_mask_4d.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
+        pfi_roi_mask_4d = jph(pfo_mask, sj + '_S0_roi_mask_4d.nii.gz')
         pfi_v1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_V1.nii.gz')
         pfi_s0 = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0.nii.gz')
         pfi_FA = jph(pfo_tmp, 'fsl_fit_' + sj + '_FA.nii.gz')
@@ -252,10 +252,10 @@ def process_DWI_per_subject(sj, controller):
             cmd3 = 'seg_maths {0} -thr {1} {0}'.format(pfi_mod, '0')
             print_and_run(cmd3)
 
-    if controller['bfc b0']:
-        print('- bfc b0 {}'.format(sj))
+    if controller['bfc S0']:
+        print('- bfc S0 {}'.format(sj))
         pfi_s0 = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0.nii.gz')
-        pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         assert check_path_validity(pfi_s0)
         assert check_path_validity(pfi_roi_mask)
         set_new_data_path(pfi_target_im=pfi_s0,
@@ -278,10 +278,10 @@ def process_DWI_per_subject(sj, controller):
     if controller['create lesion mask']:
         print('- create lesion mask {}'.format(sj))
         pfi_s0_bfc = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0_bfc.nii.gz')
-        pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         assert check_path_validity(pfi_s0_bfc)
         assert os.path.exists(pfi_roi_mask)
-        pfi_lesion_mask = jph(pfo_mask, sj + '_b0_lesion_mask.nii.gz')
+        pfi_lesion_mask = jph(pfo_mask, sj + '_S0_lesion_mask.nii.gz')
         percentile_lesion_mask_extractor(im_input_path=pfi_s0_bfc,
                                          im_output_path=pfi_lesion_mask,
                                          im_mask_foreground_path=pfi_roi_mask,
@@ -290,11 +290,11 @@ def process_DWI_per_subject(sj, controller):
 
     if controller['create reg masks']:
         print('- create reg masks {}'.format(sj))
-        pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
-        pfi_lesion_mask = jph(pfo_mask, sj + '_b0_lesion_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
+        pfi_lesion_mask = jph(pfo_mask, sj + '_S0_lesion_mask.nii.gz')
         assert os.path.exists(pfi_roi_mask)
         assert check_path_validity(pfi_lesion_mask)
-        pfi_registration_mask = jph(pfo_mask, sj + '_b0_reg_mask.nii.gz')
+        pfi_registration_mask = jph(pfo_mask, sj + '_S0_reg_mask.nii.gz')
         cmd = 'seg_maths {0} -sub {1} {2} '.format(pfi_roi_mask, pfi_lesion_mask,
                                                    pfi_registration_mask)  # until here seems correct.
         print_and_run(cmd)
@@ -333,12 +333,12 @@ if __name__ == '__main__':
                       'propagate roi masks'   : False,
                       'adjust mask'           : False,
                       'cut mask dwi'          : False,
-                      'cut mask b0'           : False,
+                      'cut mask S0'           : False,
                       'correct slope'         : False,
                       'eddy current'          : False,
                       'fsl tensor fitting'    : False,
                       'adjust dti-based mod'  : False,
-                      'bfc b0'                : True,
+                      'bfc S0'                : True,
                       'create lesion mask'    : False,
                       'create reg masks'      : False,
                       'save results'          : False}

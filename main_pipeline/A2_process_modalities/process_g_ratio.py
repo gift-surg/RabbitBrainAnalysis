@@ -73,7 +73,7 @@ def process_g_ratio_per_subject(sj, controller):
         pfi_dwi_eddy_corrected = jph(pfo_tmp_dwi, sj + '_DWI_eddy.nii.gz')
         pfi_transposed_bvals = jph(pfo_tmp, sj + '_DWI_DwEffBval_T.txt')
         pfi_transposed_vects = jph(pfo_tmp, sj + '_DWI_DwGradVec_T.txt')
-        pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         assert check_path_validity(pfi_dwi_eddy_corrected), 'Need to run process_DWI first?'
         assert check_path_validity(pfi_transposed_bvals)
         assert check_path_validity(pfi_transposed_vects)
@@ -102,7 +102,7 @@ def process_g_ratio_per_subject(sj, controller):
 
     if controller['fit msme']:
         pfi_msme_up = jph(pfo_mod, sj + '_MSME_up.nii.gz')
-        pfi_roi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
         pfi_T2_times = jph(pfo_tmp, sj + '_t2_times.txt')
         assert check_path_validity(pfi_msme_up), 'Need to run process_MSME first?'

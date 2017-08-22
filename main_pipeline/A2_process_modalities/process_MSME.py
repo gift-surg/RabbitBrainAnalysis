@@ -101,12 +101,12 @@ def process_MSME_per_subject(sj, controller):
     if controller['register tp0 to S0']:
         print('- Processing MSME: register tp0 to S0 {}'.format(sj))
         pfi_s0 = jph(pfo_mod, sj + '_S0.nii.gz')
-        pfi_s0_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
+        pfi_s0_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         pfi_msme_tp0 = jph(pfo_tmp, sj + '_MSME_tp0.nii.gz')
         assert os.path.exists(pfi_s0)
         assert os.path.exists(pfi_s0_mask)
         assert check_path_validity(pfi_msme_tp0)
-        pfi_transf_msme_on_s0 = jph(pfo_tmp, sj + '_msme_on_b0_rigid.txt')
+        pfi_transf_msme_on_s0 = jph(pfo_tmp, sj + '_msme_on_S0_rigid.txt')
         pfi_warped_msme_on_s0 = jph(pfo_tmp, sj + '_MSME_tp0_up.nii.gz')
         cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -aff {3} -res {4} -rigOnly'.format(
             pfi_s0, pfi_s0_mask, pfi_msme_tp0, pfi_transf_msme_on_s0, pfi_warped_msme_on_s0
@@ -116,7 +116,7 @@ def process_MSME_per_subject(sj, controller):
     if controller['register msme to S0']:
         pfi_s0 = jph(pfo_mod, sj + '_S0.nii.gz')
         pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
-        pfi_transf_msme_on_s0 = jph(pfo_tmp, sj + '_msme_on_b0_rigid.txt')
+        pfi_transf_msme_on_s0 = jph(pfo_tmp, sj + '_msme_on_S0_rigid.txt')
         assert os.path.exists(pfi_s0)
         assert os.path.exists(pfi_msme)
         assert check_path_validity(pfi_transf_msme_on_s0)
@@ -127,20 +127,20 @@ def process_MSME_per_subject(sj, controller):
         print_and_run(cmd)
 
     if controller['get mask for original msme']:
-        print('back-propagate the b0 mask on the MSME:')
-        pfi_aff = jph(pfo_tmp, sj + '_msme_on_b0_rigid.txt')
+        print('back-propagate the S0 mask on the MSME:')
+        pfi_aff = jph(pfo_tmp, sj + '_msme_on_S0_rigid.txt')
         assert os.path.exists(pfi_aff)
         # this very same transformation must be used to back propagate the segmentations!
-        pfi_inv_aff = jph(pfo_tmp, sj + '_b0_on_msmse_rigid.txt')
+        pfi_inv_aff = jph(pfo_tmp, sj + '_S0_on_msmse_rigid.txt')
         cmd0 = 'reg_transform -invAff {0} {1}'.format(pfi_aff, pfi_inv_aff)
         print_and_run(cmd0)
-        pfi_b0_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
+        pfi_S0_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
-        assert os.path.exists(pfi_b0_mask)
+        assert os.path.exists(pfi_S0_mask)
         assert os.path.exists(pfi_msme)
         pfi_mask_on_msme = jph(pfo_mask, sj + '_MSME_roi_mask.nii.gz')
         cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-            pfi_msme, pfi_b0_mask, pfi_inv_aff, pfi_mask_on_msme)
+            pfi_msme, pfi_S0_mask, pfi_inv_aff, pfi_mask_on_msme)
         print_and_run(cmd1)
         print('Dilate:')
         assert check_path_validity(pfi_mask_on_msme)
@@ -217,7 +217,7 @@ def process_MSME_per_subject(sj, controller):
         bfc_param = [0.001, (50, 50, 50, 50), 0.15, 0.01, 400, (4, 4, 4), 3]
         pfi_up_tp0 = jph(pfo_tmp, sj + '_MSME_up_tp0.nii.gz')
         pfi_up_tp0_bfc = jph(pfo_tmp, sj + '_MSME_up_tp0_bfc.nii.gz')
-        pfi_mask = jph(pfo_mask, sj + '_b0_roi_mask.nii.gz')
+        pfi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         bias_field_correction(pfi_up_tp0, pfi_up_tp0_bfc,
                               pfi_mask=pfi_mask,
                               prefix='',

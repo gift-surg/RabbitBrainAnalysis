@@ -8,7 +8,7 @@ from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from spot_a_rabbit.spot import SpotDS
 
 
-def spot_a_list_of_rabbits(subjects_list):
+def spot_a_list_of_rabbits(subjects_list, controller_propagator, controller_fuser):
 
     for sj_target in subjects_list:
 
@@ -32,29 +32,9 @@ def spot_a_list_of_rabbits(subjects_list):
         # --- target parameters
         spot_sj.target_parameters = sj_parameters
 
-        spot_sj.controller_propagator = {'Propagation_methods': 'Mono',
-                                           'Affine_options': '',
-                                           'Reorient_chart_hd': True,
-                                           'Aff_alignment': True,
-                                           'Propagate_aff_to_segm': True,
-                                           'Propagate_aff_to_mask': True,
-                                           'Get_differential_BFC': True,
-                                           'N-rig_alignment': True,
-                                           'Propagate_to_target_n-rig': True,
-                                           'Smooth_results': True,
-                                           'Stack_warps_and_segms': True,
-                                           'Speed': False
-                                           }
+        spot_sj.controller_propagator = controller_propagator
 
-        spot_sj.controller_fuser = {'Fuse': True,
-                                      'fusion methods': ['MV', 'STEPS', 'STAPLE'],  # 'MV', 'STAPLE',
-                                      'STAPLE_params': OrderedDict([('pr_1', None)]),
-                                      'STEPS_params': OrderedDict([('pr_1', [3, 3, None]),
-                                                                   ('pr_2', [3, 3, 2.0]),
-                                                                   ('pr_3', [3, 3, 4.0])]),  # k, n ,beta
-                                      'Propagate_to_other_modalities': True,
-                                      'Inter_mod_space_propagation': True,
-                                      'Save_results': True}
+        spot_sj.controller_fuser = controller_fuser
 
         spot_sj.bfc_corrector_cmd = bfc_corrector_cmd
 
@@ -77,4 +57,28 @@ if __name__ == '__main__':
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()
 
-    spot_a_list_of_rabbits(lsm.ls)
+    controller_propagator_ = {'Propagation_methods': 'Mono',
+                             'Affine_options': '',
+                             'Reorient_chart_hd': True,
+                             'Aff_alignment': True,
+                             'Propagate_aff_to_segm': True,
+                             'Propagate_aff_to_mask': True,
+                             'Get_differential_BFC': True,
+                             'N-rig_alignment': True,
+                             'Propagate_to_target_n-rig': True,
+                             'Smooth_results': True,
+                             'Stack_warps_and_segms': True,
+                             'Speed': False
+                             }
+
+    controller_fuser_ = {'Fuse': True,
+                        'fusion methods': ['MV', 'STEPS', 'STAPLE'],  # 'MV', 'STAPLE',
+                        'STAPLE_params': OrderedDict([('pr_1', None)]),
+                        'STEPS_params': OrderedDict([('pr_1', [3, 3, None]),
+                                                     ('pr_2', [3, 3, 2.0]),
+                                                     ('pr_3', [3, 3, 4.0])]),  # k, n ,beta
+                        'Propagate_to_other_modalities': True,
+                        'Inter_mod_space_propagation': True,
+                        'Save_results': True}
+
+    spot_a_list_of_rabbits(lsm.ls, controller_propagator_, controller_fuser_)

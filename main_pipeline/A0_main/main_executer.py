@@ -1,4 +1,5 @@
 from tools.auxiliary.sanity_checks import check_libraries
+from collections import OrderedDict
 
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A1_convert_and_clean.apply_converter_to_all_data import convert_subjects_from_list
@@ -8,8 +9,9 @@ from main_pipeline.A2_process_modalities.process_MSME import process_MSME_from_l
 from main_pipeline.A2_process_modalities.process_T1 import process_T1_from_list
 from main_pipeline.A2_process_modalities.process_T2_map import process_t2_maps_from_list
 from main_pipeline.A2_process_modalities.process_g_ratio import process_g_ratio_from_list
-from main_pipeline.A3_register_template_over_all_subjects.z_propagate_and_fuse_main import \
-    propagate_and_fuse_per_subject_list_over_all_modalities
+
+from main_pipeline.A3_register_template_over_all_subjects.spot_the_rabbits import spot_a_list_of_rabbits
+
 from main_pipeline.A4_data_collection.collect_data_studies import compile_records_from_subject_list
 from main_pipeline.U_utils.upate_shared_results import send_data_to_hannes_from_list
 
@@ -20,15 +22,15 @@ def main_runner(subj_list):
 
     # Set steps
 
-    step_A1         = False
+    step_A1         = True
     step_A2_T1      = True
-    step_A2_DWI     = False
-    step_A2_MSME    = False
-    step_A2_T2maps  = False
-    step_A2_g_ratio = False
-    step_A3         = False
-    step_A4         = False
-    step_A5         = False
+    step_A2_DWI     = True
+    step_A2_MSME    = True
+    step_A2_T2maps  = True
+    step_A2_g_ratio = True
+    step_A3         = True
+    step_A4         = True
+    step_A5         = True
 
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
@@ -45,9 +47,9 @@ def main_runner(subj_list):
                             'adjust mask'         : True,
                             'cut masks'           : True,
                             'step bfc'            : True,
-                            'create lesion mask'  : True,
-                            'create reg masks'    : True,
-                            'save results'        : True}
+                            'create lesion mask'  : False,
+                            'create reg masks'    : False,
+                            'save results'        : False}
 
         process_T1_from_list(subj_list, controller_A2_T1)
 
@@ -60,12 +62,12 @@ def main_runner(subj_list):
                             'propagate roi masks'  : True,
                             'adjust mask'          : True,
                             'cut mask dwi'         : True,
-                            'cut mask b0'          : True,
+                            'cut mask S0'          : True,
                             'correct slope'        : True,
                             'eddy current'         : True,
                             'fsl tensor fitting'   : True,
                             'adjust dti-based mod' : True,
-                            'bfc b0'               : True,
+                            'bfc S0'               : True,
                             'create lesion mask'   : True,
                             'create reg masks'     : True,
                             'save results'         : True}
@@ -116,35 +118,31 @@ def main_runner(subj_list):
     ''' Step A3 - Propagate template '''
     if step_A3:
         print('\nStep A3\n')
-        controller_fuser_ = {'set header bicommissural'  : False,
-                             'aff alignment'             : False,
-                             'Propagate aff to segm'     : False,
-                             'Propagate aff to mask'     : False,
-                             'Get differential BFC'      : False,
-                             'N-rig alignment'           : False,
-                             'Propagate to target n-rig' : False,
-                             'Smooth result'             : False,
-                             'Stack warps and segm'      : False,
-                             'Fuse'                      : True,
-                             'save result'               : True,
-                             'dominant method'           : 'STEPS'
-                             }
+        controller_propagator = {'Propagation_methods'        : 'Mono',
+                                  'Affine_options'            : '',
+                                  'Reorient_chart_hd'         : True,
+                                  'Aff_alignment'             : True,
+                                  'Propagate_aff_to_segm'     : True,
+                                  'Propagate_aff_to_mask'     : True,
+                                  'Get_differential_BFC'      : True,
+                                  'N-rig_alignment'           : True,
+                                  'Propagate_to_target_n-rig' : True,
+                                  'Smooth_results'            : True,
+                                  'Stack_warps_and_segms'     : True,
+                                  'Speed'                     : False
+                                  }
 
-        controller_propagator_ = {'set header bicommissural' : True,
-                                  'rig alignment'            : True,
-                                  'Propagate aff to segm'    : True,
-                                  'Propagate aff to mask'    : True,
-                                  'Smooth'                   : True,
-                                  'save result'              : True}
+        controller_fuser = {'Fuse': True,
+                             'fusion methods'  : ['MV', 'STEPS', 'STAPLE'],  # 'MV', 'STAPLE',
+                             'STAPLE_params'   : OrderedDict([('pr_1', None)]),
+                             'STEPS_params'    : OrderedDict([('pr_1', [3, 3, None]),
+                                                              ('pr_2', [3, 3, 2.0]),
+                                                              ('pr_3', [3, 3, 4.0])]),  # k, n ,beta
+                             'Propagate_to_other_modalities'  : True,
+                             'Inter_mod_space_propagation'    : True,
+                             'Save_results'                    : True}
 
-        controller_inter_modality_propagator_ = {'compensate squeezing'           : True,
-                                                 'rig register to S0'             : True,
-                                                 'rig propagate to S0'            : True,
-                                                 'rig register MSME_up to MSME'   : True,
-                                                 'rig propagate segm_S0 to MSME'  : True}
-
-        propagate_and_fuse_per_subject_list_over_all_modalities(subj_list, controller_fuser_, controller_propagator_,
-                                                                controller_inter_modality_propagator_)
+        spot_a_list_of_rabbits(subj_list, controller_fuser, controller_propagator)
 
     ''' Step A4 - Data collection '''
     if step_A4:
@@ -170,7 +168,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['1305', ]  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507', ]
+    lsm.input_subjects = ['3405']  # ['1305', ]  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507']
     #  ['3405', '3501', '3505', '3507', ]  # [ '3108', '3401', '3403', '3404' ]
     #  '3307', '3404']  # '2202t1', '2205t1', 3103'2206t1' -- '2503', '2608', '2702', '2205t1', '2206t1'
     lsm.update_ls()
