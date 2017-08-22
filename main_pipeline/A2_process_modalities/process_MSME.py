@@ -38,7 +38,7 @@ extract first timepoint
 register tp0 to S0
 register msme to S0
 bfc
-save results 
+save results - only the bias field corrected in this version.
 
 """
 
@@ -254,7 +254,7 @@ def process_MSME_per_subject(sj, controller):
         print_and_run(cmd_merge)
 
     if controller['save results']:
-        print('save results')
+        print('save results -  save only the bias field corrected as they proved to have the same results.')
         pfi_msme_nifti  = jph(pfo_tmp, sj + '_MSME.nii.gz')  # original
         pfi_msme_bfc    = jph(pfo_tmp, sj + '_MSME_bfc.nii.gz')  # original bfc
         pfi_msme_up     = jph(pfo_tmp, sj + '_MSME_up.nii.gz')  # up
@@ -263,43 +263,44 @@ def process_MSME_per_subject(sj, controller):
         assert check_path_validity(pfi_msme_bfc)
         assert check_path_validity(pfi_msme_up)
         assert check_path_validity(pfi_msme_up_bfc)
-        pfi_final        = jph(pfo_mod, sj + '_MSME.nii.gz')
-        pfi_final_bfc    = jph(pfo_mod, sj + '_MSME_bfc.nii.gz')
-        pfi_final_up     = jph(pfo_mod, sj + '_MSME_up.nii.gz')
-        pfi_final_bfc_up = jph(pfo_mod, sj + '_MSME_bfc_up.nii.gz')
-        cmd0 = 'cp {0} {1}'.format(pfi_msme_nifti, pfi_final)
+        # pfi_final        = jph(pfo_mod, sj + '_MSME.nii.gz')
+        pfi_final_bfc    = jph(pfo_mod, sj + '_MSME.nii.gz')
+        # pfi_final_up     = jph(pfo_mod, sj + '_MSME_up.nii.gz')
+        pfi_final_bfc_up = jph(pfo_mod, sj + '_MSME_up.nii.gz')
+        # cmd0 = 'cp {0} {1}'.format(pfi_msme_nifti, pfi_final)
+        # cmd2 = 'cp {0} {1}'.format(pfi_msme_up, pfi_final_up)
         cmd1 = 'cp {0} {1}'.format(pfi_msme_bfc, pfi_final_bfc)
-        cmd2 = 'cp {0} {1}'.format(pfi_msme_up, pfi_final_up)
         cmd3 = 'cp {0} {1}'.format(pfi_msme_up_bfc, pfi_final_bfc_up)
-        print_and_run(cmd0)
+        # print_and_run(cmd0)
+        # print_and_run(cmd2)
         print_and_run(cmd1)
-        print_and_run(cmd2)
         print_and_run(cmd3)
 
     if controller['save results tp0']:
-        print('save results')
-        pfi_msme_nifti  = jph(pfo_tmp, sj + '_MSME.nii.gz')  # original
+        print('save results - timepoint zero, only the bfc')
+        # pfi_msme_nifti  = jph(pfo_tmp, sj + '_MSME.nii.gz')  # original
+        # pfi_msme_up     = jph(pfo_tmp, sj + '_MSME_up.nii.gz')  # up
         pfi_msme_bfc    = jph(pfo_tmp, sj + '_MSME_bfc.nii.gz')  # original bfc
-        pfi_msme_up     = jph(pfo_tmp, sj + '_MSME_up.nii.gz')  # up
         pfi_msme_up_bfc = jph(pfo_tmp, sj + '_MSME_up_bfc.nii.gz')  # up bfc
-        assert check_path_validity(pfi_msme_nifti)
+        # assert check_path_validity(pfi_msme_nifti)
+        # assert check_path_validity(pfi_msme_up)
         assert check_path_validity(pfi_msme_bfc)
-        assert check_path_validity(pfi_msme_up)
         assert check_path_validity(pfi_msme_up_bfc)
         pfo_tp0 = jph(pfo_mod, 'MSME_tp0')
-        pfi_final_tp0        = jph(pfo_tp0, sj + '_MSME_tp0.nii.gz')
-        pfi_final_bfc_tp0    = jph(pfo_tp0, sj + '_MSME_bfc_tp0.nii.gz')
-        pfi_final_up_tp0     = jph(pfo_tp0, sj + '_MSME_up_tp0.nii.gz')
-        pfi_final_bfc_up_tp0 = jph(pfo_tp0, sj + '_MSME_bfc_up_tp0.nii.gz')
+        # pfi_final_tp0        = jph(pfo_tp0, sj + '_MSME_tp0.nii.gz')
+        # pfi_final_up_tp0     = jph(pfo_tp0, sj + '_MSME_up_tp0.nii.gz')
+        pfi_final_bfc_tp0    = jph(pfo_tp0, sj + '_MSME_tp0.nii.gz')
+        pfi_final_bfc_up_tp0 = jph(pfo_tp0, sj + '_MSME_up_tp0.nii.gz')
         cmd0 = 'mkdir -p {}'.format(pfo_tp0)
-        cmd1 = 'seg_maths {0} -tp 0 {1}'.format(pfi_msme_nifti, pfi_final_tp0)
+        # cmd1 = 'seg_maths {0} -tp 0 {1}'.format(pfi_msme_nifti, pfi_final_tp0)
+        # cmd3 = 'seg_maths {0} -tp 0 {1}'.format(pfi_msme_up, pfi_final_up_tp0)
         cmd2 = 'seg_maths {0} -tp 0 {1}'.format(pfi_msme_bfc, pfi_final_bfc_tp0)
-        cmd3 = 'seg_maths {0} -tp 0 {1}'.format(pfi_msme_up, pfi_final_up_tp0)
+
         cmd4 = 'seg_maths {0} -tp 0 {1}'.format(pfi_msme_up_bfc, pfi_final_bfc_up_tp0)
         print_and_run(cmd0)
-        print_and_run(cmd1)
+        # print_and_run(cmd1)
+        # print_and_run(cmd3)
         print_and_run(cmd2)
-        print_and_run(cmd3)
         print_and_run(cmd4)
 
 

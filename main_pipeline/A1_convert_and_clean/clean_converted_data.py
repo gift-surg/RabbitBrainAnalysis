@@ -87,6 +87,14 @@ def clean_a_study(pfo_study):
                         cmd = 'mv {} {}'.format(jph(pfo_experiment_p, fi), jph(pfo_experiment_p, new_fi))
                         print_and_run(cmd)
 
+            # rename b0 with S0 in coherence with the subsequent FSL steps:
+            if acquisition_method == 'DWI':
+                for file_element_in_DWI_study in os.listdir(pfo_experiment_p):
+                    if file_element_in_DWI_study.endswith('_b0.nii.gz'):
+                        cmd = 'mv {} {}'.format(jph(pfo_experiment_p, file_element_in_DWI_study),
+                                                jph(pfo_experiment_p, file_element_in_DWI_study.replace('_b0', '_S0')))
+                        print_and_run(cmd)
+
             # rename the folder p containing the files:
             new_p = p.split('_')[0] + '_' + acquisition_method
             cmd = 'mv {} {}'.format(pfo_experiment_p, jph(pfo_study, new_p))
@@ -132,7 +140,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['3307', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()
