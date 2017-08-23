@@ -93,7 +93,7 @@ def process_DWI_per_subject(sj, controller):
         print_and_run(cmd1)
         set_translational_part_to_zero(pfi_S0_std, pfi_S0_std)
 
-        if sj_parameters['DWI_squeezed']:
+        if sj_parameters['DWI_squashed']:
             scale_y_value_and_trim(pfi_dwi_std, pfi_dwi_std, squeeze_factor=2.218074656188605)
             scale_y_value_and_trim(pfi_S0_std, pfi_S0_std, squeeze_factor=2.218074656188605)
 
@@ -327,8 +327,8 @@ def process_DWI_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process DWI, local run. ')
 
-    controller_DWI = {'squeeze'               : False,
-                      'orient to standard'    : False,
+    controller_DWI = {'squeeze'               : True,
+                      'orient to standard'    : True,
                       'register roi masks'    : False,
                       'propagate roi masks'   : False,
                       'adjust mask'           : False,
@@ -351,7 +351,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['3606']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['3405']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

@@ -73,6 +73,8 @@ def process_T1_per_subject(sj, controller):
         print('- register roi masks {}'.format(sj))
         pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
         if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
+            # TODO: this will be the pivotal chart of the template, reoriented respect to the angle in
+            # the subjects parameters. (the only utils has to be the subjects parameters.)
             pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
         elif sj_parameters['category'] == 'in_vivo':
             pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
@@ -150,7 +152,7 @@ def process_T1_per_subject(sj, controller):
                               numberOfControlPoints=bfc_param[5],
                               splineOrder=bfc_param[6],
                               print_only=False)
-    else:
+    elif controller['speed']:
         pfi_3d_cropped_roi = jph(pfo_tmp, sj + '_cropped.nii.gz')
         assert check_path_validity(pfi_3d_cropped_roi)
         pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
@@ -201,15 +203,16 @@ def process_T1_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process T1, local run. ')
 
-    controller_steps = {'orient to standard'  : True,
+    controller_steps = {'orient to standard'  : False,
                         'register roi masks'  : False,
                         'propagate roi masks' : False,
                         'adjust mask'         : False,
                         'cut masks'           : False,
                         'step bfc'            : False,
-                        'create lesion mask'  : False,
-                        'create reg masks'    : False,
-                        'save results'        : False}
+                        'create lesion mask'  : True,
+                        'create reg masks'    : True,
+                        'save results'        : True,
+                        'speed'               : False}
 
     lsm = ListSubjectsManager()
 
@@ -219,7 +222,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['1305', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['3405', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

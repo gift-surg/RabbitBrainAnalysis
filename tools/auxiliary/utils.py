@@ -253,7 +253,8 @@ def scale_y_values(pfi_input, pfi_output, squeeze_factor=2.16481481481481):
     nib.save(new_image, pfi_output)
 
 
-def scale_y_value_and_trim(pfi_input, pfi_output, squeeze_factor=2.16481481481481):
+def scale_y_value_and_trim(pfi_input, pfi_output, squeeze_factor=2):
+    # Squeeze factor: as measured : 2.16481481481481 as provided by Willy : 2
     # scale and trim as well.
     im_input = nib.load(pfi_input)
 

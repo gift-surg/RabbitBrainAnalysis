@@ -101,15 +101,17 @@ def process_T2_map_per_subject(sj, controller):
             nib.save(im_corrected, pfi_T2map_corrected)
 
     if controller['save results']:
-        pfo_mod_T2map = jph(pfo_mod, 'T2_maps')
-        cmd = 'mkdir -p {}'.format(pfo_mod_T2map)
+        # Save the bias field corrected '_bfc', and '_bfc_up' in the name _T2map and _T2map_up
+        pfi_source_bfc    = jph(pfo_tmp, sj + '_corrected_T2map_bfc.nii.gz')
+        pfi_source_bfc_up = jph(pfo_tmp, sj + '_corrected_T2map_bfc_up.nii.gz')
+
+        pfi_destination_bfc    = jph(pfo_mod, sj + '_T2map.nii.gz')
+        pfi_destination_bfc_up = jph(pfo_mod, sj + '_T2map_up.nii.gz')
+
+        cmd = 'cp {0} {1}'.format(pfi_source_bfc, pfi_destination_bfc)
         print_and_run(cmd)
-        for s in suffix:
-            pfi_T2map_corrected = jph(pfo_tmp, sj + '_corrected_T2map{}.nii.gz'.format(s))
-            check_path_validity(pfi_T2map_corrected)
-            pfi_T2map = jph(pfo_mod_T2map, sj + '_T2map{}.nii.gz'.format(s))
-            cmd = 'cp {0} {1}'.format(pfi_T2map_corrected, pfi_T2map)
-            print_and_run(cmd)
+        cmd = 'cp {0} {1}'.format(pfi_source_bfc_up, pfi_destination_bfc_up)
+        print_and_run(cmd)
 
 
 def process_t2_maps_from_list(subj_list, controller):

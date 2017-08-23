@@ -22,15 +22,15 @@ def main_runner(subj_list):
 
     # Set steps
 
-    step_A1         = True
-    step_A2_T1      = True
-    step_A2_DWI     = True
-    step_A2_MSME    = True
+    step_A1         = False
+    step_A2_T1      = False
+    step_A2_DWI     = False
+    step_A2_MSME    = False
     step_A2_T2maps  = True
-    step_A2_g_ratio = True
-    step_A3         = True
-    step_A4         = True
-    step_A5         = True
+    step_A2_g_ratio = False
+    step_A3         = False
+    step_A4         = False
+    step_A5         = False
 
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
@@ -47,9 +47,9 @@ def main_runner(subj_list):
                             'adjust mask'         : True,
                             'cut masks'           : True,
                             'step bfc'            : True,
-                            'create lesion mask'  : False,
-                            'create reg masks'    : False,
-                            'save results'        : False}
+                            'create lesion mask'  : True,
+                            'create reg masks'    : True,
+                            'save results'        : True}
 
         process_T1_from_list(subj_list, controller_A2_T1)
 
@@ -94,9 +94,9 @@ def main_runner(subj_list):
     ''' Step A2 - T2Maps '''
     if step_A2_T2maps:
         print('\nStep T2 maps\n')
-        controller_T2maps = {'get acquisition echo time'  : True,
-                             'process each MSME input'    : True,
-                             'correct origin'             : True,
+        controller_T2maps = {'get acquisition echo time'  : False,
+                             'process each MSME input'    : False,
+                             'correct origin'             : False,
                              'save results'               : True}
 
         process_t2_maps_from_list(subj_list, controller_T2maps)
