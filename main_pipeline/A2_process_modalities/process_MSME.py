@@ -9,10 +9,11 @@ import pickle
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
-from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
+from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor, \
+    percentile_lesion_mask_extractor_only_from_image_path
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
-from tools.auxiliary.utils import print_and_run
+from labels_manager.tools.aux_methods.utils import print_and_run
 from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 
@@ -129,46 +130,67 @@ def process_MSME_per_subject(sj, controller):
         print_and_run(cmd)
 
     if controller['get mask for original msme']:
-
+        print('- Processing MSME: get mask for original msme:')
         # Start from the S0 mask (this will be saved as an extra mask as MSME_up mask).
         pfi_s0_mask = jph(pfo_mask, '{}_S0_roi_mask.nii.gz'.format(sj))
         pfi_warped_msme_on_s0 = jph(pfo_tmp, sj + '_MSME_tp0_up.nii.gz')
         assert os.path.exists(pfi_s0_mask), pfi_s0_mask
         assert os.path.exists(pfi_warped_msme_on_s0), pfi_warped_msme_on_s0
-        pfi_msme_up_reg_mask = jph(pfo_tmp, '{}_msme_up_reg_mask.nii.gz')
+        pfi_msme_up_lesion_mask = jph(pfo_tmp, '{}_msme_up_lesions_mask.nii.gz'.format(sj))
+        pfi_msme_up_reg_mask = jph(pfo_tmp, '{}_msme_up_reg_mask.nii.gz'.format(sj))
         # Crop it properly to the MSME_up.
-        percentile = (5, 95)
         percentile_lesion_mask_extractor(im_input_path=pfi_warped_msme_on_s0,
-                                         im_output_path=pfi_msme_up_reg_mask,
+                                         im_output_path=pfi_msme_up_lesion_mask,
                                          im_mask_foreground_path=pfi_s0_mask,
-                                         percentiles=percentile,
+                                         percentiles=(10, 98),
                                          safety_on=False)
+        cmd = 'seg_maths {0} -sub {1} {2}'.format(pfi_s0_mask, pfi_msme_up_lesion_mask, pfi_msme_up_reg_mask)
+        print_and_run(cmd)
+        # Register MSME_up with an approximative new mask over the original with no mask.
+        pfi_msme_original_first_layer = jph(pfo_tmp, '{}_MSME_tp0.nii.gz'.format(sj))
+        pfi_msme_original_pre_mask = jph(pfo_tmp, '{}_MSME_tp0_pre_mask.nii.gz'.format(sj))
+        percentile_lesion_mask_extractor_only_from_image_path(pfi_msme_original_first_layer,
+                                                              pfi_msme_original_pre_mask,
+                                                              percentile_range=(30, 95))  # TODO, personal attribute?
 
-        # Register MSME_up with the shiny new mask over the original with no mask.
-        pfi_msme_original_first_layer = jph(pfo_tmp, sj + '_MSME_tp0.nii.gz')
-        #
+        pfi_warped_msme_on_s0_back_on_msme = jph(pfo_tmp, '{}_warped_msme_on_s0_back_on_msme.nii.gz'.format(sj))
+        pfi_affine_msme_on_s0_back_on_msme = jph(pfo_tmp, '{}_affine_msme_on_s0_back_on_msme.txt'.format(sj))
+        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -res {4} -aff {5} -rigOnly'.format(
+            pfi_msme_original_first_layer, pfi_msme_original_pre_mask, pfi_warped_msme_on_s0, pfi_s0_mask,
+            pfi_warped_msme_on_s0_back_on_msme, pfi_affine_msme_on_s0_back_on_msme
+        )
+        print_and_run(cmd)
+        # Apply transformation to the S0 roi_mask and to S0 reg_mask
 
+        for ma in ['roi_mask', 'reg_mask']:
+            S0_mask = jph(pfo_mask, '{0}_S0_{1}.nii.gz'.format(sj, ma))
+            assert os.path.exists(S0_mask)
+            MSME_mask = jph(pfo_mask, '{0}_MSME_{1}.nii.gz'.format(sj, ma))
+            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+                pfi_msme_original_first_layer, S0_mask, pfi_affine_msme_on_s0_back_on_msme, MSME_mask
+            )
+            print_and_run(cmd)
 
-        print('back-propagate the S0 mask on the MSME:')
-        pfi_aff = jph(pfo_tmp, sj + '_msme_on_S0_rigid.txt')
-        assert os.path.exists(pfi_aff)
-        # this very same transformation must be used to back propagate the segmentations!
-        pfi_inv_aff = jph(pfo_tmp, sj + '_S0_on_msmse_rigid.txt')
-        cmd0 = 'reg_transform -invAff {0} {1}'.format(pfi_aff, pfi_inv_aff)
-        print_and_run(cmd0)
-        pfi_S0_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
-        pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
-        assert os.path.exists(pfi_S0_mask)
-        assert os.path.exists(pfi_msme)
-        pfi_mask_on_msme = jph(pfo_mask, sj + '_MSME_roi_mask.nii.gz')
-        cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-            pfi_msme, pfi_S0_mask, pfi_inv_aff, pfi_mask_on_msme)
-        print_and_run(cmd1)
-        print('Dilate:')
-        assert check_path_validity(pfi_mask_on_msme)
-        dil_factor = 0
-        cmd0 = 'seg_maths {0} -dil {1} {2}'.format(pfi_mask_on_msme, dil_factor, pfi_mask_on_msme)
-        print_and_run(cmd0)
+        # print('back-propagate the S0 mask on the MSME:')
+        # pfi_aff = jph(pfo_tmp, sj + '_msme_on_S0_rigid.txt')
+        # assert os.path.exists(pfi_aff)
+        # # this very same transformation must be used to back propagate the segmentations!
+        # pfi_inv_aff = jph(pfo_tmp, sj + '_S0_on_msmse_rigid.txt')
+        # cmd0 = 'reg_transform -invAff {0} {1}'.format(pfi_aff, pfi_inv_aff)
+        # print_and_run(cmd0)
+        # pfi_S0_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
+        # pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
+        # assert os.path.exists(pfi_S0_mask)
+        # assert os.path.exists(pfi_msme)
+        # pfi_mask_on_msme = jph(pfo_mask, sj + '_MSME_roi_mask.nii.gz')
+        # cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+        #     pfi_msme, pfi_S0_mask, pfi_inv_aff, pfi_mask_on_msme)
+        # print_and_run(cmd1)
+        # print('Dilate:')
+        # assert check_path_validity(pfi_mask_on_msme)
+        # dil_factor = 0
+        # cmd0 = 'seg_maths {0} -dil {1} {2}'.format(pfi_mask_on_msme, dil_factor, pfi_mask_on_msme)
+        # print_and_run(cmd0)
 
     if controller['bfc']:
         print('- get bfc correction each slice:')
@@ -337,16 +359,16 @@ def process_MSME_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process MSME, local run. ')
 
-    controller_MSME = {'squeeze'                       : True,
-                       'orient to standard'            : True,
-                       'extract first timepoint'       : True,
-                       'register tp0 to S0'            : True,
-                       'register msme to S0'           : True,
+    controller_MSME = {'squeeze'                       : False,
+                       'orient to standard'            : False,
+                       'extract first timepoint'       : False,
+                       'register tp0 to S0'            : False,
+                       'register msme to S0'           : False,
                        'get mask for original msme'    : True,
-                       'bfc'                           : True,
-                       'bfc up'                        : True,
-                       'save results'                  : True,
-                       'save results tp0'              : True
+                       'bfc'                           : False,
+                       'bfc up'                        : False,
+                       'save results'                  : False,
+                       'save results tp0'              : False
                        }
     #
     lsm = ListSubjectsManager()
@@ -357,7 +379,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['3103', '3108']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['3405']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

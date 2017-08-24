@@ -2,6 +2,9 @@ import os
 import numpy as np
 import nibabel as nib
 from scipy.stats import norm
+import matplotlib.pyplot as plt
+import matplotlib.mlab as mlab
+from sklearn.mixture import GaussianMixture
 
 from tools.auxiliary.utils import set_new_data
 from tools.definitions import root_dir
@@ -117,7 +120,7 @@ def get_percentiles_range(pfi_im_input, percentiles=(15, 95)):
     assert os.path.exists(pfi_im_input)
     im = nib.load(pfi_im_input)
     im_data = im.get_data().flatten()
-    non_zero_data = im_data[np.where(im_data > 1e-6)]
+    non_zero_data = im_data[np.where(np.nan_to_num(im_data) > 1e-6)]
     if len(non_zero_data) > 0:
         low_p = np.percentile(non_zero_data, percentiles[0])
         high_p = np.percentile(non_zero_data, percentiles[1])
@@ -206,3 +209,66 @@ def lesion_masks_extractor_cc_based_path(im_input_path, im_output_path, im_mask_
     if not safety_on:
         print_and_run(cmd2)
     pass
+
+
+def MoG_segmentation_by_max_std(data_array, plot_graph=False):
+
+    hist, bin_edges = np.histogram(data_array, bins=60)
+    bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+
+    classif = GaussianMixture(n_components=3)
+    classif.fit(data_array.reshape((data_array.size, 1)))
+
+    thresholds_mu = classif.means_.flatten()
+    thresholds_std = classif.covariances_.flatten()
+
+    index_max_std = np.argmax(thresholds_std)
+
+    if plot_graph:
+        plt.figure(1, figsize=(8, 8))
+        plt.subplot(111)
+        plt.plot(bin_centers, hist / float(np.sum(hist)), lw=1, color='k')
+        colors = ['r', 'g', 'b']
+        for i in range(3):
+            x = np.linspace(thresholds_mu[i] - 3*np.sqrt(thresholds_std[i]),
+                            thresholds_mu[i] + 3*np.sqrt(thresholds_std[i]), 300)
+            if i == index_max_std:
+                ls = '--'
+            else:
+                ls = ':'
+            plt.axvline(thresholds_mu[i], color=colors[i], ls=ls, lw=1)
+            plt.plot(x, mlab.normpdf(x, thresholds_mu[i], np.sqrt(thresholds_std[i])), color=colors[i])
+        plt.show(block=True)
+
+    return (data_array > thresholds_mu[index_max_std] - np.sqrt(thresholds_std[index_max_std])) * \
+            (data_array < thresholds_mu[index_max_std] + np.sqrt(thresholds_std[index_max_std]))
+
+
+def percentile_lesion_mask_extractor_only_from_image(data_array, percentile_range):
+    p_a = np.percentile(data_array.flatten(), percentile_range[0])
+    p_b = np.percentile(data_array.flatten(), percentile_range[1])
+
+    return (data_array > p_a) * (data_array < p_b)
+
+
+def percentile_lesion_mask_extractor_only_from_image_path(pfi_input_anatomical_image, pfi_output_segmentation,
+                                                          percentile_range=(5, 95)):
+    """
+    :param pfi_input_anatomical_image:
+    :param pfi_output_segmentation:
+    :param percentile_range:
+    :return:
+    """
+    im = nib.load(pfi_input_anatomical_image)
+
+    new_data_2 = percentile_lesion_mask_extractor_only_from_image(im.get_data(), percentile_range=percentile_range)
+    new_im_2 = set_new_data(im, new_data=new_data_2, new_dtype=np.int16)
+    nib.save(new_im_2, filename=pfi_output_segmentation)
+
+    cmd = '''seg_maths {0} -fill {0};
+             seg_maths {0} -ero 1 {0};
+             seg_maths {0} -dil 1 {0};
+             seg_maths {0} -smol 2 {0};
+          '''.format(pfi_output_segmentation)
+
+    print_and_run(cmd)
