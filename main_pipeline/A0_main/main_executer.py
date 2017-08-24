@@ -25,8 +25,8 @@ def main_runner(subj_list):
     step_A1         = False
     step_A2_T1      = False
     step_A2_DWI     = False
-    step_A2_MSME    = False
-    step_A2_T2maps  = True
+    step_A2_MSME    = True
+    step_A2_T2maps  = False
     step_A2_g_ratio = False
     step_A3         = False
     step_A4         = False
@@ -129,18 +129,22 @@ def main_runner(subj_list):
                                   'Propagate_to_target_n-rig' : True,
                                   'Smooth_results'            : True,
                                   'Stack_warps_and_segms'     : True,
-                                  'Speed'                     : False
-                                  }
+                                  'Speed'                     : False}
 
         controller_fuser = {'Fuse': True,
-                             'fusion methods'  : ['MV', 'STEPS', 'STAPLE'],  # 'MV', 'STAPLE',
+                             'Fusion methods'  : ['MV', 'STEPS', 'STAPLE'],  # 'MV', 'STAPLE',
                              'STAPLE_params'   : OrderedDict([('pr_1', None)]),
                              'STEPS_params'    : OrderedDict([('pr_1', [3, 3, None]),
                                                               ('pr_2', [3, 3, 2.0]),
-                                                              ('pr_3', [3, 3, 4.0])]),  # k, n ,beta
-                             'Propagate_to_other_modalities'  : True,
+                                                              ('pr_3', [3, 3, 4.0]),
+                                                              ('pr_4', [3, 4, None]),
+                                                              ('pr_5', [3, 4, 2.0]),
+                                                              ('pr_6', [3, 4, 4.0]),
+                                                              ('pr_7', [3, 5, None]),
+                                                              ('pr_8', [3, 5, 2.0]),
+                                                              ('pr_9', [3, 5, 4.0])]),  # k, n ,beta
                              'Inter_mod_space_propagation'    : True,
-                             'Save_results'                    : True}
+                             'Save_results'                   : True}
 
         spot_a_list_of_rabbits(subj_list, controller_fuser, controller_propagator)
 
@@ -168,7 +172,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['3405']  # ['1305', ]  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507']
+    lsm.input_subjects = ['3405']  # ['3405', '1305']  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507']
     #  ['3405', '3501', '3505', '3507', ]  # [ '3108', '3401', '3403', '3404' ]
     #  '3307', '3404']  # '2202t1', '2205t1', 3103'2206t1' -- '2503', '2608', '2702', '2205t1', '2206t1'
     lsm.update_ls()

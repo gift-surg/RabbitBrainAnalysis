@@ -9,6 +9,7 @@ import pickle
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
+from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import print_and_run
@@ -72,9 +73,6 @@ def process_MSME_per_subject(sj, controller):
     print_and_run('mkdir -p {}'.format(pfo_mask))
     print_and_run('mkdir -p {}'.format(pfo_tmp))
 
-    pfo_utils = jph(root_study_rabbits, 'A_data', 'Utils')
-    assert os.path.exists(pfo_utils)
-
     if controller['squeeze']:
         print('- Processing MSME: squeeze {}'.format(sj))
         pfi_msme_nifti = jph(pfo_input_sj, sj + '_MSME', sj + '_MSME.nii.gz')
@@ -99,6 +97,10 @@ def process_MSME_per_subject(sj, controller):
         print_and_run(cmd0)
 
     if controller['register tp0 to S0']:
+
+        print('- Processing MSME: create ficticious original MSME mask {}'.format(sj))
+        pfi_msme_original_first_layer = jph(pfo_tmp, sj + '_MSME_tp0.nii.gz')
+
         print('- Processing MSME: register tp0 to S0 {}'.format(sj))
         pfi_s0 = jph(pfo_mod, sj + '_S0.nii.gz')
         pfi_s0_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
@@ -127,6 +129,26 @@ def process_MSME_per_subject(sj, controller):
         print_and_run(cmd)
 
     if controller['get mask for original msme']:
+
+        # Start from the S0 mask (this will be saved as an extra mask as MSME_up mask).
+        pfi_s0_mask = jph(pfo_mask, '{}_S0_roi_mask.nii.gz'.format(sj))
+        pfi_warped_msme_on_s0 = jph(pfo_tmp, sj + '_MSME_tp0_up.nii.gz')
+        assert os.path.exists(pfi_s0_mask), pfi_s0_mask
+        assert os.path.exists(pfi_warped_msme_on_s0), pfi_warped_msme_on_s0
+        pfi_msme_up_reg_mask = jph(pfo_tmp, '{}_msme_up_reg_mask.nii.gz')
+        # Crop it properly to the MSME_up.
+        percentile = (5, 95)
+        percentile_lesion_mask_extractor(im_input_path=pfi_warped_msme_on_s0,
+                                         im_output_path=pfi_msme_up_reg_mask,
+                                         im_mask_foreground_path=pfi_s0_mask,
+                                         percentiles=percentile,
+                                         safety_on=False)
+
+        # Register MSME_up with the shiny new mask over the original with no mask.
+        pfi_msme_original_first_layer = jph(pfo_tmp, sj + '_MSME_tp0.nii.gz')
+        #
+
+
         print('back-propagate the S0 mask on the MSME:')
         pfi_aff = jph(pfo_tmp, sj + '_msme_on_S0_rigid.txt')
         assert os.path.exists(pfi_aff)
