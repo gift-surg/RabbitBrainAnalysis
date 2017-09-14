@@ -49,4 +49,4 @@ else:
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc'
 
 pfi_excel_table_all_data = jph(root_study_rabbits, 'A_data', 'DataSummary.xlsx')
-pfo_subjects_parameters = jph(root_study_rabbits, '01_nifti', 'Utils', 'subjects_parameters')
+pfo_subjects_parameters = jph(root_study_rabbits, 'A_data', 'Utils', 'subjects_parameters')

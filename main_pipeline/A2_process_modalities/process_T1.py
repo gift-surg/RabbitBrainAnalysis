@@ -95,7 +95,7 @@ def process_T1_per_subject(sj, controller):
         print('- propagate roi masks {}'.format(sj))
         pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
         if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
-            pfi_reference_roi_mask = jph(root_internal_template, '1305', 'masks', '1305_T1_roi_mask.nii.gz')
+            pfi_reference_roi_mask = jph(root_internal_template, '1305', 'masks', '1305_roi_mask.nii.gz')
         elif sj_parameters['category'] == 'in_vivo':
             pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_roi_mask.nii.gz')
         else:
