@@ -41,6 +41,7 @@ class ListSubjectsManager(object):
                             self.execute_PTB_op_skull + self.execute_ACS_ex_vivo
         if prod_conditions > 0:
 
+            # Get information from subjects parameters
             list_subjects = [file_name for file_name in os.listdir(pfo_subjects_parameters)
                              if not file_name.endswith(".txt")]
             

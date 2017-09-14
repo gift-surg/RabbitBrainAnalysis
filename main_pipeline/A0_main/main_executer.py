@@ -23,19 +23,19 @@ def main_runner(subj_list):
     # Set steps
 
     step_A1         = False
-    step_A2_T1      = False
-    step_A2_DWI     = False
+    step_A2_T1      = True
+    step_A2_DWI     = True
     step_A2_MSME    = True
-    step_A2_T2maps  = False
-    step_A2_g_ratio = False
-    step_A3         = False
+    step_A2_T2maps  = True
+    step_A2_g_ratio = True
+    step_A3         = True
     step_A4         = False
     step_A5         = False
 
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
         print('\nStep A1\n')
-        convert_subjects_from_list(subj_list)
+        # convert_subjects_from_list(subj_list)
         cleaner_converted_data_from_list(subj_list)
 
     ''' Step A2 - T1 '''
@@ -94,9 +94,9 @@ def main_runner(subj_list):
     ''' Step A2 - T2Maps '''
     if step_A2_T2maps:
         print('\nStep T2 maps\n')
-        controller_T2maps = {'get acquisition echo time'  : False,
-                             'process each MSME input'    : False,
-                             'correct origin'             : False,
+        controller_T2maps = {'get acquisition echo time'  : True,
+                             'process each MSME input'    : True,
+                             'correct origin'             : True,
                              'save results'               : True}
 
         process_t2_maps_from_list(subj_list, controller_T2maps)
@@ -172,9 +172,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['3405']  # ['3405', '1305']  # ['3405', '3501', '3505', '3507', ] #['3501', '3505', '3507']
-    #  ['3405', '3501', '3505', '3507', ]  # [ '3108', '3401', '3403', '3404' ]
-    #  '3307', '3404']  # '2202t1', '2205t1', 3103'2206t1' -- '2503', '2608', '2702', '2205t1', '2206t1'
+    # lsm.input_subjects = ['1201']
+    lsm.input_subjects = ['3405']
+
     lsm.update_ls()
 
     print(lsm.ls)

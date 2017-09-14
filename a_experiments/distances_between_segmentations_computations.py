@@ -1,12 +1,14 @@
 from os.path import join as jph
 from labels_manager.main import LabelsManager as LM
 
+from labels_manager.tools.caliber.distances import dice_score, dispersion, covariance_distance, hausdorff_distance
 from a_experiments.distances_between_segmentations_paths import pfo_manual, pfo_study, pfo_automatic, pfo_output, \
     modalities, pfo_intermediate_files
 
-m = LM()
 
 if __name__ == '__main__':
+
+    m = LM()
 
     for mod in modalities:
         print '\n\n\n---------------'
@@ -19,5 +21,6 @@ if __name__ == '__main__':
 
         where_to_save = jph(pfo_output, 'distances_approved_{}.pickle'.format(mod))
 
-        m.measure.dist(pfi_automatic_MV, pfi_manual_1, metrics=('dice_score', 'dispersion', 'precision'),  #
+        m.measure.dist(pfi_automatic_MV, pfi_manual_1, metrics=(dice_score, dispersion, covariance_distance,
+                                                                hausdorff_distance),
                        intermediate_files_folder_name=pfo_intermediate_files, where_to_save=where_to_save)

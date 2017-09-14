@@ -3,7 +3,8 @@ from os.path import join as jph
 import pickle
 
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
-from tools.definitions import root_study_rabbits, pfi_excel_table_all_data, pfo_subjects_parameters
+from tools.definitions import root_study_rabbits, pfi_excel_table_all_data, pfo_subjects_parameters, \
+    root_internal_template
 from tools.measurements.compile_record import compile_record
 from tools.auxiliary.utils import print_and_run
 
@@ -34,7 +35,7 @@ def compile_records_from_subject_list(subj_list):
         cmd = 'mkdir -p {}'.format(pfo_output_record_sj)
         print_and_run(cmd)
         # grab label descriptor
-        pfi_multi_labels_descr = jph(root_study_rabbits, 'A_data', 'Utils', 'multi_label_descriptor.txt')
+        pfi_multi_labels_descr = jph(root_internal_template, 'LabelsDescriptors', 'multi_label_descriptor.txt')
         assert os.path.exists(pfi_multi_labels_descr)
         assert os.path.exists(pfi_excel_table_all_data)
 

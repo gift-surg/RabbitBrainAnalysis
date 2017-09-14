@@ -7,7 +7,7 @@ import pickle
 
 import numpy as np
 
-from tools.definitions import root_study_rabbits, pfo_subjects_parameters
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_internal_template
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
@@ -101,7 +101,7 @@ def process_DWI_per_subject(sj, controller):
         print('- register roi masks {}'.format(sj))
         pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
         if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
-            pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1.nii.gz')
+            pfi_sj_ref_coord_system = jph(root_internal_template, '1305', 'mod', '1305_T1.nii.gz')
         elif sj_parameters['category'] == 'in_vivo':
             pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
         else:
@@ -122,7 +122,7 @@ def process_DWI_per_subject(sj, controller):
         print('- propagate roi masks {}'.format(sj))
         pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
         if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
-            pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1305', '1305_T1_roi_mask.nii.gz')
+            pfi_reference_roi_mask = jph(root_internal_template, '1305', 'masks', '1305_T1_roi_mask.nii.gz')
         elif sj_parameters['category'] == 'in_vivo':
             pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_roi_mask.nii.gz')
         else:

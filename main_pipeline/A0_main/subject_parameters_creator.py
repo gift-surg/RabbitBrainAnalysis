@@ -363,7 +363,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.mask_dilation = 1
     sp.MSME_acquisition = 'high_res'
     sp.comment = ''
-    sp.in_template = True
+    sp.in_template = False
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
