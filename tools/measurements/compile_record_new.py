@@ -70,15 +70,14 @@ def get_rabbit_record(list_pfi_anatomies,
 
     measurements = {}
 
-
     ldm = LDM(pfi_label_descriptor)
     multi_label_dict = ldm.get_multi_label_dict(keep_duplicate=True, combine_right_left=True)
 
-    for pfi_anat, pfi_segm, ind in zip(list_pfi_anatomies, list_pfi_segmentations):
+    for pfi_anat, pfi_segm, ind in zip(list_pfi_anatomies, list_pfi_segmentations, indexes):
 
         if verbose > 0:
             print('Analysis index {}'.format(ind))
-            print('Anatomy : {}, Segmentation : {}'.format(pfi_anat, pfi_segm))
+            print('Anatomy : {}, \nSegmentation : {}'.format(pfi_anat, pfi_segm))
 
         if os.path.exists(pfi_segm) and os.path.exists(pfi_anat):
             m = LMM()
@@ -87,7 +86,7 @@ def get_rabbit_record(list_pfi_anatomies,
 
             del m
         else:
-            df_vol = ''  # empty dataframe
+            df_vol = None  # No dataframe if the file does not exist...
 
         measurements.update({ind : df_vol})
 
@@ -125,9 +124,30 @@ if __name__ == '__main__':
     pfi_info_excel_table = jph(root_study_rabbits, 'A_data', 'DataSummary.xlsx')
     subject_name = '3103'
 
-    indexes = ['T1', 'g_ratio', 'FA', 'MD', 'T2map_up']
-    list_pfi_anatomies = [],
-    list_pfi_segmentations = [],
+    pfo_data_sj       = jph(root_study_rabbits, 'A_data', 'ACS', 'ex_vivo', subject_name)
+
+    pfi_T1            = jph(pfo_data_sj, 'mod', '{}_T1.nii.gz'.format(subject_name))
+    pfi_g_ratio       = jph(pfo_data_sj, 'mod', '{}_g_ratio.nii.gz'.format(subject_name))
+    pfi_FA            = jph(pfo_data_sj, 'mod', '{}_FA.nii.gz'.format(subject_name))
+    pfi_MD            = jph(pfo_data_sj, 'mod', '{}_MD.nii.gz'.format(subject_name))
+    pfi_T2map_up      = jph(pfo_data_sj, 'mod', '{}_T2_map_up.nii.gz'.format(subject_name))
+
+    suffix_segmentaion = '_MV_s'
+    pfo_automatic_segm = jph(pfo_data_sj, 'segm', 'automatic')
+
+    pfi_T1_segm       = jph(pfo_automatic_segm, '{0}_T1_segm{1}.nii.gz'.format(subject_name, suffix_segmentaion))
+    pfi_g_ratio_segm  = jph(pfo_automatic_segm, '{0}_S0_segm{1}.nii.gz'.format(subject_name, suffix_segmentaion))
+    pfi_FA_segm       = pfi_g_ratio_segm
+    pfi_MD_segm       = pfi_g_ratio_segm
+    pfi_T2map_up_segm = pfi_g_ratio_segm
+
+    list_pfi_anatomies = [pfi_T1, pfi_g_ratio, pfi_FA, pfi_MD, pfi_T2map_up]
+    list_pfi_segmentations = [pfi_T1_segm, pfi_g_ratio_segm, pfi_FA_segm, pfi_MD_segm, pfi_T2map_up_segm]
+    indexes = ['T1', 'g_ratio', 'FA', 'MD', 'T2map']
+
+    print list_pfi_anatomies
+    print list_pfi_segmentations
+    print indexes
 
     rec = get_rabbit_record(list_pfi_anatomies=list_pfi_anatomies,
                             list_pfi_segmentations=list_pfi_segmentations,
