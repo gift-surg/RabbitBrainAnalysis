@@ -64,7 +64,7 @@ def process_T2_map_per_subject(sj, controller):
 
     print_and_run('mkdir -p {}'.format(pfo_tmp))
 
-    suffix = ['', '_bfc', '_up', '_bfc_up']
+    suffix = ['', '_up']
 
     if controller['get acquisition echo time']:
         pfi_visu_pars = jph(pfo_input_sj_MSME, sj + '_MSME_visu_pars.npy')
@@ -101,17 +101,12 @@ def process_T2_map_per_subject(sj, controller):
             nib.save(im_corrected, pfi_T2map_corrected)
 
     if controller['save results']:
-        # Save the bias field corrected '_bfc', and '_bfc_up' in the name _T2map and _T2map_up
-        pfi_source_bfc    = jph(pfo_tmp, sj + '_corrected_T2map_bfc.nii.gz')
-        pfi_source_bfc_up = jph(pfo_tmp, sj + '_corrected_T2map_bfc_up.nii.gz')
-
-        pfi_destination_bfc    = jph(pfo_mod, sj + '_T2map.nii.gz')
-        pfi_destination_bfc_up = jph(pfo_mod, sj + '_T2map_up.nii.gz')
-
-        cmd = 'cp {0} {1}'.format(pfi_source_bfc, pfi_destination_bfc)
-        print_and_run(cmd)
-        cmd = 'cp {0} {1}'.format(pfi_source_bfc_up, pfi_destination_bfc_up)
-        print_and_run(cmd)
+        # Save the bias field corrected '', and '_up' in the name _T2map and _T2map_up
+        for s in suffix:
+            pfi_source    = jph(pfo_tmp, sj + '_corrected_T2map{}.nii.gz'.format(s))
+            pfi_destination    = jph(pfo_mod, sj + '_T2map.nii.gz')
+            cmd = 'cp {0} {1}'.format(pfi_source, pfi_destination)
+            print_and_run(cmd)
 
 
 def process_t2_maps_from_list(subj_list, controller):

@@ -27,15 +27,16 @@ def compile_records_from_subject_list(subj_list):
         pfi_g_ratio = jph(pfo_sj, 'mod', sj + '_g_ratio.nii.gz')
         # -
         # grab segmentations
-        pfi_segm_T1_sj = jph(pfo_sj, 'segm', sj + '_T1_segm.nii.gz')
-        pfi_segm_S0_sj = jph(pfo_sj, 'segm', sj + '_S0_segm.nii.gz')
+        selected_segmentation = '_MV_s'
+        pfi_segm_T1_sj = jph(pfo_sj, 'segm', sj + '_T1_segm{}.nii.gz'.format(selected_segmentation))
+        pfi_segm_S0_sj = jph(pfo_sj, 'segm', sj + '_S0_segm{}.nii.gz'.format(selected_segmentation))
         pfi_segm_g_ratio = pfi_segm_S0_sj
 
         pfo_output_record_sj = jph(pfo_input_data, sj, 'records')
         cmd = 'mkdir -p {}'.format(pfo_output_record_sj)
         print_and_run(cmd)
         # grab label descriptor
-        pfi_multi_labels_descr = jph(root_internal_template, 'LabelsDescriptors', 'multi_label_descriptor.txt')
+        pfi_multi_labels_descr = jph(root_internal_template, 'LabelsDescriptors', 'multi_labels_descriptor.txt')
         assert os.path.exists(pfi_multi_labels_descr)
         assert os.path.exists(pfi_excel_table_all_data)
 

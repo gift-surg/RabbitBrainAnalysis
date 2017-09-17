@@ -84,14 +84,14 @@ def process_DWI_per_subject(sj, controller):
         pfi_dwi_std = jph(pfo_tmp, sj + '_DWI_to_std.nii.gz')
         cmd0 = 'fslreorient2std {0} {1}'.format(pfi_dwi_original, pfi_dwi_std)
         print_and_run(cmd0)
-        set_translational_part_to_zero(pfi_dwi_std, pfi_dwi_std)
+        # set_translational_part_to_zero(pfi_dwi_std, pfi_dwi_std)
         # S0
         pfi_S0_original = jph(pfo_input_sj_DWI, sj + '_DWI_S0.nii.gz')
         assert check_path_validity(pfi_S0_original)
         pfi_S0_std = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
         cmd1 = 'fslreorient2std {0} {1}'.format(pfi_S0_original, pfi_S0_std)
         print_and_run(cmd1)
-        set_translational_part_to_zero(pfi_S0_std, pfi_S0_std)
+        # set_translational_part_to_zero(pfi_S0_std, pfi_S0_std)
 
         if sj_parameters['DWI_squashed']:
             scale_y_value_and_trim(pfi_dwi_std, pfi_dwi_std, squeeze_factor=2.218074656188605)
@@ -327,7 +327,7 @@ def process_DWI_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process DWI, local run. ')
 
-    controller_DWI = {'squeeze'               : True,
+    controller_DWI = {'squeeze'               : False,
                       'orient to standard'    : True,
                       'register roi masks'    : False,
                       'propagate roi masks'   : False,
@@ -351,7 +351,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['3405']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['3103']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

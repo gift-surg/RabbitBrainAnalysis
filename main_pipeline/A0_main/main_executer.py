@@ -23,19 +23,19 @@ def main_runner(subj_list):
     # Set steps
 
     step_A1         = False
-    step_A2_T1      = True
-    step_A2_DWI     = True
-    step_A2_MSME    = True
-    step_A2_T2maps  = True
-    step_A2_g_ratio = True
+    step_A2_T1      = False
+    step_A2_DWI     = False
+    step_A2_MSME    = False
+    step_A2_T2maps  = False
+    step_A2_g_ratio = False
     step_A3         = True
-    step_A4         = False
+    step_A4         = True
     step_A5         = False
 
     ''' Step A1 - convert, clean and create aliases '''
     if step_A1:
         print('\nStep A1\n')
-        # convert_subjects_from_list(subj_list)
+        convert_subjects_from_list(subj_list)
         cleaner_converted_data_from_list(subj_list)
 
     ''' Step A2 - T1 '''
@@ -155,7 +155,6 @@ def main_runner(subj_list):
 
     if step_A5:
         send_data_to_hannes_from_list(subj_list, records_only=False)
-        # save_data_into_excel_file(lsm.ls)
 
 
 if __name__ == '__main__':
@@ -172,8 +171,8 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    # lsm.input_subjects = ['1201']
-    lsm.input_subjects = ['3405']
+    lsm.input_subjects = ['3103']
+    # lsm.input_subjects = ['3103']
 
     lsm.update_ls()
 

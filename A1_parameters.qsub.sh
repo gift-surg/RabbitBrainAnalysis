@@ -4,14 +4,14 @@ hostname
 #$ -l h_rt=12:00:00
 #$ -l tmem=20G
 #$ -l h_vmem=20G
-#$ -N "ImgACS_1_5"
+#$ -N "ImgAll"
 #$ -S /bin/bash
 #$ -cwd
-#$ -t 1-5
+#$ -t 1-50
 #$ -e ../z_output/
 #$ -o ../z_output/
 
-SUBJECT=`sed -n ${SGE_TASK_ID}p subjects.txt`
+SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_all.txt`
 
 
 export PATH=/share/apps/fsl-5.0.8/bin/:${PATH}
@@ -24,5 +24,3 @@ CALLER=cluster_commands/call_executer.py
 echo $EXEC $CALLER -i $SUBJECT
 
 $EXEC $CALLER -i $SUBJECT
-
-
