@@ -18,7 +18,7 @@ from tools.definitions import pfo_subjects_parameters
 from tools.auxiliary.parse_excel_tables_and_descriptors import parse_excel_data_to_list, \
     parse_multi_label_descriptor_in_a_list
 
-from tools.auxiliary.utils import print_and_run
+from labels_manager.tools.aux_methods.utils import print_and_run
 
 
 # TODO needs to be refactored using labels manager methods.
