@@ -15,7 +15,7 @@ def convert_subjects_from_list(subj_list):
     print '\n\n CONVERTING SUBJECTS {} \n'.format(subj_list)
 
     for sj in subj_list:
-        print 'Subj {} conversion!\n'.format(sj)
+        print '\n\nSubj {} conversion!\n'.format(sj)
 
         sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 

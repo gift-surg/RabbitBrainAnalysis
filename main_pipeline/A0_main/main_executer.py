@@ -22,24 +22,28 @@ def main_runner(subj_list):
 
     # Set steps
 
-    step_A1         = True
-    step_A2_T1      = True
-    step_A2_DWI     = True
-    step_A2_MSME    = True
-    step_A2_T2maps  = True
-    step_A2_g_ratio = True
-    step_A3         = False
-    step_A4         = False
-    step_A5         = False
+    steps = {'step_A1'         : True,
+             'step_A2_T1'      : True,
+             'step_A2_DWI'     : True,
+             'step_A2_MSME'    : True,
+             'step_A2_T2maps'  : True,
+             'step_A2_g_ratio' : True,
+             'step_A3'         : True,
+             'step_A4'         : False,
+             'step_A5'         : False}
+
+    print('STEPS')
+    for k in sorted(steps.keys()):
+        print('{0:<20} : {1}'.format(k, steps[k]))
 
     ''' Step A1 - convert, clean and create aliases '''
-    if step_A1:
+    if steps['step_A1']:
         print('\nStep A1\n')
         convert_subjects_from_list(subj_list)
         cleaner_converted_data_from_list(subj_list)
 
     ''' Step A2 - T1 '''
-    if step_A2_T1:
+    if steps['step_A2_T1']:
         print('\nStep A2 T1\n')
         controller_A2_T1 = {'orient to standard'  : True,
                             'register roi masks'  : True,
@@ -54,7 +58,7 @@ def main_runner(subj_list):
         process_T1_from_list(subj_list, controller_A2_T1)
 
     ''' Step A2 - DWI '''
-    if step_A2_DWI:
+    if steps['step_A2_DWI']:
         print('\nStep A2 DWI\n')
         controller_DWI = {'squeeze'                : True,
                             'orient to standard'   : True,
@@ -75,7 +79,7 @@ def main_runner(subj_list):
         process_DWI_from_list(subj_list, controller_DWI)
 
     ''' Step A2 - MSME '''
-    if step_A2_MSME:
+    if steps['step_A2_MSME']:
         print('\nStep A2 MSME\n')
         controller_MSME = {'squeeze'                       : True,
                            'orient to standard'            : True,
@@ -92,7 +96,7 @@ def main_runner(subj_list):
         process_MSME_from_list(subj_list, controller_MSME)
 
     ''' Step A2 - T2Maps '''
-    if step_A2_T2maps:
+    if steps['step_A2_T2maps']:
         print('\nStep T2 maps\n')
         controller_T2maps = {'get acquisition echo time'  : True,
                              'process each MSME input'    : True,
@@ -102,7 +106,7 @@ def main_runner(subj_list):
         process_t2_maps_from_list(subj_list, controller_T2maps)
 
     ''' Step A2 - g-ratio '''
-    if step_A2_g_ratio:
+    if steps['step_A2_g_ratio']:
         print('\nStep A2 g-ratio\n')
         controller_g_ratio = {'transpose b-vals b-vects'  : True,
                               'noddi'                     : True,
@@ -116,7 +120,7 @@ def main_runner(subj_list):
         process_g_ratio_from_list(subj_list, controller_g_ratio)
 
     ''' Step A3 - Propagate template '''
-    if step_A3:
+    if steps['step_A3']:
         print('\nStep A3\n')
         controller_propagator = {'Propagation_methods'        : 'Mono',
                                   'Affine_options'            : '',
@@ -149,11 +153,11 @@ def main_runner(subj_list):
         spot_a_list_of_rabbits(subj_list, controller_fuser, controller_propagator)
 
     ''' Step A4 - Data collection '''
-    if step_A4:
+    if steps['step_A4']:
         print('\nStep A4\n')
         compile_records_from_subject_list(subj_list)
 
-    if step_A5:
+    if steps['step_A5']:
         send_data_to_hannes_from_list(subj_list, records_only=False)
 
 
@@ -166,12 +170,12 @@ if __name__ == '__main__':
     lsm = ListSubjectsManager()
 
     lsm.execute_PTB_ex_skull  = False
-    lsm.execute_PTB_ex_vivo   = False
+    lsm.execute_PTB_ex_vivo   = True
     lsm.execute_PTB_in_vivo   = False
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['3103']
+    # lsm.input_subjects = ['1305']
     # lsm.input_subjects = ['3103']
 
     lsm.update_ls()
