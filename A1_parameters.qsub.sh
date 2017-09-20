@@ -7,11 +7,11 @@ hostname
 #$ -N "ImgAll"
 #$ -S /bin/bash
 #$ -cwd
-#$ -t 1-50
+#$ -t 1-14
 #$ -e ../z_output/
 #$ -o ../z_output/
 
-SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_all.txt`
+SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_PTB_ex_vivo.txt`
 
 
 export PATH=/share/apps/fsl-5.0.8/bin/:${PATH}

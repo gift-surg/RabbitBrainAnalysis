@@ -5,7 +5,7 @@ import pickle
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits, pfi_excel_table_all_data, pfo_subjects_parameters, \
     root_internal_template
-from tools.measurements.compile_record import compile_record
+from tools.measurements.old_compile_record import compile_record
 from tools.auxiliary.utils import print_and_run
 
 

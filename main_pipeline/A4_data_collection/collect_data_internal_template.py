@@ -1,7 +1,7 @@
 import os
 from os.path import join as jph
 
-from tools.measurements.compile_record import compile_record
+from tools.measurements.old_compile_record import compile_record
 from tools.definitions import root_internal_template, root_study_rabbits, pfi_excel_table_all_data
 from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
 '''
