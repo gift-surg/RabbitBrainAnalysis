@@ -68,6 +68,7 @@ def process_T1_per_subject(sj, controller):
         pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
         assert check_path_validity(pfi_std)
         set_translational_part_to_zero(pfi_std, pfi_std_not_transl)
+        del pfi_input_original, pfi_std, cmd, pfi_std_not_transl
 
     if controller['register roi masks']:
         print('- register roi masks {}'.format(sj))
@@ -90,6 +91,8 @@ def process_T1_per_subject(sj, controller):
             pfi_affine_transformation_ref_on_subject,
             pfi_3d_warped_ref_on_subject)
         print_and_run(cmd)
+        del pfi_std_not_transl, pfi_sj_ref_coord_system, pfi_affine_transformation_ref_on_subject, \
+            pfi_3d_warped_ref_on_subject, cmd
 
     if controller['propagate roi masks']:
         print('- propagate roi masks {}'.format(sj))
@@ -111,6 +114,8 @@ def process_T1_per_subject(sj, controller):
             pfi_affine_transformation_reference_on_subject,
             pfi_roi_mask)
         print_and_run(cmd)
+        del pfi_std_not_transl, pfi_reference_roi_mask, pfi_affine_transformation_reference_on_subject, pfi_roi_mask, \
+            cmd
 
     if controller['adjust mask']:
         print('- adjust mask {}'.format(sj))
@@ -122,6 +127,7 @@ def process_T1_per_subject(sj, controller):
                                                       erosion_param,
                                                       pfi_roi_mask)
             print_and_run(cmd)
+        del pfi_roi_mask, erosion_param
 
     if controller['cut masks']:
         print('- cut masks {}'.format(sj))
@@ -133,6 +139,7 @@ def process_T1_per_subject(sj, controller):
         cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_std_not_transl, pfi_roi_mask, pfi_3d_cropped_roi)
         print '\nCutting newly-created ciccione mask on the subject: subject {0}.\n'.format(sj)
         print_and_run(cmd)
+        del pfi_std_not_transl, pfi_roi_mask, pfi_3d_cropped_roi, cmd
 
     if controller['step bfc']:
         print('- step bfc {}'.format(sj))
@@ -152,12 +159,14 @@ def process_T1_per_subject(sj, controller):
                               numberOfControlPoints=bfc_param[5],
                               splineOrder=bfc_param[6],
                               print_only=False)
+        del pfi_3d_cropped_roi, pfi_3d_bias_field_corrected, bfc_param, pfi_roi_mask
     elif controller['speed']:
         pfi_3d_cropped_roi = jph(pfo_tmp, sj + '_cropped.nii.gz')
         assert check_path_validity(pfi_3d_cropped_roi)
         pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
         cmd = 'cp {0} {1}'.format(pfi_3d_cropped_roi, pfi_3d_bias_field_corrected)
         print_and_run(cmd)
+        del pfi_3d_cropped_roi, pfi_3d_bias_field_corrected, cmd
 
     if controller['create lesion mask']:
         print('- create lesion mask {}'.format(sj))
@@ -172,7 +181,7 @@ def process_T1_per_subject(sj, controller):
                                          im_mask_foreground_path=pfi_roi_mask,
                                          percentiles=percentile,
                                          safety_on=False)
-
+        del pfi_3d_bias_field_corrected, pfi_roi_mask, pfi_lesion_mask, percentile
     if controller['create reg masks']:
         print('- create reg masks {}'.format(sj))
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
@@ -182,6 +191,7 @@ def process_T1_per_subject(sj, controller):
         pfi_registration_mask = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
         cmd = 'seg_maths {0} -sub {1} {2} '.format(pfi_roi_mask, pfi_lesion_mask, pfi_registration_mask)
         print_and_run(cmd)
+        del pfi_roi_mask, pfi_lesion_mask, pfi_registration_mask, cmd
 
     if controller['save results']:
         print('- save results {}'.format(sj))
@@ -190,6 +200,7 @@ def process_T1_per_subject(sj, controller):
         pfi_3d_final_destination = jph(pfo_mod, sj + '_T1.nii.gz')
         cmd = 'cp {0} {1}'.format(pfi_3d_bias_field_corrected, pfi_3d_final_destination)
         print_and_run(cmd)
+        del pfi_3d_bias_field_corrected, pfi_3d_final_destination, cmd
 
 
 def process_T1_from_list(subj_list, controller):
