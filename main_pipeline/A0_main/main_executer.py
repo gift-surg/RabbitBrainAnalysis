@@ -1,6 +1,12 @@
 from tools.auxiliary.sanity_checks import check_libraries
 from collections import OrderedDict
 
+from main_pipeline.A0_main.subject_parameters_creator import reset_parameters_files
+from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_template, \
+    check_subjects_situation
+
+from tools.definitions import pfo_subjects_parameters
+
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A1_convert_and_clean.apply_converter_to_all_data import convert_subjects_from_list
 from main_pipeline.A1_convert_and_clean.clean_converted_data import cleaner_converted_data_from_list
@@ -22,8 +28,8 @@ def main_runner(subj_list):
 
     # Set steps
 
-    steps = {'step_A1'         : False,
-             'step_A2_T1'      : False,
+    steps = {'step_A1'         : True,
+             'step_A2_T1'      : True,
              'step_A2_DWI'     : True,
              'step_A2_MSME'    : True,
              'step_A2_T2maps'  : True,
@@ -35,6 +41,15 @@ def main_runner(subj_list):
     print('STEPS')
     for k in sorted(steps.keys()):
         print('{0:<20} : {1}'.format(k, steps[k]))
+
+    ''' Re-set parameter files by default '''
+    print('\nStep 0 : reset parameters and examine then\n')
+    reset_parameters_files(pfo_where_to_save=pfo_subjects_parameters)
+    sjs = get_list_names_subjects_in_template(pfo_subjects_parameters)
+    print('Subjects summary: ')
+    check_subjects_situation(pfo_subjects_parameters)
+    print('\nTemplate:')
+    print sjs
 
     ''' Step A1 - convert, clean and create aliases '''
     if steps['step_A1']:

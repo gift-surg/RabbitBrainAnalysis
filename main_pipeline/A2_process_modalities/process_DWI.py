@@ -102,13 +102,13 @@ def process_DWI_per_subject(sj, controller):
     if controller['create roi masks']:
 
         # if the roi mask of the T1 exists resample that one
-        pfi_sj_T1_roi_mask = jph(pfo_mask, '{}_T1_roi_mask'.format(sj))
+        pfi_sj_T1_roi_mask = jph(pfo_mask, '{}_T1_roi_mask.nii.gz'.format(sj))
 
         if os.path.exists(pfi_sj_T1_roi_mask):
             print('- Create roi masks {}'.format(sj))
             pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
             pfi_affine_identity = jph(pfo_tmp, 'id.txt')
-            np.savetxt(pfi_affine_identity, np.eye(4))
+            np.savetxt(pfi_affine_identity, np.eye(4), fmt='%d')
             pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
             cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
                 pfi_S0,
@@ -116,7 +116,7 @@ def process_DWI_per_subject(sj, controller):
                 pfi_affine_identity,
                 pfi_roi_mask)
             print_and_run(cmd)
-            del pfi_S0, pfi_affine_identity, pfi_roi_mask, pfi_roi_mask, cmd
+            del pfi_S0, pfi_affine_identity, pfi_roi_mask, cmd
 
         # if the T1 roi mask does not exists than create a new one from scratch.
         # Ideal pipeline uses the T1_roi_mask. This second option is an extra to not brake tests or partial pipelines.
@@ -170,7 +170,7 @@ def process_DWI_per_subject(sj, controller):
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         assert check_path_validity(pfi_roi_mask)
         pfi_roi_mask_dil = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
-        dil_factor = sj_parameters['mask_dilation']
+        dil_factor = sj_parameters['S0_maks_dilation']
         cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_roi_mask,
                                                   dil_factor,
                                                   pfi_roi_mask_dil)
@@ -226,12 +226,14 @@ def process_DWI_per_subject(sj, controller):
         print_and_run(cmd)
         del pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected, cmd
 
-    else:
+    elif controller['fsl tensor fitting']:
         pfi_dwi_slope_corrected = jph(pfo_tmp, sj + '_DWI_slope_corrected.nii.gz')
         pfi_dwi_eddy_corrected = jph(pfo_tmp, sj + '_DWI_eddy.nii.gz')
         cmd = 'cp {0} {1} '.format(pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected)
         print_and_run(cmd)
         del pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected, cmd
+    else:
+        pass
 
     if controller['fsl tensor fitting']:
         print('- fsl tensor fitting {}'.format(sj))
@@ -319,10 +321,11 @@ def process_DWI_per_subject(sj, controller):
         assert check_path_validity(pfi_s0_bfc)
         assert os.path.exists(pfi_roi_mask)
         pfi_lesion_mask = jph(pfo_mask, sj + '_S0_lesion_mask.nii.gz')
+        percentile = sj_parameters['S0_window_percentile']
         percentile_lesion_mask_extractor(im_input_path=pfi_s0_bfc,
                                          im_output_path=pfi_lesion_mask,
                                          im_mask_foreground_path=pfi_roi_mask,
-                                         percentiles=(10, 98),  # TODO - take from parameters
+                                         percentiles=percentile,
                                          safety_on=False)
         del pfi_s0_bfc, pfi_roi_mask, pfi_lesion_mask
 
@@ -369,7 +372,7 @@ if __name__ == '__main__':
 
     controller_DWI = {'squeeze'               : False,
                       'orient to standard'    : False,
-                      'create roi masks'    : True,
+                      'create roi masks'      : True,
                       'adjust mask'           : False,
                       'cut mask dwi'          : False,
                       'cut mask S0'           : False,
@@ -378,8 +381,8 @@ if __name__ == '__main__':
                       'fsl tensor fitting'    : False,
                       'adjust dti-based mod'  : False,
                       'bfc S0'                : False,
-                      'create lesion mask'    : False,
-                      'create reg masks'      : False,
+                      'create lesion mask'    : True,
+                      'create reg masks'      : True,
                       'save results'          : False}
 
     lsm = ListSubjectsManager()

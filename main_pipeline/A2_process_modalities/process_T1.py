@@ -175,7 +175,7 @@ def process_T1_per_subject(sj, controller):
         assert check_path_validity(pfi_3d_bias_field_corrected)
         assert check_path_validity(pfi_roi_mask)
         pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
-        percentile = sj_parameters['intensities_percentile']
+        percentile = sj_parameters['T1_window_percentile']
         percentile_lesion_mask_extractor(im_input_path=pfi_3d_bias_field_corrected,
                                          im_output_path=pfi_lesion_mask,
                                          im_mask_foreground_path=pfi_roi_mask,
