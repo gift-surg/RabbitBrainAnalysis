@@ -85,63 +85,85 @@ def process_DWI_per_subject(sj, controller):
         pfi_dwi_std = jph(pfo_tmp, sj + '_DWI_to_std.nii.gz')
         cmd0 = 'fslreorient2std {0} {1}'.format(pfi_dwi_original, pfi_dwi_std)
         print_and_run(cmd0)
-        # set_translational_part_to_zero(pfi_dwi_std, pfi_dwi_std)
+        set_translational_part_to_zero(pfi_dwi_std, pfi_dwi_std)
         # S0
         pfi_S0_original = jph(pfo_input_sj_DWI, sj + '_DWI_S0.nii.gz')
         assert check_path_validity(pfi_S0_original)
         pfi_S0_std = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
         cmd1 = 'fslreorient2std {0} {1}'.format(pfi_S0_original, pfi_S0_std)
         print_and_run(cmd1)
-        # set_translational_part_to_zero(pfi_S0_std, pfi_S0_std)
+        set_translational_part_to_zero(pfi_S0_std, pfi_S0_std)
 
         if sj_parameters['DWI_squashed']:
             scale_y_value_and_trim(pfi_dwi_std, pfi_dwi_std, squeeze_factor=2.218074656188605)
             scale_y_value_and_trim(pfi_S0_std, pfi_S0_std, squeeze_factor=2.218074656188605)
         del pfi_dwi_original, pfi_dwi_std, cmd0, pfi_S0_original, pfi_S0_std, cmd1
 
-    if controller['register roi masks']:
-        print('- register roi masks {}'.format(sj))
-        pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
-        if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
-            pfi_sj_ref_coord_system = jph(root_internal_template, '1305', 'mod', '1305_T1.nii.gz')
-        elif sj_parameters['category'] == 'in_vivo':
-            pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
-        else:
-            raise IOError('ex_vivo, in_vivo or op_skull only.')
+    if controller['create roi masks']:
 
-        assert check_path_validity(pfi_S0)
-        assert check_path_validity(pfi_sj_ref_coord_system)
-        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '_S0.txt')
-        pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '_S0.nii.gz')
-        cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} ; '.format(
-            pfi_S0,
-            pfi_sj_ref_coord_system,
-            pfi_affine_transformation_ref_on_subject,
-            pfi_3d_warped_ref_on_subject)
-        print_and_run(cmd)
-        del pfi_S0, pfi_sj_ref_coord_system, pfi_affine_transformation_ref_on_subject, pfi_3d_warped_ref_on_subject, cmd
+        # if the roi mask of the T1 exists resample that one
+        pfi_sj_T1_roi_mask = jph(pfo_mask, '{}_T1_roi_mask'.format(sj))
 
-    if controller['propagate roi masks']:
-        print('- propagate roi masks {}'.format(sj))
-        pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
-        if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
-            pfi_reference_roi_mask = jph(root_internal_template, '1305', 'masks', '1305_roi_mask.nii.gz')
-        elif sj_parameters['category'] == 'in_vivo':
-            pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_roi_mask.nii.gz')
+        if os.path.exists(pfi_sj_T1_roi_mask):
+            print('- Create roi masks {}'.format(sj))
+            pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
+            pfi_affine_identity = jph(pfo_tmp, 'id.txt')
+            np.savetxt(pfi_affine_identity, np.eye(4))
+            pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
+            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+                pfi_S0,
+                pfi_sj_T1_roi_mask,
+                pfi_affine_identity,
+                pfi_roi_mask)
+            print_and_run(cmd)
+            del pfi_S0, pfi_affine_identity, pfi_roi_mask, pfi_roi_mask, cmd
+
+        # if the T1 roi mask does not exists than create a new one from scratch.
+        # Ideal pipeline uses the T1_roi_mask. This second option is an extra to not brake tests or partial pipelines.
         else:
-            raise IOError('ex_vivo, in_vivo or op_skull only.')
-        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '_S0.txt')
-        assert check_path_validity(pfi_S0)
-        assert check_path_validity(pfi_reference_roi_mask)
-        assert check_path_validity(pfi_affine_transformation_ref_on_subject)
-        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
-        cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-            pfi_S0,
-            pfi_reference_roi_mask,
-            pfi_affine_transformation_ref_on_subject,
-            pfi_roi_mask)
-        print_and_run(cmd)
-        del pfi_S0, pfi_reference_roi_mask, pfi_affine_transformation_ref_on_subject, pfi_roi_mask, cmd
+            print('- Register roi masks {}'.format(sj))
+            pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
+            if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
+                pfi_sj_ref_coord_system = jph(root_internal_template, '1305', 'mod', '1305_T1.nii.gz')
+            elif sj_parameters['category'] == 'in_vivo':
+                pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
+            else:
+                raise IOError('ex_vivo, in_vivo or op_skull only.')
+
+            assert check_path_validity(pfi_S0)
+            assert check_path_validity(pfi_sj_ref_coord_system)
+            pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '_S0.txt')
+            pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '_S0.nii.gz')
+            cmd0 = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} -rigOnly; '.format(
+                pfi_S0,
+                pfi_sj_ref_coord_system,
+                pfi_affine_transformation_ref_on_subject,
+                pfi_3d_warped_ref_on_subject)
+            print_and_run(cmd0)
+
+            print('- propagate roi masks {}'.format(sj))
+            pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
+            if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
+                pfi_reference_roi_mask = jph(root_internal_template, '1305', 'masks', '1305_roi_mask.nii.gz')
+            elif sj_parameters['category'] == 'in_vivo':
+                pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_roi_mask.nii.gz')
+            else:
+                raise IOError('ex_vivo, in_vivo or op_skull only.')
+            pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '_S0.txt')
+            assert check_path_validity(pfi_S0)
+            assert check_path_validity(pfi_reference_roi_mask)
+            assert check_path_validity(pfi_affine_transformation_ref_on_subject)
+            pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
+            cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+                pfi_S0,
+                pfi_reference_roi_mask,
+                pfi_affine_transformation_ref_on_subject,
+                pfi_roi_mask)
+            print_and_run(cmd1)
+            del pfi_S0, pfi_sj_ref_coord_system, pfi_3d_warped_ref_on_subject, pfi_reference_roi_mask, \
+                pfi_affine_transformation_ref_on_subject, pfi_roi_mask, cmd0, cmd1
+
+        del pfi_sj_T1_roi_mask
 
     if controller['adjust mask']:
         print('- adjust mask {}'.format(sj))
@@ -300,7 +322,7 @@ def process_DWI_per_subject(sj, controller):
         percentile_lesion_mask_extractor(im_input_path=pfi_s0_bfc,
                                          im_output_path=pfi_lesion_mask,
                                          im_mask_foreground_path=pfi_roi_mask,
-                                         percentiles=(10, 98),  # TODO
+                                         percentiles=(10, 98),  # TODO - take from parameters
                                          safety_on=False)
         del pfi_s0_bfc, pfi_roi_mask, pfi_lesion_mask
 
@@ -346,9 +368,8 @@ if __name__ == '__main__':
     print('process DWI, local run. ')
 
     controller_DWI = {'squeeze'               : False,
-                      'orient to standard'    : True,
-                      'register roi masks'    : False,
-                      'propagate roi masks'   : False,
+                      'orient to standard'    : False,
+                      'create roi masks'    : True,
                       'adjust mask'           : False,
                       'cut mask dwi'          : False,
                       'cut mask S0'           : False,
@@ -356,7 +377,7 @@ if __name__ == '__main__':
                       'eddy current'          : False,
                       'fsl tensor fitting'    : False,
                       'adjust dti-based mod'  : False,
-                      'bfc S0'                : True,
+                      'bfc S0'                : False,
                       'create lesion mask'    : False,
                       'create reg masks'      : False,
                       'save results'          : False}
@@ -369,7 +390,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['3103']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['1201']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

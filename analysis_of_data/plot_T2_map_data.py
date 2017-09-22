@@ -8,6 +8,7 @@ import pickle
 from analysis_of_data.collect_T2_maps_data import subjects_ACS, subjects_template
 from labels_manager.tools.aux_methods.utils import eliminates_consecutive_duplicates
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
+from labels_manager.main import LabelsManager as LM
 
 
 def plot_boxplot_from_data_frame(data_frame, plot_by_first_index=False, annotate=True, title='', fig_id=0,
@@ -125,3 +126,5 @@ if __name__ == '__main__':
     plot_boxplot_from_data_frame(df_T2_maps_upsampled_bfc, title='T2 maps upsampled bfc', fig_id=3,
                                  pfi_save=jph(pfo_results, 'T2_maps_upsampled_bfc.png'))
 
+    lm = LM()
+    lm.measure.volume()

@@ -1,6 +1,7 @@
 import os
 from os.path import join as jph
 import pickle
+from collections import OrderedDict
 
 """
 To create load and modify paramters manager and related utils functions.
@@ -13,73 +14,56 @@ class SubjectParameters(object):
     Simple class container to provide the parameters required to manipulate each element independently.
     """
     def __init__(self, subject_name, study='', category='', angles=(0, 0, 0), translation=(0, 0, 0), threshold=300,
-                 intensities_percentile=(0, 100), erosion_roi_mask=1, DWI_squashed=False,
+                 T1_window_percentile=(5, 95), S0_window_percentile=(1, 99),
+                 T1_mask_dilation=0, S0_mask_dilation=0,
+                 erosion_roi_mask=1, DWI_squashed=False,
                  bias_field_parameters=(0.001, (50, 50, 50, 50), 0.15, 0.01, 200, (4, 4, 4), 3),
-                 mask_dilation=0, MSME_acquisition='high_res', in_template=False):
+                 MSME_acquisition='high_res', in_template=False):
 
         self.subject_name = subject_name
 
-        self.study = study
-        self.category = category
-        self.leading_modality = 'T1'
-        self.angles = angles
-        self.translation = translation
-        self.threshold = threshold
-        self.intensities_percentile = intensities_percentile
-        self.erosion_roi_mask = erosion_roi_mask
-        self.DWI_squashed = DWI_squashed
+        self.study                 = study
+        self.category              = category
+        self.leading_modality      = 'T1'
+        self.angles                = angles
+        self.translation           = translation
+        self.threshold             = threshold
+        self.T1_window_percentile  = T1_window_percentile
+        self.S0_window_percentile  = S0_window_percentile
+        self.T1_mask_dilation      = T1_mask_dilation
+        self.S0_mask_dilation      = S0_mask_dilation
+        self.erosion_roi_mask      = erosion_roi_mask
+        self.DWI_squashed          = DWI_squashed
         self.bias_field_parameters = bias_field_parameters
-        self.mask_dilation = mask_dilation
-        self.MSME_acquisition = MSME_acquisition
-        self.comment = ''
-        self.in_template = in_template
+        self.MSME_acquisition      = MSME_acquisition
+        self.comment               = ''
+        self.in_template           = in_template
 
     def get_as_dict(self):
-        return {'study'                  : self.study,
-                'category'               : self.category,
-                'leading modality'       : self.leading_modality,
-                'angles'                 : self.angles,
-                'translation'            : self.translation,
-                'threshold'              : self.threshold,
-                'intensities_percentile' : self.intensities_percentile,
-                'erosion_roi_mask'       : self.erosion_roi_mask,
-                'DWI_squashed'           : self.DWI_squashed,
-                'bias_field_parameters'  : self.bias_field_parameters,
-                'mask_dilation'          : self.mask_dilation,
-                'MSME_acquisition'       : self.MSME_acquisition,
-                'comment'                : self.comment,
-                'in_template'            : self.in_template}
+        return OrderedDict({'study'                  : self.study,
+                            'category'               : self.category,
+                            'leading_modality'       : self.leading_modality,
+                            'angles'                 : self.angles,
+                            'translation'            : self.translation,
+                            'threshold'              : self.threshold,
+                            'T1_window_percentile'   : self.T1_window_percentile,
+                            'S0_window_percentile'   : self.S0_window_percentile,
+                            'T1_mask_dilation'       : self.T1_mask_dilation,
+                            'S0_mask_dilation'       : self.S0_mask_dilation,
+                            'erosion_roi_mask'       : self.erosion_roi_mask,
+                            'DWI_squashed'           : self.DWI_squashed,
+                            'bias_field_parameters'  : self.bias_field_parameters,
+                            'MSME_acquisition'       : self.MSME_acquisition,
+                            'comment'                : self.comment,
+                            'in_template'            : self.in_template})
 
     def save_as_txt(self, pfo_where_to_save):
         pfi_txt_file = jph(pfo_where_to_save, self.subject_name + '.txt')
-        text_to_save = '''
-        study                  : {0} 
-        category               : {1} 
-        leading modality       : {13}
-        angles                 : {2} 
-        translation            : {3} 
-        threshold              : {4} 
-        intensities_percentile : {5} 
-        erosion_roi_mask       : {6} 
-        DWI_squashed           : {7} 
-        bias_field_parameters  : {8} 
-        mask_dilation          : {9} 
-        MSME_acquisition       : {10}
-        comment                : {11}
-        in_template            : {12}'''.format(self.study,
-                                                self.category,
-                                                self.angles,
-                                                self.translation,
-                                                self.threshold,
-                                                self.intensities_percentile,
-                                                self.erosion_roi_mask,
-                                                self.DWI_squashed,
-                                                self.bias_field_parameters,
-                                                self.mask_dilation,
-                                                self.MSME_acquisition,
-                                                self.comment,
-                                                self.in_template,
-                                                self.leading_modality)
+        dict_param = self.get_as_dict()
+        text_to_save = ''
+
+        for k in dict_param.keys():
+            text_to_save += '{0:<30} : {1}\n'.format(k, dict_param[k])
 
         with open(pfi_txt_file, "w") as text_file:
             text_file.write(text_to_save)

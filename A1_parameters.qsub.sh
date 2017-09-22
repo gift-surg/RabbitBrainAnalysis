@@ -2,12 +2,12 @@ date
 hostname
 
 #$ -l h_rt=12:00:00
-#$ -l tmem=20G
-#$ -l h_vmem=20G
-#$ -N "ImgAll"
+#$ -l tmem=25G
+#$ -l h_vmem=25G
+#$ -N "Img1305"
 #$ -S /bin/bash
 #$ -cwd
-#$ -t 1-14
+#$ -t 3
 #$ -e ../z_output/
 #$ -o ../z_output/
 

@@ -170,12 +170,12 @@ if __name__ == '__main__':
     lsm = ListSubjectsManager()
 
     lsm.execute_PTB_ex_skull  = False
-    lsm.execute_PTB_ex_vivo   = True
+    lsm.execute_PTB_ex_vivo   = False
     lsm.execute_PTB_in_vivo   = False
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    # lsm.input_subjects = ['1305']
+    lsm.input_subjects = ['1203']
     # lsm.input_subjects = ['3103']
 
     lsm.update_ls()

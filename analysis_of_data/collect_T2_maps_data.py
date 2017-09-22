@@ -5,10 +5,9 @@ import nibabel as nib
 import os
 import pickle
 
-from tools.definitions import root_utils
 from labels_manager.agents.measurer import LabelsManagerMeasure
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
-from tools.auxiliary.parse_excel_tables_and_descriptors import parse_multi_label_descriptor_in_a_dict
+from labels_manager.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as CDM
 from tools.auxiliary.utils import set_new_data_path
 
 ''' INPUT structures '''
@@ -23,8 +22,9 @@ labels_per_group = {'WM'  : ['Midbrain', 'Globus Pallidus', 'Putamen', 'Thalamus
           'GM'  : ['Frontal', 'Occipital', 'Parietal'],
           'CSF' : ['Ventricular system', 'Periventricular area']}   # PBS for the ex - vivo rather than CSF
 
-ld_dict = parse_multi_label_descriptor_in_a_dict(jph(root_utils, 'multi_label_descriptor.txt'))
-
+cdm = CDM(jph('/Users/sebastiano/Dropbox/RabbitEOP-MRI/study/A_internal_template/LabelsDescriptors',
+              'labels_descriptor_v8.txt'))
+ld_dict = cdm.get_multi_label_dict()
 
 if __name__ == '__main__':
 

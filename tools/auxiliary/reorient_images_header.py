@@ -15,7 +15,7 @@ def adjust_header_from_transformations(pfi_input, pfi_output, theta, trasl):
     im_input = nib.load(pfi_input)
 
     # generate new affine transformation (from bicommissural to histological)
-    new_transf = rot_x.dot(im_input.get_affine())
+    new_transf = rot_x.dot(im_input.affine)
 
     # create output image on the input
     if im_input.header['sizeof_hdr'] == 348:
@@ -28,12 +28,12 @@ def adjust_header_from_transformations(pfi_input, pfi_output, theta, trasl):
 
     # print intermediate results
     print 'Affine input image: \n'
-    print im_input.get_affine()
+    print im_input.affine
     print 'Affine after transformation: \n'
-    print new_image.get_affine()
+    print new_image.affine
 
     # sanity check
-    np.testing.assert_almost_equal(np.linalg.det(new_transf), np.linalg.det(im_input.get_affine()))
+    np.testing.assert_almost_equal(np.linalg.det(new_transf), np.linalg.det(im_input.affine))
 
     # save output image
     nib.save(new_image, pfi_output)
@@ -45,25 +45,25 @@ def set_translational_part_to_zero(pfi_input, pfi_output):
     im_input = nib.load(pfi_input)
 
     # generate new affine transformation (from bicommissural to histological)
-    new_transf = np.copy(im_input.get_affine())
+    new_transf = np.copy(im_input.affine)
     new_transf[:, 3] = np.array([0, 0, 0, 1])
 
     # create output image on the input
     if im_input.header['sizeof_hdr'] == 348:
-        new_image = nib.Nifti1Image(im_input.get_data(), new_transf, header=im_input.get_header())
+        new_image = nib.Nifti1Image(im_input.get_data(), new_transf, header=im_input.header)
         # time.sleep(5)  # very bad solution... Don't know how to make nibabel finishing to save an image on a file.
     # if nifty2
     elif im_input.header['sizeof_hdr'] == 540:
-        new_image = nib.Nifti2Image(im_input.get_data(), new_transf, header=im_input.get_header())
+        new_image = nib.Nifti2Image(im_input.get_data(), new_transf, header=im_input.header)
         # time.sleep(5)  # very bad solution... Don't know how to make nibabel finishing to save an image on a file.
     else:
         raise IOError
 
     # print intermediate results
     print 'Affine input image: \n'
-    print im_input.get_affine()
+    print im_input.affine
     print 'Affine after transformation: \n'
-    print new_image.get_affine()
+    print new_image.affine
 
     # save output image
     nib.save(new_image, pfi_output)
