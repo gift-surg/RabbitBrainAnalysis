@@ -9,7 +9,7 @@ from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from spot_a_rabbit.spot import SpotDS
 
 
-def spot_a_list_of_rabbits(subjects_list, controller_fuser, controller_propagator):
+def spot_a_list_of_rabbits(subjects_list, controller_propagator, controller_fuser):
 
     for sj_target in subjects_list:
 
@@ -37,6 +37,8 @@ def spot_a_list_of_rabbits(subjects_list, controller_fuser, controller_propagato
 
         spot_sj.controller_fuser = controller_fuser
 
+        spot_sj.target_list_suffix_modalities = [['T1'], ['S0', 'V1', 'MD', 'FA', 'T2map', 'MSME_up'], ['MSME']]
+
         spot_sj.bfc_corrector_cmd = bfc_corrector_cmd
         msg = 'bias field corrector command {} does NOT exist'.format(spot_sj.bfc_corrector_cmd)
         assert os.path.exists(spot_sj.bfc_corrector_cmd), msg
@@ -53,9 +55,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_ex_vivo  = False
     lsm.execute_PTB_in_vivo  = False
     lsm.execute_PTB_op_skull = False
-    lsm.execute_ACS_ex_vivo  = True
+    lsm.execute_ACS_ex_vivo  = False
 
-    # lsm.input_subjects = ['3103', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['2702', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

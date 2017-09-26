@@ -28,28 +28,33 @@ def main_runner(subj_list):
 
     # Set steps
 
-    steps = {'step_A1'         : True,
-             'step_A2_T1'      : True,
-             'step_A2_DWI'     : True,
-             'step_A2_MSME'    : True,
-             'step_A2_T2maps'  : True,
-             'step_A2_g_ratio' : True,
-             'step_A3'         : True,
-             'step_A4'         : False,
-             'step_A5'         : False}
+    steps = {'reset_parameters' : False,  # if this is true it does not do anything else.
+             'step_A1'          : True,
+             'step_A2_T1'       : True,
+             'step_A2_DWI'      : True,
+             'step_A2_MSME'     : True,
+             'step_A2_T2maps'   : True,
+             'step_A2_g_ratio'  : True,
+             'step_A3'          : True,
+             'step_A4'          : False,
+             'step_A5'          : False}
 
     print('STEPS')
     for k in sorted(steps.keys()):
         print('{0:<20} : {1}'.format(k, steps[k]))
 
-    ''' Re-set parameter files by default '''
-    print('\nStep 0 : reset parameters and examine then\n')
-    reset_parameters_files(pfo_where_to_save=pfo_subjects_parameters)
-    sjs = get_list_names_subjects_in_template(pfo_subjects_parameters)
-    print('Subjects summary: ')
-    check_subjects_situation(pfo_subjects_parameters)
-    print('\nTemplate:')
-    print sjs
+    ''' Re-set parameter files '''
+    if steps['reset_parameters']:
+        print('\nStep 0 : reset parameters and examine then\n')
+        reset_parameters_files(pfo_where_to_save=pfo_subjects_parameters)
+        print('Subjects summary: ')
+        check_subjects_situation(pfo_subjects_parameters)
+        print('\nTemplate:')
+        sjs = get_list_names_subjects_in_template(pfo_subjects_parameters)
+        print(sjs)
+        # NOTE: does not go further
+        print('Parameter re-computed. The pipeline ends here')
+        return
 
     ''' Step A1 - convert, clean and create aliases '''
     if steps['step_A1']:
@@ -165,7 +170,7 @@ def main_runner(subj_list):
                              'Inter_mod_space_propagation'    : True,
                              'Save_results'                   : True}
 
-        spot_a_list_of_rabbits(subj_list, controller_fuser, controller_propagator)
+        spot_a_list_of_rabbits(subj_list, controller_propagator, controller_fuser)
 
     ''' Step A4 - Data collection '''
     if steps['step_A4']:
@@ -188,9 +193,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_ex_vivo   = False
     lsm.execute_PTB_in_vivo   = False
     lsm.execute_PTB_op_skull  = False
-    lsm.execute_ACS_ex_vivo   = False
+    lsm.execute_ACS_ex_vivo   = True
 
-    lsm.input_subjects = ['1203']
+    # lsm.input_subjects = ['1201']
     # lsm.input_subjects = ['3103']
 
     lsm.update_ls()

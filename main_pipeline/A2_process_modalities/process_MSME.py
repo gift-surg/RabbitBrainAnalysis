@@ -359,11 +359,11 @@ def process_MSME_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process MSME, local run. ')
 
-    controller_MSME = {'squeeze'                       : False,
-                       'orient to standard'            : False,
-                       'extract first timepoint'       : False,
-                       'register tp0 to S0'            : False,
-                       'register msme to S0'           : False,
+    controller_MSME = {'squeeze'                       : True,
+                       'orient to standard'            : True,
+                       'extract first timepoint'       : True,
+                       'register tp0 to S0'            : True,
+                       'register msme to S0'           : True,
                        'get mask for original msme'    : True,
                        'bfc'                           : False,
                        'bfc up'                        : False,
@@ -379,7 +379,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['3405']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['1201']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

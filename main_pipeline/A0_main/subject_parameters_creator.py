@@ -40,9 +40,10 @@ def reset_parameters_files(pfo_where_to_save):
     bfp_slow = [0.001, (50, 50, 50, 50), 0.15, 0.01, 200, (4, 4, 4), 3]
     # bfp_fast = [0.01, (50, 40, 30, 20), 0.15, 0.01, 200, (4, 4, 4), 3]
 
-    # eliminate and re-create the folder where to save the data:
-    cmd = 'rm -r {0}; mkdir {0}'.format(pfo_where_to_save)
-    os.system(cmd)
+    # eliminate if exists and re-create the folder where to save the data:
+    if os.path.exists(pfo_where_to_save):
+        os.system('rm -r {0}; mkdir {0}'.format(pfo_where_to_save))
+    os.system('mkdir {0}'.format(pfo_where_to_save))
 
     # all the subjects
 
@@ -772,7 +773,7 @@ def reset_parameters_files(pfo_where_to_save):
 
     ''' ACS ex-vivo'''
 
-    sp = SubjectParameters('3103')
+    sp = SubjectParameters('13103')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, np.pi / 20, 0]
@@ -792,7 +793,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('3108')
+    sp = SubjectParameters('13108')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, np.pi / 20, 0]
@@ -812,7 +813,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('3301')
+    sp = SubjectParameters('13301')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, np.pi / 20, 0]
@@ -832,7 +833,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('3307')
+    sp = SubjectParameters('13307')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, np.pi / 20, 0]
@@ -852,7 +853,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('3401')
+    sp = SubjectParameters('13401')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, 0, 0]
@@ -872,7 +873,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('3403')
+    sp = SubjectParameters('13403')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, np.pi / 6, 0]
@@ -892,7 +893,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('3404')
+    sp = SubjectParameters('13404')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, np.pi / 25, 0]
@@ -912,7 +913,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('3405')
+    sp = SubjectParameters('13405')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, np.pi / 25, 0]
@@ -932,7 +933,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('3501')
+    sp = SubjectParameters('13501')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, np.pi / 25, 0]
@@ -952,7 +953,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('3505')
+    sp = SubjectParameters('13505')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, np.pi / 4, 0]
@@ -972,7 +973,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('3507')
+    sp = SubjectParameters('13507')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, np.pi / 6, 0]
@@ -992,7 +993,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('3602')
+    sp = SubjectParameters('13602')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, np.pi / 8, 0]
@@ -1012,7 +1013,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('3604')
+    sp = SubjectParameters('13604')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, np.pi / 6, 0]
@@ -1032,7 +1033,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('3606')
+    sp = SubjectParameters('13606')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo'
     sp.angles                 = [0, np.pi / 6, 0]
