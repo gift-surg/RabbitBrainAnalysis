@@ -1,7 +1,6 @@
 from os.path import join as jph
 import cPickle as Pickle
 
-
 from tools.definitions import pfo_subjects_parameters, pfi_labels_descriptor, root_study_rabbits
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A4_data_collection.report_generator import ReportGenerator
