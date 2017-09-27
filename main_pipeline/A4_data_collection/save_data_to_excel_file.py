@@ -22,10 +22,10 @@ def save_data_into_excel_file_per_subject(sj):
         pfi_record = jph(pfo_records, sj + '_record.npy')
         assert os.path.exists(pfi_record)
         # ---------
-        store_a_record_in_excel_table(pfi_record, pfi_excel_table_all_data, sj, group)
+        store_a_record_in_excel_table(pfi_record, pfi_excel_table_all_data, sj, study)
         # ---------
         if sj in get_list_names_subjects_in_template(pfo_subjects_parameters):
-            pfi_record_template = jph(root_study_rabbits, 'A_data', group, category, sj, 'records_template',
+            pfi_record_template = jph(root_study_rabbits, 'A_data', study, category, sj, 'records_template',
                                       sj + '_record.npy')
             if os.path.exists(pfi_record_template):
                 store_a_record_in_excel_table(pfi_record_template, pfi_excel_table_all_data, sj, 'Template')
