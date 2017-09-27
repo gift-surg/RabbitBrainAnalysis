@@ -10,7 +10,7 @@ from labels_manager.main import LabelsManagerMeasure as LMM
 from tools.definitions import pfo_subjects_parameters, pfi_labels_descriptor
 
 
-def get_rabbit_record(list_pfi_anatomies,
+def get_rabbit_report(list_pfi_anatomies,
                       list_pfi_segmentations,
                       indexes,
                       subject_name,
@@ -29,8 +29,8 @@ def get_rabbit_record(list_pfi_anatomies,
     :param tot_volume_prior: if there is a prior on the total volume.
     (this parameter should be created from the ICV estimator and loaded from a dataset in subsequent steps).
     :param verbose:
-    :return: rabbit record
-    A rabbit record is a dictionary of the form
+    :return: rabbit report
+    A rabbit report is a dictionary of the form
     {'Subject info': se_subject_info, 'Measurements' : measurements}
     where se_subject_info is a pandas Series containing the data parsed from the info files
     in the excel table and measurements is a pandas dataframe with the relevant information.
@@ -82,13 +82,15 @@ def get_rabbit_record(list_pfi_anatomies,
 
         measurements.update({ind : df_vol})
 
+    # TODO combine measurement dictionary in a single dataframe
+
     return {'Subject info': se_subject_info, 'Measurements' : measurements, 'labels' : multi_label_dict}
 
 
-def save_rabbit_record(rabbit_record, pfo_root_subject, join_measurements=True, verbose=1):
+def save_rabbit_report(rabbit_rport, pfo_root_subject, join_measurements=True, verbose=1):
     """
     Save by default in .csv in .pickle and in .txt for human readable.
-    :param rabbit_record:
+    :param rabbit_rport:
     :param pfo_output:
     :param join_measurements: join measurements in a single dataframe. can be False for debug purposes to see
     what is going on in each individual region.
@@ -96,23 +98,23 @@ def save_rabbit_record(rabbit_record, pfo_root_subject, join_measurements=True, 
     """
 
     # -- Generate output folder
-    pfo_output_record = jph(pfo_root_subject, 'records')
-    os.system('mkdir -p {}'.format(pfo_output_record))
+    pfo_output_report = jph(pfo_root_subject, 'report')
+    os.system('mkdir -p {}'.format(pfo_output_report))
 
     # -- get output filename
-    id_number = rabbit_record['Subject info']['ID Number']
-    fin_output = '{}_record'.format(id_number)
+    id_number = rabbit_rport['Subject info']['ID Number']
+    fin_output = '{}_report'.format(id_number)
 
     # -- save in .pickle -
-    with open(jph(pfo_output_record, '{}.pickle'.format(fin_output)), 'wb') as handle:
-        pickle.dump(rabbit_record, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    with open(jph(pfo_output_report, '{}.pickle'.format(fin_output)), 'wb') as handle:
+        pickle.dump(rabbit_rport, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     if not join_measurements:
         # -- save in csv
-        rabbit_record['Subject info'].to_csv(jph(pfo_output_record, 'subject_info_{}.csv'.format(fin_output)))
-        for k in rabbit_record['Measurements'].keys():
-            if rabbit_record['Measurements'][k] is not None:
-                rabbit_record['Measurements'][k].to_csv(jph(pfo_output_record, '{0}_{1}.csv'.format(fin_output, k)))
+        rabbit_rport['Subject info'].to_csv(jph(pfo_output_report, 'subject_info_{}.csv'.format(fin_output)))
+        for k in rabbit_rport['Measurements'].keys():
+            if rabbit_rport['Measurements'][k] is not None:
+                rabbit_rport['Measurements'][k].to_csv(jph(pfo_output_report, '{0}_{1}.csv'.format(fin_output, k)))
 
     else:
 
@@ -126,36 +128,36 @@ if __name__ == '__main__':
     root_study_rabbits = jph(root_main_pantopolium, 'rabbits')
 
     pfi_info_excel_table = jph(root_study_rabbits, 'A_data', 'DataSummary.xlsx')
-    subject_name = '3103'
+    subject_name = '1201'
 
-    pfo_data_sj       = jph(root_study_rabbits, 'A_data', 'ACS', 'ex_vivo', subject_name)
+    pfo_data_sj       = jph(root_study_rabbits, 'A_data', 'PTB', 'ex_vivo', subject_name)
 
     pfi_T1            = jph(pfo_data_sj, 'mod', '{}_T1.nii.gz'.format(subject_name))
     pfi_g_ratio       = jph(pfo_data_sj, 'mod', '{}_g_ratio.nii.gz'.format(subject_name))
     pfi_FA            = jph(pfo_data_sj, 'mod', '{}_FA.nii.gz'.format(subject_name))
     pfi_MD            = jph(pfo_data_sj, 'mod', '{}_MD.nii.gz'.format(subject_name))
-    pfi_T2map_up      = jph(pfo_data_sj, 'mod', '{}_T2map_up.nii.gz'.format(subject_name))
+    pfi_T2map         = jph(pfo_data_sj, 'mod', '{}_T2map_up.nii.gz'.format(subject_name))
 
-    suffix_segmentaion = '_MV_s'
+    suffix_segmentaion = '_IN_TEMPLATE'
     pfo_automatic_segm = jph(pfo_data_sj, 'segm', 'automatic')
 
     pfi_T1_segm       = jph(pfo_automatic_segm, '{0}_T1_segm{1}.nii.gz'.format(subject_name, suffix_segmentaion))
     pfi_g_ratio_segm  = jph(pfo_automatic_segm, '{0}_S0_segm{1}.nii.gz'.format(subject_name, suffix_segmentaion))
     pfi_FA_segm       = pfi_g_ratio_segm
     pfi_MD_segm       = pfi_g_ratio_segm
-    pfi_T2map_up_segm = pfi_g_ratio_segm
+    pfi_T2map_segm    = pfi_g_ratio_segm
 
-    list_pfi_anatomies = [pfi_T1, pfi_g_ratio, pfi_FA, pfi_MD, pfi_T2map_up]
-    list_pfi_segmentations = [pfi_T1_segm, pfi_g_ratio_segm, pfi_FA_segm, pfi_MD_segm, pfi_T2map_up_segm]
-    indexes = ['T1', 'g_ratio', 'FA', 'MD', 'T2map']
+    list_pfi_anatomies = [pfi_T1, pfi_g_ratio, pfi_FA, pfi_MD, pfi_T2map]
+    list_pfi_segmentations = [pfi_T1_segm, pfi_g_ratio_segm, pfi_FA_segm, pfi_MD_segm, pfi_T2map_segm]
+    labels = ['T1', 'g_ratio', 'FA', 'MD', 'T2map']
 
     print list_pfi_anatomies
     print list_pfi_segmentations
-    print indexes
+    print labels
 
-    rec = get_rabbit_record(list_pfi_anatomies=list_pfi_anatomies,
+    rep = get_rabbit_report(list_pfi_anatomies=list_pfi_anatomies,
                             list_pfi_segmentations=list_pfi_segmentations,
-                            indexes=indexes,
+                            indexes=labels,
                             subject_name=subject_name,
                             pfi_label_descriptor=pfi_labels_descriptor,
                             pfi_info_excel_table=pfi_info_excel_table,
@@ -168,4 +170,4 @@ if __name__ == '__main__':
     # with open('/Users/sebastiano/Desktop/tmp.pickle', 'rb') as handle:
     #     rec = pickle.load(handle)
 
-    save_rabbit_record(rec, pfo_data_sj, join_measurements=False)
+    save_rabbit_report(rep, pfo_data_sj, join_measurements=False)

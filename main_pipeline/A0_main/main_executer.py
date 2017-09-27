@@ -18,7 +18,7 @@ from main_pipeline.A2_process_modalities.process_g_ratio import process_g_ratio_
 
 from main_pipeline.A3_register_template_over_all_subjects.spot_the_rabbits import spot_a_list_of_rabbits
 
-from main_pipeline.A4_data_collection.collect_data_studies import compile_records_from_subject_list
+from main_pipeline.A4_data_collection.generate_report_studies import compile_report_from_subject_list
 from main_pipeline.U_utils.upate_shared_results import send_data_to_hannes_from_list
 
 
@@ -30,12 +30,12 @@ def main_runner(subj_list):
 
     steps = {'reset_parameters' : False,  # if this is true it does not do anything else.
              'step_A1'          : True,
-             'step_A2_T1'       : True,
-             'step_A2_DWI'      : True,
-             'step_A2_MSME'     : True,
-             'step_A2_T2maps'   : True,
-             'step_A2_g_ratio'  : True,
-             'step_A3'          : True,
+             'step_A2_T1'       : False,
+             'step_A2_DWI'      : False,
+             'step_A2_MSME'     : False,
+             'step_A2_T2maps'   : False,
+             'step_A2_g_ratio'  : False,
+             'step_A3'          : False,
              'step_A4'          : False,
              'step_A5'          : False}
 
@@ -80,21 +80,20 @@ def main_runner(subj_list):
     ''' Step A2 - DWI '''
     if steps['step_A2_DWI']:
         print('\nStep A2 DWI\n')
-        controller_DWI = {'squeeze'                : True,
-                            'orient to standard'   : True,
-                            'register roi masks'   : True,
-                            'propagate roi masks'  : True,
-                            'adjust mask'          : True,
-                            'cut mask dwi'         : True,
-                            'cut mask S0'          : True,
-                            'correct slope'        : True,
-                            'eddy current'         : True,
-                            'fsl tensor fitting'   : True,
-                            'adjust dti-based mod' : True,
-                            'bfc S0'               : True,
-                            'create lesion mask'   : True,
-                            'create reg masks'     : True,
-                            'save results'         : True}
+        controller_DWI = {'squeeze'              : True,
+                          'orient to standard'   : True,
+                          'create roi masks'     : True,
+                          'adjust mask'          : True,
+                          'cut mask dwi'         : True,
+                          'cut mask S0'          : True,
+                          'correct slope'        : True,
+                          'eddy current'         : True,
+                          'fsl tensor fitting'   : True,
+                          'adjust dti-based mod' : True,
+                          'bfc S0'               : True,
+                          'create lesion mask'   : True,
+                          'create reg masks'     : True,
+                          'save results'         : True}
 
         process_DWI_from_list(subj_list, controller_DWI)
 
@@ -156,7 +155,7 @@ def main_runner(subj_list):
                                   'Speed'                     : False}
 
         controller_fuser = {'Fuse': True,
-                             'Fusion methods'  : ['MV', 'STEPS', 'STAPLE'],  # 'MV', 'STAPLE',
+                             'Fusion_methods'  : ['MV', 'STEPS', 'STAPLE'],  # 'MV', 'STAPLE',
                              'STAPLE_params'   : OrderedDict([('pr_1', None)]),
                              'STEPS_params'    : OrderedDict([('pr_1', [3, 3, None]),
                                                               ('pr_2', [3, 3, 2.0]),
@@ -175,7 +174,7 @@ def main_runner(subj_list):
     ''' Step A4 - Data collection '''
     if steps['step_A4']:
         print('\nStep A4\n')
-        compile_records_from_subject_list(subj_list)
+        compile_report_from_subject_list(subj_list)
 
     if steps['step_A5']:
         send_data_to_hannes_from_list(subj_list, records_only=False)
@@ -193,9 +192,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_ex_vivo   = False
     lsm.execute_PTB_in_vivo   = False
     lsm.execute_PTB_op_skull  = False
-    lsm.execute_ACS_ex_vivo   = True
+    lsm.execute_ACS_ex_vivo   = False
 
-    # lsm.input_subjects = ['1201']
+    lsm.input_subjects = ['1201']
     # lsm.input_subjects = ['3103']
 
     lsm.update_ls()

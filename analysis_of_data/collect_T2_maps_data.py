@@ -13,7 +13,7 @@ from tools.auxiliary.utils import set_new_data_path
 ''' INPUT structures '''
 
 # subjects selection
-subjects_ACS = [3103, 3108, 3301, 3401, 3403, 3404, 3405, 3501, 3505, 3507, 3602, 3606]  #, 3604, 3606]
+subjects_ACS = [13103, 13108, 13301, 13401, 13403, 13404, 13405, 13501, 13505, 13507, 13602, 13606]  #, 3604, 3606]
 subjects_template = []  #[1201, 1203, 1305, 1404, 1505, 1507, 1510, 1702, 1805, 2002, 2502, 2503, 2608, 2702]
 subjects_in_vivo = []
 

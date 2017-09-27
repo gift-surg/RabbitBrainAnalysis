@@ -76,7 +76,7 @@ if __name__ == '__main__':
                               'Speed'                     : False}
 
     controller_fuser_ = {'Fuse'           : True,
-                         'fusion methods' : ['MV', 'STEPS', 'STAPLE'],  # 'MV', 'STAPLE',
+                         'Fusion_methods' : ['MV', 'STEPS', 'STAPLE'],  # 'MV', 'STAPLE',
                          'STAPLE_params'  : OrderedDict([('pr_1', None)]),
                          'STEPS_params'   : OrderedDict([('pr_1', [3, 3, None]),
                                                          ('pr_2', [3, 3, 2.0]),

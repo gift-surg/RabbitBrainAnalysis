@@ -51,11 +51,11 @@ def process_DWI_per_subject(sj, controller):
     pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
 
     if sj not in list_all_subjects(pfo_subjects_parameters):
-        raise IOError('Subject parameters not known')
+        raise IOError('Subject parameters not known. Subject {}'.format(sj))
     if not os.path.exists(pfo_input_sj_DWI):
-        raise IOError('Input folder DWI does not exist.')
+        raise IOError('Input folder DWI does not exist. Subject {}'.format(sj))
     if not os.path.exists(pfo_output_sj):
-        raise IOError('Output folder DWI does not exist.')
+        raise IOError('Output folder DWI does not exist. Subject {}'.format(sj))
 
     # -- Generate intermediate and output folders:
 
@@ -170,7 +170,7 @@ def process_DWI_per_subject(sj, controller):
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         assert check_path_validity(pfi_roi_mask)
         pfi_roi_mask_dil = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
-        dil_factor = sj_parameters['S0_maks_dilation']
+        dil_factor = sj_parameters['S0_mask_dilation']
         cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_roi_mask,
                                                   dil_factor,
                                                   pfi_roi_mask_dil)
