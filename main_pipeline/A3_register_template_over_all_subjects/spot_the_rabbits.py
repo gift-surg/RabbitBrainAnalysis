@@ -3,7 +3,8 @@ from os.path import join as jph
 import pickle
 from collections import OrderedDict
 
-from tools.definitions import root_study_rabbits, root_internal_template, pfo_subjects_parameters, bfc_corrector_cmd
+from tools.definitions import root_study_rabbits, root_internal_template, pfo_subjects_parameters, bfc_corrector_cmd, \
+    num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 
 from spot_a_rabbit.spot import SpotDS
@@ -42,6 +43,8 @@ def spot_a_list_of_rabbits(subjects_list, controller_propagator, controller_fuse
         spot_sj.bfc_corrector_cmd = bfc_corrector_cmd
         msg = 'bias field corrector command {} does NOT exist'.format(spot_sj.bfc_corrector_cmd)
         assert os.path.exists(spot_sj.bfc_corrector_cmd), msg
+
+        spot_sj.num_cores_run = num_cores_run
 
         spot_sj.propagate()
         spot_sj.fuse()

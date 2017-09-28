@@ -8,7 +8,7 @@ import pickle
 import numpy as np
 
 
-from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_internal_template
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_internal_template, num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
@@ -140,11 +140,12 @@ def process_DWI_per_subject(sj, controller):
             assert check_path_validity(pfi_sj_ref_coord_system)
             pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '_S0.txt')
             pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '_S0.nii.gz')
-            cmd0 = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} -rigOnly; '.format(
+            cmd0 = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} -omp {4} -rigOnly; '.format(
                 pfi_S0,
                 pfi_sj_ref_coord_system,
                 pfi_affine_transformation_ref_on_subject,
-                pfi_3d_warped_ref_on_subject)
+                pfi_3d_warped_ref_on_subject,
+                num_cores_run)
             print_and_run(cmd0)
 
             print('- propagate roi masks {}'.format(sj))

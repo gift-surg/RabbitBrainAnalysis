@@ -1,17 +1,21 @@
-date
-hostname
-
 #$ -l h_rt=12:00:00
 #$ -l tmem=25G
 #$ -l h_vmem=25G
-#$ -N "ImgPTB_gratio_and_spot"
+#$ -N "ACS_all_2"
 #$ -S /bin/bash
 #$ -cwd
 #$ -t 1-14
 #$ -e ../z_output/
 #$ -o ../z_output/
 
-SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_PTB_ex_vivo.txt`
+#$ -R y
+#$ -pe smp 2
+
+
+date
+hostname
+
+SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_ACS_ex_vivo.txt`
 
 
 export PATH=/share/apps/fsl-5.0.8/bin/:${PATH}

@@ -6,7 +6,7 @@ from os.path import join as jph
 import nibabel as nib
 import pickle
 
-from tools.definitions import root_study_rabbits, pfo_subjects_parameters
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters, num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor, \
@@ -111,8 +111,8 @@ def process_MSME_per_subject(sj, controller):
         assert check_path_validity(pfi_msme_tp0)
         pfi_transf_msme_on_s0 = jph(pfo_tmp, sj + '_msme_on_S0_rigid.txt')
         pfi_warped_msme_on_s0 = jph(pfo_tmp, sj + '_MSME_tp0_up.nii.gz')
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -aff {3} -res {4} -rigOnly'.format(
-            pfi_s0, pfi_s0_mask, pfi_msme_tp0, pfi_transf_msme_on_s0, pfi_warped_msme_on_s0
+        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -aff {3} -res {4} -omp {5} -rigOnly'.format(
+            pfi_s0, pfi_s0_mask, pfi_msme_tp0, pfi_transf_msme_on_s0, pfi_warped_msme_on_s0, num_cores_run
         )
         print_and_run(cmd)
 
@@ -155,9 +155,9 @@ def process_MSME_per_subject(sj, controller):
 
         pfi_warped_msme_on_s0_back_on_msme = jph(pfo_tmp, '{}_warped_msme_on_s0_back_on_msme.nii.gz'.format(sj))
         pfi_affine_msme_on_s0_back_on_msme = jph(pfo_tmp, '{}_affine_msme_on_s0_back_on_msme.txt'.format(sj))
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -res {4} -aff {5} -rigOnly'.format(
+        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -res {4} -aff {5} -omp {6} -rigOnly'.format(
             pfi_msme_original_first_layer, pfi_msme_original_pre_mask, pfi_warped_msme_on_s0, pfi_s0_mask,
-            pfi_warped_msme_on_s0_back_on_msme, pfi_affine_msme_on_s0_back_on_msme
+            pfi_warped_msme_on_s0_back_on_msme, pfi_affine_msme_on_s0_back_on_msme, num_cores_run
         )
         print_and_run(cmd)
         # Apply transformation to the S0 roi_mask and to S0 reg_mask

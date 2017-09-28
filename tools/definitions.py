@@ -16,7 +16,7 @@ if os.path.exists('/cluster/project0'):
     bfc_corrector_cmd = '/share/apps/cmic/NiftyMIDAS/bin/niftkMTPDbc'
     root_shared_records = ''
     root_fit_apps = '/home/ferraris/software_lib/NiftyFit2/niftyfit-build/fit-apps/'
-
+    num_cores_run = 2
 
 elif os.path.exists('/Volumes/LC/sebastianof/rabbits/'):
     print('You are on the external hdd')
@@ -28,7 +28,7 @@ elif os.path.exists('/Volumes/LC/sebastianof/rabbits/'):
     root_shared_records = jph(root_main_dropbox, 'study', 'C_records')
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc'
     root_fit_apps = ''
-
+    num_cores_run = 8
 
 elif os.path.exists('/Volumes/sebastianof/'):
     print('You are on pantopolium')
@@ -41,6 +41,7 @@ elif os.path.exists('/Volumes/sebastianof/'):
     assert os.path.isdir(root_study_rabbits), 'Connect pantopolio'
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc'
     root_fit_apps = ''
+    num_cores_run = 8
 
 else:
     print('No source data! YOU ARE WORKING IN LOCAL!')
@@ -49,6 +50,7 @@ else:
     root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
     root_internal_template = jph(root_main_dropbox, 'study', 'A_internal_template')
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc'
+    num_cores_run = 8
 
 pfi_excel_table_all_data = jph(root_study_rabbits, 'A_data', 'DataSummary.xlsx')
 pfo_subjects_parameters = jph(root_study_rabbits, 'A_data', 'Utils', 'subjects_parameters')

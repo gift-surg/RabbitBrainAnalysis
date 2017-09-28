@@ -30,13 +30,13 @@ def process_g_ratio_per_subject(sj, controller):
 
     # input sanity check:
     if sj not in list_all_subjects(pfo_subjects_parameters):
-        raise IOError('Subject parameters not known')
+        raise IOError('Subject parameters folder {} not present.'.format(pfo_subjects_parameters))
     if not os.path.exists(pfo_input_sj_DWI):
-        raise IOError('Input folder DWI does not exist.')
+        raise IOError('Input folder DWI {} does not exist.'.format(pfo_input_sj_DWI))
     if not os.path.exists(pfo_input_sj_MSME):
-        raise IOError('Input folder MSME does not exist.')
+        raise IOError('Input folder MSME {} does not exist.'.format(pfo_input_sj_MSME))
     if not os.path.exists(pfo_output_sj):
-        raise IOError('Output folder MSME does not exist.')
+        raise IOError('Output folder subject {} does not exist.'.format(pfo_output_sj))
 
     # --  Generate intermediate and output folder
 
@@ -95,7 +95,7 @@ def process_g_ratio_per_subject(sj, controller):
 
     if controller['get acquisition echo time']:
         pfi_visu_pars = jph(pfo_input_sj_MSME, sj + '_MSME_visu_pars.npy')
-        assert check_path_validity(pfi_visu_pars)
+        assert check_path_validity(pfi_visu_pars), pfi_visu_pars
         pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
         visu_pars_dict = np.load(pfi_visu_pars)
         np.savetxt(fname=pfi_echo_times, X=visu_pars_dict.item().get('VisuAcqEchoTime'), fmt='%10.2f', newline=' ')
@@ -169,13 +169,13 @@ if __name__ == '__main__':
     print('process g-ratio, local run. ')
 
     controller_steps = {'transpose b-vals b-vects'  : False,
-                        'noddi'                     : True,
-                        'save T2_times'             : True,
+                        'noddi'                     : False,
+                        'save T2_times'             : False,
                         'get acquisition echo time' : True,
-                        'fit msme'                  : True,
-                        'extract first tp noddi'    : True,
-                        'compute g-ratio'           : True,
-                        'save results'              : True}
+                        'fit msme'                  : False,
+                        'extract first tp noddi'    : False,
+                        'compute g-ratio'           : False,
+                        'save results'              : False}
 
     lsm = ListSubjectsManager()
 

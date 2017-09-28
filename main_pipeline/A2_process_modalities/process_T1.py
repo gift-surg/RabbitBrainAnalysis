@@ -5,7 +5,7 @@ import os
 from os.path import join as jph
 import pickle
 
-from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_internal_template
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_internal_template, num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero, orient2std
@@ -81,11 +81,12 @@ def process_T1_per_subject(sj, controller):
         assert check_path_validity(pfi_sj_ref_coord_system)
         pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '.txt')
         pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '.nii.gz')
-        cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} ; '.format(
+        cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} -omp {4} '.format(
             pfi_std,
             pfi_sj_ref_coord_system,
             pfi_affine_transformation_ref_on_subject,
-            pfi_3d_warped_ref_on_subject)
+            pfi_3d_warped_ref_on_subject,
+            num_cores_run)
         print_and_run(cmd)
         del pfi_std, pfi_sj_ref_coord_system, pfi_affine_transformation_ref_on_subject, \
             pfi_3d_warped_ref_on_subject, cmd

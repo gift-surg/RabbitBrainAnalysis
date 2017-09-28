@@ -195,7 +195,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['13103']
+    lsm.input_subjects = ['3301']
     # lsm.input_subjects = ['3103']
 
     lsm.update_ls()
