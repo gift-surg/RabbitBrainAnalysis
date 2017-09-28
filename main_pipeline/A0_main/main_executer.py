@@ -29,7 +29,7 @@ def main_runner(subj_list):
     # Set steps
 
     steps = {'reset_parameters' : False,  # if this is true it does not do anything else.
-             'step_A1'          : True,
+             'step_A1'          : False,
              'step_A2_T1'       : True,
              'step_A2_DWI'      : True,
              'step_A2_MSME'     : True,
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['1201']
+    lsm.input_subjects = ['13103']
     # lsm.input_subjects = ['3103']
 
     lsm.update_ls()

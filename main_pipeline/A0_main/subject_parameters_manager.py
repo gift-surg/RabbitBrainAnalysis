@@ -38,6 +38,7 @@ class SubjectParameters(object):
         self.MSME_acquisition      = MSME_acquisition
         self.comment               = ''
         self.in_template           = in_template
+        self.b0_level              = 0
 
     def get_as_dict(self):
         return OrderedDict({'study'                  : self.study,
@@ -55,7 +56,8 @@ class SubjectParameters(object):
                             'bias_field_parameters'  : self.bias_field_parameters,
                             'MSME_acquisition'       : self.MSME_acquisition,
                             'comment'                : self.comment,
-                            'in_template'            : self.in_template})
+                            'in_template'            : self.in_template,
+                            'b0_level'               : self.b0_level})
 
     def save_as_txt(self, pfo_where_to_save):
         pfi_txt_file = jph(pfo_where_to_save, self.subject_name + '.txt')

@@ -8,7 +8,7 @@ import pickle
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_internal_template
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
-from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
+from tools.auxiliary.reorient_images_header import set_translational_part_to_zero, orient2std
 from tools.auxiliary.utils import print_and_run
 from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
 from tools.correctors.bias_field_corrector4 import bias_field_correction
@@ -63,16 +63,12 @@ def process_T1_per_subject(sj, controller):
         pfi_input_original = jph(pfo_input_sj_3D, sj + '_3D.nii.gz')
         assert check_path_validity(pfi_input_original)
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
-        cmd = 'fslreorient2std {0} {1}'.format(pfi_input_original, pfi_std)
-        print_and_run(cmd)
-        pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
-        assert check_path_validity(pfi_std)
-        set_translational_part_to_zero(pfi_std, pfi_std_not_transl)
-        del pfi_input_original, pfi_std, cmd, pfi_std_not_transl
+        orient2std(pfi_input_original, pfi_std)
+        del pfi_input_original, pfi_std
 
     if controller['register roi masks']:
         print('- register roi masks {}'.format(sj))
-        pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
+        pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
         if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
             # This will be the pivotal chart of the template, reoriented respect to the angle in
             # the subjects parameters. (the only utils has to be the subjects parameters.)
@@ -81,22 +77,22 @@ def process_T1_per_subject(sj, controller):
             pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
         else:
             raise IOError('ex_vivo, in_vivo or op_skull only.')
-        assert check_path_validity(pfi_std_not_transl)
+        assert check_path_validity(pfi_std)
         assert check_path_validity(pfi_sj_ref_coord_system)
         pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '.txt')
         pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '.nii.gz')
         cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} ; '.format(
-            pfi_std_not_transl,
+            pfi_std,
             pfi_sj_ref_coord_system,
             pfi_affine_transformation_ref_on_subject,
             pfi_3d_warped_ref_on_subject)
         print_and_run(cmd)
-        del pfi_std_not_transl, pfi_sj_ref_coord_system, pfi_affine_transformation_ref_on_subject, \
+        del pfi_std, pfi_sj_ref_coord_system, pfi_affine_transformation_ref_on_subject, \
             pfi_3d_warped_ref_on_subject, cmd
 
     if controller['propagate roi masks']:
         print('- propagate roi masks {}'.format(sj))
-        pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
+        pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
         if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
             pfi_reference_roi_mask = jph(root_internal_template, '1305', 'masks', '1305_roi_mask.nii.gz')
         elif sj_parameters['category'] == 'in_vivo':
@@ -104,17 +100,17 @@ def process_T1_per_subject(sj, controller):
         else:
             raise IOError('ex_vivo, in_vivo or op_skull only.')
         pfi_affine_transformation_reference_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '.txt')
-        assert check_path_validity(pfi_std_not_transl), pfi_std_not_transl
+        assert check_path_validity(pfi_std), pfi_std
         assert check_path_validity(pfi_reference_roi_mask)
         assert check_path_validity(pfi_affine_transformation_reference_on_subject)
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-            pfi_std_not_transl,
+            pfi_std,
             pfi_reference_roi_mask,
             pfi_affine_transformation_reference_on_subject,
             pfi_roi_mask)
         print_and_run(cmd)
-        del pfi_std_not_transl, pfi_reference_roi_mask, pfi_affine_transformation_reference_on_subject, pfi_roi_mask, \
+        del pfi_std, pfi_reference_roi_mask, pfi_affine_transformation_reference_on_subject, pfi_roi_mask, \
             cmd
 
     if controller['adjust mask']:
@@ -131,15 +127,15 @@ def process_T1_per_subject(sj, controller):
 
     if controller['cut masks']:
         print('- cut masks {}'.format(sj))
-        pfi_std_not_transl = jph(pfo_tmp, sj + '_to_std_no_transl.nii.gz')
+        pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
-        assert check_path_validity(pfi_std_not_transl)
+        assert check_path_validity(pfi_std)
         assert check_path_validity(pfi_roi_mask)
         pfi_3d_cropped_roi = jph(pfo_tmp, sj + '_cropped.nii.gz')
-        cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_std_not_transl, pfi_roi_mask, pfi_3d_cropped_roi)
+        cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_std, pfi_roi_mask, pfi_3d_cropped_roi)
         print '\nCutting newly-created ciccione mask on the subject: subject {0}.\n'.format(sj)
         print_and_run(cmd)
-        del pfi_std_not_transl, pfi_roi_mask, pfi_3d_cropped_roi, cmd
+        del pfi_std, pfi_roi_mask, pfi_3d_cropped_roi, cmd
 
     if controller['step bfc']:
         print('- step bfc {}'.format(sj))

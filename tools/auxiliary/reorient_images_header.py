@@ -1,6 +1,9 @@
 import time
 import numpy as np
 import nibabel as nib
+import os
+
+from tools.auxiliary.utils import print_and_run
 
 
 def adjust_header_from_transformations(pfi_input, pfi_output, theta, trasl):
@@ -67,6 +70,31 @@ def set_translational_part_to_zero(pfi_input, pfi_output):
 
     # save output image
     nib.save(new_image, pfi_output)
+
+
+def orient2std(pfi_in, pfi_out):
+    """
+    As different modalities are not oriented in the same space when converted and
+    as fslorient2std affects only the s-form and not the q-form.
+    1) apply fslorient2std
+    2) set translational part to zero
+    3) use nibabel to set the s-form as the q-form
+    :param pfi_in:
+    :param pfi_out:
+    :return:
+    """
+    assert os.path.exists(pfi_in)
+    pfi_intermediate = os.path.join(os.path.dirname(pfi_in), 'zz_tmp_' + os.path.basename(pfi_in))
+    # 1 --
+    cmd0 = 'fslreorient2std {0} {1}'.format(pfi_in, pfi_intermediate)
+    print_and_run(cmd0)
+    # 2 --
+    set_translational_part_to_zero(pfi_intermediate, pfi_intermediate)
+    # 3 --
+    im = nib.load(pfi_intermediate)
+    im.set_sform(im.get_qform())
+    nib.save(im, pfi_out)
+    os.system('rm {}'.format(pfi_intermediate))
 
 
 def header_orientation_bicomm2histo(pfi_input, pfi_output):

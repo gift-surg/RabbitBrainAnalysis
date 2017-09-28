@@ -37,7 +37,7 @@ def spot_a_list_of_rabbits(subjects_list, controller_propagator, controller_fuse
 
         spot_sj.controller_fuser = controller_fuser
 
-        spot_sj.target_list_suffix_modalities = [['T1'], ['S0', 'V1', 'MD', 'FA', 'T2map', 'MSME_up'], ['MSME']]  # g_ratio not present
+        spot_sj.target_list_suffix_modalities = [['T1']] # , ['S0', 'V1', 'MD', 'FA', 'T2map', 'MSME_up'], ['MSME']]  # g_ratio not present
 
         spot_sj.bfc_corrector_cmd = bfc_corrector_cmd
         msg = 'bias field corrector command {} does NOT exist'.format(spot_sj.bfc_corrector_cmd)
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['2702', ]
+    lsm.input_subjects = ['3301', ]
     lsm.update_ls()
 
     controller_propagator_ = {'Propagation_methods'       : 'Mono',

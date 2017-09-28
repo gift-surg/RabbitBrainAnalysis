@@ -4,7 +4,7 @@ hostname
 #$ -l h_rt=12:00:00
 #$ -l tmem=25G
 #$ -l h_vmem=25G
-#$ -N "ImgPTB"
+#$ -N "ImgPTB_gratio_and_spot"
 #$ -S /bin/bash
 #$ -cwd
 #$ -t 1-14

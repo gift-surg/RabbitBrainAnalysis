@@ -7,14 +7,15 @@ import pickle
 
 import numpy as np
 
+
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_internal_template
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
-from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
+from tools.auxiliary.reorient_images_header import orient2std
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, \
-    reproduce_slice_fourth_dimension_path, scale_y_value_and_trim, print_and_run, set_new_data_path
+    reproduce_slice_fourth_dimension_path, scale_y_value_and_trim, print_and_run, set_new_data_path, grab_a_timepoint_path
 from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.correctors.slope_corrector import slope_corrector_path
@@ -83,21 +84,26 @@ def process_DWI_per_subject(sj, controller):
         pfi_dwi_original = jph(pfo_input_sj_DWI, sj + '_DWI.nii.gz')
         assert check_path_validity(pfi_dwi_original)
         pfi_dwi_std = jph(pfo_tmp, sj + '_DWI_to_std.nii.gz')
-        cmd0 = 'fslreorient2std {0} {1}'.format(pfi_dwi_original, pfi_dwi_std)
-        print_and_run(cmd0)
-        set_translational_part_to_zero(pfi_dwi_std, pfi_dwi_std)
+        orient2std(pfi_dwi_original, pfi_dwi_std)
         # S0
-        pfi_S0_original = jph(pfo_input_sj_DWI, sj + '_DWI_S0.nii.gz')
+        if sj_parameters['b0_level'] == 0:
+            pfi_S0_original = jph(pfo_input_sj_DWI, sj + '_DWI_S0.nii.gz')
+        else:
+            # create the time-point t and save its path under pfi_S0_original
+            tp = sj_parameters['b0_level']
+            pfi_DWI_original = jph(pfo_input_sj_DWI, sj + '_DWI.nii.gz')
+            assert check_path_validity(pfi_DWI_original)
+            pfi_S0_original = jph(pfo_tmp, '{0}_DWI_S0_tp{1}.nii.gz'.format(sj, tp))
+            grab_a_timepoint_path(pfi_DWI_original, pfi_S0_original, tp)
+
         assert check_path_validity(pfi_S0_original)
         pfi_S0_std = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
-        cmd1 = 'fslreorient2std {0} {1}'.format(pfi_S0_original, pfi_S0_std)
-        print_and_run(cmd1)
-        set_translational_part_to_zero(pfi_S0_std, pfi_S0_std)
+        orient2std(pfi_S0_original, pfi_S0_std)
 
         if sj_parameters['DWI_squashed']:
             scale_y_value_and_trim(pfi_dwi_std, pfi_dwi_std, squeeze_factor=2.218074656188605)
             scale_y_value_and_trim(pfi_S0_std, pfi_S0_std, squeeze_factor=2.218074656188605)
-        del pfi_dwi_original, pfi_dwi_std, cmd0, pfi_S0_original, pfi_S0_std, cmd1
+        del pfi_dwi_original, pfi_dwi_std, pfi_S0_original, pfi_S0_std
 
     if controller['create roi masks']:
 
@@ -370,9 +376,9 @@ def process_DWI_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process DWI, local run. ')
 
-    controller_DWI = {'squeeze'               : False,
-                      'orient to standard'    : False,
-                      'create roi masks'      : True,
+    controller_DWI = {'squeeze'               : True,
+                      'orient to standard'    : True,
+                      'create roi masks'      : False,
                       'adjust mask'           : False,
                       'cut mask dwi'          : False,
                       'cut mask S0'           : False,
@@ -381,8 +387,8 @@ if __name__ == '__main__':
                       'fsl tensor fitting'    : False,
                       'adjust dti-based mod'  : False,
                       'bfc S0'                : False,
-                      'create lesion mask'    : True,
-                      'create reg masks'      : True,
+                      'create lesion mask'    : False,
+                      'create reg masks'      : False,
                       'save results'          : False}
 
     lsm = ListSubjectsManager()
@@ -393,7 +399,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['1201']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['3301']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

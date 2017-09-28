@@ -3,6 +3,7 @@ import pandas as pa
 import nibabel as nib
 from collections import OrderedDict
 from matplotlib import pyplot as plt
+import copy
 
 from os.path import join as jph
 import cPickle as Pickle
@@ -232,7 +233,12 @@ class ReportGenerator(object):
             pfi_values_below_labels_mod = jph(self.pfo_pre_report, '{0}_{1}_values_below_labels.pickle'.format(self.sj_name, mod))
             se_values_below_labels_mod = pa.read_pickle(pfi_values_below_labels_mod)
 
-            index_subset_fig_1 = ['Frontal Left', 'Frontal Right','Frontal', 'Occipital Left']  # get this one from labels manager
+            ldm = LdM(pfi_labels_descriptor)
+            multi_label_dict = ldm.get_multi_label_dict(keep_duplicate=False, combine_right_left=True)
+
+            index_subset_fig_1 = multi_label_dict.keys()
+
+            index_subset_fig_1 = copy.deepcopy(index_subset_fig_1)
             index_subset_fig_2 =['WM', 'GM', 'CSF']
 
             se_values_below_labels_all = se_values_below_labels_mod.loc[index_subset_fig_1]
@@ -247,21 +253,20 @@ class ReportGenerator(object):
             fig.canvas.set_window_title(title)
 
             # boxplot 1
-            ax0 = fig.add_subplot(121)
+            ax0 = fig.add_subplot(111)
             ax0.boxplot(se_values_below_labels_all.values)
-            ax0.set_xticklabels(se_values_below_labels_all.index, rotation=30)
+            ax0.set_xticklabels(se_values_below_labels_all.index, rotation=90)
 
-            # boxplot 1
-            ax1 = fig.add_subplot(122)
-            ax1.boxplot(se_values_below_labels_WM_GM_CSF.values)
-            ax1.set_xticklabels(se_values_below_labels_WM_GM_CSF.index, rotation=30)
+            # # boxplot 1
+            # ax1 = fig.add_subplot(122)
+            # ax1.boxplot(se_values_below_labels_WM_GM_CSF.values)
+            # ax1.set_xticklabels(se_values_below_labels_WM_GM_CSF.index, rotation=30)
 
             fig.suptitle(graph_title)
 
             fig.savefig(jph(self.pfo_pre_report, graph_title + '.png'))
             if show:
                 plt.show(block=True)
-
 
 
 if __name__ == '__main__':
@@ -310,8 +315,8 @@ if __name__ == '__main__':
     rg.check_attributes()
     rg.generate_structure()
 
-    rg.generate_pre_report_each_mod()
-    rg.pre_report2report()
-    rg.save_report_human_readable()
+    # rg.generate_pre_report_each_mod()
+    # rg.pre_report2report()
+    # rg.save_report_human_readable()
 
     rg.generate_boxplot()

@@ -43,11 +43,12 @@ def reset_parameters_files(pfo_where_to_save):
     # eliminate if exists and re-create the folder where to save the data:
     if os.path.exists(pfo_where_to_save):
         os.system('rm -r {0}; mkdir {0}'.format(pfo_where_to_save))
+        print('Folder {} deleted.'.format(pfo_where_to_save))
     os.system('mkdir {0}'.format(pfo_where_to_save))
-
+    print('Folder {} created.'.format(pfo_where_to_save))
     # all the subjects
 
-    ''' PTB ex skull: '''
+    ''' PTB ex skull: ---------------------------------------------------------------------- '''
 
     sp = SubjectParameters('0104')
     sp.study                  = 'PTB'
@@ -165,7 +166,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    ''' PTB ex vivo: '''
+    ''' PTB ex vivo: ---------------------------------------------------------------------- '''
 
     sp = SubjectParameters('1201')
     sp.study                  = 'PTB'
@@ -447,7 +448,28 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    ''' PTB in-vivo'''
+    sp = SubjectParameters('3301')
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, np.pi / 6, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.T1_window_percentile   = (15, 90)
+    sp.S0_window_percentile   = (1, 95)
+    sp.T1_mask_dilation       = 1
+    sp.S0_mask_dilation       = 1
+    sp.erosion_roi_mask       = 1
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_template            = False
+    sp.b0_level               = 7
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    ''' PTB in-vivo ---------------------------------------------------------------------- '''
 
     sp = SubjectParameters('0802t1')
     sp.study                  = 'PTB'
@@ -729,7 +751,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    ''' PTB op-skull'''
+    ''' PTB op-skull ---------------------------------------------------------------------- '''
 
     sp = SubjectParameters('0602')
     sp.study                  = 'PTB'
@@ -771,7 +793,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    ''' ACS ex-vivo'''
+    ''' ACS ex-vivo ---------------------------------------------------------------------- '''
 
     sp = SubjectParameters('13103')
     sp.study                  = 'ACS'
@@ -789,6 +811,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_template            = False
+    sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -809,6 +832,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_template            = False
+    sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -829,6 +853,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_template            = False
+    sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -849,6 +874,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = 'Dumped, too much ghosting in the DWI.'
     sp.in_template            = False
+    sp.b0_level = 6
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -869,6 +895,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_template            = False
+    sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -889,6 +916,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_template            = False
+    sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -909,6 +937,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_template            = False
+    sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -929,6 +958,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_template            = False
+    sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -949,6 +979,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_template            = False
+    sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -967,8 +998,9 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed           = True
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
-    sp.comment                = ''
+    sp.comment                = 'Dumped as too much ghosting artefact in the MRI'
     sp.in_template            = False
+    sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -989,6 +1021,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_template            = False
+    sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1007,8 +1040,9 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed           = True
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
-    sp.comment                = ''
+    sp.comment                = 'Almost dumped, ghosted DWI can provide noisy information.'
     sp.in_template            = False
+    sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1027,8 +1061,9 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed           = True
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
-    sp.comment                = ''
+    sp.comment                = 'Dupmed, too much ghosting in the DWI'
     sp.in_template            = False
+    sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1049,6 +1084,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_template            = False
+    sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
