@@ -66,6 +66,13 @@ def process_g_ratio_per_subject(sj, controller):
         m = np.loadtxt(pfi_bvects)
         np.savetxt(fname=pfi_transposed_vects, X=m.T, fmt='%10.8f')
 
+    if controller['get acquisition echo time']:
+        pfi_visu_pars = jph(pfo_input_sj_MSME, sj + '_MSME_visu_pars.npy')
+        assert check_path_validity(pfi_visu_pars), pfi_visu_pars
+        pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
+        visu_pars_dict = np.load(pfi_visu_pars)
+        np.savetxt(fname=pfi_echo_times, X=visu_pars_dict.item().get('VisuAcqEchoTime'), fmt='%10.2f', newline=' ')
+
     if controller['noddi']:
         print('- Noddi execution')
         # check if there is a DWI already processed in the TMP folder of the same subject:
@@ -74,13 +81,17 @@ def process_g_ratio_per_subject(sj, controller):
         pfi_transposed_bvals = jph(pfo_tmp, sj + '_DWI_DwEffBval_T.txt')
         pfi_transposed_vects = jph(pfo_tmp, sj + '_DWI_DwGradVec_T.txt')
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
+        pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
+
         assert check_path_validity(pfi_dwi_eddy_corrected), 'Need to run process_DWI first?'
         assert check_path_validity(pfi_transposed_bvals)
         assert check_path_validity(pfi_transposed_vects)
         assert check_path_validity(pfi_roi_mask)
+        assert check_path_validity(pfi_echo_times)
         pfi_output_noddi = jph(pfo_tmp, sj + '_nod.nii.gz')
-        cmd = root_fit_apps + 'fit_dwi -source {0} -mask {1} -bval {2} -bvec {3} -mcmap {4} -nod'.format(
-            pfi_dwi_eddy_corrected, pfi_roi_mask, pfi_transposed_bvals, pfi_transposed_vects, pfi_output_noddi)
+        cmd = root_fit_apps + 'fit_dwi -source {0} -mask {1} -bval {2} -bvec {3} -TE {4} -mcmap {5} -nod'.format(
+            pfi_dwi_eddy_corrected, pfi_roi_mask, pfi_transposed_bvals, pfi_transposed_vects, pfi_echo_times,
+            pfi_output_noddi)
         print_and_run(cmd)
 
     if controller['save T2_times']:
@@ -92,13 +103,6 @@ def process_g_ratio_per_subject(sj, controller):
             t2_times = (10, 60, 80)
         pfi_T2_times = jph(pfo_tmp, sj + '_t2_times.txt')
         np.savetxt(fname=pfi_T2_times, X=np.array(t2_times), fmt='%10.10f', newline=' ')
-
-    if controller['get acquisition echo time']:
-        pfi_visu_pars = jph(pfo_input_sj_MSME, sj + '_MSME_visu_pars.npy')
-        assert check_path_validity(pfi_visu_pars), pfi_visu_pars
-        pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
-        visu_pars_dict = np.load(pfi_visu_pars)
-        np.savetxt(fname=pfi_echo_times, X=visu_pars_dict.item().get('VisuAcqEchoTime'), fmt='%10.2f', newline=' ')
 
     if controller['fit msme']:
         pfi_msme_up = jph(pfo_mod, sj + '_MSME_up.nii.gz')
@@ -169,9 +173,9 @@ if __name__ == '__main__':
     print('process g-ratio, local run. ')
 
     controller_steps = {'transpose b-vals b-vects'  : False,
-                        'noddi'                     : False,
-                        'save T2_times'             : False,
                         'get acquisition echo time' : True,
+                        'noddi'                     : True,
+                        'save T2_times'             : False,
                         'fit msme'                  : False,
                         'extract first tp noddi'    : False,
                         'compute g-ratio'           : False,

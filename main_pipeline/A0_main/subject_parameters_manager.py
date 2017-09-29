@@ -19,7 +19,26 @@ class SubjectParameters(object):
                  erosion_roi_mask=1, DWI_squashed=False,
                  bias_field_parameters=(0.001, (50, 50, 50, 50), 0.15, 0.01, 200, (4, 4, 4), 3),
                  MSME_acquisition='high_res', in_template=False):
+        """
 
+        :param subject_name:
+        :param study:
+        :param category:
+        :param angles: [0, 0, 0] : same angle set for all modalities.
+                       [[0, 0, 0], [0, np.pi / 6, 0]] a different angle for each modality.
+                       In that order for this pipeline: T1, DWI, MSME.
+        :param translation:
+        :param threshold:
+        :param T1_window_percentile:
+        :param S0_window_percentile:
+        :param T1_mask_dilation:
+        :param S0_mask_dilation:
+        :param erosion_roi_mask:
+        :param DWI_squashed:
+        :param bias_field_parameters:
+        :param MSME_acquisition:
+        :param in_template:
+        """
         self.subject_name = subject_name
 
         self.study                 = study

@@ -106,11 +106,28 @@ def process_DWI_per_subject(sj, controller):
         del pfi_dwi_original, pfi_dwi_std, pfi_S0_original, pfi_S0_std
 
     if controller['create roi masks']:
+        # Ideal pipeline uses the T1_roi_mask, that has been created before.
+        # Not ideally some data have different orientation for each modality.
+        # not ideally T1 has not been computed yet - not working in this case.
 
-        # if the roi mask of the T1 exists resample that one
+        # Path T1 mask
         pfi_sj_T1_roi_mask = jph(pfo_mask, '{}_T1_roi_mask.nii.gz'.format(sj))
+        assert os.path.exists(pfi_sj_T1_roi_mask), 'Mask {} missing. Run T1 pipeline before'.format(pfi_sj_T1_roi_mask)
 
-        if os.path.exists(pfi_sj_T1_roi_mask):
+        # Conditional flags: mask creation options
+        can_resample_T1 = False  # Different modalities are in the same space. It is enough to resample T1.
+        need_to_register_mask = False  # Different modalities in different spaces. Pure resampling is not working!
+
+        if isinstance(sj_parameters.angles[0], int):
+            can_resample_T1 = True
+        elif isinstance(sj_parameters.angles[0], list):
+            need_to_register_mask = True
+        else:
+            msg = 'Check parameters angles for subject {}. Has to be [a,b,c] or [[a,b,c],[a1,b1,c1], ...[]]'.format(sj)
+            raise IOError(msg)
+
+        # process:
+        if can_resample_T1:
             print('- Create roi masks {}'.format(sj))
             pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
             pfi_affine_identity = jph(pfo_tmp, 'id.txt')
@@ -124,17 +141,22 @@ def process_DWI_per_subject(sj, controller):
             print_and_run(cmd)
             del pfi_S0, pfi_affine_identity, pfi_roi_mask, cmd
 
-        # if the T1 roi mask does not exists than create a new one from scratch.
-        # Ideal pipeline uses the T1_roi_mask. This second option is an extra to not brake tests or partial pipelines.
-        else:
+        elif need_to_register_mask:
+
             print('- Register roi masks {}'.format(sj))
             pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
-            if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
-                pfi_sj_ref_coord_system = jph(root_internal_template, '1305', 'mod', '1305_T1.nii.gz')
-            elif sj_parameters['category'] == 'in_vivo':
-                pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
-            else:
-                raise IOError('ex_vivo, in_vivo or op_skull only.')
+
+            # if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
+            #     pfi_sj_ref_coord_system = jph(root_internal_template, '1305', 'mod', '1305_T1.nii.gz')
+            # elif sj_parameters['category'] == 'in_vivo':
+            #     pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
+            # else:
+            #     raise IOError('ex_vivo, in_vivo or op_skull only.')
+
+
+            # re-orient the T1 and the T1-mask on the S0 to better initialise the mask propagation.
+            angles = sj_parameters.angles[2]
+
 
             assert check_path_validity(pfi_S0)
             assert check_path_validity(pfi_sj_ref_coord_system)
@@ -377,9 +399,9 @@ def process_DWI_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process DWI, local run. ')
 
-    controller_DWI = {'squeeze'               : True,
-                      'orient to standard'    : True,
-                      'create roi masks'      : False,
+    controller_DWI = {'squeeze'               : False,
+                      'orient to standard'    : False,
+                      'create roi masks'      : True,
                       'adjust mask'           : False,
                       'cut mask dwi'          : False,
                       'cut mask S0'           : False,
