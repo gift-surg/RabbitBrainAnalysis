@@ -76,7 +76,7 @@ plt.axvline(val, color='k', ls='--')
 plt.tight_layout()
 # plt.show(block=False)
 
-pfi_im_test = '/Users/sebastiano/Desktop/test_im/3405_MSME_bfc_tp0.nii.gz'
+pfi_im_test = '/Users/sebastiano/Desktop/3301_DWI_S0_to_std.nii.gz'
 
 im = nib.load(pfi_im_test)
 val = filters.threshold_otsu(im.get_data())

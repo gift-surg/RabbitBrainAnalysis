@@ -83,17 +83,52 @@ def orient2std(pfi_in, pfi_out):
     :param pfi_out:
     :return:
     """
-    assert os.path.exists(pfi_in)
-    pfi_intermediate = os.path.join(os.path.dirname(pfi_in), 'zz_tmp_' + os.path.basename(pfi_in))
+    # assert os.path.exists(pfi_in)
+    # pfi_intermediate = os.path.join(os.path.dirname(pfi_out), 'zz_tmp_' + os.path.basename(pfi_in))
+    # # 1 --
+    # cmd0 = 'fslreorient2std {0} {1}'.format(pfi_in, pfi_intermediate)
+    # print_and_run(cmd0)
+    # # 2 --
+    # set_translational_part_to_zero(pfi_intermediate, pfi_intermediate)
+    # # 3 --
+    # im = nib.load(pfi_intermediate)
+    # im.set_sform(im.get_qform())
+    # nib.save(im, pfi_out)
+    # os.system('rm {}'.format(pfi_intermediate))
+
+    # New version
+
+    pfi_intermediate = os.path.join(os.path.dirname(pfi_out), 'zz_tmp_' + os.path.basename(pfi_in))
     # 1 --
     cmd0 = 'fslreorient2std {0} {1}'.format(pfi_in, pfi_intermediate)
     print_and_run(cmd0)
-    # 2 --
-    set_translational_part_to_zero(pfi_intermediate, pfi_intermediate)
-    # 3 --
-    im = nib.load(pfi_intermediate)
-    im.set_sform(im.get_qform())
-    nib.save(im, pfi_out)
+
+    # for rounding problems re-do the computation of the diagonal elements. see subject 3404
+    # set the diagonal to zero in this part as well.
+    im_input = nib.load(pfi_intermediate)
+    aff = np.copy(im_input.affine)
+    new_aff = np.eye(4)
+    for c in range(3):
+        new_aff[c,c] = np.linalg.norm(aff[:,c])
+
+    # create output image on the input
+    if im_input.header['sizeof_hdr'] == 348:
+        new_image = nib.Nifti1Image(im_input.get_data(), new_aff, header=im_input.header)
+    # if nifty2
+    elif im_input.header['sizeof_hdr'] == 540:
+        new_image = nib.Nifti2Image(im_input.get_data(), new_aff, header=im_input.header)
+    else:
+        raise IOError
+
+    # print intermediate results
+    print 'Affine input image: \n'
+    print im_input.affine
+    print 'Affine after transformation: \n'
+    print new_image.affine
+
+    # save output image
+    nib.save(new_image, pfi_out)
+
     os.system('rm {}'.format(pfi_intermediate))
 
 
