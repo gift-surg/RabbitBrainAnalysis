@@ -29,11 +29,11 @@ def main_runner(subj_list):
     # Set steps
 
     steps = {'reset_parameters' : False,  # if this is true it does not do anything else.
-             'step_A1'          : False,
-             'step_A2_T1'       : False,
-             'step_A2_DWI'      : False,
-             'step_A2_MSME'     : False,
-             'step_A2_T2maps'   : False,
+             'step_A1'          : True,
+             'step_A2_T1'       : True,
+             'step_A2_DWI'      : True,
+             'step_A2_MSME'     : True,
+             'step_A2_T2maps'   : True,
              'step_A2_g_ratio'  : False,
              'step_A3'          : True,
              'step_A4'          : False,
@@ -166,7 +166,7 @@ def main_runner(subj_list):
                                                               ('pr_7', [3, 5, None]),
                                                               ('pr_8', [3, 5, 2.0]),
                                                               ('pr_9', [3, 5, 4.0])]),  # k, n ,beta
-                             'Inter_mod_space_propagation'    : True,
+                             'Inter_mod_space_propagation'    : False,
                              'Save_results'                   : True}
 
         spot_a_list_of_rabbits(subj_list, controller_propagator, controller_fuser)
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['3404']
+    lsm.input_subjects = ['13108']
     # lsm.input_subjects = ['3103']
 
     lsm.update_ls()

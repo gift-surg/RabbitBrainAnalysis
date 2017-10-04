@@ -16,7 +16,7 @@ if os.path.exists('/cluster/project0'):
     bfc_corrector_cmd = '/share/apps/cmic/NiftyMIDAS/bin/niftkMTPDbc'
     root_shared_records = ''
     root_fit_apps = '/home/ferraris/software_lib/NiftyFit2/niftyfit-build/fit-apps/'
-    num_cores_run = 2
+    num_cores_run = 8
 
 elif os.path.exists('/Volumes/LC/sebastianof/rabbits/'):
     print('You are on the external hdd')

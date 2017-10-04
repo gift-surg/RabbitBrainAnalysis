@@ -1,15 +1,12 @@
 #$ -l h_rt=12:00:00
-#$ -l tmem=25G
-#$ -l h_vmem=25G
-#$ -N "ACS_all_2"
+#$ -l tmem=20G
+#$ -l h_vmem=20G
+#$ -N "ACS_all_no_g_ratio"
 #$ -S /bin/bash
 #$ -cwd
 #$ -t 1-14
-#$ -e ../z_output/
-#$ -o ../z_output/
-
-#$ -R y
-#$ -pe smp 2
+#$ -e /cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/software/z_output
+#$ -o /cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/software/z_output
 
 
 date
