@@ -1,10 +1,10 @@
 #$ -l h_rt=12:00:00
 #$ -l tmem=20G
 #$ -l h_vmem=20G
-#$ -N "ACS_all_no_g_ratio"
+#$ -N "PTB_all_noT1_noGr"
 #$ -S /bin/bash
 #$ -cwd
-#$ -t 1-14
+#$ -t 1-17
 #$ -e /cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/software/z_output
 #$ -o /cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/software/z_output
 
@@ -12,7 +12,7 @@
 date
 hostname
 
-SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_ACS_ex_vivo.txt`
+SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_PTB_ex_vivo.txt`
 
 
 export PATH=/share/apps/fsl-5.0.8/bin/:${PATH}

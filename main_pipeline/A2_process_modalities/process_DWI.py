@@ -116,78 +116,81 @@ def process_DWI_per_subject(sj, controller):
         assert os.path.exists(pfi_sj_T1_roi_mask), 'Mask {} missing. Run T1 pipeline before'.format(pfi_sj_T1_roi_mask)
 
         # Conditional flags: mask creation options
-        can_resample_T1 = False  # Different modalities are in the same space. It is enough to resample T1.
-        need_to_register_mask = False  # Different modalities in different spaces. Pure resampling is not working!
+        # can_resample_T1 = False  # Different modalities are in the same space. It is enough to resample T1.
+        # need_to_register_mask = False  # Different modalities in different spaces. Pure resampling is not working!
+        #
+        # if isinstance(sj_parameters['angles'][0], list):
+        #     need_to_register_mask = True
+        # else:
+        #     can_resample_T1 = True
 
+        # # process:
+        # if can_resample_T1:
+        #     print('- Create roi masks {}'.format(sj))
+        #     pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
+        #     pfi_affine_identity = jph(pfo_tmp, 'id.txt')
+        #     np.savetxt(pfi_affine_identity, np.eye(4), fmt='%d')
+        #     pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
+        #     cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+        #         pfi_S0,
+        #         pfi_sj_T1_roi_mask,
+        #         pfi_affine_identity,
+        #         pfi_roi_mask)
+        #     print_and_run(cmd)
+        #     del pfi_S0, pfi_affine_identity, pfi_roi_mask, cmd
+        #
+        # elif need_to_register_mask:
+
+        print('- Register roi masks {}'.format(sj))
+        pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
+        assert os.path.exists(pfi_S0)
+
+        pfi_T1          = jph(pfo_mod, '{}_T1.nii.gz'.format(sj))
+        pfi_T1_roi_mask = jph(pfo_mask, '{}_T1_roi_mask.nii.gz'.format(sj))
+        assert os.path.exists(pfi_T1), pfi_T1
+        assert os.path.exists(pfi_T1_roi_mask), pfi_T1_roi_mask
+        pfi_T1_hd_oriented = jph(pfo_tmp, sj + '_T1_hd_oriented_to_S0.nii.gz')
+        pfi_T1_roi_mask_hd_oriented = jph(pfo_tmp, sj + '_T1_roi_mask_hd_oriented_to_S0.nii.gz')
+
+        # check if the orientation angles are different for each modality:
         if isinstance(sj_parameters['angles'][0], list):
-            need_to_register_mask = True
-        else:
-            can_resample_T1 = True
-
-        # process:
-        if can_resample_T1:
-            print('- Create roi masks {}'.format(sj))
-            pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
-            pfi_affine_identity = jph(pfo_tmp, 'id.txt')
-            np.savetxt(pfi_affine_identity, np.eye(4), fmt='%d')
-            pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
-            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-                pfi_S0,
-                pfi_sj_T1_roi_mask,
-                pfi_affine_identity,
-                pfi_roi_mask)
-            print_and_run(cmd)
-            del pfi_S0, pfi_affine_identity, pfi_roi_mask, cmd
-
-        elif need_to_register_mask:
-
-            print('- Register roi masks {}'.format(sj))
-            pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
-            assert os.path.exists(pfi_S0)
-
-            pfi_T1          = jph(pfo_mod, '{}_T1.nii.gz'.format(sj))
-            pfi_T1_roi_mask = jph(pfo_mask, '{}_T1_roi_mask.nii.gz'.format(sj))
-            assert os.path.exists(pfi_T1), pfi_T1
-            assert os.path.exists(pfi_T1_roi_mask), pfi_T1_roi_mask
-            pfi_T1_hd_oriented = jph(pfo_tmp, sj + '_T1_hd_oriented_to_S0.nii.gz')
-            pfi_T1_roi_mask_hd_oriented = jph(pfo_tmp, sj + '_T1_roi_mask_hd_oriented_to_S0.nii.gz')
-
-            # re-orient the T1 and the T1-mask on the S0 to better initialise the mask propagation.
             angles = sj_parameters['angles'][1]
-            angle_parameter = angles[1]
+        else:
+            angles = sj_parameters['angles']
 
-            lm = LabelsManager()
-            lm.header.apply_small_rotation(pfi_T1, pfi_T1_hd_oriented,
-                                           angle=angle_parameter, principal_axis='pitch')
-            lm.header.apply_small_rotation(pfi_T1_roi_mask, pfi_T1_roi_mask_hd_oriented,
-                                           angle=angle_parameter, principal_axis='pitch')
+        # re-orient the T1 and the T1-mask on the S0 to better initialise the mask propagation.
+        angle_parameter = angles[1]
 
-            assert check_path_validity(pfi_T1_hd_oriented)
-            assert check_path_validity(pfi_T1_roi_mask_hd_oriented)
-            pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '_S0.txt')
-            pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '_S0.nii.gz')
-            cmd0 = 'reg_aladin -ref {0} -flo {1} -fmask {2} -aff {3} -res {4} -omp {5} -rigOnly; '.format(
-                pfi_S0,
-                pfi_T1_hd_oriented,
-                pfi_T1_roi_mask_hd_oriented,
-                pfi_affine_transformation_ref_on_subject,
-                pfi_3d_warped_ref_on_subject,
-                num_cores_run)
-            print_and_run(cmd0)
+        lm = LabelsManager()
+        lm.header.apply_small_rotation(pfi_T1, pfi_T1_hd_oriented,
+                                       angle=angle_parameter, principal_axis='pitch')
+        lm.header.apply_small_rotation(pfi_T1_roi_mask, pfi_T1_roi_mask_hd_oriented,
+                                       angle=angle_parameter, principal_axis='pitch')
 
-            print('- propagate roi masks {}'.format(sj))
-            assert check_path_validity(pfi_affine_transformation_ref_on_subject)
-            pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
-            cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-                pfi_S0,
-                pfi_T1_roi_mask_hd_oriented,
-                pfi_affine_transformation_ref_on_subject,
-                pfi_roi_mask)
-            print_and_run(cmd1)
-            del pfi_S0, pfi_3d_warped_ref_on_subject, pfi_T1, pfi_T1_hd_oriented, pfi_T1_roi_mask, angle_parameter, \
-                angles, pfi_T1_roi_mask_hd_oriented, pfi_affine_transformation_ref_on_subject, pfi_roi_mask, cmd0, cmd1
+        assert check_path_validity(pfi_T1_hd_oriented)
+        assert check_path_validity(pfi_T1_roi_mask_hd_oriented)
+        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '_S0.txt')
+        pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '_S0.nii.gz')
+        cmd0 = 'reg_aladin -ref {0} -flo {1} -fmask {2} -aff {3} -res {4} -omp {5} -rigOnly; '.format(
+            pfi_S0,
+            pfi_T1_hd_oriented,
+            pfi_T1_roi_mask_hd_oriented,
+            pfi_affine_transformation_ref_on_subject,
+            pfi_3d_warped_ref_on_subject,
+            num_cores_run)
+        print_and_run(cmd0)
 
-        del pfi_sj_T1_roi_mask
+        print('- propagate roi masks {}'.format(sj))
+        assert check_path_validity(pfi_affine_transformation_ref_on_subject)
+        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
+        cmd1 = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+            pfi_S0,
+            pfi_T1_roi_mask_hd_oriented,
+            pfi_affine_transformation_ref_on_subject,
+            pfi_roi_mask)
+        print_and_run(cmd1)
+        del pfi_S0, pfi_3d_warped_ref_on_subject, pfi_T1, pfi_T1_hd_oriented, pfi_T1_roi_mask, angle_parameter, \
+            angles, pfi_T1_roi_mask_hd_oriented, pfi_affine_transformation_ref_on_subject, pfi_roi_mask, cmd0, cmd1
 
     if controller['adjust mask']:
         print('- adjust mask {}'.format(sj))
@@ -396,8 +399,8 @@ if __name__ == '__main__':
 
     controller_DWI = {'squeeze'               : False,
                       'orient to standard'    : False,
-                      'create roi masks'      : False,
-                      'adjust mask'           : False,
+                      'create roi masks'      : True,
+                      'adjust mask'           : True,
                       'cut mask dwi'          : False,
                       'cut mask S0'           : False,
                       'correct slope'         : False,
@@ -407,7 +410,7 @@ if __name__ == '__main__':
                       'bfc S0'                : False,
                       'create lesion mask'    : False,
                       'create reg masks'      : False,
-                      'save results'          : True}
+                      'save results'          : False}
 
     lsm = ListSubjectsManager()
 
