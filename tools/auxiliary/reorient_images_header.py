@@ -62,6 +62,9 @@ def set_translational_part_to_zero(pfi_input, pfi_output):
     else:
         raise IOError
 
+    new_image.set_qform(new_transf)
+    new_image.set_sform(new_transf)
+
     # print intermediate results
     print 'Affine input image: \n'
     print im_input.affine
@@ -104,7 +107,7 @@ def orient2std(pfi_in, pfi_out):
     print_and_run(cmd0)
 
     # for rounding problems re-do the computation of the diagonal elements. see subject 3404
-    # set the diagonal to zero in this part as well.
+    # set the translational part to zero in this part as well.
     im_input = nib.load(pfi_intermediate)
     aff = np.copy(im_input.affine)
     new_aff = np.eye(4)

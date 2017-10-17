@@ -55,12 +55,26 @@ macro_region_labels_joints_side_only = {
 }
 
 
+# ---
+
+macro_region_labels_for_ptb = {
+    'ptb_regions'             : [179, 180, 83, 84, 31, 32, 223, 224, 69, 70, 218, 215],
+    'cerebrum_left'             : [5, 7, 9, 11, 13, 15, 17, 19, 21, 25, 27, 31, 32, 43, 45, 47, 53, 55,
+                                   69, 71, 75, 77],
+    'ventricular_system_fibre_tracts'   : [201, 211, 212] + [213, 215, 218, 219, 220, 223, 224, 225, 226,
+                                                             227, 228, 229, 230, 233, 237, 239, 240, 241,
+                                                             242, 243, 244, 247, 248, 249, 250, 251, 252,
+                                                             253, 255]
+}
+
+
+
 
 # Segmentation input
 
 pfo_template = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/study/A_internal_template'
 pfo_model = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/docs/Atlas_Paper/images/subject_model'
-pfo_resulting_images_folder = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/docs/Atlas_Paper/images/figure_3'
+pfo_resulting_images_folder = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/docs/Atlas_Paper/images/f4_3drendering'
 
 chart_name = '1305'
 
@@ -81,20 +95,20 @@ if True:
 
     print labels_in_image
 
-    # for mr_key in macro_region_labels_joints_side_only.keys():
-    #
-    #     pfi_macro_region_output = jph(pfo_resulting_images_folder,
-    #                                   '{0}_approved_macro_region_{1}.nii.gz'.format(chart_name, mr_key))
-    #
-    #     new_data = assign_all_other_labels_the_same_value(im_segm.get_data(),
-    #                                                       labels_to_keep=macro_region_labels_joints_side_only[mr_key],
-    #                                                       same_value_label=255)
-    #
-    #     new_im_segm = set_new_data(im_segm, new_data)
-    #     nib.save(new_im_segm, pfi_macro_region_output)
-    #
-    #     cmd = 'itksnap -g {0} -s {1} -l {2}'.format(pfi_input_anatomy,
-    #                                                 pfi_macro_region_output,
-    #                                                 pfi_local_labels_descriptor)
-    #     os.system(cmd)
+    for mr_key in macro_region_labels_for_ptb.keys():
+
+        pfi_macro_region_output = jph(pfo_resulting_images_folder,
+                                      '{0}_approved_macro_region_{1}.nii.gz'.format(chart_name, mr_key))
+
+        new_data = assign_all_other_labels_the_same_value(im_segm.get_data(),
+                                                          labels_to_keep=macro_region_labels_for_ptb[mr_key],
+                                                          same_value_label=255)
+
+        new_im_segm = set_new_data(im_segm, new_data)
+        nib.save(new_im_segm, pfi_macro_region_output)
+
+        cmd = 'itksnap -g {0} -s {1} -l {2}'.format(pfi_input_anatomy,
+                                                    pfi_macro_region_output,
+                                                    pfi_local_labels_descriptor)
+        os.system(cmd)
 
