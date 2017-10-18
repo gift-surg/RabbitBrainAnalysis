@@ -1,10 +1,10 @@
 #$ -l h_rt=12:00:00
 #$ -l tmem=20G
 #$ -l h_vmem=20G
-#$ -N "PTB_all_noT1_noGr"
+#$ -N "Atlas_selected_T1_DWI_only"
 #$ -S /bin/bash
 #$ -cwd
-#$ -t 1-17
+#$ -t 1-8
 #$ -e /cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/software/z_output
 #$ -o /cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/software/z_output
 
@@ -12,7 +12,7 @@
 date
 hostname
 
-SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_PTB_ex_vivo.txt`
+SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_atlas_only.txt`
 
 
 export PATH=/share/apps/fsl-5.0.8/bin/:${PATH}

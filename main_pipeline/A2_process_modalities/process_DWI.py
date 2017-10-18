@@ -154,18 +154,20 @@ def process_DWI_per_subject(sj, controller):
 
         # check if the orientation angles are different for each modality:
         if isinstance(sj_parameters['angles'][0], list):
+            # re-orient the T1 and the T1-mask on the S0 to better initialise the mask propagation.
             angles = sj_parameters['angles'][1]
+            angle_parameter = angles[1]
+            lm = LabelsManager()
+            lm.header.apply_small_rotation(pfi_T1, pfi_T1_hd_oriented,
+                                           angle=angle_parameter, principal_axis='pitch')
+            lm.header.apply_small_rotation(pfi_T1_roi_mask, pfi_T1_roi_mask_hd_oriented,
+                                           angle=angle_parameter, principal_axis='pitch')
+
         else:
-            angles = sj_parameters['angles']
-
-        # re-orient the T1 and the T1-mask on the S0 to better initialise the mask propagation.
-        angle_parameter = angles[1]
-
-        lm = LabelsManager()
-        lm.header.apply_small_rotation(pfi_T1, pfi_T1_hd_oriented,
-                                       angle=angle_parameter, principal_axis='pitch')
-        lm.header.apply_small_rotation(pfi_T1_roi_mask, pfi_T1_roi_mask_hd_oriented,
-                                       angle=angle_parameter, principal_axis='pitch')
+            cmd1 = 'cp {0} {1}'.format(pfi_T1, pfi_T1_hd_oriented)
+            cmd2 = 'cp {0} {1}'.format(pfi_T1, pfi_T1_hd_oriented)
+            os.system(cmd1)
+            os.system(cmd2)
 
         assert check_path_validity(pfi_T1_hd_oriented)
         assert check_path_validity(pfi_T1_roi_mask_hd_oriented)

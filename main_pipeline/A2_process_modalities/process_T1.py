@@ -4,6 +4,9 @@ T1 processing in their original coordinate system.
 import os
 from os.path import join as jph
 import pickle
+import numpy as np
+
+from labels_manager.main import LabelsManager
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_internal_template, num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
@@ -67,64 +70,101 @@ def process_T1_per_subject(sj, controller):
         del pfi_input_original, pfi_std
 
     if controller['register roi masks']:
-        print('- register roi masks {}'.format(sj))
+        print('- register roi masks and propagate it {}'.format(sj))
+
+        # --- subject input:
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
+        assert check_path_validity(pfi_std)
+
+        # --- Get the reference masks from the histologically oriented template ---
         if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
             # This will be the pivotal chart of the template, reoriented respect to the angle in
             # the subjects parameters. (the only utils has to be the subjects parameters.)
             pfi_sj_ref_coord_system = jph(root_internal_template, '1305', 'mod', '1305_T1.nii.gz')
-        elif sj_parameters['category'] == 'in_vivo':
-            pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
-        else:
-            raise IOError('ex_vivo, in_vivo or op_skull only.')
-        assert check_path_validity(pfi_std)
-        assert check_path_validity(pfi_sj_ref_coord_system)
-        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '.txt')
-        pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '.nii.gz')
-        cmd = 'reg_aladin -ref {0} -flo {1} -aff {2} -res {3} -omp {4} '.format(
-            pfi_std,
-            pfi_sj_ref_coord_system,
-            pfi_affine_transformation_ref_on_subject,
-            pfi_3d_warped_ref_on_subject,
-            num_cores_run)
-        print_and_run(cmd)
-        del pfi_std, pfi_sj_ref_coord_system, pfi_affine_transformation_ref_on_subject, \
-            pfi_3d_warped_ref_on_subject, cmd
-
-    if controller['propagate roi masks']:
-        print('- propagate roi masks {}'.format(sj))
-        pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
-        if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
             pfi_reference_roi_mask = jph(root_internal_template, '1305', 'masks', '1305_roi_mask.nii.gz')
         elif sj_parameters['category'] == 'in_vivo':
+            pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
             pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_roi_mask.nii.gz')
         else:
             raise IOError('ex_vivo, in_vivo or op_skull only.')
-        pfi_affine_transformation_reference_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '.txt')
-        assert check_path_validity(pfi_std), pfi_std
+
+        assert check_path_validity(pfi_sj_ref_coord_system)
         assert check_path_validity(pfi_reference_roi_mask)
-        assert check_path_validity(pfi_affine_transformation_reference_on_subject)
-        pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
+
+        # --- Get the angle difference from histological (template) to bicommissural (data) and orient header ---
+        if isinstance(sj_parameters['angles'][0], list):
+            angles = sj_parameters['angles'][0]
+        else:
+            angles = sj_parameters['angles']
+
+        angle_parameter = angles[1]
+
+        pfi_sj_ref_coord_system_hd_oriented = jph(pfo_tmp, 'reference_for_mask_registration.nii.gz')
+        pfi_reference_roi_mask_hd_oriented = jph(pfo_tmp, 'reference_for_mask_registration_mask.nii.gz')
+
+        lm = LabelsManager()
+        lm.header.apply_small_rotation(pfi_sj_ref_coord_system, pfi_sj_ref_coord_system_hd_oriented,
+                                       angle=angle_parameter, principal_axis='pitch')
+        lm.header.apply_small_rotation(pfi_reference_roi_mask, pfi_reference_roi_mask_hd_oriented,
+                                       angle=angle_parameter, principal_axis='pitch')
+
+        # set translational part it its center of mass
+
+        lm.header.modify_translational_part(pfi_sj_ref_coord_system_hd_oriented, pfi_sj_ref_coord_system_hd_oriented,
+                                            np.array([0, 0, 0]))
+        lm.header.modify_translational_part(pfi_reference_roi_mask_hd_oriented, pfi_reference_roi_mask_hd_oriented,
+                                            np.array([0, 0, 0]))
+
+        assert check_path_validity(pfi_sj_ref_coord_system_hd_oriented)
+        assert check_path_validity(pfi_reference_roi_mask_hd_oriented)
+        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '.txt')
+        pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '.nii.gz')
+        cmd = 'reg_aladin -ref {0} -flo {1} -fmask {2} -aff {3} -res {4} -omp {5} -rigOnly '.format(
+            pfi_std,
+            pfi_sj_ref_coord_system_hd_oriented,
+            pfi_reference_roi_mask_hd_oriented,
+            pfi_affine_transformation_ref_on_subject,
+            pfi_3d_warped_ref_on_subject,
+            num_cores_run)
+        print cmd
+        print_and_run(cmd)
+
+        print('- propagate roi masks {}'.format(sj))
+
+        assert check_path_validity(pfi_affine_transformation_ref_on_subject)
+        pfi_roi_mask_not_adjusted = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted.nii.gz')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_std,
-            pfi_reference_roi_mask,
-            pfi_affine_transformation_reference_on_subject,
-            pfi_roi_mask)
+            pfi_reference_roi_mask_hd_oriented,
+            pfi_affine_transformation_ref_on_subject,
+            pfi_roi_mask_not_adjusted)
         print_and_run(cmd)
-        del pfi_std, pfi_reference_roi_mask, pfi_affine_transformation_reference_on_subject, pfi_roi_mask, \
-            cmd
+        del pfi_std, pfi_sj_ref_coord_system, pfi_reference_roi_mask, \
+            angle_parameter, angles, pfi_sj_ref_coord_system_hd_oriented, pfi_reference_roi_mask_hd_oriented,\
+            pfi_affine_transformation_ref_on_subject, pfi_3d_warped_ref_on_subject, pfi_roi_mask_not_adjusted, cmd
 
     if controller['adjust mask']:
         print('- adjust mask {}'.format(sj))
+        pfi_roi_mask_not_adjusted = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted.nii.gz')
+        assert check_path_validity(pfi_roi_mask_not_adjusted)
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
-        assert check_path_validity(pfi_roi_mask)
-        erosion_param = sj_parameters['erosion_roi_mask']
-        if erosion_param > 0:
-            cmd = 'seg_maths {0} -ero {1} {2}'.format(pfi_roi_mask,
-                                                      erosion_param,
+
+        dilation_param = sj_parameters['T1_mask_dilation']
+        if dilation_param < 0:  # if negative use to erode.
+            cmd = 'seg_maths {0} -ero {1} {2}'.format(pfi_roi_mask_not_adjusted,
+                                                      -1 * dilation_param,
                                                       pfi_roi_mask)
             print_and_run(cmd)
-        del pfi_roi_mask, erosion_param
+
+        elif dilation_param > 0:
+            cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_roi_mask_not_adjusted,
+                                                      dilation_param,
+                                                      pfi_roi_mask)
+            print_and_run(cmd)
+        else:
+            cmd = 'cp {} {}'.format(pfi_roi_mask_not_adjusted, pfi_roi_mask)
+            os.system(cmd)
+        del pfi_roi_mask, dilation_param, pfi_roi_mask_not_adjusted
 
     if controller['cut masks']:
         print('- cut masks {}'.format(sj))
@@ -211,15 +251,14 @@ def process_T1_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process T1, local run. ')
 
-    controller_steps = {'orient to standard'  : True,
+    controller_steps = {'orient to standard'  : False,
                         'register roi masks'  : True,
-                        'propagate roi masks' : True,
                         'adjust mask'         : True,
                         'cut masks'           : True,
-                        'step bfc'            : True,
-                        'create lesion mask'  : True,
-                        'create reg masks'    : True,
-                        'save results'        : True,
+                        'step bfc'            : False,
+                        'create lesion mask'  : False,
+                        'create reg masks'    : False,
+                        'save results'        : False,
                         'speed'               : False}
 
     lsm = ListSubjectsManager()
@@ -230,7 +269,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['3404', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['1505', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

@@ -28,14 +28,14 @@ def main_runner(subj_list):
 
     # Set steps
 
-    steps = {'reset_parameters' : False,  # if this is true it does not do anything else.
+    steps = {'reset_parameters' : True,  # if this is true it does not do anything else.
              'step_A1'          : False,
-             'step_A2_T1'       : False,
+             'step_A2_T1'       : True,
              'step_A2_DWI'      : True,
-             'step_A2_MSME'     : True,
-             'step_A2_T2maps'   : True,
+             'step_A2_MSME'     : False,
+             'step_A2_T2maps'   : False,
              'step_A2_g_ratio'  : False,
-             'step_A3'          : True,
+             'step_A3'          : False,
              'step_A4'          : False,
              'step_A5'          : False}
 
@@ -67,7 +67,6 @@ def main_runner(subj_list):
         print('\nStep A2 T1\n')
         controller_A2_T1 = {'orient to standard'  : True,
                             'register roi masks'  : True,
-                            'propagate roi masks' : True,
                             'adjust mask'         : True,
                             'cut masks'           : True,
                             'step bfc'            : True,
@@ -197,7 +196,7 @@ if __name__ == '__main__':
 
     lsm.input_subjects = ['13108']
     # lsm.input_subjects = ['3103']
-
+    # template_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
     lsm.update_ls()
 
     print(lsm.ls)

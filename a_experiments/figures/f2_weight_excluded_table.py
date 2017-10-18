@@ -60,15 +60,15 @@ data_set = OrderedDict(
             2502: ['Term',    'Female', (62.9, 1.65), 'in'],
             2503: ['Term',    'Female', (66.8, 1.79), 'out'],
             2608: ['Term',    'Female', (54.1, 1.79), 'out'],
-            3301: ['Term',    'Female', (40, 1),      'in'],     # DATA NOT GIVEN!
-            3303: ['Preterm', 'Male',   (45, 1.25),   'out'],     # DATA NOT GIVEN!
-            3404: ['Term',    'Female', (50, 1.5),    'in'],     # DATA NOT GIVEN!
+            3301: ['Preterm', 'Female', (47.4, 1.59),      'in'],     # M/F DATA NOT GIVEN!
+            3303: ['Preterm', 'Male',   (50.3, 1.78),   'out'],    # M/F DATA NOT GIVEN!
+            3404: ['Term',    'Female', (34.3, 1.6),    'in'],     # M/F DATA NOT GIVEN!
             })
 
 
 if __name__ == '__main__':
 
-    add_id = False
+    add_id = True
 
     body_we  = [data_set[k][2][0] for k in data_set.keys()]
     brain_we = [data_set[k][2][1] for k in data_set.keys()]
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     std_brain = np.std(brain_we)
 
     # FIGURE:
-    fig, ax = plt.subplots(figsize=(7, 8))
+    fig, ax = plt.subplots(figsize=(7, 6))
 
     # --------- horizontal vertical lines
     ax.axhline(y=mu_brain, color='grey', linestyle='--')
@@ -166,7 +166,7 @@ if __name__ == '__main__':
     ax.set_ylabel('Brain weight (g)')
 
     ax.set_xlim([25, 75])
-    ax.set_ylim([0.9, 1.9])
+    ax.set_ylim([1.0, 1.9])
 
     pfo_resulting_images_folder = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/docs/Atlas_Paper/images/f2_dataset_presentation'
     if add_id:
