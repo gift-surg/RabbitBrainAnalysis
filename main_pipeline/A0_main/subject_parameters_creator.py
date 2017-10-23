@@ -177,7 +177,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.T1_window_percentile   = (15, 90)
     sp.S0_window_percentile   = (1, 95)
     sp.T1_mask_dilation       = 1.5
-    sp.S0_mask_dilation       = 1
+    sp.S0_mask_dilation       = 2
     sp.erosion_roi_mask       = 0
     sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
@@ -197,7 +197,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.T1_window_percentile   = (15, 90)
     sp.S0_window_percentile   = (1, 95)
     sp.T1_mask_dilation       = 3.5
-    sp.S0_mask_dilation       = 1
+    sp.S0_mask_dilation       = 2
     sp.erosion_roi_mask       = 0
     sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
@@ -217,7 +217,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.T1_window_percentile   = (15, 90)
     sp.S0_window_percentile   = (1, 95)
     sp.T1_mask_dilation       = 0.5
-    sp.S0_mask_dilation       = 1
+    sp.S0_mask_dilation       = 2
     sp.erosion_roi_mask       = 0
     sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
@@ -296,9 +296,9 @@ def reset_parameters_files(pfo_where_to_save):
     sp.threshold              = 25
     sp.T1_window_percentile   = (15, 90)
     sp.S0_window_percentile   = (1, 95)
-    sp.T1_mask_dilation       = 1
+    sp.T1_mask_dilation       = -3.5
     sp.S0_mask_dilation       = 1
-    sp.erosion_roi_mask       = 1
+    sp.erosion_roi_mask       = 0
     sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
@@ -316,9 +316,9 @@ def reset_parameters_files(pfo_where_to_save):
     sp.threshold              = 25
     sp.T1_window_percentile   = (15, 90)
     sp.S0_window_percentile   = (1, 95)
-    sp.T1_mask_dilation       = 1
+    sp.T1_mask_dilation       = 2.5
     sp.S0_mask_dilation       = 1
-    sp.erosion_roi_mask       = 1
+    sp.erosion_roi_mask       = 0
     sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
@@ -336,9 +336,9 @@ def reset_parameters_files(pfo_where_to_save):
     sp.threshold              = 25
     sp.T1_window_percentile   = (15, 90)
     sp.S0_window_percentile   = (1, 95)
-    sp.T1_mask_dilation       = 1
-    sp.S0_mask_dilation       = 1
-    sp.erosion_roi_mask       = 1
+    sp.T1_mask_dilation       = 4
+    sp.S0_mask_dilation       = 2
+    sp.erosion_roi_mask       = 0
     sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
@@ -356,7 +356,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.threshold              = 25
     sp.T1_window_percentile   = (15, 90)
     sp.S0_window_percentile   = (1, 95)
-    sp.T1_mask_dilation       = 1
+    sp.T1_mask_dilation       = -3
     sp.S0_mask_dilation       = 1
     sp.erosion_roi_mask       = 0
     sp.DWI_squashed           = False
@@ -376,7 +376,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.threshold              = 25
     sp.T1_window_percentile   = (15, 90)
     sp.S0_window_percentile   = (1, 95)
-    sp.T1_mask_dilation       = 3
+    sp.T1_mask_dilation       = 1.5
     sp.S0_mask_dilation       = 1
     sp.erosion_roi_mask       = 0
     sp.DWI_squashed           = False
@@ -396,9 +396,9 @@ def reset_parameters_files(pfo_where_to_save):
     sp.threshold              = 25
     sp.T1_window_percentile   = (5, 90)
     sp.S0_window_percentile   = (1, 95)
-    sp.T1_mask_dilation       = 1
-    sp.S0_mask_dilation       = 1
-    sp.erosion_roi_mask       = 1
+    sp.T1_mask_dilation       = 3
+    sp.S0_mask_dilation       = 2
+    sp.erosion_roi_mask       = 0
     sp.DWI_squashed           = True
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
@@ -418,7 +418,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.S0_window_percentile   = (1, 95)
     sp.T1_mask_dilation       = 1
     sp.S0_mask_dilation       = 1
-    sp.erosion_roi_mask       = 1
+    sp.erosion_roi_mask       = 0
     sp.DWI_squashed           = True
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
@@ -436,9 +436,9 @@ def reset_parameters_files(pfo_where_to_save):
     sp.threshold              = 0.001
     sp.T1_window_percentile   = (15, 90)
     sp.S0_window_percentile   = (1, 95)
-    sp.T1_mask_dilation       = 1
+    sp.T1_mask_dilation       = 0.5
     sp.S0_mask_dilation       = 1
-    sp.erosion_roi_mask       = 1
+    sp.erosion_roi_mask       = 0
     sp.DWI_squashed           = True
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
@@ -456,9 +456,9 @@ def reset_parameters_files(pfo_where_to_save):
     sp.threshold              = 0.001
     sp.T1_window_percentile   = (5, 90)
     sp.S0_window_percentile   = (1, 95)
-    sp.T1_mask_dilation       = 1
+    sp.T1_mask_dilation       = 2
     sp.S0_mask_dilation       = 3
-    sp.erosion_roi_mask       = 1
+    sp.erosion_roi_mask       = 0
     sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
@@ -479,7 +479,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.S0_window_percentile = (1, 95)
     sp.T1_mask_dilation = 2
     sp.S0_mask_dilation = 3
-    sp.erosion_roi_mask = 1
+    sp.erosion_roi_mask = 0
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
@@ -500,7 +500,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.S0_window_percentile = (1, 95)
     sp.T1_mask_dilation = 1
     sp.S0_mask_dilation = 2
-    sp.erosion_roi_mask = 1
+    sp.erosion_roi_mask = 0
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'

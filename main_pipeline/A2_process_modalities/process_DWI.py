@@ -10,14 +10,15 @@ import numpy as np
 from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
 from labels_manager.main import LabelsManager
 
-from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_internal_template, num_cores_run
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters, num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
 from tools.auxiliary.reorient_images_header import orient2std
 from tools.auxiliary.squeezer import squeeze_image_from_path
 from tools.auxiliary.utils import cut_dwi_image_from_first_slice_mask_path, \
-    reproduce_slice_fourth_dimension_path, scale_y_value_and_trim, print_and_run, set_new_data_path, grab_a_timepoint_path
+    reproduce_slice_fourth_dimension_path, scale_y_value_and_trim, print_and_run, set_new_data_path, \
+    grab_a_timepoint_path
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.correctors.slope_corrector import slope_corrector_path
 
@@ -165,7 +166,7 @@ def process_DWI_per_subject(sj, controller):
 
         else:
             cmd1 = 'cp {0} {1}'.format(pfi_T1, pfi_T1_hd_oriented)
-            cmd2 = 'cp {0} {1}'.format(pfi_T1, pfi_T1_hd_oriented)
+            cmd2 = 'cp {0} {1}'.format(pfi_T1_roi_mask, pfi_T1_roi_mask_hd_oriented)
             os.system(cmd1)
             os.system(cmd2)
 
@@ -191,8 +192,8 @@ def process_DWI_per_subject(sj, controller):
             pfi_affine_transformation_ref_on_subject,
             pfi_roi_mask)
         print_and_run(cmd1)
-        del pfi_S0, pfi_3d_warped_ref_on_subject, pfi_T1, pfi_T1_hd_oriented, pfi_T1_roi_mask, angle_parameter, \
-            angles, pfi_T1_roi_mask_hd_oriented, pfi_affine_transformation_ref_on_subject, pfi_roi_mask, cmd0, cmd1
+        del pfi_S0, pfi_3d_warped_ref_on_subject, pfi_T1, pfi_T1_hd_oriented, pfi_T1_roi_mask, \
+            pfi_T1_roi_mask_hd_oriented, pfi_affine_transformation_ref_on_subject, pfi_roi_mask, cmd0, cmd1
 
     if controller['adjust mask']:
         print('- adjust mask {}'.format(sj))
@@ -386,7 +387,7 @@ def process_DWI_per_subject(sj, controller):
         for a, b in zip([pfi_v1, pfi_s0, pfi_FA, pfi_MD], [pfi_v1_new, pfi_s0_new, pfi_FA_new, pfi_MD_new]):
             cmd = 'cp {0} {1}'.format(a, b)
             print_and_run(cmd)
-        del pfi_v1, pfi_s0, pfi_FA, pfi_MD, pfi_v1_new, pfi_s0_new, pfi_FA_new, pfi_MD_new, cmd
+        del pfi_v1, pfi_s0, pfi_FA, pfi_MD, pfi_v1_new, pfi_s0_new, pfi_FA_new, pfi_MD_new
 
 
 def process_DWI_from_list(subj_list, controller):
@@ -399,20 +400,20 @@ def process_DWI_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process DWI, local run. ')
 
-    controller_DWI = {'squeeze'               : False,
-                      'orient to standard'    : False,
+    controller_DWI = {'squeeze'               : True,
+                      'orient to standard'    : True,
                       'create roi masks'      : True,
                       'adjust mask'           : True,
-                      'cut mask dwi'          : False,
-                      'cut mask S0'           : False,
-                      'correct slope'         : False,
-                      'eddy current'          : False,
-                      'fsl tensor fitting'    : False,
-                      'adjust dti-based mod'  : False,
-                      'bfc S0'                : False,
-                      'create lesion mask'    : False,
-                      'create reg masks'      : False,
-                      'save results'          : False}
+                      'cut mask dwi'          : True,
+                      'cut mask S0'           : True,
+                      'correct slope'         : True,
+                      'eddy current'          : True,
+                      'fsl tensor fitting'    : True,
+                      'adjust dti-based mod'  : True,
+                      'bfc S0'                : True,
+                      'create lesion mask'    : True,
+                      'create reg masks'      : True,
+                      'save results'          : True}
 
     lsm = ListSubjectsManager()
 
@@ -422,7 +423,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['3404']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['1201']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()
