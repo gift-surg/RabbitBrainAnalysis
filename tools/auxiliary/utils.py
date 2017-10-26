@@ -42,6 +42,19 @@ from labels_manager.tools.aux_methods.utils_nib import set_new_data
 #     return new_image
 
 
+
+def triangular_density_function(x, a, mu, b):
+
+    if a <= x < mu:
+        return 2 * (x - a) / float((b - a) * (mu - a))
+    elif x == mu:
+        return 2 / float(b - a)
+    elif mu < x <= b:
+        return 2 * (b - x) / float((b - a) * (b - mu))
+    else:
+        return 0
+
+
 def set_new_data_path(pfi_target_im, pfi_image_where_the_new_data, pfi_result, new_dtype=None, remove_nan=True):
 
     # if pfi_image_where_the_new_data == pfi_result:
