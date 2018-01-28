@@ -2,7 +2,7 @@ import os
 from os.path import join as jph
 
 from tools.measurements.z_old_compile_record import compile_record
-from tools.definitions import root_internal_template, root_study_rabbits, pfi_excel_table_all_data
+from tools.definitions import root_atlas, root_study_rabbits, pfi_excel_table_all_data
 from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
 '''
 Data here are directly collected from the manual segmentation that constitutes the internal template.
@@ -14,7 +14,7 @@ the resampling.
 def compile_record_internal_template(bypass=None):
 
     # folders and data from the architecture:
-    pfi_multi_labels_descr = jph(root_internal_template, 'LabelsDescriptors', 'multi_labels_descriptor.txt')
+    pfi_multi_labels_descr = jph(root_atlas, 'LabelsDescriptors', 'multi_labels_descriptor.txt')
 
     for p in [pfi_multi_labels_descr, pfi_excel_table_all_data]:
         if not check_path_validity(p):
@@ -22,14 +22,14 @@ def compile_record_internal_template(bypass=None):
             raise IOError(msg)
 
     if bypass is None:
-        subjects = os.listdir(root_internal_template)
+        subjects = os.listdir(root_atlas)
         subjects = [k for k in subjects if k.isdigit()]
     else:
         subjects = bypass
 
     for sj in subjects:
 
-        pfo_subject = jph(root_internal_template, sj)
+        pfo_subject = jph(root_atlas, sj)
         pfo_output_records = jph(root_study_rabbits, 'A_data', 'PTB', 'ex_vivo', sj, 'records_template')
 
         # grab segmentation

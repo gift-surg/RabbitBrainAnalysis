@@ -10,7 +10,7 @@ if os.path.exists('/cluster/project0'):
     # call FSL
     # set up the roots
     root_main_cluster = '/cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/data'
-    root_internal_template = jph(root_main_cluster, 'A_internal_template')
+    root_atlas = jph(root_main_cluster, 'A_atlas')
     root_utils = jph(root_main_cluster, 'A_data', 'Utils')
     root_study_rabbits = root_main_cluster
     bfc_corrector_cmd = '/share/apps/cmic/NiftyMIDAS/bin/niftkMTPDbc'
@@ -22,7 +22,7 @@ elif os.path.exists('/Volumes/LC/sebastianof/rabbits/'):
     print('You are on the external hdd')
     root_main_hdd = '/Volumes/LC/sebastianof'
     root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
-    root_internal_template = jph(root_main_dropbox, 'study', 'A_internal_template')
+    root_atlas = jph(root_main_hdd, 'rabbits', 'A_atlas')
     root_docs = jph(root_main_dropbox, 'docs')
     root_study_rabbits = jph(root_main_hdd, 'rabbits')
     root_shared_records = jph(root_main_dropbox, 'study', 'C_records')
@@ -34,7 +34,7 @@ elif os.path.exists('/Volumes/sebastianof/'):
     print('You are on pantopolium')
     root_main_pantopolium = '/Volumes/sebastianof/'
     root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
-    root_internal_template = jph(root_main_dropbox, 'study', 'A_internal_template')
+    root_atlas = jph(root_main_pantopolium, 'rabbits', 'A_atlas')
     root_study_rabbits = jph(root_main_pantopolium, 'rabbits')
     root_utils = jph(root_study_rabbits, 'A_data', 'Utils')
     root_shared_records = jph(root_main_dropbox, 'study', 'C_records')
@@ -48,10 +48,10 @@ else:
     root_study_rabbits = ''
     root_utils = ''
     root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
-    root_internal_template = jph(root_main_dropbox, 'study', 'A_internal_template')
+    root_atlas = jph(root_main_dropbox, 'study', 'A_internal_template')
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc'
     num_cores_run = 8
 
 pfi_excel_table_all_data = jph(root_study_rabbits, 'A_data', 'DataSummary.xlsx')
 pfo_subjects_parameters = jph(root_study_rabbits, 'A_data', 'Utils', 'subjects_parameters')
-pfi_labels_descriptor = jph(root_internal_template, 'LabelsDescriptors', 'labels_descriptor_v8.txt')
+pfi_labels_descriptor = jph(root_atlas, 'LabelsDescriptors', 'labels_descriptor_v8.txt')

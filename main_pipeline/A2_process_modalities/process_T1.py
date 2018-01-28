@@ -8,7 +8,7 @@ import numpy as np
 
 from labels_manager.main import LabelsManager
 
-from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_internal_template, num_cores_run
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_atlas, num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero, orient2std
@@ -80,8 +80,8 @@ def process_T1_per_subject(sj, controller):
         if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
             # This will be the pivotal chart of the template, reoriented respect to the angle in
             # the subjects parameters. (the only utils has to be the subjects parameters.)
-            pfi_sj_ref_coord_system = jph(root_internal_template, '1305', 'mod', '1305_T1.nii.gz')
-            pfi_reference_roi_mask = jph(root_internal_template, '1305', 'masks', '1305_roi_mask.nii.gz')
+            pfi_sj_ref_coord_system = jph(root_atlas, '1305', 'mod', '1305_T1.nii.gz')
+            pfi_reference_roi_mask = jph(root_atlas, '1305', 'masks', '1305_roi_mask.nii.gz')
         elif sj_parameters['category'] == 'in_vivo':
             pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
             pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_roi_mask.nii.gz')
@@ -108,7 +108,7 @@ def process_T1_per_subject(sj, controller):
         lm.header.apply_small_rotation(pfi_reference_roi_mask, pfi_reference_roi_mask_hd_oriented,
                                        angle=angle_parameter, principal_axis='pitch')
 
-        # set translational part it its center of mass
+        # set translational part to zero
 
         lm.header.modify_translational_part(pfi_sj_ref_coord_system_hd_oriented, pfi_sj_ref_coord_system_hd_oriented,
                                             np.array([0, 0, 0]))
@@ -206,7 +206,6 @@ def process_T1_per_subject(sj, controller):
         del pfi_3d_cropped_roi, pfi_3d_bias_field_corrected, cmd
 
     if controller['create lesion mask']:
-        print('- create lesion mask {}'.format(sj))
         pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
         assert check_path_validity(pfi_3d_bias_field_corrected)

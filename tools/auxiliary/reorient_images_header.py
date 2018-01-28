@@ -75,7 +75,7 @@ def set_translational_part_to_zero(pfi_input, pfi_output):
     nib.save(new_image, pfi_output)
 
 
-def orient2std(pfi_in, pfi_out):
+def orient2std(pfi_in, pfi_out, keep_translation=True):
     """
     As different modalities are not oriented in the same space when converted and
     as fslorient2std affects only the s-form and not the q-form.
@@ -113,6 +113,8 @@ def orient2std(pfi_in, pfi_out):
     new_aff = np.eye(4)
     for c in range(3):
         new_aff[c,c] = np.linalg.norm(aff[:,c])
+    if keep_translation:
+        new_aff[:-1, 3] = aff[:-1, 3]
 
     # create output image on the input
     if im_input.header['sizeof_hdr'] == 348:
