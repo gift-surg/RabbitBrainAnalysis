@@ -10,7 +10,7 @@ from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from spot_a_rabbit.spot import SpotDS
 
 
-def spot_a_list_of_rabbits(subjects_list, controller_propagator, controller_fuser):
+def spot_a_list_of_rabbits(subjects_list):
 
     for sj_target in subjects_list:
 
@@ -33,10 +33,6 @@ def spot_a_list_of_rabbits(subjects_list, controller_propagator, controller_fuse
 
         # --- target parameters
         spot_sj.target_parameters = sj_parameters
-
-        spot_sj.controller_propagator = controller_propagator
-
-        spot_sj.controller_fuser = controller_fuser
 
         spot_sj.target_list_suffix_modalities = [['T1'], ['S0', 'V1', 'MD', 'FA']]
 
@@ -63,7 +59,7 @@ def spot_a_list_of_rabbits(subjects_list, controller_propagator, controller_fuse
                                          }
 
         # settings fuser:
-        spot_sj.controller_fuser = {'Fusion_methods': ['MV', 'STAPLE', 'STEPS'],
+        spot_sj.controller_fuser = {'Fusion_methods': ['MV'],
                                     'Fuse': True,
                                     'STAPLE_params': OrderedDict([('pr_1', None)]),
                                     'STEPS_params': OrderedDict([('pr_{0}_{1}'.format(k, n), [k, n, 0.4])
@@ -74,7 +70,7 @@ def spot_a_list_of_rabbits(subjects_list, controller_propagator, controller_fuse
 
         spot_sj.num_cores_run = num_cores_run
 
-        spot_sj.propagate()
+        # spot_sj.propagate()
         spot_sj.fuse()
 
 
@@ -88,35 +84,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['3301', ]
+    lsm.input_subjects = ['4302', ]
     lsm.update_ls()
 
-    controller_propagator_ = {'Propagation_methods'       : 'Mono',
-                              'Affine_options'            : '',
-                              'Reorient_chart_hd'         : True,
-                              'Aff_alignment'             : True,
-                              'Propagate_aff_to_segm'     : True,
-                              'Propagate_aff_to_mask'     : True,
-                              'Get_differential_BFC'      : True,
-                              'N-rig_alignment'           : True,
-                              'Propagate_to_target_n-rig' : True,
-                              'Smooth_results'            : True,
-                              'Stack_warps_and_segms'     : True,
-                              'Speed'                     : False}
-
-    controller_fuser_ = {'Fuse'           : True,
-                         'Fusion_methods' : ['MV', 'STEPS', 'STAPLE'],  # 'MV', 'STAPLE',
-                         'STAPLE_params'  : OrderedDict([('pr_1', None)]),
-                         'STEPS_params'   : OrderedDict([('pr_1', [3, 3, None]),
-                                                         ('pr_2', [3, 3, 2.0]),
-                                                         ('pr_3', [3, 3, 4.0]),
-                                                         ('pr_4', [3, 4, None]),
-                                                         ('pr_5', [3, 4, 2.0]),
-                                                         ('pr_6', [3, 4, 4.0]),
-                                                         ('pr_7', [3, 5, None]),
-                                                         ('pr_8', [3, 5, 2.0]),
-                                                         ('pr_9', [3, 5, 4.0])]),  # k, n ,beta
-                         'Inter_mod_space_propagation'   : True,
-                         'Save_results'                  : True}
-
-    spot_a_list_of_rabbits(lsm.ls, controller_propagator_, controller_fuser_)
+    spot_a_list_of_rabbits(lsm.ls)

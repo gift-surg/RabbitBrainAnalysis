@@ -371,6 +371,51 @@ def process_DWI_per_subject(sj, controller):
         print_and_run(cmd)
         del pfi_roi_mask, pfi_lesion_mask, pfi_registration_mask, cmd
 
+    if controller['align over T1']:
+        """
+        All the DWI-based maps are aligned with the T1. Transformation si obtained from the S0 aligned on the T1.
+         Will be S0inT1, V1inT1 ... 
+         This is for the multi-modal registration method and for visualisation purposes.
+         The final method will always be on the 
+        """
+        print('- Align over T1 {}'.format(sj))
+        pfi_T1 = jph(pfo_mod, sj + '_T1.nii.gz')
+        pfi_V1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_V1.nii.gz')
+        pfi_S0 = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0.nii.gz')
+        pfi_FA = jph(pfo_tmp, 'fsl_fit_' + sj + '_FA.nii.gz')
+        pfi_MD = jph(pfo_tmp, 'fsl_fit_' + sj + '_MD.nii.gz')
+        for p in [pfi_T1, pfi_V1, pfi_S0, pfi_FA, pfi_MD]:
+            assert check_path_validity(p), p
+
+        pfi_reg_mask_T1 = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
+        pfi_reg_mask_S0 = jph(pfo_mask, sj + '_S0_reg_mask.nii.gz')
+
+        assert check_path_validity(pfi_reg_mask_T1), pfi_reg_mask_T1
+        assert check_path_validity(pfi_reg_mask_S0), pfi_reg_mask_S0
+
+        pfi_rigid_transform = jph(pfo_tmp, 'aff_rigid_{}_S0_over_T1.txt'.format(sj))
+
+        pfi_S0inT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0inT1.nii.gz')
+        pfi_V1inT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_V1inT1.nii.gz')
+        pfi_FAinT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_FAinT1.nii.gz')
+        pfi_MDinT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_MDinT1.nii.gz')
+
+        # register:
+        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmaks {3} -aff {4} -res {4} -rigOnly'.format(
+            pfi_T1, pfi_reg_mask_T1, pfi_S0, pfi_reg_mask_S0, pfi_rigid_transform, pfi_S0inT1)
+
+        print_and_run(cmd)
+
+        cmd1 = 'seg_maths {0} -thr 0 {0}'.format(pfi_S0inT1)
+
+        # resample:
+        for pfi_mod, pfi_mod_resampled in zip([pfi_V1, pfi_FA, pfi_MD], [pfi_V1inT1, pfi_FAinT1, pfi_MDinT1]):
+            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(
+                pfi_T1, pfi_mod, pfi_rigid_transform, pfi_mod_resampled)
+            print_and_run(cmd)
+
+        del cmd, cmd1, pfi_V1, pfi_S0, pfi_FA, pfi_MD, pfi_V1inT1, pfi_S0inT1, pfi_FAinT1, pfi_MDinT1
+
     if controller['save results']:
         print('- save results {}'.format(sj))
         pfi_v1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_V1.nii.gz')
@@ -388,6 +433,26 @@ def process_DWI_per_subject(sj, controller):
             cmd = 'cp {0} {1}'.format(a, b)
             print_and_run(cmd)
         del pfi_v1, pfi_s0, pfi_FA, pfi_MD, pfi_v1_new, pfi_s0_new, pfi_FA_new, pfi_MD_new
+
+        if controller['align over T1']:
+            # copy the transformations aligned in the T1 space
+            pfo_S0inT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0inT1.nii.gz')
+            pfo_V1inT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_V1inT1.nii.gz')
+            pfo_FAinT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_FAinT1.nii.gz')
+            pfo_MDinT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_MDinT1.nii.gz')
+            for p in [pfo_S0inT1, pfo_V1inT1, pfo_FAinT1, pfo_MDinT1]:
+                assert check_path_validity(p)
+            pfo_S0inT1_new = jph(pfo_mod, sj + '_V1inT1.nii.gz')
+            pfo_V1inT1_new = jph(pfo_mod, sj + '_S0inT1.nii.gz')
+            pfo_FAinT1_new = jph(pfo_mod, sj + '_FAinT1.nii.gz')
+            pfo_MDinT1_new = jph(pfo_mod, sj + '_MDinT1.nii.gz')
+
+            for a, b in zip([pfo_S0inT1, pfo_V1inT1, pfo_FAinT1, pfo_MDinT1],
+                            [pfo_S0inT1_new, pfo_V1inT1_new, pfo_FAinT1_new, pfo_MDinT1_new]):
+                cmd = 'cp {0} {1}'.format(a, b)
+                print_and_run(cmd)
+            del pfo_S0inT1, pfo_V1inT1, pfo_FAinT1, pfo_MDinT1, pfo_S0inT1_new, pfo_V1inT1_new, pfo_FAinT1_new, \
+                pfo_MDinT1_new
 
 
 def process_DWI_from_list(subj_list, controller):

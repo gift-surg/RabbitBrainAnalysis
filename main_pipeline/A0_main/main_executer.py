@@ -29,9 +29,9 @@ def main_runner(subj_list):
     # Set steps
 
     steps = {'reset_parameters' : False,  # if this is true it does not do anything else.
-             'step_A1'          : False,
+             'step_A1'          : True,
              'step_A2_T1'       : False,
-             'step_A2_DWI'      : False,
+             'step_A2_DWI'      : True,
              'step_A2_MSME'     : False,
              'step_A2_T2maps'   : False,
              'step_A2_g_ratio'  : False,
@@ -140,35 +140,7 @@ def main_runner(subj_list):
     ''' Step A3 - Propagate template '''
     if steps['step_A3']:
         print('\nStep A3\n')
-        controller_propagator = {'Propagation_methods'        : 'Mono',
-                                  'Affine_options'            : '',
-                                  'Reorient_chart_hd'         : True,
-                                  'Aff_alignment'             : True,
-                                  'Propagate_aff_to_segm'     : True,
-                                  'Propagate_aff_to_mask'     : True,
-                                  'Get_differential_BFC'      : True,
-                                  'N-rig_alignment'           : True,
-                                  'Propagate_to_target_n-rig' : True,
-                                  'Smooth_results'            : True,
-                                  'Stack_warps_and_segms'     : True,
-                                  'Speed'                     : False}
-
-        controller_fuser = {'Fuse': True,
-                             'Fusion_methods'  : ['MV', 'STEPS', 'STAPLE'],  # 'MV', 'STAPLE',
-                             'STAPLE_params'   : OrderedDict([('pr_1', None)]),
-                             'STEPS_params'    : OrderedDict([('pr_1', [3, 3, None]),
-                                                              ('pr_2', [3, 3, 2.0]),
-                                                              ('pr_3', [3, 3, 4.0]),
-                                                              ('pr_4', [3, 4, None]),
-                                                              ('pr_5', [3, 4, 2.0]),
-                                                              ('pr_6', [3, 4, 4.0]),
-                                                              ('pr_7', [3, 5, None]),
-                                                              ('pr_8', [3, 5, 2.0]),
-                                                              ('pr_9', [3, 5, 4.0])]),  # k, n ,beta
-                             'Inter_mod_space_propagation'    : False,
-                             'Save_results'                   : True}
-
-        spot_a_list_of_rabbits(subj_list, controller_propagator, controller_fuser)
+        spot_a_list_of_rabbits(subj_list)
 
     ''' Step A4 - Data collection '''
     if steps['step_A4']:
@@ -178,7 +150,6 @@ def main_runner(subj_list):
 
     if steps['step_A5']:
         send_data_to_hannes_from_list(subj_list, records_only=False)
-
 
 if __name__ == '__main__':
 
@@ -194,9 +165,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    # lsm.input_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
-    lsm.input_subjects = ['4302']
-    # template_subjects = ['1201', '1203', '1305', '1404', '', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
+    lsm.input_subjects = ['4303']
     lsm.update_ls()
 
     print(lsm.ls)

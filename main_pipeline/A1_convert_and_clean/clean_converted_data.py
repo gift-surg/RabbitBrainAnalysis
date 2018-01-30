@@ -123,7 +123,7 @@ def cleaner_converted_data_from_list(subj_list):
         study = sj_parameters['study']
         category = sj_parameters['category']
         pfo_to_be_cleaned = jph(root_study_rabbits, '01_nifti', study, category, sj)
-        assert os.path.exists(pfo_to_be_cleaned)
+        assert os.path.exists(pfo_to_be_cleaned), pfo_to_be_cleaned
 
         print 'Study subject {} cleaning. \n'.format(sj)
 
@@ -140,7 +140,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['4302', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['4303', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

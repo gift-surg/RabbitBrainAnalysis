@@ -514,7 +514,70 @@ def reset_parameters_files(pfo_where_to_save):
     sp = SubjectParameters('4302')
     sp.study = 'PTB'
     sp.category = 'ex_vivo'
-    sp.angles = [[0, np.pi / 8, 0], [0, np.pi / 6, 0]]
+    sp.angles = [0, np.pi / 8, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 0.001
+    sp.T1_window_percentile = (5, 90)
+    sp.S0_window_percentile = (1, 95)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 2
+    sp.erosion_roi_mask = 0
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_template = False
+    sp.b0_level = 7
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('4303')
+    sp.study = 'PTB'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, np.pi / 8, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 0.001
+    sp.T1_window_percentile = (5, 90)
+    sp.S0_window_percentile = (1, 95)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 2
+    sp.erosion_roi_mask = 0
+    sp.DWI_squashed = True
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_template = False
+    sp.b0_level = 7
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('4304')
+    sp.study = 'PTB'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, np.pi / 8, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 0.001
+    sp.T1_window_percentile = (5, 90)
+    sp.S0_window_percentile = (1, 95)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 2
+    sp.erosion_roi_mask = 0
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_template = False
+    sp.b0_level = 7
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('4305')
+    sp.study = 'PTB'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, np.pi / 8, 0]
     sp.translation = [0, 0, 0]
     sp.threshold = 0.001
     sp.T1_window_percentile = (5, 90)
