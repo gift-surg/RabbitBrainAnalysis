@@ -3,7 +3,7 @@ from os.path import join as jph
 import numpy as np
 from collections import OrderedDict
 
-from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_template
+from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_atlas
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_internal_template
 from tools.auxiliary.sanity_checks import check_libraries
 
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     controller_ = OrderedDict({'Modality'                    : 'Mono',
                                'Update_data_folders'          : False})
 
-    list_subjects_in_template = get_list_names_subjects_in_template(pfo_subjects_parameters)
+    list_subjects_in_template = get_list_names_subjects_in_atlas(pfo_subjects_parameters)
     print list_subjects_in_template
 
     # cross validation

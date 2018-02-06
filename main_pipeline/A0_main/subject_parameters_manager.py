@@ -106,7 +106,7 @@ def list_all_subjects(pfo_where_parameter_files_are_stored):
             if not file_name.endswith(".txt")]
 
 
-def get_list_names_subjects_in_template(pfo_where_parameter_files_are_stored):
+def get_list_names_subjects_in_atlas(pfo_where_parameter_files_are_stored):
 
     list_subjects = [file_name for file_name in os.listdir(pfo_where_parameter_files_are_stored)
                      if not file_name.endswith(".txt")]

@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 from tools.definitions import pfo_subjects_parameters
-from main_pipeline.A0_main.subject_parameters_manager import SubjectParameters, get_list_names_subjects_in_template, \
+from main_pipeline.A0_main.subject_parameters_manager import SubjectParameters, get_list_names_subjects_in_atlas, \
     check_subjects_situation
 
 
@@ -463,7 +463,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
-    sp.in_template            = False
+    sp.in_template            = True
     sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
@@ -505,7 +505,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
     sp.comment = ''
-    sp.in_template = False
+    sp.in_template = True
     sp.b0_level = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
@@ -517,9 +517,9 @@ def reset_parameters_files(pfo_where_to_save):
     sp.angles = [0, np.pi / 8, 0]
     sp.translation = [0, 0, 0]
     sp.threshold = 0.001
-    sp.T1_window_percentile = (5, 90)
+    sp.T1_window_percentile = (18, 92)
     sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = 1
+    sp.T1_mask_dilation = 0
     sp.S0_mask_dilation = 2
     sp.erosion_roi_mask = 0
     sp.DWI_squashed = False
@@ -538,12 +538,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.angles = [0, np.pi / 8, 0]
     sp.translation = [0, 0, 0]
     sp.threshold = 0.001
-    sp.T1_window_percentile = (5, 90)
+    sp.T1_window_percentile = (12, 92)
     sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = 1
+    sp.T1_mask_dilation = -1
     sp.S0_mask_dilation = 2
     sp.erosion_roi_mask = 0
-    sp.DWI_squashed = True
+    sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
     sp.comment = ''
@@ -559,10 +559,10 @@ def reset_parameters_files(pfo_where_to_save):
     sp.angles = [0, np.pi / 8, 0]
     sp.translation = [0, 0, 0]
     sp.threshold = 0.001
-    sp.T1_window_percentile = (5, 90)
+    sp.T1_window_percentile = (12, 92)
     sp.S0_window_percentile = (1, 95)
     sp.T1_mask_dilation = 1
-    sp.S0_mask_dilation = 2
+    sp.S0_mask_dilation = 0
     sp.erosion_roi_mask = 0
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
@@ -580,7 +580,133 @@ def reset_parameters_files(pfo_where_to_save):
     sp.angles = [0, np.pi / 8, 0]
     sp.translation = [0, 0, 0]
     sp.threshold = 0.001
-    sp.T1_window_percentile = (5, 90)
+    sp.T1_window_percentile = (12, 92)
+    sp.S0_window_percentile = (1, 95)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 2
+    sp.erosion_roi_mask = 0
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_template = False
+    sp.b0_level = 7
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('4501')
+    sp.study = 'PTB'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, np.pi / 8, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 0.001
+    sp.T1_window_percentile = (15, 95)
+    sp.S0_window_percentile = (1, 95)
+    sp.T1_mask_dilation = 5
+    sp.S0_mask_dilation = 2
+    sp.erosion_roi_mask = 0
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_template = False
+    sp.b0_level = 7
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('4504')
+    sp.study = 'PTB'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, 0, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 0.001
+    sp.T1_window_percentile = (12, 92)
+    sp.S0_window_percentile = (1, 95)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 2
+    sp.erosion_roi_mask = 0
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_template = False
+    sp.b0_level = 7
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('4507')
+    sp.study = 'PTB'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, 0, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 0.001
+    sp.T1_window_percentile = (12, 92)
+    sp.S0_window_percentile = (1, 95)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 2
+    sp.erosion_roi_mask = 0
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_template = False
+    sp.b0_level = 7
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('4601')
+    sp.study = 'PTB'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, 0, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 0.001
+    sp.T1_window_percentile = (12, 92)
+    sp.S0_window_percentile = (1, 95)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 2
+    sp.erosion_roi_mask = 0
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_template = False
+    sp.b0_level = 7
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('4602')
+    sp.study = 'PTB'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, 0, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 0.001
+    sp.T1_window_percentile = (12, 92)
+    sp.S0_window_percentile = (1, 95)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 2
+    sp.erosion_roi_mask = 0
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_template = False
+    sp.b0_level = 7
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('4603')
+    sp.study = 'PTB'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, 0, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 0.001
+    sp.T1_window_percentile = (12, 92)
     sp.S0_window_percentile = (1, 95)
     sp.T1_mask_dilation = 1
     sp.S0_mask_dilation = 2
@@ -1219,9 +1345,9 @@ def reset_parameters_files(pfo_where_to_save):
 if __name__ == '__main__':
 
     reset_parameters_files(pfo_subjects_parameters)
-    sjs = get_list_names_subjects_in_template(pfo_subjects_parameters)
+    sjs = get_list_names_subjects_in_atlas(pfo_subjects_parameters)
 
     print('Subjects summary: ')
     check_subjects_situation(pfo_subjects_parameters)
     print('\nTemplate:')
-    print sjs
+    # print sjs

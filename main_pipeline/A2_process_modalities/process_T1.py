@@ -15,6 +15,7 @@ from tools.auxiliary.reorient_images_header import set_translational_part_to_zer
 from tools.auxiliary.utils import print_and_run
 from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
 from tools.correctors.bias_field_corrector4 import bias_field_correction
+from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_atlas
 
 """
 Processing list for each T1 of each subject:
@@ -70,7 +71,11 @@ def process_T1_per_subject(sj, controller):
         del pfi_input_original, pfi_std
 
     if controller['register roi masks']:
-        print('- register roi masks and propagate it {}'.format(sj))
+        print('- register roi masks and propagate it with representative 1305 on {}'.format(sj))
+        # faster version than the multi one. The two are exclusive:
+        controller['register roi masks multi-atlas'] = False
+        # Probably the multi is an overkill (?) - what counts more is the roi mask extraction and related percentiles
+        # in the subjects parameters. This has the highest input in the data.
 
         # --- subject input:
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
@@ -119,7 +124,7 @@ def process_T1_per_subject(sj, controller):
         assert check_path_validity(pfi_reference_roi_mask_hd_oriented)
         pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_on_' + sj + '.txt')
         pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_on_' + sj + '.nii.gz')
-        cmd = 'reg_aladin -ref {0} -flo {1} -fmask {2} -aff {3} -res {4} -omp {5} -rigOnly '.format(
+        cmd = 'reg_aladin -ref {0} -flo {1} -fmask {2} -aff {3} -res {4} -omp {5}  '.format(  # -rigOnly
             pfi_std,
             pfi_sj_ref_coord_system_hd_oriented,
             pfi_reference_roi_mask_hd_oriented,
@@ -143,9 +148,97 @@ def process_T1_per_subject(sj, controller):
             angle_parameter, angles, pfi_sj_ref_coord_system_hd_oriented, pfi_reference_roi_mask_hd_oriented,\
             pfi_affine_transformation_ref_on_subject, pfi_3d_warped_ref_on_subject, pfi_roi_mask_not_adjusted, cmd
 
+    if controller['register roi masks multi-atlas']:
+        # Robust roi extraction, if not for particular cases is an overkill...
+        print('- register roi masks and propagate it with multi-atlas on {}'.format(sj))
+
+        # --- subject input:
+        pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
+        assert check_path_validity(pfi_std)
+
+        list_names_subjects_in_atlas = get_list_names_subjects_in_atlas(pfo_subjects_parameters)
+        for atlas_sj in list_names_subjects_in_atlas:
+
+            pfi_sj_ref_coord_system = jph(root_atlas, atlas_sj, 'mod', '{}_T1.nii.gz'.format(atlas_sj))
+            pfi_reference_roi_mask = jph(root_atlas, atlas_sj, 'masks', '{}_roi_mask.nii.gz'.format(atlas_sj))
+
+            assert check_path_validity(pfi_sj_ref_coord_system)
+            assert check_path_validity(pfi_reference_roi_mask)
+
+            # --- Get the angle difference from histological (template) to bicommissural (data) and orient header ---
+            if isinstance(sj_parameters['angles'][0], list):
+                angles = sj_parameters['angles'][0]
+            else:
+                angles = sj_parameters['angles']
+
+            angle_parameter = angles[1]
+
+            pfi_sj_ref_coord_system_hd_oriented = jph(pfo_tmp, 'reference_for_mask_registration.nii.gz')
+            pfi_reference_roi_mask_hd_oriented = jph(pfo_tmp, 'reference_for_mask_registration_mask.nii.gz')
+
+            lm = LabelsManager()
+            lm.header.apply_small_rotation(pfi_sj_ref_coord_system, pfi_sj_ref_coord_system_hd_oriented,
+                                           angle=angle_parameter, principal_axis='pitch')
+            lm.header.apply_small_rotation(pfi_reference_roi_mask, pfi_reference_roi_mask_hd_oriented,
+                                           angle=angle_parameter, principal_axis='pitch')
+
+            # set translational part to zero
+            lm.header.modify_translational_part(pfi_sj_ref_coord_system_hd_oriented, pfi_sj_ref_coord_system_hd_oriented,
+                                                np.array([0, 0, 0]))
+            lm.header.modify_translational_part(pfi_reference_roi_mask_hd_oriented, pfi_reference_roi_mask_hd_oriented,
+                                                np.array([0, 0, 0]))
+
+            assert check_path_validity(pfi_sj_ref_coord_system_hd_oriented)
+            assert check_path_validity(pfi_reference_roi_mask_hd_oriented)
+            pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_{0}_on_{1}.txt'.format(atlas_sj, sj))
+            pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_{0}_on_{1}.nii.gz'.format(atlas_sj, sj))
+            cmd = 'reg_aladin -ref {0} -flo {1} -fmask {2} -aff {3} -res {4} -omp {5}  '.format(  # -rigOnly
+                pfi_std,
+                pfi_sj_ref_coord_system_hd_oriented,
+                pfi_reference_roi_mask_hd_oriented,
+                pfi_affine_transformation_ref_on_subject,
+                pfi_3d_warped_ref_on_subject,
+                num_cores_run)
+            print cmd
+            print_and_run(cmd)
+
+            print('- propagate roi masks {}'.format(sj))
+
+            assert check_path_validity(pfi_affine_transformation_ref_on_subject)
+            pfi_roi_mask_not_adjusted = jph(pfo_tmp, '{0}_T1_roi_mask_from_atlas{1}_not_adjusted.nii.gz'.format(sj, atlas_sj))
+            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+                pfi_std,
+                pfi_reference_roi_mask_hd_oriented,
+                pfi_affine_transformation_ref_on_subject,
+                pfi_roi_mask_not_adjusted)
+            print_and_run(cmd)
+
+        # label fusion MV of the region of interest for the final region of interest:
+
+        # create the stack of the registered roi masks:
+        # output:
+        pfi_stack_roi_mask = jph(pfo_tmp, '{0}_T1_roi_masks_from_atlases_stack.nii.gz'.format(sj))
+        cmd = 'seg_maths {0}  -merge {1} {2} '.format(
+            jph(pfo_tmp, '{0}_T1_roi_mask_from_atlas{1}_not_adjusted.nii.gz'.format(sj, list_names_subjects_in_atlas[0])),
+            len(list_names_subjects_in_atlas) - 1,
+            4
+        )
+        for p in list_names_subjects_in_atlas[1:]:
+            cmd += ' {} '.format(jph(pfo_tmp, '{0}_T1_roi_mask_from_atlas{1}_not_adjusted.nii.gz'.format(sj, p)))
+        cmd += ' {} '.format(pfi_stack_roi_mask)
+        print_and_run(cmd)
+
+        # merge the roi masks in one:
+        pfi_roi_mask_not_adjusted_multi = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted_MV.nii.gz')
+        cmd = 'seg_LabFusion  -in {0} -out {1} -MV '.format(pfi_stack_roi_mask, pfi_roi_mask_not_adjusted_multi)
+        print_and_run(cmd)
+
     if controller['adjust mask']:
         print('- adjust mask {}'.format(sj))
-        pfi_roi_mask_not_adjusted = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted.nii.gz')
+        if controller['register roi masks multi-atlas']:
+            pfi_roi_mask_not_adjusted = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted_MV.nii.gz')
+        else:
+            pfi_roi_mask_not_adjusted = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted.nii.gz')
         assert check_path_validity(pfi_roi_mask_not_adjusted)
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
 
@@ -154,17 +247,14 @@ def process_T1_per_subject(sj, controller):
             cmd = 'seg_maths {0} -ero {1} {2}'.format(pfi_roi_mask_not_adjusted,
                                                       -1 * dilation_param,
                                                       pfi_roi_mask)
-            print_and_run(cmd)
-
         elif dilation_param > 0:
             cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_roi_mask_not_adjusted,
                                                       dilation_param,
                                                       pfi_roi_mask)
-            print_and_run(cmd)
         else:
             cmd = 'cp {} {}'.format(pfi_roi_mask_not_adjusted, pfi_roi_mask)
-            os.system(cmd)
-        del pfi_roi_mask, dilation_param, pfi_roi_mask_not_adjusted
+        print_and_run(cmd)
+        del pfi_roi_mask, dilation_param, pfi_roi_mask_not_adjusted, cmd
 
     if controller['cut masks']:
         print('- cut masks {}'.format(sj))
@@ -250,15 +340,16 @@ def process_T1_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process T1, local run. ')
 
-    controller_steps = {'orient to standard'  : False,
-                        'register roi masks'  : True,
+    controller_steps = {'orient to standard'             : False,
+                        'register roi masks'             : False,
+                        'register roi masks multi-atlas' : False,
                         'adjust mask'         : True,
                         'cut masks'           : True,
                         'step bfc'            : False,
-                        'create lesion mask'  : False,
-                        'create reg masks'    : False,
+                        'create lesion mask'  : True,
+                        'create reg masks'    : True,
                         'save results'        : False,
-                        'speed'               : False}
+                        'speed'               : True}
 
     lsm = ListSubjectsManager()
 
@@ -268,9 +359,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['1201']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1','2503', '2708',
-    # '2205t1', '2206t1', '2502bt1']
-    #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
+    lsm.input_subjects = ['4302']
     lsm.update_ls()
 
     process_T1_from_list(lsm.ls, controller_steps)

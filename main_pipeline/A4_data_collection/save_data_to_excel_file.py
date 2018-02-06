@@ -3,7 +3,7 @@ from os.path import join as jph
 import pickle
 from tools.definitions import root_study_rabbits, pfi_excel_table_all_data, pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
-from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_template
+from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_atlas
 from tools.auxiliary.parse_excel_tables_and_descriptors import store_a_record_in_excel_table
 
 
@@ -24,7 +24,7 @@ def save_data_into_excel_file_per_subject(sj):
         # ---------
         store_a_record_in_excel_table(pfi_record, pfi_excel_table_all_data, sj, study)
         # ---------
-        if sj in get_list_names_subjects_in_template(pfo_subjects_parameters):
+        if sj in get_list_names_subjects_in_atlas(pfo_subjects_parameters):
             pfi_record_template = jph(root_study_rabbits, 'A_data', study, category, sj, 'records_template',
                                       sj + '_record.npy')
             if os.path.exists(pfi_record_template):

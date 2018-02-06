@@ -389,6 +389,8 @@ def process_DWI_per_subject(sj, controller):
 
         pfi_reg_mask_T1 = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
         pfi_reg_mask_S0 = jph(pfo_mask, sj + '_S0_reg_mask.nii.gz')
+        pfi_roi_mask_T1 = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
+        pfi_roi_mask_S0 = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
 
         assert check_path_validity(pfi_reg_mask_T1), pfi_reg_mask_T1
         assert check_path_validity(pfi_reg_mask_S0), pfi_reg_mask_S0
@@ -400,21 +402,52 @@ def process_DWI_per_subject(sj, controller):
         pfi_FAinT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_FAinT1.nii.gz')
         pfi_MDinT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_MDinT1.nii.gz')
 
-        # register:
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmaks {3} -aff {4} -res {4} -rigOnly'.format(
-            pfi_T1, pfi_reg_mask_T1, pfi_S0, pfi_reg_mask_S0, pfi_rigid_transform, pfi_S0inT1)
+        pfi_reg_mask_S0inT1 = jph(pfo_mask, sj + '_S0inT1_reg_mask.nii.gz')
+        pfi_roi_mask_S0inT1 = jph(pfo_mask, sj + '_S0inT1_roi_mask.nii.gz')
 
+        # register:
+        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly'.format(
+            pfi_T1, pfi_reg_mask_T1, pfi_S0, pfi_reg_mask_S0, pfi_rigid_transform, pfi_S0inT1)
         print_and_run(cmd)
 
-        cmd1 = 'seg_maths {0} -thr 0 {0}'.format(pfi_S0inT1)
-
-        # resample:
+        # --- resample images:
         for pfi_mod, pfi_mod_resampled in zip([pfi_V1, pfi_FA, pfi_MD], [pfi_V1inT1, pfi_FAinT1, pfi_MDinT1]):
             cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(
                 pfi_T1, pfi_mod, pfi_rigid_transform, pfi_mod_resampled)
             print_and_run(cmd)
 
-        del cmd, cmd1, pfi_V1, pfi_S0, pfi_FA, pfi_MD, pfi_V1inT1, pfi_S0inT1, pfi_FAinT1, pfi_MDinT1
+        # --- resample masks:
+        for pfi_mask_mod, pfi_mask_mod_resampled in zip([pfi_reg_mask_S0, pfi_roi_mask_S0], [pfi_reg_mask_S0inT1, pfi_roi_mask_S0inT1]):
+            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}  -inter 0 '.format(
+                pfi_T1, pfi_mask_mod, pfi_rigid_transform, pfi_mask_mod_resampled)
+            print_and_run(cmd)
+
+        # adjust resampled images:
+        for pfi_mod in [pfi_S0inT1, pfi_V1inT1, pfi_FAinT1, pfi_MDinT1]:
+            assert check_path_validity(pfi_mod)
+            pfi_T1_roi_mask_4d = jph(pfo_mask, sj + '_T1_roi_mask_4d.nii.gz')
+
+            if 'V1' in pfi_mod:
+                cmd0 = 'seg_maths {} -abs {}'.format(pfi_mod, pfi_mod)
+                print_and_run(cmd0)
+                reproduce_slice_fourth_dimension_path(pfi_roi_mask_S0inT1,
+                                                      pfi_T1_roi_mask_4d, num_slices=3)
+                cmd1 = 'seg_maths {0} -mul {1} {0}'.format(pfi_mod, pfi_T1_roi_mask_4d, pfi_mod)
+                print_and_run(cmd1)
+            else:
+                cmd0 = 'seg_maths {0} -mul {1} {0}'.format(pfi_mod, pfi_roi_mask_T1, pfi_mod)
+                print_and_run(cmd0)
+
+            cmd0 = 'seg_maths {0} -removenan {0}'.format(pfi_mod)
+            print_and_run(cmd0)
+            cmd1 = 'seg_maths {0} -thr {1} {0}'.format(pfi_mod, '0')
+            print_and_run(cmd1)
+
+        # adjsut resampled masks:
+        cmd = 'seg_maths {0} -mul {1} {0}'.format(pfi_reg_mask_S0inT1, pfi_reg_mask_T1)
+        print_and_run(cmd)
+
+        del cmd, pfi_V1, pfi_S0, pfi_FA, pfi_MD, pfi_V1inT1, pfi_S0inT1, pfi_FAinT1, pfi_MDinT1
 
     if controller['save results']:
         print('- save results {}'.format(sj))
@@ -435,15 +468,15 @@ def process_DWI_per_subject(sj, controller):
         del pfi_v1, pfi_s0, pfi_FA, pfi_MD, pfi_v1_new, pfi_s0_new, pfi_FA_new, pfi_MD_new
 
         if controller['align over T1']:
-            # copy the transformations aligned in the T1 space
+            # copy the transformations aligned in the T1 space as well
             pfo_S0inT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0inT1.nii.gz')
             pfo_V1inT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_V1inT1.nii.gz')
             pfo_FAinT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_FAinT1.nii.gz')
             pfo_MDinT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_MDinT1.nii.gz')
             for p in [pfo_S0inT1, pfo_V1inT1, pfo_FAinT1, pfo_MDinT1]:
                 assert check_path_validity(p)
-            pfo_S0inT1_new = jph(pfo_mod, sj + '_V1inT1.nii.gz')
-            pfo_V1inT1_new = jph(pfo_mod, sj + '_S0inT1.nii.gz')
+            pfo_S0inT1_new = jph(pfo_mod, sj + '_S0inT1.nii.gz')
+            pfo_V1inT1_new = jph(pfo_mod, sj + '_V1inT1.nii.gz')
             pfo_FAinT1_new = jph(pfo_mod, sj + '_FAinT1.nii.gz')
             pfo_MDinT1_new = jph(pfo_mod, sj + '_MDinT1.nii.gz')
 
@@ -451,6 +484,7 @@ def process_DWI_per_subject(sj, controller):
                             [pfo_S0inT1_new, pfo_V1inT1_new, pfo_FAinT1_new, pfo_MDinT1_new]):
                 cmd = 'cp {0} {1}'.format(a, b)
                 print_and_run(cmd)
+
             del pfo_S0inT1, pfo_V1inT1, pfo_FAinT1, pfo_MDinT1, pfo_S0inT1_new, pfo_V1inT1_new, pfo_FAinT1_new, \
                 pfo_MDinT1_new
 
@@ -465,30 +499,31 @@ def process_DWI_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process DWI, local run. ')
 
-    controller_DWI = {'squeeze'               : True,
-                      'orient to standard'    : True,
-                      'create roi masks'      : True,
-                      'adjust mask'           : True,
-                      'cut mask dwi'          : True,
-                      'cut mask S0'           : True,
-                      'correct slope'         : True,
-                      'eddy current'          : True,
-                      'fsl tensor fitting'    : True,
-                      'adjust dti-based mod'  : True,
-                      'bfc S0'                : True,
-                      'create lesion mask'    : True,
-                      'create reg masks'      : True,
+    controller_DWI = {'squeeze'               : False,
+                      'orient to standard'    : False,
+                      'create roi masks'      : False,
+                      'adjust mask'           : False,
+                      'cut mask dwi'          : False,
+                      'cut mask S0'           : False,
+                      'correct slope'         : False,
+                      'eddy current'          : False,
+                      'fsl tensor fitting'    : False,
+                      'adjust dti-based mod'  : False,
+                      'bfc S0'                : False,
+                      'create lesion mask'    : False,
+                      'create reg masks'      : False,
+                      'align over T1'         : True,
                       'save results'          : True}
 
     lsm = ListSubjectsManager()
 
     lsm.execute_PTB_ex_skull = False
     lsm.execute_PTB_ex_vivo = False
-    lsm.execute_PTB_in_vivo = False
+    # lsm.execute_PTB_in_vivo = False
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['1201']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['2502']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

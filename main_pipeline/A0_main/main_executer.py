@@ -2,7 +2,7 @@ from tools.auxiliary.sanity_checks import check_libraries
 from collections import OrderedDict
 
 from main_pipeline.A0_main.subject_parameters_creator import reset_parameters_files
-from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_template, \
+from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_atlas, \
     check_subjects_situation
 
 from tools.definitions import pfo_subjects_parameters
@@ -31,11 +31,11 @@ def main_runner(subj_list):
     steps = {'reset_parameters' : False,  # if this is true it does not do anything else.
              'step_A1'          : True,
              'step_A2_T1'       : False,
-             'step_A2_DWI'      : True,
+             'step_A2_DWI'      : False,
              'step_A2_MSME'     : False,
              'step_A2_T2maps'   : False,
              'step_A2_g_ratio'  : False,
-             'step_A3'          : True,
+             'step_A3'          : False,
              'step_A4'          : False,
              'step_A5'          : False}
 
@@ -50,7 +50,7 @@ def main_runner(subj_list):
         print('Subjects summary: ')
         check_subjects_situation(pfo_subjects_parameters)
         print('\nTemplate:')
-        sjs = get_list_names_subjects_in_template(pfo_subjects_parameters)
+        sjs = get_list_names_subjects_in_atlas(pfo_subjects_parameters)
         print(sjs)
         # NOTE: does not go further
         print('Parameter re-computed. The pipeline ends here')
@@ -67,6 +67,7 @@ def main_runner(subj_list):
         print('\nStep A2 T1\n')
         controller_A2_T1 = {'orient to standard'  : True,
                             'register roi masks'  : True,
+                            'register roi masks multi-atlas': False,
                             'adjust mask'         : True,
                             'cut masks'           : True,
                             'step bfc'            : True,
@@ -92,6 +93,7 @@ def main_runner(subj_list):
                           'bfc S0'               : True,
                           'create lesion mask'   : True,
                           'create reg masks'     : True,
+                          'align over T1'        : True,
                           'save results'         : True}
 
         process_DWI_from_list(subj_list, controller_DWI)
@@ -165,7 +167,8 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['4303']
+    # lsm.input_subjects = ['4302', '4303', '4304', '4305', '4501', '4504']
+    lsm.input_subjects = ['4602']
     lsm.update_ls()
 
     print(lsm.ls)
