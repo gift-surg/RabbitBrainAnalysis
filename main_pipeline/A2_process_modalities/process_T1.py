@@ -29,7 +29,6 @@ Get mask - subject params.
 Cut mask
 Bias field correction
 Compute registration and lesion mask
-
 """
 
 

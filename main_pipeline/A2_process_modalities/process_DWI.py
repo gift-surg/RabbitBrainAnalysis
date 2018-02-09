@@ -371,6 +371,8 @@ def process_DWI_per_subject(sj, controller):
         print_and_run(cmd)
         del pfi_roi_mask, pfi_lesion_mask, pfi_registration_mask, cmd
 
+
+    # TODO remove an move to part A pre-spotter.
     if controller['align over T1']:
         """
         All the DWI-based maps are aligned with the T1. Transformation si obtained from the S0 aligned on the T1.
