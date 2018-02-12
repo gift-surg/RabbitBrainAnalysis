@@ -38,18 +38,18 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
     assert os.path.exists(pfi_mod_reference_atlas), pfi_mod_reference_atlas
     assert os.path.exists(pfi_reg_mask_reference_atlas), pfi_reg_mask_reference_atlas
 
-    pfo_tmp = jph(pfo_sj, 'z_sc_aligment'.format(sj))
-    pfo_sc_sj = jph(pfo_sj, 'sc{}'.format(sj))
+    pfo_tmp = jph(pfo_sj, 'z_tmp', 'z_sc_aligment'.format(sj))
+    pfo_sc_sj = jph(pfo_sj, 'stereotaxic'.format(sj))
     pfo_sc_sj_mod = jph(pfo_sc_sj, 'mod')
     pfo_sc_sj_masks = jph(pfo_sc_sj, 'masks')
 
     # Initialise folder structure in stereotaxic coordinates
     if controller['Initialise_sc_folder']:
 
-        print_and_run('mdkir -p {}'.format(pfo_tmp))
-        print_and_run('mdkir -p {}'.format(pfo_sc_sj))
-        print_and_run('mdkir -p {}'.format(pfo_sc_sj_mod))
-        print_and_run('mdkir -p {}'.format(pfo_sc_sj_masks))
+        print_and_run('mkdir -p {}'.format(pfo_tmp))
+        print_and_run('mkdir -p {}'.format(pfo_sc_sj))
+        print_and_run('mkdir -p {}'.format(pfo_sc_sj_mod))
+        print_and_run('mkdir -p {}'.format(pfo_sc_sj_masks))
 
     if controller['Register_T1']:
 
@@ -71,6 +71,17 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
                                            pfi_T1_reoriented,
                                            angle=pitch_theta, principal_axis='pitch')
 
+        pfi_original_roi_mask_T1 = jph(pfo_sj_masks, '{0}_{1}_{2}.nii.gz'.format(sj, 'T1', 'roi_mask'))
+        assert os.path.exists(pfi_original_roi_mask_T1), pfi_original_roi_mask_T1
+        pfi_roi_mask_T1_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}_{2}.nii.gz'.format(sj, 'T1', 'roi_mask'))
+        cmd = 'cp {0} {1}'.format(pfi_original_roi_mask_T1, pfi_roi_mask_T1_reoriented)
+        print_and_run(cmd)
+        if pitch_theta != 0:
+            lm = LabelsManager()
+            lm.header.apply_small_rotation(pfi_roi_mask_T1_reoriented,
+                                           pfi_roi_mask_T1_reoriented,
+                                           angle=pitch_theta, principal_axis='pitch')
+
         pfi_original_reg_mask_T1 = jph(pfo_sj_masks, '{0}_{1}_{2}.nii.gz'.format(sj, 'T1', 'reg_mask'))
         assert os.path.exists(pfi_original_reg_mask_T1), pfi_original_reg_mask_T1
         pfi_reg_mask_T1_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}_{2}.nii.gz'.format(sj, 'T1', 'reg_mask'))
@@ -84,7 +95,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
             del lm
 
         print('Rigid registration T1:')
-        pfi_transformation_T1_over_T1 = jph(pfo_tmp, 'trans_{0}_over_{1}_mod_{2}_rigid.nii.gz'.format(
+        pfi_transformation_T1_over_T1 = jph(pfo_tmp, 'trans_{0}_over_{1}_mod_{2}_rigid.txt'.format(
             sj, options['Template_name'], 'T1'))
         pfi_resampled_T1 = jph(pfo_sc_sj_mod, '{0}_T1.nii.gz'.format(sj))  # RESULT
 
@@ -99,17 +110,19 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
     if controller['Propagate_T1_masks']:
         print('Propagate T1 mask:')
         pfi_T1_in_sc = jph(pfo_sc_sj_mod, '{0}_T1.nii.gz'.format(sj))
+        pfi_roi_mask_T1_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}_{2}.nii.gz'.format(sj, 'T1', 'roi_mask'))
         pfi_reg_mask_T1_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}_{2}.nii.gz'.format(sj, 'T1', 'reg_mask'))
-        pfi_transformation_T1_over_T1 = jph(pfo_tmp, 'trans_{0}_over_{1}_mod_{2}_rigid.nii.gz'.format(
+        pfi_transformation_T1_over_T1 = jph(pfo_tmp, 'trans_{0}_over_{1}_mod_{2}_rigid.txt'.format(
             sj, options['Template_name'], 'T1'))
 
         assert os.path.exists(pfi_T1_in_sc), pfi_T1_in_sc
+        assert os.path.exists(pfi_roi_mask_T1_reoriented), pfi_roi_mask_T1_reoriented
         assert os.path.exists(pfi_reg_mask_T1_reoriented), pfi_reg_mask_T1_reoriented
         assert os.path.exists(pfi_transformation_T1_over_T1), pfi_transformation_T1_over_T1
 
         pfi_final_roi_mask_T1 = jph(pfo_sc_sj_masks, '{}_roi_mask.nii.gz'.format(sj))  # RESULT
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-            pfi_T1_in_sc, pfi_reg_mask_T1_reoriented, pfi_transformation_T1_over_T1, pfi_final_roi_mask_T1)
+            pfi_T1_in_sc, pfi_roi_mask_T1_reoriented, pfi_transformation_T1_over_T1, pfi_final_roi_mask_T1)
         print_and_run(cmd)
 
         pfi_final_reg_mask_T1 = jph(pfo_sc_sj_masks, '{0}_{1}_reg_mask.nii.gz'.format(sj, 'T1'))
@@ -141,7 +154,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
         pfi_original_reg_mask_S0 = jph(pfo_sj_masks, '{0}_{1}_{2}.nii.gz'.format(sj, 'S0', 'reg_mask'))
         assert os.path.exists(pfi_original_reg_mask_S0), pfi_original_reg_mask_S0
         pfi_reg_mask_S0_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}_{2}.nii.gz'.format(sj, 'S0', 'reg_mask'))
-        cmd = 'cp {0} {1}'.format(pfi_reg_mask_S0_reoriented, pfi_reg_mask_S0_reoriented)
+        cmd = 'cp {0} {1}'.format(pfi_original_reg_mask_S0, pfi_reg_mask_S0_reoriented)
         print_and_run(cmd)
         if pitch_theta != 0:
             lm = LabelsManager()
@@ -151,7 +164,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
             del lm
 
         print('Rigid registration S0:')
-        pfi_transformation_S0_over_T1 = jph(pfo_tmp, 'trans_{0}_over_{1}_mod_{2}_rigid.nii.gz'.format(
+        pfi_transformation_S0_over_T1 = jph(pfo_tmp, 'trans_{0}_over_{1}_mod_{2}_rigid.txt'.format(
             sj, options['Template_name'], 'S0'))
         pfi_resampled_S0 = jph(pfo_sc_sj_mod, '{0}_S0.nii.gz'.format(sj))  # RESULT
 
@@ -164,8 +177,14 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
             pfi_reg_mask_S0_reoriented, pfi_transformation_S0_over_T1, pfi_resampled_S0, cmd
 
     if controller['Propagate_S0_related_mods_and_mask']:
+        angles = sj_parameters['angles']
+        if isinstance(angles[0], list):
+            pitch_theta = -1 * angles[1][1]
+        else:
+            pitch_theta = -1 * angles[1]
+
         pfi_S0_in_sc = jph(pfo_sc_sj_mod, '{0}_S0.nii.gz'.format(sj))
-        pfi_transformation_S0_over_T1 = jph(pfo_tmp, 'trans_{0}_over_{1}_mod_{2}_rigid.nii.gz'.format(
+        pfi_transformation_S0_over_T1 = jph(pfo_tmp, 'trans_{0}_over_{1}_mod_{2}_rigid.txt'.format(
             sj, options['Template_name'], 'S0'))
 
         for mod in ['FA', 'MD', 'V1']:
@@ -174,7 +193,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
             pfi_original_MOD = jph(pfo_sj_mod, '{0}_{1}.nii.gz'.format(sj, mod))
             assert os.path.exists(pfi_original_MOD), pfi_original_MOD
             pfi_MOD_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}.nii.gz'.format(sj, mod))
-            cmd = 'cp {0} {1}'.format(pfi_MOD_reoriented, pfi_MOD_reoriented)
+            cmd = 'cp {0} {1}'.format(pfi_original_MOD, pfi_MOD_reoriented)
             print_and_run(cmd)
             if pitch_theta != 0:
                 lm = LabelsManager()
@@ -238,13 +257,21 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
 def move_to_stereotaxic_coordinate_from_list(subj_list, controller, options):
     print '\n\n Move to stereotaxic coordinate from list {} \n'.format(subj_list)
     for sj in subj_list:
-        move_to_stereotaxic_coordinate_per_subject(sj, controller, options)
+
+        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+        in_atlas = sj_parameters['in_atlas']
+
+        if in_atlas:
+            pass
+        else:
+            move_to_stereotaxic_coordinate_per_subject(sj, controller, options)
 
 
 if __name__ == '__main__':
     print('process Stereotaxic orientation, local run. ')
 
     controller_ = {
+        'Initialise_sc_folder'               : True,
         'Register_T1'                        : True,
         'Propagate_T1_masks'                 : True,
         'Register_S0'                        : True,
@@ -358,7 +385,7 @@ if __name__ == '__main__':
 #         assert os.path.exists(pfi_pivot_mod_sj), pfi_pivot_mod_sj
 #         assert os.path.exists(pfi_pivot_reg_mask_sj), pfi_pivot_reg_mask_sj
 #
-#         pfi_transformation = jph(pfo_tmp, 'trans_{0}_over_{1}_mod_{2}_rigid.nii.gz'.format(
+#         pfi_transformation = jph(pfo_tmp, 'trans_{0}_over_{1}_mod_{2}_rigid.txt'.format(
 #             sj, options['Template_name'], pivot_mod))
 #         pfi_resampled = jph(pfo_tmp, '')
 #

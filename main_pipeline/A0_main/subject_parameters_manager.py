@@ -18,7 +18,7 @@ class SubjectParameters(object):
                  T1_mask_dilation=0, S0_mask_dilation=0,
                  erosion_roi_mask=1, DWI_squashed=False,
                  bias_field_parameters=(0.001, (50, 50, 50, 50), 0.15, 0.01, 200, (4, 4, 4), 3),
-                 MSME_acquisition='high_res', in_template=False):
+                 MSME_acquisition='high_res', in_atlas=False):
         """
 
         :param subject_name:
@@ -37,7 +37,7 @@ class SubjectParameters(object):
         :param DWI_squashed:
         :param bias_field_parameters:
         :param MSME_acquisition:
-        :param in_template:
+        :param in_atlas:
         """
         self.subject_name = subject_name
 
@@ -56,7 +56,7 @@ class SubjectParameters(object):
         self.bias_field_parameters = bias_field_parameters
         self.MSME_acquisition      = MSME_acquisition
         self.comment               = ''
-        self.in_template           = in_template
+        self.in_atlas           = in_atlas
         self.b0_level              = 0
 
     def get_as_dict(self):
@@ -75,7 +75,7 @@ class SubjectParameters(object):
                             'bias_field_parameters'  : self.bias_field_parameters,
                             'MSME_acquisition'       : self.MSME_acquisition,
                             'comment'                : self.comment,
-                            'in_template'            : self.in_template,
+                            'in_atlas'               : self.in_atlas,
                             'b0_level'               : self.b0_level})
 
     def save_as_txt(self, pfo_where_to_save):
@@ -114,7 +114,7 @@ def get_list_names_subjects_in_atlas(pfo_where_parameter_files_are_stored):
     list_subjects_in_template = []
     for k in list_subjects:
         subj_k_parameters = pickle.load(open(jph(pfo_where_parameter_files_are_stored, k), 'r'))
-        if subj_k_parameters['in_template']:
+        if subj_k_parameters['in_atlas']:
             list_subjects_in_template.append(k)
     list_subjects_in_template.sort(key=float)
     return list_subjects_in_template
