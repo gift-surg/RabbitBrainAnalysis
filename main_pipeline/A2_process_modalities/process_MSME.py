@@ -37,10 +37,11 @@ Orient to standard - fsl
 squeeze
 orient to standard
 extract first timepoint
-register tp0 to S0
-register msme to S0
+Upsample MSMEtp0 to the grid spacing of S0 (id affine transformation).
+-> Outcome MSMEup will be an extra modality for the segmentation propagation in its own space.
 bfc
-save results - only the bias field corrected in this version.
+Save the bias field corrected in original space and the MSMEup as extra modality for the
+segmentatino propagation.
 
 """
 

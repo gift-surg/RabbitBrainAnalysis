@@ -371,86 +371,6 @@ def process_DWI_per_subject(sj, controller):
         print_and_run(cmd)
         del pfi_roi_mask, pfi_lesion_mask, pfi_registration_mask, cmd
 
-
-    # TODO remove an move to part A pre-spotter.
-    if controller['align over T1']:
-        """
-        All the DWI-based maps are aligned with the T1. Transformation si obtained from the S0 aligned on the T1.
-         Will be S0inT1, V1inT1 ... 
-         This is for the multi-modal registration method and for visualisation purposes.
-         The final method will always be on the 
-        """
-        print('- Align over T1 {}'.format(sj))
-        pfi_T1 = jph(pfo_mod, sj + '_T1.nii.gz')
-        pfi_V1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_V1.nii.gz')
-        pfi_S0 = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0.nii.gz')
-        pfi_FA = jph(pfo_tmp, 'fsl_fit_' + sj + '_FA.nii.gz')
-        pfi_MD = jph(pfo_tmp, 'fsl_fit_' + sj + '_MD.nii.gz')
-        for p in [pfi_T1, pfi_V1, pfi_S0, pfi_FA, pfi_MD]:
-            assert check_path_validity(p), p
-
-        pfi_reg_mask_T1 = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
-        pfi_reg_mask_S0 = jph(pfo_mask, sj + '_S0_reg_mask.nii.gz')
-        pfi_roi_mask_T1 = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
-        pfi_roi_mask_S0 = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
-
-        assert check_path_validity(pfi_reg_mask_T1), pfi_reg_mask_T1
-        assert check_path_validity(pfi_reg_mask_S0), pfi_reg_mask_S0
-
-        pfi_rigid_transform = jph(pfo_tmp, 'aff_rigid_{}_S0_over_T1.txt'.format(sj))
-
-        pfi_S0inT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0inT1.nii.gz')
-        pfi_V1inT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_V1inT1.nii.gz')
-        pfi_FAinT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_FAinT1.nii.gz')
-        pfi_MDinT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_MDinT1.nii.gz')
-
-        pfi_reg_mask_S0inT1 = jph(pfo_mask, sj + '_S0inT1_reg_mask.nii.gz')
-        pfi_roi_mask_S0inT1 = jph(pfo_mask, sj + '_S0inT1_roi_mask.nii.gz')
-
-        # register:
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly'.format(
-            pfi_T1, pfi_reg_mask_T1, pfi_S0, pfi_reg_mask_S0, pfi_rigid_transform, pfi_S0inT1)
-        print_and_run(cmd)
-
-        # --- resample images:
-        for pfi_mod, pfi_mod_resampled in zip([pfi_V1, pfi_FA, pfi_MD], [pfi_V1inT1, pfi_FAinT1, pfi_MDinT1]):
-            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}'.format(
-                pfi_T1, pfi_mod, pfi_rigid_transform, pfi_mod_resampled)
-            print_and_run(cmd)
-
-        # --- resample masks:
-        for pfi_mask_mod, pfi_mask_mod_resampled in zip([pfi_reg_mask_S0, pfi_roi_mask_S0], [pfi_reg_mask_S0inT1, pfi_roi_mask_S0inT1]):
-            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3}  -inter 0 '.format(
-                pfi_T1, pfi_mask_mod, pfi_rigid_transform, pfi_mask_mod_resampled)
-            print_and_run(cmd)
-
-        # adjust resampled images:
-        for pfi_mod in [pfi_S0inT1, pfi_V1inT1, pfi_FAinT1, pfi_MDinT1]:
-            assert check_path_validity(pfi_mod)
-            pfi_T1_roi_mask_4d = jph(pfo_mask, sj + '_T1_roi_mask_4d.nii.gz')
-
-            if 'V1' in pfi_mod:
-                cmd0 = 'seg_maths {} -abs {}'.format(pfi_mod, pfi_mod)
-                print_and_run(cmd0)
-                reproduce_slice_fourth_dimension_path(pfi_roi_mask_S0inT1,
-                                                      pfi_T1_roi_mask_4d, num_slices=3)
-                cmd1 = 'seg_maths {0} -mul {1} {0}'.format(pfi_mod, pfi_T1_roi_mask_4d, pfi_mod)
-                print_and_run(cmd1)
-            else:
-                cmd0 = 'seg_maths {0} -mul {1} {0}'.format(pfi_mod, pfi_roi_mask_T1, pfi_mod)
-                print_and_run(cmd0)
-
-            cmd0 = 'seg_maths {0} -removenan {0}'.format(pfi_mod)
-            print_and_run(cmd0)
-            cmd1 = 'seg_maths {0} -thr {1} {0}'.format(pfi_mod, '0')
-            print_and_run(cmd1)
-
-        # adjsut resampled masks:
-        cmd = 'seg_maths {0} -mul {1} {0}'.format(pfi_reg_mask_S0inT1, pfi_reg_mask_T1)
-        print_and_run(cmd)
-
-        del cmd, pfi_V1, pfi_S0, pfi_FA, pfi_MD, pfi_V1inT1, pfi_S0inT1, pfi_FAinT1, pfi_MDinT1
-
     if controller['save results']:
         print('- save results {}'.format(sj))
         pfi_v1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_V1.nii.gz')
@@ -468,28 +388,6 @@ def process_DWI_per_subject(sj, controller):
             cmd = 'cp {0} {1}'.format(a, b)
             print_and_run(cmd)
         del pfi_v1, pfi_s0, pfi_FA, pfi_MD, pfi_v1_new, pfi_s0_new, pfi_FA_new, pfi_MD_new
-
-        if controller['align over T1']:
-            # copy the transformations aligned in the T1 space as well
-            pfo_S0inT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0inT1.nii.gz')
-            pfo_V1inT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_V1inT1.nii.gz')
-            pfo_FAinT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_FAinT1.nii.gz')
-            pfo_MDinT1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_MDinT1.nii.gz')
-            for p in [pfo_S0inT1, pfo_V1inT1, pfo_FAinT1, pfo_MDinT1]:
-                assert check_path_validity(p)
-            pfo_S0inT1_new = jph(pfo_mod, sj + '_S0inT1.nii.gz')
-            pfo_V1inT1_new = jph(pfo_mod, sj + '_V1inT1.nii.gz')
-            pfo_FAinT1_new = jph(pfo_mod, sj + '_FAinT1.nii.gz')
-            pfo_MDinT1_new = jph(pfo_mod, sj + '_MDinT1.nii.gz')
-
-            for a, b in zip([pfo_S0inT1, pfo_V1inT1, pfo_FAinT1, pfo_MDinT1],
-                            [pfo_S0inT1_new, pfo_V1inT1_new, pfo_FAinT1_new, pfo_MDinT1_new]):
-                cmd = 'cp {0} {1}'.format(a, b)
-                print_and_run(cmd)
-
-            del pfo_S0inT1, pfo_V1inT1, pfo_FAinT1, pfo_MDinT1, pfo_S0inT1_new, pfo_V1inT1_new, pfo_FAinT1_new, \
-                pfo_MDinT1_new
-
 
 def process_DWI_from_list(subj_list, controller):
 
@@ -514,7 +412,6 @@ if __name__ == '__main__':
                       'bfc S0'                : False,
                       'create lesion mask'    : False,
                       'create reg masks'      : False,
-                      'align over T1'         : True,
                       'save results'          : True}
 
     lsm = ListSubjectsManager()
