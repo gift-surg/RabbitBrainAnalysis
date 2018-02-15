@@ -56,27 +56,29 @@ class SubjectParameters(object):
         self.bias_field_parameters = bias_field_parameters
         self.MSME_acquisition      = MSME_acquisition
         self.comment               = ''
-        self.in_atlas           = in_atlas
+        self.in_atlas              = in_atlas
         self.b0_level              = 0
 
     def get_as_dict(self):
-        return OrderedDict({'study'                  : self.study,
-                            'category'               : self.category,
-                            'leading_modality'       : self.leading_modality,
-                            'angles'                 : self.angles,
-                            'translation'            : self.translation,
-                            'threshold'              : self.threshold,
-                            'T1_window_percentile'   : self.T1_window_percentile,
-                            'S0_window_percentile'   : self.S0_window_percentile,
-                            'T1_mask_dilation'       : self.T1_mask_dilation,
-                            'S0_mask_dilation'       : self.S0_mask_dilation,
-                            'erosion_roi_mask'       : self.erosion_roi_mask,
-                            'DWI_squashed'           : self.DWI_squashed,
-                            'bias_field_parameters'  : self.bias_field_parameters,
-                            'MSME_acquisition'       : self.MSME_acquisition,
-                            'comment'                : self.comment,
-                            'in_atlas'               : self.in_atlas,
-                            'b0_level'               : self.b0_level})
+        d = OrderedDict()
+        d['study']                   = self.study,
+        d['category']                = self.category,
+        d['leading_modality']        = self.leading_modality,
+        d['angles']                  = self.angles,
+        d['translation']             = self.translation,
+        d['threshold']               = self.threshold,
+        d['T1_window_percentile']    = self.T1_window_percentile,
+        d['S0_window_percentile']    = self.S0_window_percentile,
+        d['T1_mask_dilation']        = self.T1_mask_dilation,
+        d['S0_mask_dilation']        = self.S0_mask_dilation,
+        d['erosion_roi_mask']        = self.erosion_roi_mask,
+        d['DWI_squashed']            = self.DWI_squashed,
+        d['bias_field_parameters']   = self.bias_field_parameters,
+        d['MSME_acquisition']        = self.MSME_acquisition,
+        d['comment']                 = self.comment,
+        d['in_atlas']                = self.in_atlas,
+        d['b0_level']                = self.b0_level
+        return d
 
     def save_as_txt(self, pfo_where_to_save):
         pfi_txt_file = jph(pfo_where_to_save, self.subject_name + '.txt')

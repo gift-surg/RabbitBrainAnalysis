@@ -1,11 +1,12 @@
+from os.path import join as jph
+
 from tools.auxiliary.sanity_checks import check_libraries
-from collections import OrderedDict
 
 from main_pipeline.A0_main.subject_parameters_creator import reset_parameters_files
 from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_atlas, \
     check_subjects_situation
 
-from tools.definitions import pfo_subjects_parameters
+from tools.definitions import pfo_subjects_parameters, root_atlas
 
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A1_convert_and_clean.apply_converter_to_all_data import convert_subjects_from_list
@@ -15,11 +16,9 @@ from main_pipeline.A2_process_modalities.process_MSME import process_MSME_from_l
 from main_pipeline.A2_process_modalities.process_T1 import process_T1_from_list
 from main_pipeline.A2_process_modalities.process_T2_map import process_t2_maps_from_list
 from main_pipeline.A2_process_modalities.process_g_ratio import process_g_ratio_from_list
-
+from main_pipeline.A3_register_template_over_all_subjects.A_move_to_stereotaxic_coordinates import move_to_stereotaxic_coordinate_from_list
 from main_pipeline.A3_register_template_over_all_subjects.B_spot_the_rabbits import spot_a_list_of_rabbits
-
-# from main_pipeline.A4_data_collection.generate_report_studies import compile_report_from_subject_list
-from main_pipeline.U_utils.upate_shared_results import send_data_to_hannes_from_list
+from main_pipeline.A3_register_template_over_all_subjects.C_bring_segmentation_back_to_original_coordinates import propagate_segmentation_in_original_space_from_list
 
 
 def main_runner(subj_list):
@@ -36,8 +35,7 @@ def main_runner(subj_list):
              'step_A2_T2maps'   : False,
              'step_A2_g_ratio'  : False,
              'step_A3'          : True,
-             'step_A4'          : False,
-             'step_A5'          : False}
+             'step_A4'          : False}
 
     print('STEPS')
     for k in sorted(steps.keys()):
@@ -142,17 +140,35 @@ def main_runner(subj_list):
     ''' Step A3 - Propagate template '''
     if steps['step_A3']:
         print('\nStep A3\n')
+
+        print('A3) PART A')
+        controller = {
+            'Initialise_sc_folder': True,
+            'Register_T1': True,
+            'Propagate_T1_masks': True,
+            'Register_S0': True,
+            'Propagate_S0_related_mods_and_mask': True,
+            'Adjustments': True
+        }
+
+        options = {
+            'Template_chart_path': jph(root_atlas, '1305'),
+            'Template_name': '1305'}
+
+        move_to_stereotaxic_coordinate_from_list(subj_list, controller, options)
+
+        print('A3) PART B')
         spot_a_list_of_rabbits(subj_list)
-        # Inter_modality_propagator_list
+
+        print('A3) PART C')
+        controller = {}
+        options = {}
+        propagate_segmentation_in_original_space_from_list(subj_list, controller, options)
 
     ''' Step A4 - Data collection '''
     if steps['step_A4']:
         print('\nStep A4\n')
-        pass  # in progress!
-        # compile_report_from_subject_list(subj_list)
-
-    if steps['step_A5']:
-        send_data_to_hannes_from_list(subj_list, records_only=False)
+        pass  # ERASE WHAT HAS BEEN DONE SO FAR AND RE-DO!
 
 if __name__ == '__main__':
 

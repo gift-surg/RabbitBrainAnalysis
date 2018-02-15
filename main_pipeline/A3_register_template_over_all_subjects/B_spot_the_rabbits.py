@@ -11,81 +11,85 @@ from spot_a_rabbit.spot import SpotDS
 
 
 def spot_a_list_of_rabbits(subjects_list):
-    # TODO - A lot TODO here, integrate with the new structure of the multi-atlas.
+
     multi_atlas_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
 
     for sj_target in subjects_list:
+        print('\nAutomatic segmentation with SPOT-A-NeonatalRabbit - subject {} started.\n'.format(sj_target))
 
-        # if in template just copy the modality.
+        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj_target), 'r'))
 
-        pass
-        # if sj_target in multi_atlas_subjects:
-        #     # Propagate when in atlas (the subject is already manually segmented, no need to propagate back):
-        #     propagator_when_in_atlas()  # TODO BELOW
-        # else:
-        #     # Propagate when not in atlas, using SPOT-A-NeonatalRabbit:
-        #
-        #
-        #     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj_target), 'r'))
-        #
-        #     study = sj_parameters['study']
-        #     category = sj_parameters['category']
-        #
-        #     pfo_target = jph(root_study_rabbits, 'A_data', study, category, sj_target)
-        #
-        #     spot_sj = SpotDS(atlas_pfo=root_atlas,
-        #                      target_pfo=pfo_target,
-        #                      target_scaffoldings_folder_name='z_tmp',
-        #                      pfo_subjects_parameters=pfo_subjects_parameters)
-        #
-        #     # template parameters:
-        #     spot_sj.atlas_list_charts_names = multi_atlas_subjects
-        #     spot_sj.atlas_list_suffix_modalities = ['T1', 'S0', 'V1', 'MD', 'FA']
-        #     spot_sj.atlas_list_suffix_masks = ['roi_mask', 'reg_mask']
-        #
-        #     # --- target parameters
-        #     spot_sj.target_parameters = sj_parameters
-        #
-        #     spot_sj.target_list_suffix_modalities = [['T1'], ['S0', 'V1', 'MD', 'FA']]
-        #
-        #     spot_sj.bfc_corrector_cmd = bfc_corrector_cmd
-        #     msg = 'bias field corrector command {} does NOT exist'.format(spot_sj.bfc_corrector_cmd)
-        #     assert os.path.exists(spot_sj.bfc_corrector_cmd), msg
-        #
-        #     # settings propagator:
-        #     spot_sj.controller_propagator = {'Propagation_methods': 'Multi',
-        #                                      'Affine_options': '',
-        #                                      'Reorient_chart_hd': True,
-        #                                      'Aff_alignment': True,
-        #                                      'Propagate_aff_to_segm': True,
-        #                                      'Propagate_aff_to_mask': True,
-        #                                      'Get_differential_BFC': False,  # if multi try to put this off.
-        #                                      'N-rig_alignment': True,
-        #                                      'Propagate_to_target_n-rig': True,
-        #                                      'Smooth_results': True,
-        #                                      'Stack_warps_and_segms': True,
-        #                                      'Speed': False,
-        #                                      # not all modalities acquisitions are considered
-        #                                      'Selected_modalities_suffix_for_multimodal_propagation' : ['T1', 'FAinT1'],
-        #                                      'Selected_masks_suffix_for_multimodal_propagation'      : ['T1', 'S0inT1'],
-        #                                      'Parameters_nrigid_registration': ' -be 0.95 -ln 6 -lp 3 '   #  -vel -be 0.5 -ln 6 -lp 4  -smooR 0.07 -smooF 0.07  '
-        #                                      }
-        #
-        #     # settings fuser:
-        #     spot_sj.controller_fuser = {'Fusion_methods': ['MV'],
-        #                                 'Fuse': True,
-        #                                 'STAPLE_params': OrderedDict([('pr_1', None)]),
-        #                                 'STEPS_params': OrderedDict([('pr_{0}_{1}'.format(k, n), [k, n, 0.4])
-        #                                                              for n in [5, 7, 9]
-        #                                                              for k in [5, 11]]),  # k-pixels, n (5 or lower), beta
-        #                                 'Inter_mod_space_propagation': True,
-        #                                 'Save_results': True}
-        #
-        #     spot_sj.num_cores_run = num_cores_run
-        #     #
-        #     spot_sj.propagate()
-        #     spot_sj.fuse()
-        #     spot_sj.integrate_target_as_atlas_chart()
+        if sj_parameters['in_atlas']:
+            # SPOT only the rabbits not already in the atlas.
+            return
+
+        study = sj_parameters['study']
+        category = sj_parameters['category']
+
+        pfo_target = jph(root_study_rabbits, 'A_data', study, category, sj_target, 'stereotaxic')
+
+
+        # --- initialise the class spot:
+
+        spot_sj = SpotDS(atlas_pfo=root_atlas,
+                         target_pfo=pfo_target,
+                         target_name=sj_target,
+                         parameters_tag='P1')
+        """
+        Parameters tag -> correspondence:
+        'P1' -> Multi modal T1 and FA + BFC on T1.
+        """
+        # Template parameters:
+        spot_sj.atlas_name = 'MANRround3'  # Multi Atlas Newborn Rabbit
+        spot_sj.atlas_list_charts_names      = multi_atlas_subjects
+        spot_sj.atlas_list_suffix_modalities = ['T1', 'S0', 'V1', 'MD', 'FA']
+        spot_sj.atlas_list_suffix_masks      = ['roi_mask', 'roi_reg_mask']
+        spot_sj.atlas_reference_chart_name   = '1305'
+        spot_sj.atlas_segmentation_suffix    = 'approved_round3'
+
+        # --- target parameters
+        spot_sj.target_list_suffix_modalities = ['T1', 'S0', 'V1', 'MD', 'FA']
+        spot_sj.target_name                   = sj_target
+
+        # --- Utils
+        spot_sj.bfc_corrector_cmd = bfc_corrector_cmd
+        spot_sj.num_cores_run     = num_cores_run
+
+        # --- Propagator option
+        spot_sj.propagation_options['Affine_modalities']        = ('T1',)
+        spot_sj.propagation_options['Affine_reg_masks']         = ('T1',)  # if (), there is a single mask for all modalities
+        spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
+        spot_sj.propagation_options['N_rigid_modalities']       = ('T1',)  # if empty, no non-rigid step.
+        spot_sj.propagation_options['N_rigid_reg_masks']        = ('T1',)  # if [], same mask for all modalities
+        spot_sj.propagation_options['N_rigid_slim_reg_mask']    = True
+        spot_sj.propagation_options['N_rigid_mod_diff_bfc']     = ()  # empty list no diff bfc. - put a comma!!
+        spot_sj.propagation_options['N_rigid_parameters']       = '  -be 0.9 -ln 6 -lp 4  -smooR 1.5 -smooF 1.5 '
+        spot_sj.propagation_options['N_rigid_same_mask_moving'] = True
+        spot_sj.propagation_options['Final_smoothing_factor']   = 0
+
+        # --- Propagator controller
+        spot_sj.propagation_controller['Aff_alignment']          = True
+        spot_sj.propagation_controller['Propagate_aff_to_segm']  = True
+        spot_sj.propagation_controller['Propagate_aff_to_mask']  = True
+        spot_sj.propagation_controller['Get_N_rigid_slim_mask']  = True
+        spot_sj.propagation_controller['Get_differential_BFC']   = True
+        spot_sj.propagation_controller['N_rigid_alignment']      = True
+        spot_sj.propagation_controller['Propagate_n_rigid']      = True
+        spot_sj.propagation_controller['Smooth_results']         = True
+        spot_sj.propagation_controller['Stack_warps_and_segms']  = True
+
+        # --- Fuser option
+        spot_sj.fuser_options['Fusion_methods'] = ['MV', 'STAPLE', 'STEPS']
+        spot_sj.fuser_options['STAPLE_params']  = OrderedDict([('pr1', None)])
+        spot_sj.fuser_options['STEPS_params']   = OrderedDict([('pr{0}.{1}'.format(k, n), [k, n, 4])
+                                                             for n in [9] for k in [5, 11]])
+        # --- Fuser controller
+        spot_sj.fuser_controller['Fuse']         = True
+        spot_sj.fuser_controller['Save_results'] = True
+
+        spot_sj.spot_on_target_initialise()
+        spot_sj.propagate()
+        spot_sj.fuse()
 
 
 if __name__ == '__main__':

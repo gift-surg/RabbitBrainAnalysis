@@ -48,7 +48,7 @@ else:
     root_study_rabbits = ''
     root_utils = ''
     root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
-    root_atlas = jph(root_main_dropbox, 'study', 'A_internal_template')
+    root_atlas = jph(root_main_dropbox, 'study', 'A_atlas')
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc'
     num_cores_run = 8
 

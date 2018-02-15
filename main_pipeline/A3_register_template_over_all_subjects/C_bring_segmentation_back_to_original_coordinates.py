@@ -14,13 +14,29 @@ from tools.auxiliary.utils import print_and_run
 from tools.auxiliary.multichannel import stack_a_list_of_images_from_list_pfi
 
 
-def propgate_segmentation_in_original_space_per_subject(sj, controller, options):
-    print('\nProcessing T1 {} started.\n'.format(sj))
+def propagate_segmentation_in_original_space_per_subject(sj, controller, options):
 
-def propgate_segmentation_in_original_space_from_list(subj_list, controller, options):
+    print('\nfrom Stereotaxic orientation to original space - SUBJECT {} started.\n'.format(sj))
+
+    sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+    study = sj_parameters['study']
+    category = sj_parameters['category']
+
+    # recover the source in stereotaxic coordinates:
+    if sj_parameters['in_atlas']:
+        # source in stereotaxic coordinate is in the atlas
+        return
+
+    else:
+        pass
+
+
+
+def propagate_segmentation_in_original_space_from_list(subj_list, controller, options):
     print '\n\n Move to stereotaxic coordinate from list {} \n'.format(subj_list)
     for sj in subj_list:
-        propgate_segmentation_in_original_space_per_subject(sj, controller, options)
+        propagate_segmentation_in_original_space_per_subject(sj, controller, options)
 
 if __name__ == '__main__':
     print('Propagate from Stereotaxic orientation to original space, local run. ')
@@ -48,5 +64,5 @@ if __name__ == '__main__':
     lsm.input_subjects = ['4302']
     lsm.update_ls()
 
-    propgate_segmentation_in_original_space_from_list(lsm.ls, controller_, options_)
+    propagate_segmentation_in_original_space_per_subject(lsm.ls, controller_, options_)
 

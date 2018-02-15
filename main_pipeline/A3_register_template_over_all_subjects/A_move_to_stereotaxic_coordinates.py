@@ -18,6 +18,10 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
+    if sj_parameters['in_atlas']:
+        # SPOT only the rabbits not already in the atlas.
+        return
+
     study = sj_parameters['study']
     category = sj_parameters['category']
 
@@ -205,7 +209,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
             print('Resampling {}:'.format(mod))
 
             pfi_final_MOD= jph(pfo_sc_sj_mod, '{0}_{1}.nii.gz'.format(sj, mod)) # RESULT
-            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 1'.format(
                 pfi_S0_in_sc, pfi_MOD_reoriented, pfi_transformation_S0_over_T1, pfi_final_MOD)
             print_and_run(cmd)
 
@@ -295,106 +299,3 @@ if __name__ == '__main__':
     lsm.update_ls()
 
     move_to_stereotaxic_coordinate_from_list(lsm.ls, controller_, options_)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# --- Too general version, discarded as overkill!
-#
-# controller_ = {
-#     'Initialise_sc_folder': True,
-#     'Orient_header': True,
-#     'Rigid_alignment': True,
-#     'Propagate_mods': True,
-#     'Propagate_masks': True,
-#     'Modalities_cleaner': True,
-# }
-#
-# options_ = {
-#     'Template_chart_path': jph(root_atlas, '1305'),
-#     'Template_name': '1305',
-#     'Pivot_mod_template': 'T1',
-#     'Pivot_mod_target': [['T1'], ['S0', 'FA', 'MD', 'V1']],
-# }
-# for num_mod_serie, mod_serie in enumerate(options['Pivot_mod_target']):  # [[T1], [S0, FA, MD, V1]]
-#
-#     pivot_mod = mod_serie[0]
-#
-#     if controller['Orient_header']:
-#         print('- set header histological orientation for each modality in the serie {0}'.format(num_mod_serie))
-#
-#         angles = sj_parameters['angles']
-#         if isinstance(angles[0], list):
-#             pitch_theta = -1 * angles[num_mod_serie][1]
-#         else:
-#             pitch_theta = -1 * angles[1]
-#
-#         for mo in mod_serie:
-#             # mods
-#             pfi_original_mo = jph(pfo_sj_mod, '{0}_{1}.nii.gz'.format(sj, mo))
-#             assert os.path.exists(pfi_original_mo)
-#             pfi_mo_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}.nii.gz'.format(sj, mo))
-#             cmd = 'cp {0} {1}'.format(pfi_original_mo, pfi_mo_reoriented)
-#             print_and_run(cmd)
-#             if pitch_theta != 0:
-#                 lm = LabelsManager()
-#                 lm.header.apply_small_rotation(pfi_mo_reoriented,
-#                                                pfi_mo_reoriented,
-#                                                angle=pitch_theta, principal_axis='pitch')
-#
-#         # mask
-#         pfi_original_roi_mask = jph(pfo_sj_masks, '{0}_{1}_{2}.nii.gz'.format(sj, pivot_mod, 'roi_mask'))
-#         pfi_original_reg_mask = jph(pfo_sj_masks, '{0}_{1}_{2}.nii.gz'.format(sj, pivot_mod, 'reg_mask'))
-#         assert os.path.exists(pfi_original_roi_mask), pfi_original_roi_mask
-#         assert os.path.exists(pfi_original_reg_mask), pfi_original_reg_mask
-#         pfi_roi_mask_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}_{2}.nii.gz'.format(sj, pivot_mod, 'roi_mask'))
-#         pfi_reg_mask_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}_{2}.nii.gz'.format(sj, pivot_mod, 'reg_mask'))
-#
-#         cmd = 'cp {0} {1}'.format(pfi_original_roi_mask, pfi_roi_mask_reoriented)
-#         print_and_run(cmd)
-#         cmd = 'cp {0} {1}'.format(pfi_original_reg_mask, pfi_reg_mask_reoriented)
-#         print_and_run(cmd)
-#         if pitch_theta != 0:
-#             lm = LabelsManager()
-#             lm.header.apply_small_rotation(pfi_roi_mask_reoriented,
-#                                            pfi_roi_mask_reoriented,
-#                                            angle=pitch_theta, principal_axis='pitch')
-#
-#             lm = LabelsManager()
-#             lm.header.apply_small_rotation(pfi_reg_mask_reoriented,
-#                                            pfi_reg_mask_reoriented,
-#                                            angle=pitch_theta, principal_axis='pitch')
-#
-#     if controller['Rigid_alignment']:
-#         print('- register oriented pivotal modality over the modality {0}'.format(num_mod_serie))
-#
-#         pfi_pivot_mod_sj = jph(pfo_tmp, 'histo_header_{0}_{1}.nii.gz'.format(sj, pivot_mod))
-#         pfi_pivot_reg_mask_sj = jph(pfo_tmp, 'histo_header_{0}_{1}_{2}.nii.gz'.format(sj, pivot_mod, 'reg_mask'))
-#
-#         assert os.path.exists(pfi_pivot_mod_sj), pfi_pivot_mod_sj
-#         assert os.path.exists(pfi_pivot_reg_mask_sj), pfi_pivot_reg_mask_sj
-#
-#         pfi_transformation = jph(pfo_tmp, 'trans_{0}_over_{1}_mod_{2}_rigid.txt'.format(
-#             sj, options['Template_name'], pivot_mod))
-#         pfi_resampled = jph(pfo_tmp, '')
-#
-#     if controller['Propagate_mods']:
-#         pass
-#
-#     if controller['Propagate_masks']:
-#         pass
-#
-#     if controller['Modalities_cleaner']:
-#         pass
-#
