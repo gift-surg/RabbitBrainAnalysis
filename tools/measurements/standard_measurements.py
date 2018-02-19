@@ -100,8 +100,9 @@ def plot_collected(pfo_storage):
 
 if __name__ == '__main__':
 
-    if True:
-        # example of rabbbit-valued-dataframe:
+    if False:
+
+        # EXAMPLE of rabbbit-valued-dataframe:
         names = ['12xx', '12yy', '12zz', '12aa', '14xx', '14yy', '14zz', '14aa']
         cat1 = pa.Series(['F', 'F', 'F', 'F', 'M', 'M', 'M', 'M'], index=names)
         cat2 = pa.Series(['pre-term', 'pre-term', 'term', 'term', 'pre-term', 'pre-term', 'term', 'term'], index=names)
@@ -124,3 +125,6 @@ if __name__ == '__main__':
         historgram_of_data_st(ax, df)
 
         plt.show()
+
+    if True:
+        pass
