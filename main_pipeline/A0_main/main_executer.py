@@ -28,9 +28,9 @@ def main_runner(subj_list):
     # Set steps
 
     steps = {'reset_parameters' : False,  # if this is true it does not do anything else.
-             'step_A1'          : True,
+             'step_A1'          : False,
              'step_A2_T1'       : False,
-             'step_A2_DWI'      : True,
+             'step_A2_DWI'      : False,
              'step_A2_MSME'     : False,
              'step_A2_T2maps'   : False,
              'step_A2_g_ratio'  : False,
@@ -161,14 +161,23 @@ def main_runner(subj_list):
         spot_a_list_of_rabbits(subj_list)
 
         print('A3) PART C')
-        controller = {}
-        options = {}
-        propagate_segmentation_in_original_space_from_list(subj_list, controller, options)
+
+        controller = {
+            'Header_alignment_T1strx_to_T1orig' : True,
+            'Rigid_T1strx_to_T1orig'            : True,
+            'Propagate_T1_segm'                 : True,
+            'Inter_modal_reg_S0'                : True,
+            'Inter_modal_reg_MSME'              : False,
+                    }
+
+        propagate_segmentation_in_original_space_from_list(subj_list, controller)
 
     ''' Step A4 - Data collection '''
     if steps['step_A4']:
+
+
+
         print('\nStep A4\n')
-        pass  # ERASE WHAT HAS BEEN DONE SO FAR AND RE-DO!
 
 if __name__ == '__main__':
 
@@ -185,7 +194,7 @@ if __name__ == '__main__':
     lsm.execute_ACS_ex_vivo   = False
 
     # lsm.input_subjects = ['4302', '4303', '4304', '4305', '4501', '4504']
-    lsm.input_subjects = ['4305']  # , '4305']
+    lsm.input_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']  # , '4305']
     lsm.update_ls()
 
     print(lsm.ls)

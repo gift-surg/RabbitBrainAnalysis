@@ -3,7 +3,7 @@ import nibabel as nib
 
 from labels_manager.tools.aux_methods.utils import eliminates_consecutive_duplicates
 from labels_manager.tools.aux_methods.utils_nib import set_new_data
-from bruker2nifti._utils import slope_corrector
+from bruker2nifti._utils import data_corrector
 
 
 # def slope_corrector_old(slopes, im_input, eliminate_consec_duplicates=False):
@@ -45,7 +45,7 @@ def slope_corrector_path(slopes_array, path_im_input, path_im_output, eliminate_
     # slopes = np.loadtxt(slopes_txt_path)
     if eliminate_consec_duplicates:
         slopes_array = np.array(eliminates_consecutive_duplicates(list(slopes_array)))
-    data_output = slope_corrector(im_input.get_data(), slopes_array)
+    data_output = data_corrector(im_input.get_data(), slopes_array, kind='slope')
     im_output = set_new_data(im_input, data_output)
     nib.save(im_output, path_im_output)
     msg = 'Scaled image saved in ' + path_im_output

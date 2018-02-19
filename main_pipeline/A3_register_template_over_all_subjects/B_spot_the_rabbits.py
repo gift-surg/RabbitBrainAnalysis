@@ -28,9 +28,7 @@ def spot_a_list_of_rabbits(subjects_list):
 
         pfo_target = jph(root_study_rabbits, 'A_data', study, category, sj_target, 'stereotaxic')
 
-
         # --- initialise the class spot:
-
         spot_sj = SpotDS(atlas_pfo=root_atlas,
                          target_pfo=pfo_target,
                          target_name=sj_target,
@@ -56,14 +54,14 @@ def spot_a_list_of_rabbits(subjects_list):
         spot_sj.num_cores_run     = num_cores_run
 
         # --- Propagator option
-        spot_sj.propagation_options['Affine_modalities']        = ('T1',)
-        spot_sj.propagation_options['Affine_reg_masks']         = ('T1',)  # if (), there is a single mask for all modalities
+        spot_sj.propagation_options['Affine_modalities']        = ('T1', 'FA')
+        spot_sj.propagation_options['Affine_reg_masks']         = ('T1', 'S0')  # if (), there is a single mask for all modalities
         spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
-        spot_sj.propagation_options['N_rigid_modalities']       = ('T1',)  # if empty, no non-rigid step.
-        spot_sj.propagation_options['N_rigid_reg_masks']        = ('T1',)  # if [], same mask for all modalities
+        spot_sj.propagation_options['N_rigid_modalities']       = ('T1', 'FA')  # if empty, no non-rigid step.
+        spot_sj.propagation_options['N_rigid_reg_masks']        = ('T1', 'S0')  # if [], same mask for all modalities
         spot_sj.propagation_options['N_rigid_slim_reg_mask']    = True
-        spot_sj.propagation_options['N_rigid_mod_diff_bfc']     = ()  # empty list no diff bfc. - put a comma!!
-        spot_sj.propagation_options['N_rigid_parameters']       = '  -be 0.9 -ln 6 -lp 4  -smooR 1.5 -smooF 1.5 '
+        spot_sj.propagation_options['N_rigid_mod_diff_bfc']     = ('T1',)  # empty list no diff bfc. - put a comma!!
+        spot_sj.propagation_options['N_rigid_parameters']       = ' -be 0.5 -ln 6 -lp 4  -smooR 1.5 -smooF 1.5 '
         spot_sj.propagation_options['N_rigid_same_mask_moving'] = True
         spot_sj.propagation_options['Final_smoothing_factor']   = 0
 
@@ -79,7 +77,7 @@ def spot_a_list_of_rabbits(subjects_list):
         spot_sj.propagation_controller['Stack_warps_and_segms']  = True
 
         # --- Fuser option
-        spot_sj.fuser_options['Fusion_methods'] = ['MV', 'STAPLE', 'STEPS']
+        spot_sj.fuser_options['Fusion_methods'] = ['MV']  #, 'STAPLE', 'STEPS']
         spot_sj.fuser_options['STAPLE_params']  = OrderedDict([('pr1', None)])
         spot_sj.fuser_options['STEPS_params']   = OrderedDict([('pr{0}.{1}'.format(k, n), [k, n, 4])
                                                              for n in [9] for k in [5, 11]])

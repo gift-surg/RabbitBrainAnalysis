@@ -49,7 +49,6 @@ def process_T1_per_subject(sj, controller):
         raise IOError('Input folder T1 does not exist. {}'.format(pfo_input_sj_3D))
 
     # --  Generate intermediate and output folder
-
     pfo_mod = jph(pfo_output_sj, 'mod')
     pfo_segm = jph(pfo_output_sj, 'segm')
     pfo_mask = jph(pfo_output_sj, 'masks')
@@ -148,7 +147,7 @@ def process_T1_per_subject(sj, controller):
             pfi_affine_transformation_ref_on_subject, pfi_3d_warped_ref_on_subject, pfi_roi_mask_not_adjusted, cmd
 
     if controller['register roi masks multi-atlas']:
-        # Robust roi extraction, if not for particular cases is an overkill...
+        # Robust roi extraction - uses the binarised brain tissue for the partial skull stripping..
         print('- register roi masks and propagate it with multi-atlas on {}'.format(sj))
 
         # --- subject input:

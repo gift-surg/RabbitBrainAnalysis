@@ -1356,7 +1356,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
-    sp.in_atlas            = False
+    sp.in_atlas               = False
     sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)

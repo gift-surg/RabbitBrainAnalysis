@@ -61,23 +61,23 @@ class SubjectParameters(object):
 
     def get_as_dict(self):
         d = OrderedDict()
-        d['study']                   = self.study,
-        d['category']                = self.category,
-        d['leading_modality']        = self.leading_modality,
-        d['angles']                  = self.angles,
-        d['translation']             = self.translation,
-        d['threshold']               = self.threshold,
-        d['T1_window_percentile']    = self.T1_window_percentile,
-        d['S0_window_percentile']    = self.S0_window_percentile,
-        d['T1_mask_dilation']        = self.T1_mask_dilation,
-        d['S0_mask_dilation']        = self.S0_mask_dilation,
-        d['erosion_roi_mask']        = self.erosion_roi_mask,
-        d['DWI_squashed']            = self.DWI_squashed,
-        d['bias_field_parameters']   = self.bias_field_parameters,
-        d['MSME_acquisition']        = self.MSME_acquisition,
-        d['comment']                 = self.comment,
-        d['in_atlas']                = self.in_atlas,
-        d['b0_level']                = self.b0_level
+        d.update({'study'                 : self.study})
+        d.update({'category'              : self.category})
+        d.update({'leading_modality'      : self.leading_modality})
+        d.update({'angles'                : self.angles})
+        d.update({'translation'           : self.translation})
+        d.update({'threshold'             : self.threshold})
+        d.update({'T1_window_percentile'  : self.T1_window_percentile})
+        d.update({'S0_window_percentile'  : self.S0_window_percentile})
+        d.update({'T1_mask_dilation'      : self.T1_mask_dilation})
+        d.update({'S0_mask_dilation'      : self.S0_mask_dilation})
+        d.update({'erosion_roi_mask'      : self.erosion_roi_mask})
+        d.update({'DWI_squashed'          : self.DWI_squashed})
+        d.update({'bias_field_parameters' : self.bias_field_parameters})
+        d.update({'MSME_acquisition'      : self.MSME_acquisition})
+        d.update({'comment'               : self.comment})
+        d.update({'in_atlas'              : self.in_atlas})
+        d.update({'b0_level'              : self.b0_level})
         return d
 
     def save_as_txt(self, pfo_where_to_save):
@@ -118,7 +118,7 @@ def get_list_names_subjects_in_atlas(pfo_where_parameter_files_are_stored):
         subj_k_parameters = pickle.load(open(jph(pfo_where_parameter_files_are_stored, k), 'r'))
         if subj_k_parameters['in_atlas']:
             list_subjects_in_template.append(k)
-    list_subjects_in_template.sort(key=float)
+    # list_subjects_in_template.sort(key=float)
     return list_subjects_in_template
 
 
