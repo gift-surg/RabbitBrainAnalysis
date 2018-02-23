@@ -52,13 +52,14 @@ data_set_info = OrderedDict(
             })
 
 ptb_related_regions = OrderedDict()
-ptb_related_regions['Cerebellar Hemispheres'] = [179, 180]
+ptb_related_regions['Cerebellar hemisphere']  = [179, 180]
 ptb_related_regions['Thalamus']               = [83, 84]
-ptb_related_regions['Hippocampi']             = [31, 32]
-ptb_related_regions['Internal_Capsulae']      = [223, 234]
-ptb_related_regions['Caudate_Nucleus']        = [69, 70]
-ptb_related_regions['Corpus_Callosum']        = [218]
-ptb_related_regions['Prefrontal_Cortex']      = [5, 6, 7, 8]
+ptb_related_regions['Hippocampus']            = [31, 32]
+ptb_related_regions['Internal capsule']       = [223, 234]
+ptb_related_regions['Caudate nucleus']        = [69, 70]
+ptb_related_regions['Corpus callosum']        = [218]
+ptb_related_regions['Medial Prefrontal']      = [5, 6]
+ptb_related_regions['Frontal']                = [7, 8]
 
 
 atlas_subjects = get_list_names_subjects_in_atlas(pfo_subjects_parameters)
@@ -122,10 +123,63 @@ def historgram_of_data_st(ax, df, xlabel='', ylabel='Values', factor=1., legend=
     ax.set_axisbelow(True)
 
 
-def collect_data_from_subject_list(sj_list, pfo_storage, suffix='E1', controller=None):
+def boxplot_of_data_st(ax, df, xlabel='', ylabel='', factor=1., legend=True):
+    df_F_pre = df.loc[df['cat1'] == 'Female'].loc[df['cat2'] == 'Preterm']
+    df_F_ter = df.loc[df['cat1'] == 'Female'].loc[df['cat2'] == 'Term']
+    df_M_pre = df.loc[df['cat1'] == 'Male'].loc[df['cat2'] == 'Preterm']
+    df_M_ter = df.loc[df['cat1'] == 'Male'].loc[df['cat2'] == 'Term']
+
+    lens = [len(df_F_pre.index), len(df_F_ter.index), len(df_M_pre.index), len(df_M_ter.index)]
+    custom_red = np.array([255, 153, 153]) / 255.
+    custom_green = np.array([163, 255, 163]) / 255.
+    colors = [custom_red, ] * lens[0] + [custom_green, ] * lens[1] + [custom_red, ] * lens[2] + [custom_green, ] * lens[3]
+    all_data = []
+    for se in (df_F_pre['vals'], df_F_ter['vals'], df_M_pre['vals'], df_M_ter['vals']):
+        for i in se.index:
+            all_data.append(se[i])
+
+    bplot = ax.boxplot(all_data, patch_artist=True)
+
+    for patch, color in zip(bplot['boxes'], colors):
+        patch.set_facecolor(color)
+
+    # add vertical line separating males females
+    tot_females = sum([len(df_F_pre.index), len(df_F_ter.index)])
+    tot_males = sum([len(df_M_pre.index), len(df_M_ter.index)])
+    ax.axvline(x=tot_females + 0.5, color='k', alpha=0.4)
+
+    # add labels and text axis
+
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(df.name)
+    labels = list(df_F_pre.index) + list(df_F_ter.index) + list(df_M_pre.index) + list(df_M_ter.index)
+    #ax.set_xticks(range(len(labels)))
+    ax.set_xticklabels(labels, rotation=45)
+
+    # annotate male female text:
+    x_lim = ax.get_xlim()
+    y_lim = ax.get_ylim()
+    y_hight = 0.1 * (y_lim[1] - y_lim[0])
+    ax.annotate('Females', xy=(tot_females / 2. - 1, y_hight), color='gray', size=int(factor * 20))
+    ax.annotate('Males', xy=(tot_females + tot_males / 2. - 0.75, y_hight), color='gray', size=(factor * 20))
+
+    # add legend
+    if legend:
+        # Finally, add a basic legend
+        ax.annotate('pre-term', xy=(x_lim[0] + 0.5, y_lim[0] + 0.5), backgroundcolor=custom_red, color='black',  size=(factor * 12))
+        ax.annotate('term', xy=(x_lim[0] + 0.5, y_lim[0] + 0.1), backgroundcolor=custom_green, color='black', size=(factor * 12))
+
+    # add grid
+    ax.grid()
+    ax.set_axisbelow(True)
+
+
+def collect_data_from_subject_list(sj_list, pfo_storage, controller=None):
     """
     :param sj_list: list of subjects
-    :param pfo_dump: where to save the obtained dataframe per region, per value.
+    :param pfo_storage: where to save the obtained dataframe per region, per value.
+    :param controller: controller values
     :return:
     """
 
@@ -146,7 +200,6 @@ def collect_data_from_subject_list(sj_list, pfo_storage, suffix='E1', controller
         3301    vols
         3404    vols
         """
-
         se_vols = pa.Series(np.array([0, ] * len(sj_list)).astype(np.float64), index=sj_list)
         print('\n -- ')
         for sj in sj_list:
@@ -162,15 +215,11 @@ def collect_data_from_subject_list(sj_list, pfo_storage, suffix='E1', controller
             pfi_report_vols = jph(pfo_subject, 'report', '{}_volumes.pickle')
 
             im_segm = nib.load(pfi_segm)
-            vols = pa.to_pickle(pfi_report_vols)
 
             num_voxels = get_total_num_nonzero_voxels(im_segm)
             vol_mm3 = num_voxels * one_voxel_volume(im_segm)
 
-            se_vols
-
-            df_tot_voxels =
-
+            se_vols[sj] = vol_mm3
 
     # --> Collection 2: tot volume normalised by the body weight
     if controller['Collection2']:
@@ -184,14 +233,30 @@ def collect_data_from_subject_list(sj_list, pfo_storage, suffix='E1', controller
         1510    vols / vol tot
         ...
         """
-        vols_norm = collect_vols(sj_list, labels='tot', normaliser='body')
-        vols_norm.name = 'Total volume normalised'
-        vols_norm.to_pickle(jph(pfo_storage, 'VolumesNormalised_{}.pickle'.format(suffix)))
+        se_vols = pa.Series(np.array([0, ] * len(sj_list)).astype(np.float64), index=sj_list)
+        print('\n -- ')
+        for sj in sj_list:
+            print('\nCollection 1, subject {}. '.format(sj))
 
-    # --> Collection 3: volumes per regions
+            sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+            study = sj_parameters['study']
+            category = sj_parameters['category']
+
+            pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
+            pfi_segm = jph(pfo_subject, 'segm', '{}_T1_segm.nii.gz'.format(sj))
+
+            im_segm = nib.load(pfi_segm)
+
+            num_voxels = get_total_num_nonzero_voxels(im_segm)
+            vol_mm3 = num_voxels * one_voxel_volume(im_segm)
+
+            se_vols[sj] = vol_mm3 / float(data_set_info[sj][2][0])
+
+    # --> Collection 3: volumes per regions normalised total brain volume
     if controller['Collection3']:
         """
-        Pandas series as:
+        One pandas series for region, as:
         1201    vols / vol tot
         1203    vols / vol tot
         1305    vols / vol tot
@@ -201,14 +266,102 @@ def collect_data_from_subject_list(sj_list, pfo_storage, suffix='E1', controller
         ...
         """
         for k in ptb_related_regions.keys():
-            vols_reg_k = collect_vols(sj_list, labels=[ptb_related_regions[k]], normalise=False)
-            vols_reg_k.name = 'Volumes, region {}'.format(ptb_related_regions[k])
-            vols_reg_k.to_pickle(jph(pfo_storage, 'VolumesRegion{0}_{1}.pickle'.format(k, suffix)))
+            se_vols_region_k = pa.Series(np.array([0, ] * len(sj_list)).astype(np.float64), index=sj_list)
+
+            for sj in sj_list:
+                sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+                study = sj_parameters['study']
+                category = sj_parameters['category']
+
+                pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
+                pfi_segm = jph(pfo_subject, 'segm', '{}_T1_segm.nii.gz'.format(sj))
+
+                im_segm = nib.load(pfi_segm)
+
+                tot_num_voxels = get_total_num_nonzero_voxels(im_segm)
+
+                pfi_report_vols = jph(pfo_subject, 'report', '{}_volumes.pickle')
+
+                df = pa.read_pickle(pfi_report_vols)
+                df.set_index('region_names')
+
+                num_voxel_reg_k = df['num_voxels'][k]
+                net_volume = num_voxel_reg_k / float(tot_num_voxels)
+                se_vols_region_k[sj] = net_volume
+
+            se_vols_region_k.name = 'Volumes normalised tot brain vol, region {0}'.format(ptb_related_regions[k])
+            se_vols_region_k.to_pickle(jph(pfo_storage, 'VolumesRegionOverTotBV{0}.pickle'.format(k)))
 
     # --> Collection 4: volumes per regions normalised by the body weight of the interesting regions
     if controller['Collection4']:
         """
-        Pandas df as:
+        One pandas series for region, as:
+        1201    vols / vol tot
+        1203    vols / vol tot
+        1305    vols / vol tot
+        1404    vols / vol tot
+        1507    vols / vol tot
+        1510    vols / vol tot
+        ...
+        """
+        for k in ptb_related_regions.keys():
+            se_vols_region_k = pa.Series(np.array([0, ] * len(sj_list)).astype(np.float64), index=sj_list)
+
+            for sj in sj_list:
+                sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+                study = sj_parameters['study']
+                category = sj_parameters['category']
+
+                pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
+
+                pfi_report_vols = jph(pfo_subject, 'report', '{}_volumes.pickle')
+
+                df = pa.read_pickle(pfi_report_vols)
+                df.set_index('region_names')
+
+                num_voxel_reg_k = df['num_voxels'][k]
+                net_volume = num_voxel_reg_k / float(data_set_info[sj][2][0])
+                se_vols_region_k[sj] = net_volume
+
+            se_vols_region_k.name = 'Volumes normalised tot body weight, region {0}'.format(ptb_related_regions[k])
+            se_vols_region_k.to_pickle(jph(pfo_storage, 'VolumesRegionOverBodyWeight{0}.pickle'.format(k)))
+
+    # --> Collection 5: FA per regions
+    if controller['Collection5']:
+        """
+        Pandas se
+        sj      vals
+        1201    np.ndarray(... vals)
+        1203    np.ndarray(... vals)
+        1305    np.ndarray(... vals)
+        ...
+        """
+        for k in ptb_related_regions.keys():
+            se_vals_per_region_k = pa.Series()
+            for sj in sj_list:
+                sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+                study = sj_parameters['study']
+                category = sj_parameters['category']
+
+                pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
+
+                pfi_report_FA = jph(pfo_subject, 'report', '{}_FA_values.pickle'.format(sj))
+
+                df_FA = pa.read_pickle(pfi_report_FA)
+                df_FA = df_FA.set_index('region_names')
+
+                se_vals_per_region_k.append (pa.Series([df_FA['FA_values'][k]], index=[sj]), ignore_index=True)
+
+            se_vals_per_region_k.name = 'FA per values, region {0}'.format(ptb_related_regions[k])
+            se_vals_per_region_k.to_pickle(jph(pfo_storage, 'FARegion{0}.pickle'.format(k)))
+
+    # --> Collection 6: MD
+    if controller['Collection6']:
+        """
+        Pandas df as with MD
         sj      mu     std
         1201    mu     std
         1203    mu     std
@@ -216,23 +369,24 @@ def collect_data_from_subject_list(sj_list, pfo_storage, suffix='E1', controller
         ...
         """
         for k in ptb_related_regions.keys():
-            vols_reg_k_norm = collect_vols(sj_list, labels=[ptb_related_regions[k]], normalise=True)
-            vols_reg_k_norm.name = 'Volumes, region {}, normalised'.format(ptb_related_regions[k])
-            vols_reg_k_norm.to_pickle(jph(pfo_storage, 'VolumesNormalisedRegion{0}_{1}.pickle'.format(k, suffix)))
+            se_vals_per_region_k = pa.Series(np.array([0, ] * len(sj_list)).astype(np.float64), index=sj_list)
+            for sj in sj_list:
+                sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-    # --> Collection 5: FA per regions
-    if controller['Collection5']:
-        for k in ptb_related_regions.keys():
-            FA_under_labels = collect_under_labels(sj_list, labels=[ptb_related_regions[k]], map='FA')
-            FA_under_labels.name = 'FA mu, stdev, region {}'.format(k)
-            FA_under_labels.to_pickle(jph(pfo_storage, 'FARegion{0}_{1}.pickle'.format(k, suffix)))
+                study = sj_parameters['study']
+                category = sj_parameters['category']
 
-    # --> Collection 6: MD
-    if controller['Collection6']:
-        for k in ptb_related_regions.keys():
-            MD_under_labels = collect_under_labels(sj_list, labels=[ptb_related_regions[k]], map='MD')
-            MD_under_labels.name = 'MD mu, stdev, region {}'.format(k)
-            MD_under_labels.to_pickle(jph(pfo_storage, 'MDRegion{0}_{1}.pickle'.format(k, suffix)))
+                pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
+
+                pfi_report_FA = jph(pfo_subject, 'report', '{}_MD_values.pickle'.format(sj))
+
+                df_FA = pa.read_pickle(pfi_report_FA)
+                df_FA = df_FA.set_index('region_names')
+
+                se_vals_per_region_k[sj] = df_FA['MD_values'][k]
+
+            se_vals_per_region_k.name = 'MD per values, region {0}'.format(ptb_related_regions[k])
+            se_vals_per_region_k.to_pickle(jph(pfo_storage, 'MDRegion{0}.pickle'.format(k)))
 
 
 def plot_and_save_collected(pfo_storage, suffix='E1', show=True, controller=None):
@@ -412,13 +566,13 @@ def simple_data_analysis_by_subjects_list(sj_list):
 
     pfo_storage = '/Volumes/sebastianof/rabbits/B_stats/simple_analysis'
     suffix = 'E1'
-    controller = {'Collection1': True,
-                  'Collection2': True,
-                  'Collection3': True,
-                  'Collection4': True,
-                  'Collection5': True,
-                  'Collection6': True}
-    collect_data_from_subject_list(sj_list, pfo_storage, suffix=suffix, controller=controller)
+    controller = {'Collection1'     : True,
+                  'Collection2'     : True,
+                  'Collection3'     : True,
+                  'Collection4'     : True,
+                  'Collection5'     : True,
+                  'Collection6'     : True}
+    collect_data_from_subject_list(sj_list, pfo_storage, controller=controller)
     plot_and_save_collected(pfo_storage, suffix=suffix, show=True, controller=controller)
 
 
@@ -450,61 +604,41 @@ if __name__ == '__main__':
 
         plt.show()
 
+    if False:
+        # EXAMPLE of rabbbit-valued-dataframe:
+        names = ['12xx', '12yy', '12zz', '12aa', '14xx', '14yy', '14zz', '14aa']
+        cat1 = pa.Series(['Female', 'Female', 'Female', 'Female', 'Male', 'Male', 'Male', 'Male'], index=names)
+        cat2 = pa.Series(['Preterm', 'Preterm', 'Term', 'Term', 'Preterm', 'Preterm', 'Term', 'Term'], index=names)
+        vals = pa.Series([np.random.randn(1000) for _ in range(len(names))], index=names)
+        d = {'cat1': cat1,
+             'cat2': cat2,
+             'vals': vals}
+        df = pa.DataFrame(data=d)
+        df.name = 'vol type, region i'
+
+        print df
+
+        fig, ax = plt.subplots(figsize=(12, 8), nrows=1, ncols=1)
+        fig.canvas.set_window_title('zzz')
+        boxplot_of_data_st(ax, df)
+
+        plt.show()
+
     if True:
-        controller = {'Collection1': True,
-                      'Collection2': True,
-                      'Collection3': True,
-                      'Collection4': True,
-                      'Collection5': True,
-                      'Collection6': True}
+
+        controller = {'Collection1'     : False,
+                      'Collection2'     : False,
+                      'Collection3'     : False,
+                      'Collection4'     : False,
+                      'Collection5'     : True,
+                      'Collection6'     : True,}
 
         pfo_storage = '/Volumes/sebastianof/rabbits/B_stats/simple_analysis'
-        # collect_data_from_subject_list(atlas_subjects, pfo_storage)
-        plot_and_save_collected(pfo_storage, controller=controller)
+        collect_data_from_subject_list(atlas_subjects, pfo_storage, controller=controller)
+        # plot_and_save_collected(pfo_storage, controller=controller)
 
 
 
 
 
-#
-# def generate_boxplot(pfi_labels_descriptor,modalities, pfo_pre_report, show=True):
-#     for mod_d, mod in enumerate(self.modalities):
-#         pfi_values_below_labels_mod = jph(self.pfo_pre_report,
-#                                           '{0}_{1}_values_below_labels.pickle'.format(self.sj_name, mod))
-#         se_values_below_labels_mod = pa.read_pickle(pfi_values_below_labels_mod)
-#
-#         ldm = LdM(pfi_labels_descriptor)
-#         multi_label_dict = ldm.get_multi_label_dict(keep_duplicate=False, combine_right_left=True)
-#
-#         index_subset_fig_1 = multi_label_dict.keys()
-#
-#         index_subset_fig_1 = copy.deepcopy(index_subset_fig_1)
-#         index_subset_fig_2 = ['WM', 'GM', 'CSF']
-#
-#         se_values_below_labels_all = se_values_below_labels_mod.loc[index_subset_fig_1]
-#         se_values_below_labels_WM_GM_CSF = se_values_below_labels_mod.loc[index_subset_fig_2]
-#
-#         title = 'boxplot_{0}_{1}'.format(self.sj_name, mod)
-#         graph_title = 'Values below label subject {0}, modality {1}'.format(self.sj_name, mod)
-#
-#         fig = plt.figure(mod_d, figsize=(14, 7), dpi=80, facecolor='w', edgecolor='k')
-#         fig.subplots_adjust(left=0.075, right=0.95, top=0.9, bottom=0.25)
-#         # set title
-#         fig.canvas.set_window_title(title)
-#
-#         # boxplot 1
-#         ax0 = fig.add_subplot(111)
-#         ax0.boxplot(se_values_below_labels_all.values)
-#         ax0.set_xticklabels(se_values_below_labels_all.index, rotation=90)
-#
-#         # # boxplot 1
-#         # ax1 = fig.add_subplot(122)
-#         # ax1.boxplot(se_values_below_labels_WM_GM_CSF.values)
-#         # ax1.set_xticklabels(se_values_below_labels_WM_GM_CSF.index, rotation=30)
-#
-#         fig.suptitle(graph_title)
-#
-#         fig.savefig(jph(self.pfo_pre_report, graph_title + '.png'))
-#         if show:
-#             plt.show(block=True)
 
