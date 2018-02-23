@@ -54,4 +54,4 @@ else:
 
 pfi_excel_table_all_data = jph(root_study_rabbits, 'A_data', 'DataSummary.xlsx')
 pfo_subjects_parameters = jph(root_study_rabbits, 'A_data', 'Utils', 'subjects_parameters')
-pfi_labels_descriptor = jph(root_atlas, 'LabelsDescriptors', 'labels_descriptor_v8.txt')
+pfi_labels_descriptor = jph(root_atlas, 'labels_descriptor.txt')

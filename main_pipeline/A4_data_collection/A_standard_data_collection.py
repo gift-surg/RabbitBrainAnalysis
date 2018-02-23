@@ -2,6 +2,8 @@
 Standard measurements on the selected data.
 Volume, Volume/tot_volume, FA_i, MD_i, i in regions.
 
+Very direct approach to create the intended data structure.
+
 data_st:
 data structure defined as:
 
@@ -12,6 +14,7 @@ data_st['12xx'] = ['M/F', 'term/pre-term', value]
 """
 import numpy as np
 import pandas as pa
+import nibabel as nib
 import matplotlib.pyplot as plt
 from os.path import join as jph
 import pickle
@@ -22,6 +25,9 @@ from collections import OrderedDict
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_atlas
 
+from labels_manager.tools.aux_methods.utils_nib import one_voxel_volume
+from labels_manager.tools.caliber.volumes_and_values import get_total_num_nonzero_voxels
+from labels_manager.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
 from labels_manager.main import LabelsManager as LM
 
 
@@ -116,84 +122,84 @@ def historgram_of_data_st(ax, df, xlabel='', ylabel='Values', factor=1., legend=
     ax.set_axisbelow(True)
 
 
-def collect_vols(sj_list, labels, normalise=True):
-    """
-
-    :param sj_list:
-    :param labels:
-    :param normalise:
-    :return:  rabbbit-valued-dataframe with total volumes.
-    """
-    se_vols = pa.Series(np.array([0, ]*len(sj_list)).astype(np.float64), index=sj_list)
-    print('\n -- ')
-    for sj in sj_list:
-
-        print('\nExtracting volume for subject {}, labels {}, normalised {} - started. '.format(sj, labels, normalise))
-
-        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
-
-        study = sj_parameters['study']
-        category = sj_parameters['category']
-
-        pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
-        pfi_segm = jph(pfo_subject, 'segm', '{}_T1_segm.nii.gz'.format(sj))
-
-        m = LM()
-        vol = m.measure.volume(pfi_segm, labels=labels, tot_volume_prior=data_set_info[sj][2][0])
-        if normalise:
-            se_vols[sj] = vol['Vol over Tot']
-        else:
-            se_vols[sj] = vol['Volume']
-
-    return se_vols
-
-
-def collect_under_labels(sj_list, labels, map='FA'):
-    df_vals_below_label_mu_std = pa.DataFrame({'mu' : pa.Series(np.array([0, ] * len(sj_list)).astype(np.float64), index=sj_list),
-                                               'std': pa.Series(np.array([0, ] * len(sj_list)).astype(np.float64), index=sj_list)},
-                                              index=sj_list)
-    print('\n -- ')
-    for sj in sj_list:
-
-        print('\nExtracting values below labels for map subject {}, labels {}, MAP {} - started. '.format(sj, labels, map))
-
-        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
-
-        study = sj_parameters['study']
-        category = sj_parameters['category']
-
-        pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
-        pfi_segm = jph(pfo_subject, 'segm', '{}_S0_segm.nii.gz'.format(sj))
-        pfi_anat = jph(pfo_subject, 'mod', '{}_{}.nii.gz'.format(sj, map))
-
-        m = LM()
-        se_vals_below = m.measure.values_below_labels(pfi_segm, pfi_anat, labels=labels)
-        df_vals_below_label_mu_std['mu'][sj] = np.mean(se_vals_below[str(labels[0])])
-        df_vals_below_label_mu_std['std'][sj] = np.std(se_vals_below[str(labels[0])])
-
-    return df_vals_below_label_mu_std
-
-
 def collect_data_from_subject_list(sj_list, pfo_storage, suffix='E1', controller=None):
     """
     :param sj_list: list of subjects
     :param pfo_dump: where to save the obtained dataframe per region, per value.
     :return:
     """
-    # --> Collection 1: tot volume
+
+    # --> Collection 1: total volume, no normalisation
     if controller['Collection1']:
-        vols = collect_vols(sj_list, labels='tot', normalise=False)
-        vols.name = 'Total volume'
-        vols.to_pickle(jph(pfo_storage, 'Volumes_{}.pickle'.format(suffix)))
+        """
+        Pandas series as:
+        1201    vols
+        1203    vols
+        1305    vols
+        1404    vols
+        1507    vols
+        1510    vols
+        1702    vols
+        1805    vols
+        2002    vols
+        2502    vols
+        3301    vols
+        3404    vols
+        """
+
+        se_vols = pa.Series(np.array([0, ] * len(sj_list)).astype(np.float64), index=sj_list)
+        print('\n -- ')
+        for sj in sj_list:
+            print('\nCollection 1, subject {}. '.format(sj))
+
+            sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+            study = sj_parameters['study']
+            category = sj_parameters['category']
+
+            pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
+            pfi_segm = jph(pfo_subject, 'segm', '{}_T1_segm.nii.gz'.format(sj))
+            pfi_report_vols = jph(pfo_subject, 'report', '{}_volumes.pickle')
+
+            im_segm = nib.load(pfi_segm)
+            vols = pa.to_pickle(pfi_report_vols)
+
+            num_voxels = get_total_num_nonzero_voxels(im_segm)
+            vol_mm3 = num_voxels * one_voxel_volume(im_segm)
+
+            se_vols
+
+            df_tot_voxels =
+
 
     # --> Collection 2: tot volume normalised by the body weight
     if controller['Collection2']:
-        vols_norm = collect_vols(sj_list, labels='tot', normalise=True)
+        """
+        Pandas series as:
+        1201    vols / vol tot
+        1203    vols / vol tot
+        1305    vols / vol tot
+        1404    vols / vol tot
+        1507    vols / vol tot
+        1510    vols / vol tot
+        ...
+        """
+        vols_norm = collect_vols(sj_list, labels='tot', normaliser='body')
         vols_norm.name = 'Total volume normalised'
         vols_norm.to_pickle(jph(pfo_storage, 'VolumesNormalised_{}.pickle'.format(suffix)))
 
     # --> Collection 3: volumes per regions
     if controller['Collection3']:
+        """
+        Pandas series as:
+        1201    vols / vol tot
+        1203    vols / vol tot
+        1305    vols / vol tot
+        1404    vols / vol tot
+        1507    vols / vol tot
+        1510    vols / vol tot
+        ...
+        """
         for k in ptb_related_regions.keys():
             vols_reg_k = collect_vols(sj_list, labels=[ptb_related_regions[k]], normalise=False)
             vols_reg_k.name = 'Volumes, region {}'.format(ptb_related_regions[k])
@@ -201,19 +207,27 @@ def collect_data_from_subject_list(sj_list, pfo_storage, suffix='E1', controller
 
     # --> Collection 4: volumes per regions normalised by the body weight of the interesting regions
     if controller['Collection4']:
+        """
+        Pandas df as:
+        sj      mu     std
+        1201    mu     std
+        1203    mu     std
+        1305    mu     std
+        ...
+        """
         for k in ptb_related_regions.keys():
             vols_reg_k_norm = collect_vols(sj_list, labels=[ptb_related_regions[k]], normalise=True)
             vols_reg_k_norm.name = 'Volumes, region {}, normalised'.format(ptb_related_regions[k])
             vols_reg_k_norm.to_pickle(jph(pfo_storage, 'VolumesNormalisedRegion{0}_{1}.pickle'.format(k, suffix)))
 
-    # --> Collection 5: FA per regions normalised by the body weight of the interesting regions
+    # --> Collection 5: FA per regions
     if controller['Collection5']:
         for k in ptb_related_regions.keys():
             FA_under_labels = collect_under_labels(sj_list, labels=[ptb_related_regions[k]], map='FA')
             FA_under_labels.name = 'FA mu, stdev, region {}'.format(k)
             FA_under_labels.to_pickle(jph(pfo_storage, 'FARegion{0}_{1}.pickle'.format(k, suffix)))
 
-    # --> Collection 6: MD per regions normalised by the body weight of the interesting regions
+    # --> Collection 6: MD
     if controller['Collection6']:
         for k in ptb_related_regions.keys():
             MD_under_labels = collect_under_labels(sj_list, labels=[ptb_related_regions[k]], map='MD')
@@ -437,13 +451,60 @@ if __name__ == '__main__':
         plt.show()
 
     if True:
-        controller = {'Collection1': False,
-                      'Collection2': False,
-                      'Collection3': False,
-                      'Collection4': False,
+        controller = {'Collection1': True,
+                      'Collection2': True,
+                      'Collection3': True,
+                      'Collection4': True,
                       'Collection5': True,
                       'Collection6': True}
 
         pfo_storage = '/Volumes/sebastianof/rabbits/B_stats/simple_analysis'
         # collect_data_from_subject_list(atlas_subjects, pfo_storage)
         plot_and_save_collected(pfo_storage, controller=controller)
+
+
+
+
+
+#
+# def generate_boxplot(pfi_labels_descriptor,modalities, pfo_pre_report, show=True):
+#     for mod_d, mod in enumerate(self.modalities):
+#         pfi_values_below_labels_mod = jph(self.pfo_pre_report,
+#                                           '{0}_{1}_values_below_labels.pickle'.format(self.sj_name, mod))
+#         se_values_below_labels_mod = pa.read_pickle(pfi_values_below_labels_mod)
+#
+#         ldm = LdM(pfi_labels_descriptor)
+#         multi_label_dict = ldm.get_multi_label_dict(keep_duplicate=False, combine_right_left=True)
+#
+#         index_subset_fig_1 = multi_label_dict.keys()
+#
+#         index_subset_fig_1 = copy.deepcopy(index_subset_fig_1)
+#         index_subset_fig_2 = ['WM', 'GM', 'CSF']
+#
+#         se_values_below_labels_all = se_values_below_labels_mod.loc[index_subset_fig_1]
+#         se_values_below_labels_WM_GM_CSF = se_values_below_labels_mod.loc[index_subset_fig_2]
+#
+#         title = 'boxplot_{0}_{1}'.format(self.sj_name, mod)
+#         graph_title = 'Values below label subject {0}, modality {1}'.format(self.sj_name, mod)
+#
+#         fig = plt.figure(mod_d, figsize=(14, 7), dpi=80, facecolor='w', edgecolor='k')
+#         fig.subplots_adjust(left=0.075, right=0.95, top=0.9, bottom=0.25)
+#         # set title
+#         fig.canvas.set_window_title(title)
+#
+#         # boxplot 1
+#         ax0 = fig.add_subplot(111)
+#         ax0.boxplot(se_values_below_labels_all.values)
+#         ax0.set_xticklabels(se_values_below_labels_all.index, rotation=90)
+#
+#         # # boxplot 1
+#         # ax1 = fig.add_subplot(122)
+#         # ax1.boxplot(se_values_below_labels_WM_GM_CSF.values)
+#         # ax1.set_xticklabels(se_values_below_labels_WM_GM_CSF.index, rotation=30)
+#
+#         fig.suptitle(graph_title)
+#
+#         fig.savefig(jph(self.pfo_pre_report, graph_title + '.png'))
+#         if show:
+#             plt.show(block=True)
+

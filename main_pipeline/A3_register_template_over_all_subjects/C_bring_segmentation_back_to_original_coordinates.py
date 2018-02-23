@@ -262,10 +262,10 @@ if __name__ == '__main__':
     print('Propagate from Stereotaxic orientation to original space, local run. ')
 
     controller_ = {
-        'Header_alignment_T1strx_to_T1orig' : False,
-        'Rigid_T1strx_to_T1orig'            : False,
-        'Propagate_T1_segm'                 : False,
-        'Inter_modal_reg_S0'                : False,
+        'Header_alignment_T1strx_to_T1orig' : True,
+        'Rigid_T1strx_to_T1orig'            : True,
+        'Propagate_T1_segm'                 : True,
+        'Inter_modal_reg_S0'                : True,
         'Inter_modal_reg_MSME'              : True,
     }
 
@@ -277,7 +277,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['4501']
+    lsm.input_subjects = ['1505']
     lsm.update_ls()
 
     propagate_segmentation_in_original_space_from_list(lsm.ls, controller_)

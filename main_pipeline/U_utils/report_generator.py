@@ -3,20 +3,94 @@ import pandas as pa
 import nibabel as nib
 from collections import OrderedDict
 from matplotlib import pyplot as plt
-import copy
+import pickle
 
 from os.path import join as jph
 import cPickle as Pickle
 
 from labels_manager.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
-
-from labels_manager.tools.caliber.volumes_and_values import get_values_below_labels, \
-    from_values_below_labels_to_volumes, from_values_below_labels_to_mu_std, get_total_volume
-
+from labels_manager.tools.aux_methods.utils import custom_dataframe_to_csv
+from labels_manager.tools.caliber.volumes_and_values import get_total_num_nonzero_voxels, \
+    get_num_voxels_from_labels_list, get_values_below_labels_list
+from labels_manager.tools.aux_methods.utils_nib import one_voxel_volume
 from tools.definitions import pfi_labels_descriptor
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 
 
 class ReportGenerator(object):
+    """
+    Genearet minimal reports (volumetric, FA, MD) with raw data.
+    Any further elaborations are done elsewhere.
+    Here is the starting point to collect extra data such as MSME-T2, g-ratio, T2map, partial voluming,
+    and other DWI parameters.
+    A new method-class will be created for each of this, with the consequent file generation.
+    """
+    def __init__(self, subject_name):
+        self.subject_name = subject_name
+        self.pfo_subjects_parameters = pfo_subjects_parameters
+        self._initialise_paths()
+        self._create_report_folder()
+        self._initialise_lables()
+
+    def _initialise_paths(self):
+        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, self.subject_name), 'r'))
+        study = sj_parameters['study']
+        category = sj_parameters['category']
+        self.pfo_subject = jph(root_study_rabbits, 'A_data', study, category, self.subject_name)
+        self.pfo_report = jph(self.pfo_subject, 'report')
+
+    def _create_report_folder(self):
+        os.system('mkdir -p {}'.format(self.pfo_report))
+
+    def _initialise_lables(self):
+        ldm = LdM(pfi_labels_descriptor)
+        self.multi_label_dict = ldm.get_multi_label_dict(keep_duplicate=True, combine_right_left=True)
+
+    def get_raw_volumes(self):
+        labels_list = [self.multi_label_dict[l] for l in self.multi_label_dict.keys()]
+        labels_names_list = self.multi_label_dict.keys()
+        im_segm = nib.load(jph(self.pfo_subject, 'segm', '{0}_T1_segm.nii.gz'.format(self.subject_name)))
+        num_voxels = [0] + get_num_voxels_from_labels_list(im_segm, labels_list)
+        df_raw_volumes = pa.DataFrame({'region_names': labels_names_list, 'num_voxels' : num_voxels}, index=[str(a) for a in labels_list], columns=['region_names', 'num_voxels'])
+        df_raw_volumes.to_pickle(jph(self.pfo_subject, 'report', '{}_volumes.pickle'.format(self.subject_name)))
+        df_raw_volumes.to_csv(jph(self.pfo_subject, 'report', '{}_volumes.csv'.format(self.subject_name)))
+
+    def get_raw_FA(self):
+        labels_list = [self.multi_label_dict[l] for l in self.multi_label_dict.keys()]
+        labels_names_list = self.multi_label_dict.keys()
+        im_segm = nib.load(jph(self.pfo_subject, 'segm', '{0}_S0_segm.nii.gz'.format(self.subject_name)))
+        im_anat = nib.load(jph(self.pfo_subject, 'mod', '{0}_FA.nii.gz'.format(self.subject_name)))
+        FA_values = get_values_below_labels_list(im_segm, im_anat, labels_list)
+        df_raw_FA = pa.DataFrame({'region_names': labels_names_list, 'FA_values': FA_values}, index=[str(a) for a in labels_list], columns=['region_names', 'FA_values'])
+        df_raw_FA.to_pickle(jph(self.pfo_subject, 'report', '{}_FA_values.pickle'.format(self.subject_name)))
+        custom_dataframe_to_csv(df_raw_FA, jph(self.pfo_subject, 'report', '{}_FA_values.csv'.format(self.subject_name)))
+
+    def get_raw_MD(self):
+        labels_list = [self.multi_label_dict[l] for l in self.multi_label_dict.keys()]
+        labels_names_list = self.multi_label_dict.keys()
+        im_segm = nib.load(jph(self.pfo_subject, 'segm', '{0}_S0_segm.nii.gz'.format(self.subject_name)))
+        im_anat = nib.load(jph(self.pfo_subject, 'mod', '{0}_MD.nii.gz'.format(self.subject_name)))
+        MD_values = get_values_below_labels_list(im_segm, im_anat, labels_list)
+        df_raw_MD = pa.DataFrame({'region_names': labels_names_list, 'MD_values': MD_values}, index=[str(a) for a in labels_list], columns=['region_names', 'MD_values'])
+        df_raw_MD.to_pickle(jph(self.pfo_subject, 'report', '{}_MD_values.pickle'.format(self.subject_name)))
+        custom_dataframe_to_csv(df_raw_MD, jph(self.pfo_subject, 'report', '{}_MD_values.csv'.format(self.subject_name)))
+
+
+if __name__ == '__main__':
+    sj_atlas = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
+    for sj in sj_atlas:
+        print('Generate report subject {}'.format(sj))
+        rg = ReportGenerator(sj)
+        rg.get_raw_volumes()
+        rg.get_raw_FA()
+        rg.get_raw_MD()
+
+
+'''
+# below a memento: this is how to NOT develop code! 
+# if you collect measurments, you just collect measurements!
+
+class ReportGenerator_(object):
     """
     Report is a dictionary: {'info' : subject_info, 'measurement' : subject_measurements}
     subject_info pandas.Series
@@ -86,7 +160,7 @@ class ReportGenerator(object):
 
             # ---  GET TOTAL VOLUME ---
             df_tot_vol = pa.DataFrame(
-                {self.modalities[j]: pa.Series(get_total_volume(im_seg, labels_to_exclude=[0]),
+                {self.modalities[j]: pa.Series(get_total_num_voxels(im_seg, labels_to_exclude=[0]),
                                                index=['Num voxels', 'Vol mm3'])}
             )
             pfi_vol_tot = jph(self.pfo_pre_report,
@@ -96,8 +170,8 @@ class ReportGenerator(object):
 
             # --- ALL LABELS ---
             # Save values below
-            se_values_below_labels_all = get_values_below_labels(im_anat=im_anat, im_seg=im_seg, labels_list=labels_list,
-                                                              labels_names=labels_names_list)
+            se_values_below_labels_all = se_values_below_labels(im_anat=im_anat, im_seg=im_seg, labels_list=labels_list,
+                                                                labels_names=labels_names_list)
             pfi_all = jph(self.pfo_pre_report,
                           '{0}_{1}_values_below_labels.pickle'.format(self.sj_name, self.modalities[j]))
 
@@ -228,95 +302,5 @@ class ReportGenerator(object):
             report['Info'].to_csv(open(jph(self.pfo_report, '1201_info.csv'), 'w+'))
             report['Measurements'].to_csv(open(jph(self.pfo_report, '1201_measurements.csv'), 'w+'))
 
-    def generate_boxplot(self, show=True):
-        for mod_d, mod in enumerate(self.modalities):
-            pfi_values_below_labels_mod = jph(self.pfo_pre_report, '{0}_{1}_values_below_labels.pickle'.format(self.sj_name, mod))
-            se_values_below_labels_mod = pa.read_pickle(pfi_values_below_labels_mod)
 
-            ldm = LdM(pfi_labels_descriptor)
-            multi_label_dict = ldm.get_multi_label_dict(keep_duplicate=False, combine_right_left=True)
-
-            index_subset_fig_1 = multi_label_dict.keys()
-
-            index_subset_fig_1 = copy.deepcopy(index_subset_fig_1)
-            index_subset_fig_2 =['WM', 'GM', 'CSF']
-
-            se_values_below_labels_all = se_values_below_labels_mod.loc[index_subset_fig_1]
-            se_values_below_labels_WM_GM_CSF = se_values_below_labels_mod.loc[index_subset_fig_2]
-
-            title = 'boxplot_{0}_{1}'.format(self.sj_name, mod)
-            graph_title = 'Values below label subject {0}, modality {1}'.format(self.sj_name, mod)
-
-            fig = plt.figure(mod_d, figsize=(14, 7), dpi=80, facecolor='w', edgecolor='k')
-            fig.subplots_adjust(left=0.075, right=0.95, top=0.9, bottom=0.25)
-            # set title
-            fig.canvas.set_window_title(title)
-
-            # boxplot 1
-            ax0 = fig.add_subplot(111)
-            ax0.boxplot(se_values_below_labels_all.values)
-            ax0.set_xticklabels(se_values_below_labels_all.index, rotation=90)
-
-            # # boxplot 1
-            # ax1 = fig.add_subplot(122)
-            # ax1.boxplot(se_values_below_labels_WM_GM_CSF.values)
-            # ax1.set_xticklabels(se_values_below_labels_WM_GM_CSF.index, rotation=30)
-
-            fig.suptitle(graph_title)
-
-            fig.savefig(jph(self.pfo_pre_report, graph_title + '.png'))
-            if show:
-                plt.show(block=True)
-
-
-if __name__ == '__main__':
-
-    from tools.definitions import pfo_subjects_parameters, pfi_labels_descriptor, root_study_rabbits
-
-    selected_segmentation_suffix = '_IN_TEMPLATE'
-    sj = '1201'
-
-    sj_parameters = Pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
-    study = sj_parameters['study']
-    category = sj_parameters['category']
-
-    pfo_data_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
-
-    rg = ReportGenerator()
-
-    rg.sj_name = sj
-    rg.pfo_report = jph(pfo_data_sj, 'report')
-    rg.pfo_pre_report = jph(pfo_data_sj, 'report', 'z_pre_report')
-
-    pfi_T1 = jph(pfo_data_sj, 'mod', '{}_T1.nii.gz'.format(sj))
-    pfi_g_ratio = jph(pfo_data_sj, 'mod', '{}_g_ratio.nii.gz'.format(sj))
-    pfi_FA = jph(pfo_data_sj, 'mod', '{}_FA.nii.gz'.format(sj))
-    pfi_MD = jph(pfo_data_sj, 'mod', '{}_MD.nii.gz'.format(sj))
-    pfi_T2map = jph(pfo_data_sj, 'mod', '{}_T2map.nii.gz'.format(sj))
-
-    rg.list_pfi_anatomies     = [pfi_T1, pfi_g_ratio, pfi_FA, pfi_MD, pfi_T2map]
-
-    pfo_automatic_segm = jph(pfo_data_sj, 'segm', 'automatic')
-    pfi_T1_segm = jph(pfo_automatic_segm, '{0}_T1_segm{1}.nii.gz'.format(sj, selected_segmentation_suffix))
-    pfi_g_ratio_segm = jph(pfo_automatic_segm, '{0}_S0_segm{1}.nii.gz'.format(sj, selected_segmentation_suffix))
-    pfi_FA_segm = pfi_g_ratio_segm
-    pfi_MD_segm = pfi_g_ratio_segm
-    pfi_T2map_segm = pfi_g_ratio_segm
-
-    rg.list_pfi_segmentations = [pfi_T1_segm, pfi_g_ratio_segm, pfi_FA_segm, pfi_MD_segm, pfi_T2map_segm]
-    rg.modalities = ['T1', 'g_ratio', 'FA', 'MD', 'T2map']
-
-    rg.pfi_labels_descriptor = pfi_labels_descriptor
-    rg.pfi_info_excel_table = jph(root_study_rabbits, 'A_data', 'DataSummary.xlsx')
-    rg.pfo_subjects_param = pfo_subjects_parameters
-    rg.tot_volume_prior = None
-    rg.verbose = 1
-
-    rg.check_attributes()
-    rg.generate_structure()
-
-    # rg.generate_pre_report_each_mod()
-    # rg.pre_report2report()
-    # rg.save_report_human_readable()
-
-    rg.generate_boxplot()
+'''
