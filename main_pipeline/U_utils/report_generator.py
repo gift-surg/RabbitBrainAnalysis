@@ -1,5 +1,6 @@
 import os
 import pandas as pa
+import numpy as np
 import nibabel as nib
 from collections import OrderedDict
 from matplotlib import pyplot as plt
@@ -40,11 +41,13 @@ class ReportGenerator(object):
         self.pfo_report = jph(self.pfo_subject, 'report')
 
     def _create_report_folder(self):
+        os.system('rm -r {}'.format(self.pfo_report))
         os.system('mkdir -p {}'.format(self.pfo_report))
 
     def _initialise_lables(self):
         ldm = LdM(pfi_labels_descriptor)
         self.multi_label_dict = ldm.get_multi_label_dict(keep_duplicate=True, combine_right_left=True)
+        self.single_label_dict = ldm.get_multi_label_dict(keep_duplicate=True, combine_right_left=False)
 
     def get_raw_volumes(self):
         labels_list = [self.multi_label_dict[l] for l in self.multi_label_dict.keys()]
@@ -52,28 +55,36 @@ class ReportGenerator(object):
         im_segm = nib.load(jph(self.pfo_subject, 'segm', '{0}_T1_segm.nii.gz'.format(self.subject_name)))
         num_voxels = [0] + get_num_voxels_from_labels_list(im_segm, labels_list)
         df_raw_volumes = pa.DataFrame({'region_names': labels_names_list, 'num_voxels' : num_voxels}, index=[str(a) for a in labels_list], columns=['region_names', 'num_voxels'])
-        df_raw_volumes.to_pickle(jph(self.pfo_subject, 'report', '{}_volumes.pickle'.format(self.subject_name)))
+        df_raw_volumes.to_pickle(jph(self.pfo_subject, 'report', '{}_volumes.pkl'.format(self.subject_name)))
         df_raw_volumes.to_csv(jph(self.pfo_subject, 'report', '{}_volumes.csv'.format(self.subject_name)))
 
     def get_raw_FA(self):
-        labels_list = [self.multi_label_dict[l] for l in self.multi_label_dict.keys()]
-        labels_names_list = self.multi_label_dict.keys()
+        labels_names_list = self.single_label_dict.keys()
+        labels_list = [self.single_label_dict[l][0] for l in labels_names_list]
         im_segm = nib.load(jph(self.pfo_subject, 'segm', '{0}_S0_segm.nii.gz'.format(self.subject_name)))
         im_anat = nib.load(jph(self.pfo_subject, 'mod', '{0}_FA.nii.gz'.format(self.subject_name)))
         FA_values = get_values_below_labels_list(im_segm, im_anat, labels_list)
-        df_raw_FA = pa.DataFrame({'region_names': labels_names_list, 'FA_values': FA_values}, index=[str(a) for a in labels_list], columns=['region_names', 'FA_values'])
-        df_raw_FA.to_pickle(jph(self.pfo_subject, 'report', '{}_FA_values.pickle'.format(self.subject_name)))
-        custom_dataframe_to_csv(df_raw_FA, jph(self.pfo_subject, 'report', '{}_FA_values.csv'.format(self.subject_name)))
+        for i, (label_name, label_id) in enumerate(zip(labels_names_list, labels_list)) :
+            if i == 0:
+                pass
+            else:
+                fin = '{0}_FA_{1}_{2}'.format(sj, label_name.replace(' ', '').strip(), label_id)
+                np.save(jph(self.pfo_report, fin + '.npy'), FA_values[i])
+                np.savetxt(jph(self.pfo_report, fin + '.csv'), FA_values[i], delimiter=",")
 
     def get_raw_MD(self):
-        labels_list = [self.multi_label_dict[l] for l in self.multi_label_dict.keys()]
-        labels_names_list = self.multi_label_dict.keys()
+        labels_names_list = self.single_label_dict.keys()
+        labels_list = [self.single_label_dict[l][0] for l in labels_names_list]
         im_segm = nib.load(jph(self.pfo_subject, 'segm', '{0}_S0_segm.nii.gz'.format(self.subject_name)))
         im_anat = nib.load(jph(self.pfo_subject, 'mod', '{0}_MD.nii.gz'.format(self.subject_name)))
-        MD_values = get_values_below_labels_list(im_segm, im_anat, labels_list)
-        df_raw_MD = pa.DataFrame({'region_names': labels_names_list, 'MD_values': MD_values}, index=[str(a) for a in labels_list], columns=['region_names', 'MD_values'])
-        df_raw_MD.to_pickle(jph(self.pfo_subject, 'report', '{}_MD_values.pickle'.format(self.subject_name)))
-        custom_dataframe_to_csv(df_raw_MD, jph(self.pfo_subject, 'report', '{}_MD_values.csv'.format(self.subject_name)))
+        FA_values = get_values_below_labels_list(im_segm, im_anat, labels_list)
+        for i, (label_name, label_id) in enumerate(zip(labels_names_list, labels_list)) :
+            if i == 0:
+                pass
+            else:
+                fin = '{0}_MD_{1}_{2}'.format(sj, label_name.replace(' ', '').strip(), label_id)
+                np.save(jph(self.pfo_report, fin + '.npy'), FA_values[i])
+                np.savetxt(jph(self.pfo_report, fin + '.csv'), FA_values[i], delimiter=",")
 
 
 if __name__ == '__main__':
