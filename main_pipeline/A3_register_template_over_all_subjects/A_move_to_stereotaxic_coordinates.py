@@ -18,10 +18,6 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-    if sj_parameters['in_atlas']:
-        # SPOT only the rabbits not already in the atlas.
-        return
-
     study = sj_parameters['study']
     category = sj_parameters['category']
 
@@ -46,6 +42,26 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
     pfo_sc_sj = jph(pfo_sj, 'stereotaxic'.format(sj))
     pfo_sc_sj_mod = jph(pfo_sc_sj, 'mod')
     pfo_sc_sj_masks = jph(pfo_sc_sj, 'masks')
+
+    subject_is_in_atlas = sj_parameters['in_atlas']
+
+    if subject_is_in_atlas:
+        pfo_sj_mod_in_atlas = jph(root_atlas, sj, 'mod')
+        pfo_sj_masks_in_atlas = jph(root_atlas, sj, 'masks')
+        pfo_sj_segm_in_atlas = jph(root_atlas, sj, 'segm')
+        assert os.path.exists(pfo_sj_mod_in_atlas), pfo_sj_mod_in_atlas
+        assert os.path.exists(pfo_sj_masks_in_atlas), pfo_sj_masks_in_atlas
+        assert os.path.exists(pfo_sj_segm_in_atlas), pfo_sj_segm_in_atlas
+
+        print_and_run('mkdir -p {}'.format(pfo_sc_sj))
+        cmd = 'cp -r {} {}'.format(pfo_sj_mod_in_atlas, pfo_sc_sj)
+        print_and_run(cmd)
+        cmd = 'cp  -r {} {}'.format(pfo_sj_masks_in_atlas, pfo_sc_sj)
+        print_and_run(cmd)
+        cmd = 'cp -r {} {}'.format(pfo_sj_segm_in_atlas, pfo_sc_sj)
+        print_and_run(cmd)
+        return
+
 
     # Initialise folder structure in stereotaxic coordinates
     if controller['Initialise_sc_folder']:
@@ -262,12 +278,6 @@ def move_to_stereotaxic_coordinate_from_list(subj_list, controller, options):
     print '\n\n Move to stereotaxic coordinate from list {} \n'.format(subj_list)
     for sj in subj_list:
 
-        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
-        in_atlas = sj_parameters['in_atlas']
-
-        if in_atlas:
-            pass
-        else:
             move_to_stereotaxic_coordinate_per_subject(sj, controller, options)
 
 
@@ -295,7 +305,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['4501', '4305']
+    sj_atlas = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
+
+    lsm.input_subjects = sj_atlas
     lsm.update_ls()
 
     move_to_stereotaxic_coordinate_from_list(lsm.ls, controller_, options_)

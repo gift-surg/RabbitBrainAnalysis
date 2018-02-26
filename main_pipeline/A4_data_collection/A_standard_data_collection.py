@@ -42,7 +42,7 @@ data_set_info = OrderedDict(
             '1702': ['Term',    'Male',   (47.2, 1.81), 'in'],
             '1805': ['Term',    'Male',   (54.2, 1.78 ), 'in'],
             '2002': ['Preterm', 'Female', (31.8, 1.23), 'in'],
-            '2502': ['Term',    'Female', (62.9, 1.65), 'in'],
+            '2502': ['Term',    'Female', (62.9, 1.65), 'in'],     ##
             '2503': ['Term',    'Female', (66.8, 1.79), 'out'],
             '2702': ['Term',    'Male',   (54.6, 1.79), 'out'],
             '2608': ['Term',    'Female', (54.1, 1.79), 'out'],
@@ -174,7 +174,7 @@ def boxplot_of_data_st(ax, df, xlabel='', ylabel='', factor=1., legend=True):
     ax.set_axisbelow(True)
 
 
-def collect_data_from_subject_list(sj_list, pfo_storage, controller=None):
+def collect_data_from_subject_list(sj_list, pfo_storage, controller=None, report_folder='report_stereotaxic'):
     """
     :param sj_list: list of subjects
     :param pfo_storage: where to save the obtained dataframe per region, per value.
@@ -258,14 +258,6 @@ def collect_data_from_subject_list(sj_list, pfo_storage, controller=None):
     # --> Collection 3: volumes per regions normalised total brain volume
     if controller['Collection3']:
         """
-        One pandas series for region, as:
-        1201    vols / vol tot
-        1203    vols / vol tot
-        1305    vols / vol tot
-        1404    vols / vol tot
-        1507    vols / vol tot
-        1510    vols / vol tot
-        ...
         """
         for k in ptb_related_regions.keys():
             se_vols_region_k = pa.Series(np.array([0, ] * len(sj_list)).astype(np.float64), index=sj_list)
@@ -283,8 +275,8 @@ def collect_data_from_subject_list(sj_list, pfo_storage, controller=None):
                 im_segm = nib.load(pfi_segm)
 
                 tot_num_voxels = get_total_num_nonzero_voxels(im_segm)
-
-                pfi_report_vols = jph(pfo_subject, 'report', '{}_volumes.pkl'.format(sj))
+                # load volumes saved in in the report of each subject.
+                pfi_report_vols = jph(pfo_subject, report_folder, '{}_volumes.pkl'.format(sj))
 
                 df = pa.read_pickle(pfi_report_vols)
 
@@ -302,20 +294,11 @@ def collect_data_from_subject_list(sj_list, pfo_storage, controller=None):
 
     # --> Collection 4: volumes per regions normalised by the body weight of the interesting regions
     if controller['Collection4']:
-        """
-        One pandas series for region, as:
-        1201    vols / vol tot
-        1203    vols / vol tot
-        1305    vols / vol tot
-        1404    vols / vol tot
-        1507    vols / vol tot
-        1510    vols / vol tot
-        ...
-        """
         for k in ptb_related_regions.keys():
             se_vols_region_k = pa.Series(np.array([0, ] * len(sj_list)).astype(np.float64), index=sj_list)
 
             for sj in sj_list:
+                print('\nCollection 4, subject {}, region {} (normalisation by body weight). '.format(sj, k))
                 sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
                 study = sj_parameters['study']
@@ -323,7 +306,7 @@ def collect_data_from_subject_list(sj_list, pfo_storage, controller=None):
 
                 pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
 
-                pfi_report_vols = jph(pfo_subject, 'report', '{}_volumes.pkl'.format(sj))
+                pfi_report_vols = jph(pfo_subject, report_folder, '{}_volumes.pkl'.format(sj))
 
                 df = pa.read_pickle(pfi_report_vols)
 
@@ -331,7 +314,11 @@ def collect_data_from_subject_list(sj_list, pfo_storage, controller=None):
                 for k_j in ptb_related_regions[k]:
                     num_voxel_reg_k += df['num_voxels']['[{}]'.format(k_j)]
 
-                net_volume = num_voxel_reg_k / float(data_set_info[sj][2][0])
+                pfi_segm = jph(pfo_subject, 'segm', '{}_T1_segm.nii.gz'.format(sj))
+                im_segm = nib.load(pfi_segm)  # use the vol in mm instead of other measures.
+                vol_reg_k_mm = num_voxel_reg_k * one_voxel_volume(im_segm)
+
+                net_volume = vol_reg_k_mm / float(data_set_info[sj][2][0])
                 se_vols_region_k[sj] = net_volume
 
             se_vols_region_k.name = 'Volumes normalised tot body weight, region {0}'.format(ptb_related_regions[k])
@@ -339,14 +326,6 @@ def collect_data_from_subject_list(sj_list, pfo_storage, controller=None):
 
     # --> Collection 5: FA per regions
     if controller['Collection5']:
-        """
-        Pandas se
-        sj      vals
-        1201    np.ndarray(... vals)
-        1203    np.ndarray(... vals)
-        1305    np.ndarray(... vals)
-        ...
-        """
         ldm = LdM(pfi_labels_descriptor)
         labels_dict = ldm.get_dict()
         for k in ptb_related_regions.keys():
@@ -361,25 +340,18 @@ def collect_data_from_subject_list(sj_list, pfo_storage, controller=None):
                 pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
                 arrays_FA_k = []
                 for k_j in ptb_related_regions[k]:
-                    pfi_saved_data_FA = jph(pfo_subject, 'report', '{}_FA_{}_{}.npy'.format(sj, labels_dict[k_j][-1].replace(' ', ''), k_j))
+                    pfi_saved_data_FA = jph(pfo_subject, report_folder, '{}_FA_{}_{}.npy'.format(sj, labels_dict[k_j][-1].replace(' ', ''), k_j))
                     arrays_FA_k.append(np.load(pfi_saved_data_FA))
 
                 vals_per_region_k.append(np.concatenate(arrays_FA_k, axis=0))
 
             se_vals_per_region_k = pa.Series(vals_per_region_k, index=sj_list)
+            print se_vals_per_region_k
             se_vals_per_region_k.name = 'FA per values, region {0}'.format(ptb_related_regions[k])
             se_vals_per_region_k.to_pickle(jph(pfo_storage, 'FARegion{0}.pkl'.format(k)))
 
     # --> Collection 6: MD
     if controller['Collection6']:
-        """
-        Pandas df as with MD
-        sj      mu     std
-        1201    np.ndarray(... vals)
-        1203    np.ndarray(... vals)
-        1305    np.ndarray(... vals)
-        ...
-        """
         ldm = LdM(pfi_labels_descriptor)
         labels_dict = ldm.get_dict()
         for k in ptb_related_regions.keys():
@@ -392,13 +364,13 @@ def collect_data_from_subject_list(sj_list, pfo_storage, controller=None):
                 category = sj_parameters['category']
 
                 pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
-                arrays_FA_k = []
+                arrays_MD_k = []
                 for k_j in ptb_related_regions[k]:
-                    pfi_saved_data_FA = jph(pfo_subject, 'report',
+                    pfi_saved_data_MD = jph(pfo_subject, report_folder,
                                             '{}_MD_{}_{}.npy'.format(sj, labels_dict[k_j][-1].replace(' ', ''), k_j))
-                    arrays_FA_k.append(np.load(pfi_saved_data_FA))
+                    arrays_MD_k.append(np.load(pfi_saved_data_MD))
 
-                vals_per_region_k.append(np.concatenate(arrays_FA_k, axis=0))
+                vals_per_region_k.append(np.concatenate(arrays_MD_k, axis=0))
 
             se_vals_per_region_k = pa.Series(vals_per_region_k, index=sj_list)
             se_vals_per_region_k.name = 'MD per values, region {0}'.format(ptb_related_regions[k])
@@ -436,7 +408,7 @@ def plot_and_save_collected(pfo_storage, show=True, controller=None):
         # save figure:
         plt.savefig(jph(pfo_storage, 'Volumes.png'))
         if show:
-            plt.show(block=False)
+            plt.show()
 
     # --> Collection 2: tot volume normalised by the body weight.
     if controller['Collection2']:
@@ -457,7 +429,7 @@ def plot_and_save_collected(pfo_storage, show=True, controller=None):
         # save figure:
         plt.savefig(jph(pfo_storage, 'VolumesNormalised.png'))
         if show:
-            plt.show(block=False)
+            plt.show()
 
     # --> Collection 3: volumes per regions normalised total brain volume
     if controller['Collection3']:
@@ -556,7 +528,7 @@ def plot_and_save_collected(pfo_storage, show=True, controller=None):
         fig.canvas.set_window_title('Volumes per region Normalised')
 
         for k_id, k in enumerate(ptb_related_regions.keys()):
-            pfi_vol_region = jph(pfo_storage, 'FARegion{0}.pkl'.format(k))
+            pfi_vol_region = jph(pfo_storage, 'MDRegion{0}.pkl'.format(k))
             se_FA = pa.read_pickle(pfi_vol_region)
             d = {'cat1': cat1,
                  'cat2': cat2,
@@ -564,7 +536,7 @@ def plot_and_save_collected(pfo_storage, show=True, controller=None):
             df = pa.DataFrame(data=d, index=atlas_subjects)
             df.name = 'MD {0}'.format(k)
             if k_id == 0:
-                ylabel = 'FA'
+                ylabel = 'MD'
             else:
                 ylabel = ''
 
@@ -647,12 +619,12 @@ if __name__ == '__main__':
         controller = {'Collection1'     : False,
                       'Collection2'     : False,
                       'Collection3'     : False,
-                      'Collection4'     : True,
-                      'Collection5'     : False,
+                      'Collection4'     : False,
+                      'Collection5'     : True,
                       'Collection6'     : False}
 
         pfo_storage = '/Volumes/sebastianof/rabbits/B_stats/simple_analysis'
-        collect_data_from_subject_list(atlas_subjects, pfo_storage, controller=controller)
+        collect_data_from_subject_list(atlas_subjects, pfo_storage, controller=controller, report_folder='report_stereotaxic')
         plot_and_save_collected(pfo_storage, controller=controller)
 
 

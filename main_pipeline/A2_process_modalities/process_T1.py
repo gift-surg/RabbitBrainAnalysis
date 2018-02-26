@@ -66,6 +66,11 @@ def process_T1_per_subject(sj, controller):
         assert check_path_validity(pfi_input_original)
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
         orient2std(pfi_input_original, pfi_std)
+        if sj == '2502':
+            # TODO resample over the finer grid of every other subjects.
+            print("WARNING! some code to do here at line 71 to process subject 2502 that has a different grid spacing")
+            pass
+
         del pfi_input_original, pfi_std
 
     if controller['register roi masks']:

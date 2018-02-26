@@ -88,7 +88,7 @@ class ReportGenerator(object):
 
 
 if __name__ == '__main__':
-    sj_atlas = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
+    sj_atlas = ['1201']  #, '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
     for sj in sj_atlas:
         print('Generate report subject {}'.format(sj))
         rg = ReportGenerator(sj)
