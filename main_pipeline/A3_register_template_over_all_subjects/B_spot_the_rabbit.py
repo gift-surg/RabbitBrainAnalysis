@@ -57,19 +57,21 @@ def spot_a_list_of_rabbits(subjects_list):
         spot_sj.propagation_options['Affine_modalities']        = ('T1', 'FA')
         spot_sj.propagation_options['Affine_reg_masks']         = ('T1', 'S0')  # if (), there is a single mask for all modalities
         spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
-        spot_sj.propagation_options['N_rigid_modalities']       = ('T1', 'FA')  # if empty, no non-rigid step.
+        spot_sj.propagation_options['N_rigid_modalities']       = ()  # if empty, no non-rigid step.
         spot_sj.propagation_options['N_rigid_reg_masks']        = ('T1', 'S0')  # if [], same mask for all modalities
         spot_sj.propagation_options['N_rigid_slim_reg_mask']    = True
-        spot_sj.propagation_options['N_rigid_mod_diff_bfc']     = ('T1',)  # empty list no diff bfc. - put a comma!!
-        spot_sj.propagation_options['N_rigid_parameters']       = ' -be 0.5 -ln 6 -lp 4  -smooR 1.5 -smooF 1.5 '
-        spot_sj.propagation_options['N_rigid_same_mask_moving'] = True
+        spot_sj.propagation_options['N_rigid_mod_diff_bfc']     = ('T1', )  # empty list no diff bfc. - PUT A COMMA IF ONLY ONE SUBJECT!!
+        spot_sj.propagation_options['N_rigid_parameters']       = ' -be 0.9 -ln 6 -lp 1  -smooR 0.07 -smooF 0.07 '
+        spot_sj.propagation_options['N_rigid_same_mask_moving'] = False
+        spot_sj.propagation_options['N_reg_mask_target'] = 0  # 0 roi_mask, 1 reg_mask
+        spot_sj.propagation_options['N_reg_mask_moving'] = 1  # 0 roi_mask, 1 reg_mask
         spot_sj.propagation_options['Final_smoothing_factor']   = 0
 
         # --- Propagator controller
-        spot_sj.propagation_controller['Aff_alignment']          = True
-        spot_sj.propagation_controller['Propagate_aff_to_segm']  = True
-        spot_sj.propagation_controller['Propagate_aff_to_mask']  = True
-        spot_sj.propagation_controller['Get_N_rigid_slim_mask']  = True
+        spot_sj.propagation_controller['Aff_alignment']          = False
+        spot_sj.propagation_controller['Propagate_aff_to_segm']  = False
+        spot_sj.propagation_controller['Propagate_aff_to_mask']  = False
+        spot_sj.propagation_controller['Get_N_rigid_slim_mask']  = False
         spot_sj.propagation_controller['Get_differential_BFC']   = True
         spot_sj.propagation_controller['N_rigid_alignment']      = True
         spot_sj.propagation_controller['Propagate_n_rigid']      = True
@@ -77,10 +79,10 @@ def spot_a_list_of_rabbits(subjects_list):
         spot_sj.propagation_controller['Stack_warps_and_segms']  = True
 
         # --- Fuser option
-        spot_sj.fuser_options['Fusion_methods'] = ['MV']  #, 'STAPLE', 'STEPS']
+        spot_sj.fuser_options['Fusion_methods'] = ['MV', 'STAPLE', 'STEPS']  #, 'STAPLE', 'STEPS']
         spot_sj.fuser_options['STAPLE_params']  = OrderedDict([('pr1', None)])
         spot_sj.fuser_options['STEPS_params']   = OrderedDict([('pr{0}.{1}'.format(k, n), [k, n, 4])
-                                                             for n in [9] for k in [5, 11]])
+                                                               for n in [9] for k in [5, 11]])
         # --- Fuser controller
         spot_sj.fuser_controller['Fuse']         = True
         spot_sj.fuser_controller['Save_results'] = True
@@ -100,7 +102,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['4501', '4305']
+    lsm.input_subjects = ['Test67']
     lsm.update_ls()
 
     spot_a_list_of_rabbits(lsm.ls)

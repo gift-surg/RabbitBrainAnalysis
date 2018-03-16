@@ -17,7 +17,7 @@ from main_pipeline.A2_process_modalities.process_T1 import process_T1_from_list
 from main_pipeline.A2_process_modalities.process_T2_map import process_t2_maps_from_list
 from main_pipeline.A2_process_modalities.process_g_ratio import process_g_ratio_from_list
 from main_pipeline.A3_register_template_over_all_subjects.A_move_to_stereotaxic_coordinates import move_to_stereotaxic_coordinate_from_list
-from main_pipeline.A3_register_template_over_all_subjects.B_spot_the_rabbits import spot_a_list_of_rabbits
+from main_pipeline.A3_register_template_over_all_subjects.B_spot_the_rabbit import spot_a_list_of_rabbits
 from main_pipeline.A3_register_template_over_all_subjects.C_bring_segmentation_back_to_original_coordinates import propagate_segmentation_in_original_space_from_list
 
 
@@ -28,9 +28,9 @@ def main_runner(subj_list):
     # Set steps
 
     steps = {'reset_parameters' : False,  # if this is true it does not do anything else.
-             'step_A1'          : True,
-             'step_A2_T1'       : True,
-             'step_A2_DWI'      : True,
+             'step_A1'          : False,
+             'step_A2_T1'       : False,
+             'step_A2_DWI'      : False,
              'step_A2_MSME'     : False,
              'step_A2_T2maps'   : False,
              'step_A2_g_ratio'  : False,
@@ -63,8 +63,8 @@ def main_runner(subj_list):
     ''' Step A2 - T1 '''
     if steps['step_A2_T1']:
         print('\nStep A2 T1\n')
-        controller_A2_T1 = {'orient to standard'  : True,
-                            'register roi masks'  : True,
+        controller_A2_T1 = {'orient to standard'            : True,
+                            'register roi masks'            : True,
                             'register roi masks multi-atlas': False,
                             'adjust mask'         : True,
                             'cut masks'           : True,
@@ -175,8 +175,6 @@ def main_runner(subj_list):
     ''' Step A4 - Data collection '''
     if steps['step_A4']:
 
-
-
         print('\nStep A4\n')
 
 if __name__ == '__main__':
@@ -194,7 +192,7 @@ if __name__ == '__main__':
     lsm.execute_ACS_ex_vivo   = False
 
     # lsm.input_subjects = ['4302', '4303', '4304', '4305', '4501', '4504']
-    lsm.input_subjects = ['Test67'] #  ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']  # , '4305']
+    lsm.input_subjects = ['Test67']  # ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']  # , '4305']
     lsm.update_ls()
 
     print(lsm.ls)

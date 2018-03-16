@@ -89,7 +89,7 @@ def clean_a_study(pfo_study):
                         print_and_run(cmd)
 
             # rename b0 with S0 in coherence with the subsequent FSL steps:
-            if acquisition_method == 'DWI':
+            if acquisition_method.startswith('DWI'):
                 for file_element_in_DWI_study in os.listdir(pfo_experiment_p):
                     if file_element_in_DWI_study.endswith('_b0.nii.gz'):
                         cmd = 'mv {} {}'.format(jph(pfo_experiment_p, file_element_in_DWI_study),

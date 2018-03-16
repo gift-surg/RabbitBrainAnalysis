@@ -62,7 +62,6 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
         print_and_run(cmd)
         return
 
-
     # Initialise folder structure in stereotaxic coordinates
     if controller['Initialise_sc_folder']:
 
@@ -216,15 +215,15 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
             cmd = 'cp {0} {1}'.format(pfi_original_MOD, pfi_MOD_reoriented)
             print_and_run(cmd)
             if pitch_theta != 0:
-                lm = LABelsToolkit()
-                lm.header.apply_small_rotation(pfi_MOD_reoriented,
+                lt = LABelsToolkit()
+                lt.header.apply_small_rotation(pfi_MOD_reoriented,
                                                pfi_MOD_reoriented,
                                                angle=pitch_theta, principal_axis='pitch')
-                del lm
+                del lt
 
             print('Resampling {}:'.format(mod))
 
-            pfi_final_MOD= jph(pfo_sc_sj_mod, '{0}_{1}.nii.gz'.format(sj, mod)) # RESULT
+            pfi_final_MOD= jph(pfo_sc_sj_mod, '{0}_{1}.nii.gz'.format(sj, mod))  # RESULT
             cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 1'.format(
                 pfi_S0_in_sc, pfi_MOD_reoriented, pfi_transformation_S0_over_T1, pfi_final_MOD)
             print_and_run(cmd)

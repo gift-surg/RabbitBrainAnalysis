@@ -1,6 +1,3 @@
-"""
-T1 processing in their original coordinate system.
-"""
 import os
 from os.path import join as jph
 import pickle

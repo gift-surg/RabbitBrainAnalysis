@@ -51,7 +51,7 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
 
     # recover the source in stereotaxic coordinates (strx):
     if sj_parameters['in_atlas']:
-        pfo_sj_atlas = jph(root_study_rabbits, 'A_atlas', sj)
+        pfo_sj_atlas = jph(root_study_rabbits, 'A_MultiAtlas', sj)
         pfi_T1_strx          = jph(pfo_sj_atlas, 'mod', '{}_T1.nii.gz'.format(sj))
         pfi_T1_reg_mask_strx = jph(pfo_sj_atlas, 'masks', '{}_reg_mask.nii.gz'.format(sj))
         pfi_T1_segm_strx     = jph(pfo_sj_atlas, 'segm', '{}_approved_round3.nii.gz'.format(sj))
