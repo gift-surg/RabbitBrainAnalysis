@@ -6,14 +6,14 @@ from os.path import join as jph
 import pickle
 import numpy as np
 
-from labels_manager.main import LabelsManager
+from LABelsToolkit.main import LABelsToolkit
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_atlas, num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero, orient2std
 from tools.auxiliary.utils import print_and_run
-from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
+from LABelsToolkit.tools.aux_methods.sanity_checks import check_path_validity
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_atlas
 
@@ -110,7 +110,7 @@ def process_T1_per_subject(sj, controller):
         pfi_sj_ref_coord_system_hd_oriented = jph(pfo_tmp, 'reference_for_mask_registration.nii.gz')
         pfi_reference_roi_mask_hd_oriented = jph(pfo_tmp, 'reference_for_mask_registration_mask.nii.gz')
 
-        lm = LabelsManager()
+        lm = LABelsToolkit()
         lm.header.apply_small_rotation(pfi_sj_ref_coord_system, pfi_sj_ref_coord_system_hd_oriented,
                                        angle=angle_parameter, principal_axis='pitch')
         lm.header.apply_small_rotation(pfi_reference_roi_mask, pfi_reference_roi_mask_hd_oriented,
@@ -179,7 +179,7 @@ def process_T1_per_subject(sj, controller):
             pfi_sj_ref_coord_system_hd_oriented = jph(pfo_tmp, 'reference_for_mask_registration.nii.gz')
             pfi_reference_roi_mask_hd_oriented = jph(pfo_tmp, 'reference_for_mask_registration_mask.nii.gz')
 
-            lm = LabelsManager()
+            lm = LABelsToolkit()
             lm.header.apply_small_rotation(pfi_sj_ref_coord_system, pfi_sj_ref_coord_system_hd_oriented,
                                            angle=angle_parameter, principal_axis='pitch')
             lm.header.apply_small_rotation(pfi_reference_roi_mask, pfi_reference_roi_mask_hd_oriented,

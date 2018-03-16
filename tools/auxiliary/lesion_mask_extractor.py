@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 from sklearn.mixture import GaussianMixture
 
-from tools.auxiliary.utils import set_new_data
+from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
 from tools.definitions import root_dir
 from tools.auxiliary.utils import print_and_run
 

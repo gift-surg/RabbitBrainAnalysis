@@ -4,7 +4,7 @@ import os
 import subprocess
 import time
 
-from labels_manager.tools.aux_methods.utils_nib import set_new_data
+from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
 
 
 # def set_new_data(image, new_data, new_dtype=None, remove_nan=True):

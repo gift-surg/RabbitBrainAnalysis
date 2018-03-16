@@ -7,7 +7,7 @@ from tools.definitions import root_study_rabbits, root_atlas, pfo_subjects_param
     num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 
-from spot_a_rabbit.spot import SpotDS
+from spot.spotter import SpotDS
 
 
 def spot_a_list_of_rabbits(subjects_list):

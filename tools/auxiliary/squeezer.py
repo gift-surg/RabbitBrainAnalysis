@@ -2,7 +2,8 @@ import os
 import numpy as np
 import nibabel as nib
 
-from tools.auxiliary.utils import set_new_data, print_and_run
+from LABelsToolkit.tools.aux_methods.utils import print_and_run
+from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
 
 
 def squeeze_image_from_path(pfi_in, pfi_out, copy_anyway=False):

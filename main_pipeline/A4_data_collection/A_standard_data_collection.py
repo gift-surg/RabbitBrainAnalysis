@@ -25,10 +25,10 @@ from collections import OrderedDict
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
 from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_atlas
 
-from labels_manager.tools.aux_methods.utils_nib import one_voxel_volume
-from labels_manager.tools.caliber.volumes_and_values import get_total_num_nonzero_voxels
-from labels_manager.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
-from labels_manager.main import LabelsManager as LM
+from LABelsToolkit.tools.aux_methods.utils_nib import one_voxel_volume
+from LABelsToolkit.tools.caliber.volumes_and_values import get_total_num_nonzero_voxels
+from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
+from LABelsToolkit.main import LABelsToolkit as LabT
 
 
 data_set_info = OrderedDict(
@@ -174,7 +174,7 @@ def boxplot_of_data_st(ax, df, xlabel='', ylabel='', factor=1., legend=True):
     ax.set_axisbelow(True)
 
 
-def collect_data_from_subject_list(sj_list, pfo_storage, controller=None, report_folder='report_stereotaxic'):
+def collect_data_from_subject_list(sj_list, pfo_storage, controller=None, report_folder='report_stereotaxic', remove_3_sigma=False):
     """
     :param sj_list: list of subjects
     :param pfo_storage: where to save the obtained dataframe per region, per value.
@@ -343,7 +343,14 @@ def collect_data_from_subject_list(sj_list, pfo_storage, controller=None, report
                     pfi_saved_data_FA = jph(pfo_subject, report_folder, '{}_FA_{}_{}.npy'.format(sj, labels_dict[k_j][-1].replace(' ', ''), k_j))
                     arrays_FA_k.append(np.load(pfi_saved_data_FA))
 
-                vals_per_region_k.append(np.concatenate(arrays_FA_k, axis=0))
+                unrolled_arrays_FA_k = np.concatenate(arrays_FA_k, axis=0)
+                if remove_3_sigma:
+                    three_std = 3 * np.std(unrolled_arrays_FA_k)
+                    mean = np.mean(unrolled_arrays_FA_k)
+                    unrolled_arrays_FA_k = [x for x in unrolled_arrays_FA_k if (x > mean - three_std)]
+                    unrolled_arrays_FA_k = [x for x in unrolled_arrays_FA_k if (x < mean + three_std)]
+
+                vals_per_region_k.append(unrolled_arrays_FA_k)
 
             se_vals_per_region_k = pa.Series(vals_per_region_k, index=sj_list)
             print se_vals_per_region_k
@@ -370,7 +377,15 @@ def collect_data_from_subject_list(sj_list, pfo_storage, controller=None, report
                                             '{}_MD_{}_{}.npy'.format(sj, labels_dict[k_j][-1].replace(' ', ''), k_j))
                     arrays_MD_k.append(np.load(pfi_saved_data_MD))
 
-                vals_per_region_k.append(np.concatenate(arrays_MD_k, axis=0))
+                unrolled_arrays_MD_k = np.concatenate(arrays_MD_k, axis=0)
+                if remove_3_sigma:
+                    three_std = 3 * np.std(unrolled_arrays_MD_k)
+                    mean = np.mean(unrolled_arrays_MD_k)
+                    unrolled_arrays_MD_k = [x for x in unrolled_arrays_MD_k if (x > mean - three_std)]
+                    unrolled_arrays_MD_k = [x for x in unrolled_arrays_MD_k if (x < mean + three_std)]
+
+
+                vals_per_region_k.append(unrolled_arrays_MD_k)
 
             se_vals_per_region_k = pa.Series(vals_per_region_k, index=sj_list)
             se_vals_per_region_k.name = 'MD per values, region {0}'.format(ptb_related_regions[k])
@@ -388,6 +403,8 @@ def plot_and_save_collected(pfo_storage, show=True, controller=None):
     """
     cat1 = pa.Series([data_set_info[k][1] for k in atlas_subjects], index=atlas_subjects)
     cat2 = pa.Series([data_set_info[k][0] for k in atlas_subjects], index=atlas_subjects)
+
+    print('\nSHOW!!\n')
 
     # --> Collection 1: tot volume.
     if controller['Collection1']:
@@ -563,7 +580,8 @@ def simple_data_analysis_by_subjects_list(sj_list):
                   'Collection4'     : True,
                   'Collection5'     : True,
                   'Collection6'     : True}
-    collect_data_from_subject_list(sj_list, pfo_storage, controller=controller)
+    collect_data_from_subject_list(sj_list, pfo_storage, controller=controller, report_folder='report_stereotaxic',
+                                   remove_3_sigma=True)
     plot_and_save_collected(pfo_storage,  show=True, controller=controller)
 
 
@@ -621,10 +639,11 @@ if __name__ == '__main__':
                       'Collection3'     : False,
                       'Collection4'     : False,
                       'Collection5'     : True,
-                      'Collection6'     : False}
+                      'Collection6'     : True}
 
         pfo_storage = '/Volumes/sebastianof/rabbits/B_stats/simple_analysis'
-        collect_data_from_subject_list(atlas_subjects, pfo_storage, controller=controller, report_folder='report_stereotaxic')
+        # collect_data_from_subject_list(atlas_subjects, pfo_storage, controller=controller,
+        #                                report_folder='report_stereotaxic', remove_3_sigma=True)
         plot_and_save_collected(pfo_storage, controller=controller)
 
 

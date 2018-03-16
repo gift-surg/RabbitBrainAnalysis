@@ -152,6 +152,8 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
                 list_ACS_ex_vivo.append(k)
             else:
                 raise IOError('Unrecognised category for subject {}'.format(k))
+        elif subj_k_parameters['study'] == 'TestStudy':
+            pass
         else:
             raise IOError('Unrecognised study attribute for subject {}'.format(k))
 

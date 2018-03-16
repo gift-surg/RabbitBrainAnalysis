@@ -9,11 +9,11 @@ import pickle
 from os.path import join as jph
 import cPickle as Pickle
 
-from labels_manager.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
-from labels_manager.tools.aux_methods.utils import custom_dataframe_to_csv
-from labels_manager.tools.caliber.volumes_and_values import get_total_num_nonzero_voxels, \
+from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
+from LABelsToolkit.tools.aux_methods.utils import custom_dataframe_to_csv
+from LABelsToolkit.tools.caliber.volumes_and_values import get_total_num_nonzero_voxels, \
     get_num_voxels_from_labels_list, get_values_below_labels_list
-from labels_manager.tools.aux_methods.utils_nib import one_voxel_volume
+from LABelsToolkit.tools.aux_methods.utils_nib import one_voxel_volume
 from tools.definitions import pfi_labels_descriptor
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 

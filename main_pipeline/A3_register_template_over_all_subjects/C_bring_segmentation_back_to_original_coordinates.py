@@ -6,7 +6,7 @@ import os
 from os.path import join as jph
 import pickle
 
-from labels_manager.main import LabelsManager
+from LABelsToolkit.main import LABelsToolkit
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
@@ -82,7 +82,7 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
             cmd = 'cp {0} {1}'.format(strx, strx_hdo)
             print_and_run(cmd)
             if pitch_theta != 0:
-                lm = LabelsManager()
+                lm = LABelsToolkit()
                 lm.header.apply_small_rotation(strx_hdo, strx_hdo,
                                                angle=pitch_theta, principal_axis='pitch')
 
@@ -148,7 +148,7 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
                 cmd = 'cp {0} {1}'.format(strx, strx_hdo)
                 print_and_run(cmd)
                 if pitch_theta != 0:
-                    lm = LabelsManager()
+                    lm = LABelsToolkit()
                     lm.header.apply_small_rotation(strx_hdo, strx_hdo,
                                                    angle=pitch_theta, principal_axis='pitch')
 
@@ -219,7 +219,7 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
                 cmd = 'cp {0} {1}'.format(strx, strx_hdo)
                 print_and_run(cmd)
                 if pitch_theta != 0:
-                    lm = LabelsManager()
+                    lm = LABelsToolkit()
                     lm.header.apply_small_rotation(strx_hdo, strx_hdo,
                                                    angle=pitch_theta, principal_axis='pitch')
 

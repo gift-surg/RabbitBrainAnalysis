@@ -28,9 +28,9 @@ def main_runner(subj_list):
     # Set steps
 
     steps = {'reset_parameters' : False,  # if this is true it does not do anything else.
-             'step_A1'          : False,
-             'step_A2_T1'       : False,
-             'step_A2_DWI'      : False,
+             'step_A1'          : True,
+             'step_A2_T1'       : True,
+             'step_A2_DWI'      : True,
              'step_A2_MSME'     : False,
              'step_A2_T2maps'   : False,
              'step_A2_g_ratio'  : False,
@@ -194,7 +194,7 @@ if __name__ == '__main__':
     lsm.execute_ACS_ex_vivo   = False
 
     # lsm.input_subjects = ['4302', '4303', '4304', '4305', '4501', '4504']
-    lsm.input_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']  # , '4305']
+    lsm.input_subjects = ['Test67'] #  ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']  # , '4305']
     lsm.update_ls()
 
     print(lsm.ls)

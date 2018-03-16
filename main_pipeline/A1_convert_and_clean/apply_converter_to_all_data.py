@@ -6,8 +6,8 @@ from bruker2nifti.converter import Bruker2Nifti
 from tools.definitions import pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits
-from labels_manager.tools.aux_methods.utils import print_and_run
-from labels_manager.tools.aux_methods.sanity_checks import check_path_validity
+from LABelsToolkit.tools.aux_methods.utils import print_and_run
+from LABelsToolkit.tools.aux_methods.sanity_checks import check_path_validity
 
 
 def convert_subjects_from_list(subj_list):

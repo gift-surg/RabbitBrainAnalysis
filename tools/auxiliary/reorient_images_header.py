@@ -3,7 +3,7 @@ import numpy as np
 import nibabel as nib
 import os
 
-from tools.auxiliary.utils import print_and_run
+from LABelsToolkit.tools.aux_methods.utils import print_and_run
 
 
 def adjust_header_from_transformations(pfi_input, pfi_output, theta, trasl):

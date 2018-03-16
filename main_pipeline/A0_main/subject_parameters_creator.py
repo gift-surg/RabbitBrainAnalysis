@@ -744,6 +744,29 @@ def reset_parameters_files(pfo_where_to_save):
 
     ''' PTB in-vivo ---------------------------------------------------------------------- '''
 
+    sp = SubjectParameters('Test67')
+    sp.study = 'TestStudy'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, 0, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 0.001
+    sp.T1_window_percentile = (12, 92)
+    sp.S0_window_percentile = (1, 95)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 2
+    sp.erosion_roi_mask = 0
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_atlas = False
+    sp.b0_level = 7
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    ''' PTB in-vivo ---------------------------------------------------------------------- '''
+
     sp = SubjectParameters('0802t1')
     sp.study                  = 'PTB'
     sp.category               = 'in_vivo'
