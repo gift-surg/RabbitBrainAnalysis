@@ -4,6 +4,8 @@ A) re-orient the chart in stereotaxic coordinate.
 import os
 from os.path import join as jph
 import pickle
+import numpy as np
+import nibabel as nib
 
 from LABelsToolkit.main import LABelsToolkit
 
@@ -11,6 +13,13 @@ from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.auxiliary.utils import print_and_run
 from tools.auxiliary.multichannel import stack_a_list_of_images_from_list_pfi
+
+
+def resample_A_on_B_path(pfi_B_reference, pfi_A_floating, pfi_A_resampled_B, pfo_tmp, inter=1):
+    np.savetxt(jph(pfo_tmp, 'id.txt'), np.eye(4))
+    cmd = 'reg_resample -ref {} -flo {} -aff {} -res {} -inter {}'.format(
+        pfi_B_reference, pfi_A_floating, jph(pfo_tmp, 'id.txt'), pfi_A_resampled_B, inter)
+    print_and_run(cmd)
 
 
 def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
@@ -45,6 +54,8 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
 
     subject_is_in_atlas = sj_parameters['in_atlas']
 
+    pfi_base_space = jph(pfo_tmp, 'base_space.nii.gz')  # basic resampling space, created stage 2
+
     if subject_is_in_atlas:
         pfo_sj_mod_in_atlas = jph(root_atlas, sj, 'mod')
         pfo_sj_masks_in_atlas = jph(root_atlas, sj, 'masks')
@@ -70,6 +81,22 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
         print_and_run('mkdir -p {}'.format(pfo_sc_sj_mod))
         print_and_run('mkdir -p {}'.format(pfo_sc_sj_masks))
 
+    if controller['Create_base_space']:
+        # isotropic space where all the subjects resampled (where small rotations can be made without problems).
+        pfi_original_T1 = jph(pfo_sj_mod, '{0}_{1}.nii.gz'.format(sj, 'T1'))
+        im_original_T1 = nib.load(pfi_original_T1)
+
+        # check that the matrix is diagonal:
+        assert (np.diag(np.diag(im_original_T1.get_affine())) == im_original_T1.get_affine()).all()
+
+        base_spacing = np.min(np.diag(im_original_T1.get_affine()))
+        original_dimension = np.array(im_original_T1.shape).astype(np.float) * np.diag(im_original_T1.get_affine())[:3]
+        base_space_shape = [int(np.floor(d / float(base_spacing))) for d in original_dimension]
+        aff_base_spacing = np.diag(np.array([base_spacing, ] * 3 + [1]))
+        im_base_spacing = nib.Nifti1Image(np.zeros(base_space_shape), affine=aff_base_spacing)
+        nib.save(im_base_spacing, pfi_base_space)
+        np.savetxt(jph(pfo_tmp, 'id.txt'), np.eye(4))
+
     if controller['Register_T1']:
 
         print('Orient header histological T1 and reg-mask:')
@@ -82,8 +109,9 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
         pfi_original_T1 = jph(pfo_sj_mod, '{0}_{1}.nii.gz'.format(sj, 'T1'))
         assert os.path.exists(pfi_original_T1), pfi_original_T1
         pfi_T1_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}.nii.gz'.format(sj, 'T1'))
-        cmd = 'cp {0} {1}'.format(pfi_original_T1, pfi_T1_reoriented)
-        print_and_run(cmd)
+
+        resample_A_on_B_path(pfi_base_space, pfi_original_T1, pfi_T1_reoriented, pfo_tmp, inter=1)
+
         if pitch_theta != 0:
             lm = LABelsToolkit()
             lm.header.apply_small_rotation(pfi_T1_reoriented,
@@ -93,8 +121,9 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
         pfi_original_roi_mask_T1 = jph(pfo_sj_masks, '{0}_{1}_{2}.nii.gz'.format(sj, 'T1', 'roi_mask'))
         assert os.path.exists(pfi_original_roi_mask_T1), pfi_original_roi_mask_T1
         pfi_roi_mask_T1_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}_{2}.nii.gz'.format(sj, 'T1', 'roi_mask'))
-        cmd = 'cp {0} {1}'.format(pfi_original_roi_mask_T1, pfi_roi_mask_T1_reoriented)
-        print_and_run(cmd)
+
+        resample_A_on_B_path(pfi_base_space, pfi_original_roi_mask_T1, pfi_roi_mask_T1_reoriented, pfo_tmp, inter=1)
+
         if pitch_theta != 0:
             lm = LABelsToolkit()
             lm.header.apply_small_rotation(pfi_roi_mask_T1_reoriented,
@@ -104,8 +133,9 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
         pfi_original_reg_mask_T1 = jph(pfo_sj_masks, '{0}_{1}_{2}.nii.gz'.format(sj, 'T1', 'reg_mask'))
         assert os.path.exists(pfi_original_reg_mask_T1), pfi_original_reg_mask_T1
         pfi_reg_mask_T1_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}_{2}.nii.gz'.format(sj, 'T1', 'reg_mask'))
-        cmd = 'cp {0} {1}'.format(pfi_original_reg_mask_T1, pfi_reg_mask_T1_reoriented)
-        print_and_run(cmd)
+
+        resample_A_on_B_path(pfi_base_space, pfi_original_reg_mask_T1, pfi_reg_mask_T1_reoriented, pfo_tmp, inter=1)
+
         if pitch_theta != 0:
             lm = LABelsToolkit()
             lm.header.apply_small_rotation(pfi_reg_mask_T1_reoriented,
@@ -162,8 +192,9 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
         pfi_original_S0 = jph(pfo_sj_mod, '{0}_{1}.nii.gz'.format(sj, 'S0'))
         assert os.path.exists(pfi_original_S0), pfi_original_S0
         pfi_S0_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}.nii.gz'.format(sj, 'S0'))
-        cmd = 'cp {0} {1}'.format(pfi_original_S0, pfi_S0_reoriented)
-        print_and_run(cmd)
+
+        resample_A_on_B_path(pfi_base_space, pfi_original_S0, pfi_S0_reoriented, pfo_tmp, inter=1)
+
         if pitch_theta != 0:
             lm = LABelsToolkit()
             lm.header.apply_small_rotation(pfi_S0_reoriented,
@@ -173,8 +204,9 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
         pfi_original_reg_mask_S0 = jph(pfo_sj_masks, '{0}_{1}_{2}.nii.gz'.format(sj, 'S0', 'reg_mask'))
         assert os.path.exists(pfi_original_reg_mask_S0), pfi_original_reg_mask_S0
         pfi_reg_mask_S0_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}_{2}.nii.gz'.format(sj, 'S0', 'reg_mask'))
-        cmd = 'cp {0} {1}'.format(pfi_original_reg_mask_S0, pfi_reg_mask_S0_reoriented)
-        print_and_run(cmd)
+
+        resample_A_on_B_path(pfi_base_space, pfi_original_reg_mask_S0, pfi_reg_mask_S0_reoriented, pfo_tmp, inter=1)
+
         if pitch_theta != 0:
             lm = LABelsToolkit()
             lm.header.apply_small_rotation(pfi_reg_mask_S0_reoriented,
@@ -187,9 +219,10 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
             sj, options['Template_name'], 'S0'))
         pfi_resampled_S0 = jph(pfo_sc_sj_mod, '{0}_S0.nii.gz'.format(sj))  # RESULT
 
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -rigOnly'.format(
+        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -rigOnly'.format(  # Try the non rigid and full mask  -rigOnly
             pfi_mod_reference_atlas, pfi_reg_mask_reference_atlas, pfi_S0_reoriented, pfi_reg_mask_S0_reoriented,
             pfi_transformation_S0_over_T1, pfi_resampled_S0, num_cores_run)
+
         print_and_run(cmd)
 
         del angles, pitch_theta, pfi_original_S0, pfi_S0_reoriented, pfi_original_reg_mask_S0, \
@@ -212,8 +245,9 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
             pfi_original_MOD = jph(pfo_sj_mod, '{0}_{1}.nii.gz'.format(sj, mod))
             assert os.path.exists(pfi_original_MOD), pfi_original_MOD
             pfi_MOD_reoriented = jph(pfo_tmp, 'histo_header_{0}_{1}.nii.gz'.format(sj, mod))
-            cmd = 'cp {0} {1}'.format(pfi_original_MOD, pfi_MOD_reoriented)
-            print_and_run(cmd)
+
+            resample_A_on_B_path(pfi_base_space, pfi_original_MOD, pfi_MOD_reoriented, pfo_tmp, inter=1)
+
             if pitch_theta != 0:
                 lt = LABelsToolkit()
                 lt.header.apply_small_rotation(pfi_MOD_reoriented,
@@ -284,9 +318,10 @@ if __name__ == '__main__':
     print('process Stereotaxic orientation, local run. ')
 
     controller_ = {
-        'Initialise_sc_folder'               : True,
-        'Register_T1'                        : True,
-        'Propagate_T1_masks'                 : True,
+        'Initialise_sc_folder'               : False,
+        'Create_base_space'                  : False,
+        'Register_T1'                        : False,
+        'Propagate_T1_masks'                 : False,
         'Register_S0'                        : True,
         'Propagate_S0_related_mods_and_mask' : True,
         'Adjustments'                        : True
@@ -304,9 +339,13 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    sj_atlas = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
+    # sj_atlas = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
+    # lsm.input_subjects = sj_atlas
 
-    lsm.input_subjects = sj_atlas
+    # lsm.input_subjects = ['0802t1', ]
+    # lsm.input_subjects = ['0904t1']
+    # lsm.input_subjects = ['1501t1', ]
+    lsm.input_subjects = ['1509t1']
     lsm.update_ls()
 
     move_to_stereotaxic_coordinate_from_list(lsm.ls, controller_, options_)

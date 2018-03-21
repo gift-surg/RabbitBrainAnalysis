@@ -770,7 +770,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp = SubjectParameters('0802t1')
     sp.study                  = 'PTB'
     sp.category               = 'in_vivo'
-    sp.angles                 = [0, np.pi / 20, 0]
+    sp.angles                 = [0, np.pi / 6, 0]
     sp.translation            = [0, 0, 0]
     sp.threshold              = 25
     sp.T1_window_percentile   = (10, 98)

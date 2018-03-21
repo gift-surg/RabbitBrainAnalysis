@@ -58,7 +58,7 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
     else:
         pfi_T1_strx          = jph(pfo_mod_strx, '{}_T1.nii.gz'.format(sj))
         pfi_T1_reg_mask_strx = jph(pfo_mask_strx, '{}_T1_reg_mask.nii.gz'.format(sj))
-        pfi_T1_segm_strx     = jph(pfo_segm_strx, '{}_approved.nii.gz'.format(sj))
+        pfi_T1_segm_strx     = jph(pfo_segm_strx, '{}_segm.nii.gz'.format(sj))
 
     for p in [pfi_T1_strx, pfi_T1_reg_mask_strx, pfi_T1_segm_strx]:
         assert os.path.exists(p), p

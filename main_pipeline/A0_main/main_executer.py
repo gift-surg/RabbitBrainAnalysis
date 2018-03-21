@@ -144,6 +144,7 @@ def main_runner(subj_list):
         print('A3) PART A')
         controller = {
             'Initialise_sc_folder': True,
+            'Create_base_space': True,
             'Register_T1': True,
             'Propagate_T1_masks': True,
             'Register_S0': True,
@@ -155,7 +156,7 @@ def main_runner(subj_list):
             'Template_chart_path': jph(root_atlas, '1305'),
             'Template_name': '1305'}
 
-        move_to_stereotaxic_coordinate_from_list(subj_list, controller, options)
+        # move_to_stereotaxic_coordinate_from_list(subj_list, controller, options)
 
         print('A3) PART B')
         spot_a_list_of_rabbits(subj_list)
@@ -192,7 +193,13 @@ if __name__ == '__main__':
     lsm.execute_ACS_ex_vivo   = False
 
     # lsm.input_subjects = ['4302', '4303', '4304', '4305', '4501', '4504']
-    lsm.input_subjects = ['Test67']  # ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']  # , '4305']
+    # lsm.input_subjects = ['0802t1']  # ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']  # , '4305']
+
+    # lsm.input_subjects = ['0802t1', ]
+    # lsm.input_subjects = ['0904t1']
+    # lsm.input_subjects = ['1501t1', ]
+    lsm.input_subjects = ['1509t1']
+
     lsm.update_ls()
 
     print(lsm.ls)
