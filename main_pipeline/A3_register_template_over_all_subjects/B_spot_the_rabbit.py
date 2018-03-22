@@ -118,7 +118,7 @@ def spot_a_list_of_rabbits(subjects_list):
 
         elapsed = time.time() - t
 
-        print 'Time to spot {} is : {}'.format(sj_target, elapsed)
+        print 'Time to spot subject {} is : {}'.format(sj_target, elapsed)
 
 if __name__ == '__main__':
 
@@ -132,10 +132,10 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['Test67']
 
-    lsm.input_subjects = ['0802t1', ]
+    # lsm.input_subjects = ['0802t1', ]
     # lsm.input_subjects = ['0904t1']
     # lsm.input_subjects = ['1501t1', ]
-    # lsm.input_subjects = ['1509t1']
+    lsm.input_subjects = ['1509t1']
 
 
     lsm.update_ls()
