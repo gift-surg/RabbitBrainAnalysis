@@ -1,0 +1,20 @@
+Each subject under A_data/<study>/<cateogory> must have the structure:
+
+/<sj>
+--/masks
+--/mod
+--/segm
+--/stereotaxic
+-- --/mask
+-- --/mod
+-- --/segm
+-- --/report
+--/report
+
+Report can be build in stereotaxic and in the orignal coordinate system (interesting to see the differences for
+each subject and run some warning when analysisng the data if differences are too high).
+
+Report will host the Volumes, FA and MD for each region or for macro region subdivisions.
+This folder is commited to research and will admit some level of chaos in the early stage.
+
+

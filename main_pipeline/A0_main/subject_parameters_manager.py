@@ -132,6 +132,7 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
     list_PTB_in_vivo  = []
     list_PTB_op_skull = []
     list_ACS_ex_vivo  = []
+    list_TEST_ex_vivo = []
     list_comments     = []
     list_leftovers    = []
     for k in list_subjects:
@@ -153,7 +154,8 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
             else:
                 raise IOError('Unrecognised category for subject {}'.format(k))
         elif subj_k_parameters['study'] == 'TestStudy':
-            pass
+            if subj_k_parameters['category'] == 'ex_vivo':
+                list_TEST_ex_vivo.append(k)
         else:
             raise IOError('Unrecognised study attribute for subject {}'.format(k))
 
@@ -166,6 +168,8 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
     list_PTB_in_vivo.sort()
     list_PTB_op_skull.sort(key=float)
     list_ACS_ex_vivo.sort(key=float)
+    list_TEST_ex_vivo.sort()
+
     list_comments.sort()
 
     print('PTB_ex_skull: ')
@@ -182,3 +186,7 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
 
     print('ACS_ex_vivo: ')
     print(list_ACS_ex_vivo, len(list_ACS_ex_vivo))
+
+    print('TestStudy_ex_vivo: ')
+    print(list_TEST_ex_vivo, len(list_TEST_ex_vivo))
+
