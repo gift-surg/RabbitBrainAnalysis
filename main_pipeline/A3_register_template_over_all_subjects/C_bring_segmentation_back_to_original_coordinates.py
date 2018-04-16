@@ -51,14 +51,20 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
 
     # recover the source in stereotaxic coordinates (strx):
     if sj_parameters['in_atlas']:
-        pfo_sj_atlas = jph(root_study_rabbits, 'A_MultiAtlas', sj)
+        pfo_sj_atlas         = jph(root_study_rabbits, 'A_MultiAtlas', sj)
         pfi_T1_strx          = jph(pfo_sj_atlas, 'mod', '{}_T1.nii.gz'.format(sj))
         pfi_T1_reg_mask_strx = jph(pfo_sj_atlas, 'masks', '{}_reg_mask.nii.gz'.format(sj))
-        pfi_T1_segm_strx     = jph(pfo_sj_atlas, 'segm', '{}_approved_round3.nii.gz'.format(sj))
+        pfi_T1_segm_strx     = jph(pfo_sj_atlas, 'segm', '{}_segm.nii.gz'.format(sj))
     else:
         pfi_T1_strx          = jph(pfo_mod_strx, '{}_T1.nii.gz'.format(sj))
         pfi_T1_reg_mask_strx = jph(pfo_mask_strx, '{}_T1_reg_mask.nii.gz'.format(sj))
-        pfi_T1_segm_strx     = jph(pfo_segm_strx, '{}_segm.nii.gz'.format(sj))
+
+        if controller['Selected_segmentation'] == 'automatic':
+            pfo_segmentation_strx = jph(pfo_segm_strx, 'automatic')
+        else:
+            pfo_segmentation_strx = pfo_segm_strx
+
+        pfi_T1_segm_strx = jph(pfo_segmentation_strx, '{}_{}.nii.gz'.format(sj, controller['Suffix_selected_segmentation']))
 
     for p in [pfi_T1_strx, pfi_T1_reg_mask_strx, pfi_T1_segm_strx]:
         assert os.path.exists(p), p
@@ -267,6 +273,8 @@ if __name__ == '__main__':
         'Propagate_T1_segm'                 : True,
         'Inter_modal_reg_S0'                : True,
         'Inter_modal_reg_MSME'              : True,
+        'Selected_segmentation'             : 'automatic',  # can be automatic or manual
+        'Suffix_selected_segmentation'      : 'MV_P2'
     }
 
     lsm = ListSubjectsManager()

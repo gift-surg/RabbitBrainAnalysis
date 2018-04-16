@@ -28,9 +28,9 @@ def main_runner(subj_list):
     # Set steps
 
     steps = {'reset_parameters' : False,  # if this is true it does not do anything else.
-             'step_A1'          : True,
-             'step_A2_T1'       : True,
-             'step_A2_DWI'      : True,
+             'step_A1'          : False,
+             'step_A2_T1'       : False,
+             'step_A2_DWI'      : False,
              'step_A2_MSME'     : False,
              'step_A2_T2maps'   : False,
              'step_A2_g_ratio'  : False,
@@ -50,7 +50,6 @@ def main_runner(subj_list):
         print('\nTemplate:')
         sjs = get_list_names_subjects_in_atlas(pfo_subjects_parameters)
         print(sjs)
-        # NOTE: does not go further
         print('Parameter re-computed. The pipeline ends here')
         return
 
@@ -63,15 +62,17 @@ def main_runner(subj_list):
     ''' Step A2 - T1 '''
     if steps['step_A2_T1']:
         print('\nStep A2 T1\n')
-        controller_A2_T1 = {'orient to standard'            : True,
-                            'register roi masks'            : True,
-                            'register roi masks multi-atlas': False,
-                            'adjust mask'         : True,
-                            'cut masks'           : True,
-                            'step bfc'            : True,
-                            'create lesion mask'  : True,
-                            'create reg masks'    : True,
-                            'save results'        : True}
+
+        controller_A2_T1 = {'orient_to_standard'       : False,
+                            'register_roi_masks'       : True,
+                            'register_roi_masks_slims' : False,
+                            'adjust_mask'              : True,
+                            'cut_masks'                : True,
+                            'step_bfc'                 : True,
+                            'create_lesion_mask'       : True,
+                            'create_reg_masks'         : True,
+                            'save_results'             : True,
+                            'speed'                    : False}
 
         process_T1_from_list(subj_list, controller_A2_T1)
 
@@ -143,13 +144,12 @@ def main_runner(subj_list):
 
         print('A3) PART A')
         controller = {
-            'Initialise_sc_folder': True,
-            'Create_base_space': True,
-            'Register_T1': True,
-            'Propagate_T1_masks': True,
-            'Register_S0': True,
-            'Propagate_S0_related_mods_and_mask': True,
-            'Adjustments': True
+            'Initialise_sc_folder'               : True,
+            'Register_T1'                        : True,
+            'Propagate_T1_masks'                 : True,
+            'Register_S0'                        : True,
+            'Propagate_S0_related_mods_and_mask' : True,
+            'Adjustments'                        : True
         }
 
         options = {
@@ -159,7 +159,7 @@ def main_runner(subj_list):
         # move_to_stereotaxic_coordinate_from_list(subj_list, controller, options)
 
         print('A3) PART B')
-        spot_a_list_of_rabbits(subj_list)
+        # spot_a_list_of_rabbits(subj_list)
 
         print('A3) PART C')
 
@@ -169,6 +169,8 @@ def main_runner(subj_list):
             'Propagate_T1_segm'                 : True,
             'Inter_modal_reg_S0'                : True,
             'Inter_modal_reg_MSME'              : False,
+            'Selected_segmentation'             : 'automatic',  # can be automatic or manual
+            'Suffix_selected_segmentation'      : 'MV_P2'
                     }
 
         propagate_segmentation_in_original_space_from_list(subj_list, controller)
@@ -198,7 +200,11 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['0802t1', ]
     # lsm.input_subjects = ['0904t1']
     # lsm.input_subjects = ['1501t1', ]
-    lsm.input_subjects = ['1201', '4602', '12001']
+    # lsm.input_subjects = ['12001', ]  # ['1201', '4602', '12001']
+
+    # lsm.input_subjects = ['F1Test', ]  # ['1201', '4602', '12001']
+    # lsm.input_subjects = ['F2Test', ]  # ['1201', '460A_move_to_stereotaxic_coordinates.pyc2', '12001']
+    lsm.input_subjects = ['11806', ]  # ['1201', '4602', '12001']
     #
     lsm.update_ls()
 

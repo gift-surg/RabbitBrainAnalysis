@@ -45,7 +45,7 @@ def spot_a_list_of_rabbits(subjects_list):
         spot_sj.atlas_list_suffix_modalities = ['T1', 'S0', 'V1', 'MD', 'FA']
         spot_sj.atlas_list_suffix_masks      = ['roi_mask', 'roi_reg_mask']
         spot_sj.atlas_reference_chart_name   = '1305'
-        spot_sj.atlas_segmentation_suffix    = 'approved_round3'
+        spot_sj.atlas_segmentation_suffix    = 'segm'
 
         # --- target parameters
         spot_sj.target_list_suffix_modalities = ['T1', 'S0', 'V1', 'MD', 'FA']
@@ -101,7 +101,7 @@ def spot_a_list_of_rabbits(subjects_list):
         spot_sj.propagation_controller['Stack_warps_and_segms']  = True
 
         # --- Fuser option
-        spot_sj.fuser_options['Fusion_methods'] = ['MV', 'STAPLE', 'STEPS']  #, 'STAPLE', 'STEPS']
+        spot_sj.fuser_options['Fusion_methods'] = ['MV', 'STAPLE', 'STEPS']  # , 'STAPLE', 'STEPS']
         spot_sj.fuser_options['STAPLE_params']  = OrderedDict([('pr1', None)])
         spot_sj.fuser_options['STEPS_params']   = OrderedDict([('pr{0}.{1}'.format(k, n), [k, n, 4])
                                                                for n in [9] for k in [5, 11]])
@@ -118,7 +118,7 @@ def spot_a_list_of_rabbits(subjects_list):
 
         elapsed = time.time() - t
 
-        print 'Time to spot subject {} is : {}'.format(sj_target, elapsed)
+        print('Time to spot subject {} is : {}'.format(sj_target, elapsed))
 
 if __name__ == '__main__':
 
@@ -135,7 +135,9 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['0802t1', ]
     # lsm.input_subjects = ['0904t1']
     # lsm.input_subjects = ['1501t1', ]
-    lsm.input_subjects = ['1509t1']
+    # lsm.input_subjects = ['11806']
+    # lsm.input_subjects = ['F1Test']
+    lsm.input_subjects = ['F2Test']
 
 
     lsm.update_ls()
