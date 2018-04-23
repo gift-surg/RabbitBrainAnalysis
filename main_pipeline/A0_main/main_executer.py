@@ -27,15 +27,17 @@ def main_runner(subj_list):
 
     # Set steps
 
-    steps = {'reset_parameters' : False,  # if this is true it does not do anything else.
-             'step_A1'          : False,
-             'step_A2_T1'       : False,
-             'step_A2_DWI'      : False,
-             'step_A2_MSME'     : False,
-             'step_A2_T2maps'   : False,
-             'step_A2_g_ratio'  : False,
-             'step_A3'          : True,
-             'step_A4'          : False}
+    steps = {'reset_parameters'  : False,
+             'step_A1'           : False,
+             'step_A2_T1'        : False,
+             'step_A2_DWI'       : False,
+             'step_A2_MSME'      : False,
+             'step_A2_T2maps'    : False,
+             'step_A2_g_ratio'   : False,
+             'step_A3_move'      : True,
+             'step_A3_segment'   : True,
+             'step_A3_move_back' : True,
+             'step_A4'           : False}
 
     print('STEPS')
     for k in sorted(steps.keys()):
@@ -63,18 +65,19 @@ def main_runner(subj_list):
     if steps['step_A2_T1']:
         print('\nStep A2 T1\n')
 
-        controller_A2_T1 = {'orient_to_standard'       : False,
-                            'register_roi_masks'       : True,
-                            'register_roi_masks_slims' : False,
-                            'adjust_mask'              : True,
-                            'cut_masks'                : True,
-                            'step_bfc'                 : True,
-                            'create_lesion_mask'       : True,
-                            'create_reg_masks'         : True,
-                            'save_results'             : True,
-                            'speed'                    : False}
+        controller_steps_A2_T1 = {'orient_to_standard'       : False,
+                                  'create_roi_masks'         : False,
+                                  'adjust_mask'              : False,
+                                  'cut_masks'                : False,
+                                  'step_bfc'                 : False,
+                                  'create_reg_mask'          : True,
+                                  'save_results'             : False}
 
-        process_T1_from_list(subj_list, controller_A2_T1)
+        controller_options_A2_T1 = {'roi_mask' : 'slim',  # can be 'slim', 'pivotal'
+                                    'reg_mask' : 'MoG',  # can be 'MoG', 'quartile'
+                                   }
+
+        process_T1_from_list(subj_list, controller_steps_A2_T1, controller_options_A2_T1)
 
     ''' Step A2 - DWI '''
     if steps['step_A2_DWI']:
@@ -139,7 +142,7 @@ def main_runner(subj_list):
         process_g_ratio_from_list(subj_list, controller_g_ratio)
 
     ''' Step A3 - Propagate template '''
-    if steps['step_A3']:
+    if steps['step_A3_move']:
         print('\nStep A3\n')
 
         print('A3) PART A')
@@ -156,11 +159,13 @@ def main_runner(subj_list):
             'Template_chart_path': jph(root_atlas, '1305'),
             'Template_name': '1305'}
 
-        # move_to_stereotaxic_coordinate_from_list(subj_list, controller, options)
+        move_to_stereotaxic_coordinate_from_list(subj_list, controller, options)
 
+    if steps['step_A3_segment']:
         print('A3) PART B')
-        # spot_a_list_of_rabbits(subj_list)
+        spot_a_list_of_rabbits(subj_list)
 
+    if steps['step_A3_move_back']:
         print('A3) PART C')
 
         controller = {
@@ -204,7 +209,7 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['F1Test', ]  # ['1201', '4602', '12001']
     # lsm.input_subjects = ['F2Test', ]  # ['1201', '460A_move_to_stereotaxic_coordinates.pyc2', '12001']
-    lsm.input_subjects = ['11806', ]  # ['1201', '4602', '12001']
+    lsm.input_subjects = ['12001', ]  # ['1201', '4602', '12001']
     #
     lsm.update_ls()
 

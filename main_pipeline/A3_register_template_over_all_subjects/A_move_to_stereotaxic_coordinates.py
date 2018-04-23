@@ -309,10 +309,10 @@ if __name__ == '__main__':
     print('process Stereotaxic orientation, local run. ')
 
     controller_ = {
-        'Initialise_sc_folder'               : True,
-        'Register_T1'                        : True,
-        'Propagate_T1_masks'                 : True,
-        'Register_S0'                        : True,
+        'Initialise_sc_folder'               : False,
+        'Register_T1'                        : False,
+        'Propagate_T1_masks'                 : False,
+        'Register_S0'                        : False,
         'Propagate_S0_related_mods_and_mask' : True,
         'Adjustments'                        : True
     }
@@ -335,7 +335,7 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['0802t1', ]
     # lsm.input_subjects = ['0904t1']
     # lsm.input_subjects = ['1501t1', ]
-    lsm.input_subjects = ['11806']
+    lsm.input_subjects = ['12001']
     lsm.update_ls()
 
     move_to_stereotaxic_coordinate_from_list(lsm.ls, controller_, options_)
