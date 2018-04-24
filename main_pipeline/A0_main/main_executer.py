@@ -30,7 +30,7 @@ def main_runner(subj_list):
     steps = {'reset_parameters'  : False,
              'step_A1'           : False,
              'step_A2_T1'        : False,
-             'step_A2_DWI'       : False,
+             'step_A2_DWI'       : True,
              'step_A2_MSME'      : False,
              'step_A2_T2maps'    : False,
              'step_A2_g_ratio'   : False,
@@ -65,13 +65,13 @@ def main_runner(subj_list):
     if steps['step_A2_T1']:
         print('\nStep A2 T1\n')
 
-        controller_steps_A2_T1 = {'orient_to_standard'       : False,
-                                  'create_roi_masks'         : False,
-                                  'adjust_mask'              : False,
-                                  'cut_masks'                : False,
-                                  'step_bfc'                 : False,
+        controller_steps_A2_T1 = {'orient_to_standard'       : True,
+                                  'create_roi_masks'         : True,
+                                  'adjust_mask'              : True,
+                                  'cut_masks'                : True,
+                                  'step_bfc'                 : True,
                                   'create_reg_mask'          : True,
-                                  'save_results'             : False}
+                                  'save_results'             : True}
 
         controller_options_A2_T1 = {'roi_mask' : 'slim',  # can be 'slim', 'pivotal'
                                     'reg_mask' : 'MoG',  # can be 'MoG', 'quartile'
@@ -209,8 +209,8 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['F1Test', ]  # ['1201', '4602', '12001']
     # lsm.input_subjects = ['F2Test', ]  # ['1201', '460A_move_to_stereotaxic_coordinates.pyc2', '12001']
-    lsm.input_subjects = ['12001', ]  # ['1201', '4602', '12001']
-    #
+    lsm.input_subjects = ['12402', ]  # ['1201', '4602', '12001']
+
     lsm.update_ls()
 
     print(lsm.ls)

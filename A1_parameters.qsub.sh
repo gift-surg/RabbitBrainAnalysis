@@ -4,14 +4,14 @@
 #$ -N "Atlas_10_11_12_T1_DWI"
 #$ -S /bin/bash
 #$ -cwd
-#$ -t 10-12
+#$ -t 1-29
 #$ -e /cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/software/z_output
 #$ -o /cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/software/z_output
 
 date
 hostname
 
-SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_atlas_only.txt`
+SUBJECT=`sed -n ${SGE_TASK_ID}p subjects_PTB_ex_vivo.txt`
 
 export PATH=/share/apps/fsl-5.0.8/bin/:${PATH}
 export PATH=/home/ferraris/software_lib/NiftyFit2/niftyfit-build/fit-apps/:${PATH}

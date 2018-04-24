@@ -72,7 +72,6 @@ def process_T1_per_subject(sj, step, options):
 
     if step['create_roi_masks']:
 
-
         if options['roi_mask'] == 'pivotal':
             print('- register roi masks and propagate it with representative 1305 on {}'.format(sj))
             # faster version than the slim one but less accurate and even problematic for new acquisitions.
@@ -280,16 +279,23 @@ def process_T1_per_subject(sj, step, options):
         del pfi_roi_mask, dilation_param, pfi_roi_mask_not_adjusted, cmd
 
     if step['cut_masks']:
-        print('- cut masks {}'.format(sj))
-        pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
-        pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
-        assert check_path_validity(pfi_std)
-        assert check_path_validity(pfi_roi_mask)
-        pfi_3d_cropped_roi = jph(pfo_tmp, sj + '_cropped.nii.gz')
-        cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_std, pfi_roi_mask, pfi_3d_cropped_roi)
-        print '\nCutting newly-created ciccione mask on the subject: subject {0}.\n'.format(sj)
-        print_and_run(cmd)
-        del pfi_std, pfi_roi_mask, pfi_3d_cropped_roi, cmd
+        if options['crop_roi']:
+            print('- cut masks {}'.format(sj))
+            pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
+            pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
+            assert check_path_validity(pfi_std)
+            assert check_path_validity(pfi_roi_mask)
+            pfi_3d_cropped_roi = jph(pfo_tmp, sj + '_cropped.nii.gz')
+            cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_std, pfi_roi_mask, pfi_3d_cropped_roi)
+            print '\nCutting newly-created ciccione mask on the subject: subject {0}.\n'.format(sj)
+            print_and_run(cmd)
+            del pfi_std, pfi_roi_mask, pfi_3d_cropped_roi, cmd
+        else:
+            pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
+            assert check_path_validity(pfi_std)
+            pfi_3d_cropped_roi = jph(pfo_tmp, sj + '_cropped.nii.gz')
+            cmd = 'cp {0} {1}'.format(pfi_std, pfi_3d_cropped_roi)
+            print_and_run(cmd)
 
     if step['step_bfc']:
         print('- step bfc {}'.format(sj))
@@ -310,12 +316,11 @@ def process_T1_per_subject(sj, step, options):
                               splineOrder=bfc_param[6],
                               print_only=False)
 
-
         del pfi_3d_cropped_roi, pfi_3d_bias_field_corrected, bfc_param, pfi_roi_mask
 
     if step['create_reg_mask']:
 
-        if options['reg_mask'] == 'quartile':
+        if options['reg_mask'] == 0:
             print('remove percentiles, values added manually:')
             pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
             pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
@@ -335,15 +340,21 @@ def process_T1_per_subject(sj, step, options):
             print_and_run(cmd)
             del pfi_roi_mask, pfi_lesion_mask, pfi_registration_mask, cmd
 
-        elif options['reg_mask'] == 'MoG':
-            print('remove the first (not background) and the last gaussians after MoG fitting.')
+        elif options['reg_mask'] > 0:
+            K = options['reg_mask']
+            print('remove the first (not background) and the last gaussians after MoG fitting, with K = {}.'.format(K))
             pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
+            pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
             assert os.path.exists(pfi_3d_bias_field_corrected)
+            assert check_path_validity(pfi_roi_mask)
             pfi_mog_segm = jph(pfo_tmp, '{}_mog_segm.nii.gz'.format(sj))
             T1_bfc = nib.load(pfi_3d_bias_field_corrected)
-            c, p = MoG(T1_bfc, K=6, pre_process_median_filter=True)
-            old_labels = [0, 1, 2, 3, 4, 5]
-            new_labels = [0, 0, 1, 1, 1, 0]
+            roi_mask = nib.load(pfi_roi_mask)
+            c, p = MoG(T1_bfc, K=5, pre_process_median_filter=False, mask=roi_mask)
+            nib.save(c, '/Users/sebastiano/Desktop/zzz.nii.gz')
+            old_labels = list(range(K))  # [0, 1, 2, 3, 4]
+            new_labels = [1, ] * len(old_labels)
+            new_labels[0], new_labels[1], new_labels[-1] = 0, 0, 0  # [0, 0, 1, ..., 1, 0]
             im_crisp = set_new_data(c, np.copy(relabeller(c.get_data(), old_labels, new_labels)), new_dtype=np.uint8)
             nib.save(im_crisp, pfi_mog_segm)
 
@@ -391,7 +402,8 @@ if __name__ == '__main__':
                         'save_results'             : False}
 
     controller_options = {'roi_mask' : 'slim',  # can be 'slim', 'pivotal'
-                          'reg_mask' : 'MoG',  # can be 'MoG', 'quartile'
+                          'crop_roi' : False,
+                          'reg_mask' : 5,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
                           }
 
     lsm = ListSubjectsManager()
@@ -402,7 +414,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['12001']
+    lsm.input_subjects = ['12402']
     lsm.update_ls()
 
     process_T1_from_list(lsm.ls, controller_steps, controller_options)
