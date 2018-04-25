@@ -58,6 +58,7 @@ class SubjectParameters(object):
         self.comment               = ''
         self.in_atlas              = in_atlas
         self.b0_level              = 0
+        self.options_T1            = None
 
     def get_as_dict(self):
         d = OrderedDict()
@@ -78,6 +79,7 @@ class SubjectParameters(object):
         d.update({'comment'               : self.comment})
         d.update({'in_atlas'              : self.in_atlas})
         d.update({'b0_level'              : self.b0_level})
+        d.update({'options_T1'            : self.options_T1})
         return d
 
     def save_as_txt(self, pfo_where_to_save):

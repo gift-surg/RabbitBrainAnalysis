@@ -29,7 +29,7 @@ def main_runner(subj_list):
 
     steps = {'reset_parameters'  : False,
              'step_A1'           : False,
-             'step_A2_T1'        : False,
+             'step_A2_T1'        : True,
              'step_A2_DWI'       : True,
              'step_A2_MSME'      : False,
              'step_A2_T2maps'    : False,
@@ -73,9 +73,10 @@ def main_runner(subj_list):
                                   'create_reg_mask'          : True,
                                   'save_results'             : True}
 
-        controller_options_A2_T1 = {'roi_mask' : 'slim',  # can be 'slim', 'pivotal'
-                                    'reg_mask' : 'MoG',  # can be 'MoG', 'quartile'
-                                   }
+        controller_options_A2_T1 = {'roi_mask': 'slim',  # can be 'slim', 'pivotal' or a string atlas subject name
+                                    'crop_roi': False,
+                                    'reg_mask': 5,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
+                                    }
 
         process_T1_from_list(subj_list, controller_steps_A2_T1, controller_options_A2_T1)
 
@@ -209,7 +210,7 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['F1Test', ]  # ['1201', '4602', '12001']
     # lsm.input_subjects = ['F2Test', ]  # ['1201', '460A_move_to_stereotaxic_coordinates.pyc2', '12001']
-    lsm.input_subjects = ['12402', ]  # ['1201', '4602', '12001']
+    lsm.input_subjects = ['12607', ]  # ['1201', '4602', '12001']
 
     lsm.update_ls()
 

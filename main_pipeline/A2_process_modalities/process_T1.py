@@ -9,7 +9,7 @@ from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
 from LABelsToolkit.tools.image_colors_manipulations.relabeller import relabeller
 from LABelsToolkit.tools.aux_methods.sanity_checks import check_path_validity
 
-from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_atlas, num_cores_run
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_atlas, num_cores_run, multi_atlas_subjects
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero, orient2std
@@ -43,6 +43,9 @@ def process_T1_per_subject(sj, step, options):
     study = sj_parameters['study']
     category = sj_parameters['category']
 
+    if sj_parameters['options_T1'] is not None:
+        options = sj_parameters['options_T1']
+
     pfo_input_sj_3D = jph(root_study_rabbits, '01_nifti', study, category, sj, sj + '_3D')
     pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
 
@@ -72,29 +75,29 @@ def process_T1_per_subject(sj, step, options):
 
     if step['create_roi_masks']:
 
-        if options['roi_mask'] == 'pivotal':
-            print('- register roi masks and propagate it with representative 1305 on {}'.format(sj))
-            # faster version than the slim one but less accurate and even problematic for new acquisitions.
-            # The two are exclusive:
+        if options['roi_mask'] == 'pivotal' or options['roi_mask'] in multi_atlas_subjects:
+            print('- register roi masks and propagate it with representative {} on {}'.format(options['roi_mask'], sj))
+
+            if options['roi_mask'] == 'pivotal':
+                if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
+                    reference_subject = '1305'
+                elif sj_parameters['category'] == 'in_vivo':
+                    reference_subject = '1504t1'
+                else:
+                    raise IOError('ex_vivo, in_vivo or op_skull only.')
+
+            else:
+                reference_subject = options['roi_mask']
 
             # --- subject input:
             pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
             assert check_path_validity(pfi_std)
 
             # --- Get the reference masks from the histologically oriented template ---
-            if sj_parameters['category'] in ['ex_vivo', 'op_skull']:
-                # This will be the pivotal chart of the template, reoriented respect to the angle in
-                # the subjects parameters. (the only utils has to be the subjects parameters.)
-                pfi_sj_ref_coord_system = jph(root_atlas, '1305', 'mod', '1305_T1.nii.gz')
-
-                # original mask
-                pfi_reference_roi_mask = jph(root_atlas, '1305', 'masks', '1305_roi_mask.nii.gz')
-
-            elif sj_parameters['category'] == 'in_vivo':
-                pfi_sj_ref_coord_system = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_T1.nii.gz')
-                pfi_reference_roi_mask = jph(root_study_rabbits, 'A_data', 'Utils', '1504t1', '1504t1_roi_mask.nii.gz')
-            else:
-                raise IOError('ex_vivo, in_vivo or op_skull only.')
+           # reference subject:
+            pfi_sj_ref_coord_system = jph(root_atlas, reference_subject, 'mod', '{}_T1.nii.gz'.format(reference_subject))
+            # original mask
+            pfi_reference_roi_mask = jph(root_atlas, reference_subject, 'masks', '{}_roi_mask.nii.gz'.format(reference_subject))
 
             assert check_path_validity(pfi_sj_ref_coord_system)
             assert check_path_validity(pfi_reference_roi_mask)
@@ -394,14 +397,14 @@ if __name__ == '__main__':
     print('process T1, local run. ')
 
     controller_steps = {'orient_to_standard'       : False,
-                        'create_roi_masks'         : False,
-                        'adjust_mask'              : False,
-                        'cut_masks'                : False,
-                        'step_bfc'                 : False,
+                        'create_roi_masks'         : True,
+                        'adjust_mask'              : True,
+                        'cut_masks'                : True,
+                        'step_bfc'                 : True,
                         'create_reg_mask'          : True,
-                        'save_results'             : False}
+                        'save_results'             : True}
 
-    controller_options = {'roi_mask' : 'slim',  # can be 'slim', 'pivotal'
+    controller_options = {'roi_mask' : 'slim',  # can be 'slim', 'pivotal' or a string atlas subject name if you want to use a specific subject.
                           'crop_roi' : False,
                           'reg_mask' : 5,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
                           }

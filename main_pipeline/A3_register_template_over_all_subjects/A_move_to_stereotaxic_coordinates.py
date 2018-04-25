@@ -54,8 +54,6 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
 
     subject_is_in_atlas = sj_parameters['in_atlas']
 
-    pfi_base_space = jph(pfo_tmp, 'base_space.nii.gz')  # basic resampling space, created stage 2
-
     if subject_is_in_atlas:
         pfo_sj_mod_in_atlas = jph(root_atlas, sj, 'mod')
         pfo_sj_masks_in_atlas = jph(root_atlas, sj, 'masks')
@@ -80,22 +78,6 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
         print_and_run('mkdir -p {}'.format(pfo_sc_sj))
         print_and_run('mkdir -p {}'.format(pfo_sc_sj_mod))
         print_and_run('mkdir -p {}'.format(pfo_sc_sj_masks))
-
-    # if controller['Create_base_space']:
-    #     # isotropic space where all the subjects resampled (where small rotations can be made without problems).
-    #     pfi_original_T1 = jph(pfo_sj_mod, '{0}_{1}.nii.gz'.format(sj, 'T1'))
-    #     im_original_T1 = nib.load(pfi_original_T1)
-    #
-    #     # check that the rotational part of the affine matrix is diagonal:
-    #     assert (np.diag(np.diag(im_original_T1.get_affine()[:3, :3])) == im_original_T1.get_affine()[:3, :3]).all()
-    #
-    #     base_spacing = np.min(np.diag(im_original_T1.get_affine()))
-    #     original_dimension = np.array(im_original_T1.shape).astype(np.float) * np.diag(im_original_T1.get_affine())[:3]
-    #     base_space_shape = [int(np.floor(d / float(base_spacing))) for d in original_dimension]
-    #     aff_base_spacing = np.diag(np.array([base_spacing, ] * 3 + [1]))
-    #     im_base_spacing = nib.Nifti1Image(np.zeros(base_space_shape), affine=aff_base_spacing)
-    #     nib.save(im_base_spacing, pfi_base_space)
-    #     np.savetxt(jph(pfo_tmp, 'id.txt'), np.eye(4))
 
     if controller['Register_T1']:
 

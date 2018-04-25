@@ -5,6 +5,8 @@ from os.path import join as jph
 root_dir = os.path.abspath(os.path.dirname(__file__))
 pfo_local_output = jph(os.path.dirname(root_dir), 'output')
 
+multi_atlas_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
+
 if os.path.exists('/cluster/project0'):
     print('You are on the cluster')
     # call FSL

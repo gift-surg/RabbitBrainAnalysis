@@ -5,15 +5,13 @@ from collections import OrderedDict
 import time
 
 from tools.definitions import root_study_rabbits, root_atlas, pfo_subjects_parameters, bfc_corrector_cmd, \
-    num_cores_run
+    num_cores_run, multi_atlas_subjects
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 
 from spot.spotter import SpotDS
 
 
 def spot_a_list_of_rabbits(subjects_list):
-
-    multi_atlas_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
 
     for sj_target in subjects_list:
         print('\nAutomatic segmentation with SPOT-A-NeonatalRabbit - subject {} started.\n'.format(sj_target))
