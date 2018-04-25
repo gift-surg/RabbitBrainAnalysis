@@ -146,7 +146,6 @@ def normal_lesion_mask_extractor(im_input_path, im_output_path, im_mask_foregrou
              seg_maths {1} -bin {1};
              seg_maths {1} -add {2} {1};
              seg_maths {1} -replace 2 0 {1};
-             seg_maths {1} -fill {1};
              seg_maths {1} -dil 0.5 {1};
              seg_maths {1} -ero 0.5 {1};
              seg_maths {1} -mul {2} {1};
@@ -164,7 +163,6 @@ def percentile_lesion_mask_extractor(im_input_path, im_output_path, im_mask_fore
              seg_maths {1} -bin {1};
              seg_maths {1} -add {2} {1};
              seg_maths {1} -replace 2 0 {1};
-             seg_maths {1} -fill {1};
              seg_maths {1} -ero 0.7 {1};
              seg_maths {1} -dil 1 {1};
              seg_maths {1} -mul {2} {1};
@@ -184,7 +182,6 @@ def lesion_masks_extractor_cc_based_path(im_input_path, im_output_path, im_mask_
              seg_maths {1} -bin {1};
              seg_maths {1} -add {2} {1};
              seg_maths {1} -replace 2 0 {1};
-             seg_maths {1} -fill {1};
              seg_maths {1} -dil 2 {1};
              seg_maths {1} -ero 2 {1};
              seg_maths {1} -concomp6 {1};

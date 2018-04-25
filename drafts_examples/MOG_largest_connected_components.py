@@ -1,12 +1,14 @@
+import os
 import scipy
 from scipy import ndimage
 import matplotlib.pyplot as plt
 
-fname='index.png'
+fname='/Users/sebastiano/Desktop/index.png'
+assert os.path.exists(fname)
 blur_radius = 1.0
 threshold = 50
 
-img = scipy.misc.imread(fname) # gray-scale image
+img = scipy.misc.imread(fname)  # gray-scale image
 print(img.shape)
 
 # smooth the image (to remove small objects)

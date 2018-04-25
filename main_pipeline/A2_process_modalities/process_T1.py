@@ -17,6 +17,7 @@ from tools.auxiliary.utils import print_and_run
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_atlas
 
+from LABelsToolkit.tools.visualiser.see_volume import see_array
 from LABelsToolkit.tools.detections.get_segmentation import MoG
 
 """
@@ -353,7 +354,7 @@ def process_T1_per_subject(sj, step, options):
             pfi_mog_segm = jph(pfo_tmp, '{}_mog_segm.nii.gz'.format(sj))
             T1_bfc = nib.load(pfi_3d_bias_field_corrected)
             roi_mask = nib.load(pfi_roi_mask)
-            c, p = MoG(T1_bfc, K=5, pre_process_median_filter=False, mask=roi_mask)
+            c, p = MoG(T1_bfc, K=5, pre_process_median_filter=True, mask_im=roi_mask, pre_process_only_interquartile=True)
             nib.save(c, '/Users/sebastiano/Desktop/zzz.nii.gz')
             old_labels = list(range(K))  # [0, 1, 2, 3, 4]
             new_labels = [1, ] * len(old_labels)
@@ -397,16 +398,16 @@ if __name__ == '__main__':
     print('process T1, local run. ')
 
     controller_steps = {'orient_to_standard'       : False,
-                        'create_roi_masks'         : True,
-                        'adjust_mask'              : True,
-                        'cut_masks'                : True,
-                        'step_bfc'                 : True,
+                        'create_roi_masks'         : False,
+                        'adjust_mask'              : False,
+                        'cut_masks'                : False,
+                        'step_bfc'                 : False,
                         'create_reg_mask'          : True,
                         'save_results'             : True}
 
-    controller_options = {'roi_mask' : 'slim',  # can be 'slim', 'pivotal' or a string atlas subject name if you want to use a specific subject.
+    controller_options = {'roi_mask' : '2502',  # can be 'slim', 'pivotal' or a string atlas subject name if you want to use a specific subject.
                           'crop_roi' : False,
-                          'reg_mask' : 5,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
+                          'reg_mask' : 0,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
                           }
 
     lsm = ListSubjectsManager()

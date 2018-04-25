@@ -1,10 +1,10 @@
 #$ -l h_rt=6:00:00
 #$ -l tmem=25G
 #$ -l h_vmem=25G
-#$ -N "Atlas_10_11_12_T1_DWI"
+#$ -N "allPTB"
 #$ -S /bin/bash
 #$ -cwd
-#$ -t 1-29
+#$ -t 1-26
 #$ -e /cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/software/z_output
 #$ -o /cluster/project0/fetalsurgery/Data/MRI/KUL_preterm_rabbit_model/software/z_output
 
