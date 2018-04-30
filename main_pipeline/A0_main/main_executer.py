@@ -25,6 +25,8 @@ def main_runner(subj_list):
 
     check_libraries()
 
+    # TODO check subject list, if the parameter files are not available stop here!
+
     # Set steps
 
     steps = {'reset_parameters'  : False,
@@ -210,8 +212,16 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['F1Test', ]  # ['1201', '4602', '12001']
     # lsm.input_subjects = ['F2Test', ]  # ['1201', '460A_move_to_stereotaxic_coordinates.pyc2', '12001']
-    lsm.input_subjects = ['12607', ]  # ['1201', '4602', '12001']
+    # lsm.input_subjects = ['12607', ]  # ['1201', '4602', '12001']
 
+    # lsm.input_subjects = ['12307', '12308', '12402']
+    # lsm.input_subjects = ['12504', '12505', '12607']
+    # lsm.input_subjects = ['12608', '12609', '12610']
+
+    lsm.input_subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
+    # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
+
+    
     lsm.update_ls()
 
     print(lsm.ls)

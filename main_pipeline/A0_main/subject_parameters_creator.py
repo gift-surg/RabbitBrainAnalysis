@@ -1595,7 +1595,84 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
+    ''' --------- ACS ex-vivo round of 10 ------'''
+
+    sp = SubjectParameters('12307')
+    sp.study = 'ACS'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, np.pi / 8, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 18
+    sp.T1_window_percentile = (5, 98)
+    sp.S0_window_percentile = (1, 99)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 1
+    sp.erosion_roi_mask = 1
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_atlas = False
+    sp.b0_level = 7
+    sp.options_T1 = {'roi_mask': '1305',  # can be 'slim', 'pivotal' or a string atlas subject name
+                     'crop_roi': False,
+                     'reg_mask': 0,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
+                     }
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('12308')
+    sp.study = 'ACS'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, np.pi / 6, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 18
+    sp.T1_window_percentile = (5, 98)
+    sp.S0_window_percentile = (1, 99)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 1
+    sp.erosion_roi_mask = 1
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_atlas = False
+    sp.b0_level = 7
+    sp.options_T1 = {'roi_mask': '1305',  # can be 'slim', 'pivotal' or a string atlas subject name
+                     'crop_roi': False,
+                     'reg_mask': 0,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
+                     }
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
     sp = SubjectParameters('12402')
+    sp.study = 'ACS'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, np.pi / 6, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 18
+    sp.T1_window_percentile = (5, 98)
+    sp.S0_window_percentile = (1, 99)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 1
+    sp.erosion_roi_mask = 1
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_atlas = False
+    sp.b0_level = 7
+    sp.options_T1 = {'roi_mask': '1305',  # can be 'slim', 'pivotal' or a string atlas subject name
+                     'crop_roi': False,
+                     'reg_mask': 0,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
+                     }
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('12504')
     sp.study = 'ACS'
     sp.category = 'ex_vivo'
     sp.angles = [0, np.pi / 6, 0]
@@ -1614,9 +1691,33 @@ def reset_parameters_files(pfo_where_to_save):
     sp.b0_level = 7
     sp.options_T1 = {'roi_mask': '2502',  # can be 'slim', 'pivotal' or a string atlas subject name
                      'crop_roi': False,
-                     'reg_mask': 5,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
+                     'reg_mask': 0,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
                      }
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
 
+    sp = SubjectParameters('12505')
+    sp.study = 'ACS'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, np.pi / 6, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 18
+    sp.T1_window_percentile = (5, 98)
+    sp.S0_window_percentile = (1, 99)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 1
+    sp.erosion_roi_mask = 1
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_atlas = False
+    sp.b0_level = 7
+    sp.options_T1 = {'roi_mask': '1305',  # can be 'slim', 'pivotal' or a string atlas subject name
+                     'crop_roi': False,
+                     'reg_mask': 0,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
+                     }
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1638,13 +1739,87 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
-    sp.options_T1 = {'roi_mask': '2502',  # can be 'slim', 'pivotal' or a string atlas subject name
+    sp.options_T1 = {'roi_mask': '1305',  # can be 'slim', 'pivotal' or a string atlas subject name
                      'crop_roi': False,
-                     'reg_mask': 5,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
+                     'reg_mask': 0,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
                      }
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
+    del sp
 
+    sp = SubjectParameters('12608')
+    sp.study = 'ACS'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, np.pi / 6, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 18
+    sp.T1_window_percentile = (5, 98)
+    sp.S0_window_percentile = (1, 99)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 1
+    sp.erosion_roi_mask = 1
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_atlas = False
+    sp.b0_level = 7
+    sp.options_T1 = {'roi_mask': '1305',  # can be 'slim', 'pivotal' or a string atlas subject name
+                     'crop_roi': False,
+                     'reg_mask': 0,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
+                     }
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('12609')
+    sp.study = 'ACS'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, np.pi / 6, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 18
+    sp.T1_window_percentile = (5, 98)
+    sp.S0_window_percentile = (1, 99)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 1
+    sp.erosion_roi_mask = 1
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_atlas = False
+    sp.b0_level = 7
+    sp.options_T1 = {'roi_mask': '1305',  # can be 'slim', 'pivotal' or a string atlas subject name
+                     'crop_roi': False,
+                     'reg_mask': 0,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
+                     }
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('12610')
+    sp.study = 'ACS'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, np.pi / 6, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 18
+    sp.T1_window_percentile = (5, 98)
+    sp.S0_window_percentile = (1, 99)
+    sp.T1_mask_dilation = 1
+    sp.S0_mask_dilation = 1
+    sp.erosion_roi_mask = 1
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_atlas = False
+    sp.b0_level = 7
+    sp.options_T1 = {'roi_mask': '1305',  # can be 'slim', 'pivotal' or a string atlas subject name
+                     'crop_roi': False,
+                     'reg_mask': 0,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
+                     }
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
 
