@@ -7,167 +7,218 @@ No ICV or other corrections, no stats, no sigma or outlier removal.
 ONLY getting the row data in the report folder for each subject, both in stereotaxic and in the original orientation.
 The raw data in the A_data/<study>/<cathegory>/<sj> folder for each subject.
 """
+import os
 import numpy as np
-import pandas as pa
 import nibabel as nib
 from os.path import join as jph
 import pickle
 
-from collections import OrderedDict
-
-from main_pipeline.A0_main.main_controller import ListSubjectsManager
+from LABelsToolkit.tools.caliber.volumes_and_values import get_volumes_per_label
+from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
-
-from LABelsToolkit.tools.aux_methods.utils_nib import one_voxel_volume
-from LABelsToolkit.tools.caliber.volumes_and_values import get_total_num_nonzero_voxels
-from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
-from LABelsToolkit.main import LABelsToolkit as LabT
+from main_pipeline.A0_main.main_controller import ListSubjectsManager
 
 
-def collect_data_from_subject_list(sj_list, pfo_storage, controller=None, report_folder='report_stereotaxic', remove_3_sigma=False):
+def generate_reports_for_subject(sj, controller, ldm):
     """
-    :param sj_list: list of subjects
-    :param pfo_storage: where to save the obtained dataframe per region, per value.
+    :param sj: list of subjects
+    :param ldm: instance of the class LabelsDescriptorManager from LABelsToolkit. This contains the informations
+    from the label descriptors.
     :param controller: controller values
     :return:
     """
+    # labels
+    label_descriptor_dict = ldm.get_dict()
 
-    # Load regions with labels_descriptor_manager:
+    labels_list = label_descriptor_dict.keys()
+    labels_names = [label_descriptor_dict[k][2].replace(' ', '') for k in label_descriptor_dict.keys()]
 
-    pfi_descriptor = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/study/A_atlas/labels_descriptor_abbrev.txt'
+    # --- paths to parameters and folders
 
-    ldm = LdM(pfi_descriptor)
-    dict = ldm.get_dict()
-    pfi_hwere_to_save = '/Users/sebastiano/Desktop/zzz_lab_abbrev.txt'
+    print('\nCollect report for subject {} started.\n'.format(sj))
 
-    ldm.save_labels_and_abbreviations(pfi_hwere_to_save)
+    sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-    for d in dict.keys():
-        if len(dict[d]) == 4:
-            print("{0} : '{1}',".format(d, dict[d][3]))
+    study = sj_parameters['study']
+    category = sj_parameters['category']
 
-    # elaborate for each region
+    root_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
 
+    pfo_sj_mod = jph(root_subject, 'mod')
+    pfo_sj_segm = jph(root_subject, 'segm')
 
-    if controller['Volumes_per_regions']:
+    pfo_sj_report = jph(root_subject, 'report')
+
+    if controller['Force_reset']:
+        os.system('rm -r {}'.format(pfo_sj_report))
+
+    os.system('mkdir {}'.format(pfo_sj_report))
+
+    # --- Path to file input
+
+    pfi_segm_T1 = jph(pfo_sj_segm, '{}_T1_segm.nii.gz'.format(sj))
+    pfi_segm_S0 = jph(pfo_sj_segm, '{}_S0_segm.nii.gz'.format(sj))
+
+    pfi_anat_FA = jph(pfo_sj_mod, '{}_FA.nii.gz'.format(sj))
+    pfi_anat_MD = jph(pfo_sj_mod, '{}_MD.nii.gz'.format(sj))
+
+    assert os.path.exists(pfi_segm_T1)
+    assert os.path.exists(pfi_segm_S0)
+
+    if controller['Volumes_per_region']:
         """
         Get the files under report, for subject sj, region reg and corresponding label lab as:
-        <sj>_vol_<reg>_<lab>.csv
+        <sj>_vol_regions.csv
         """
-        for k in ptb_related_regions.keys():
-            se_vols_region_k = pa.Series(np.array([0, ] * len(sj_list)).astype(np.float64), index=sj_list)
+        im_segm = nib.load(pfi_segm_T1)
+        df_volumes = get_volumes_per_label(im_segm, labels=labels_list, labels_names=labels_names)
 
-            for sj in sj_list:
-                print('\nCollection 3, subject {}, region {}. '.format(sj, k))
-                sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+        pfi_sj_vol_regions = jph(pfo_sj_report, '{}_vol_regions.csv'.format(sj))
+        df_volumes.to_csv(pfi_sj_vol_regions)
 
-                study = sj_parameters['study']
-                category = sj_parameters['category']
+        print('Vols all regions saved under {}'.format(pfi_sj_vol_regions))
 
-                pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
-                pfi_segm = jph(pfo_subject, 'segm', '{}_T1_segm.nii.gz'.format(sj))
-
-                im_segm = nib.load(pfi_segm)
-
-                tot_num_voxels = get_total_num_nonzero_voxels(im_segm)
-                # load volumes saved in in the report of each subject.
-                pfi_report_vols = jph(pfo_subject, report_folder, '{}_volumes.pkl'.format(sj))
-
-                df = pa.read_pickle(pfi_report_vols)
-
-                num_voxel_reg_k = 0
-                for k_j in ptb_related_regions[k]:
-                    num_voxel_reg_k += df['num_voxels']['[{}]'.format(k_j)]
-
-                net_volume = num_voxel_reg_k / float(tot_num_voxels)
-                se_vols_region_k[sj] = net_volume
-
-            print se_vols_region_k
-
-            se_vols_region_k.name = 'Volumes normalised tot brain vol, region {0}'.format(ptb_related_regions[k])
-            se_vols_region_k.to_pickle(jph(pfo_storage, 'VolumesRegionOverTotBV{0}.pkl'.format(k)))
-
-    # --> Collection 5: FA per regions
-    if controller['FA_per_regions']:
+    if controller['FA_per_region']:
         """
         Get the files under report, for subject sj, region reg and corresponding label lab as
-        <sj>_vol_<reg>_<lab>.csv
+        <sj>_FA_<reg>_<lab>.csv
         """
-        ldm = LdM(pfi_labels_descriptor)
-        labels_dict = ldm.get_dict()
-        for k in ptb_related_regions.keys():
-            print('FA per regions, all subjects, region {}'.format(k))
-            vals_per_region_k = []
-            for sj in sj_list:
-                sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+        im_segm = nib.load(pfi_segm_S0)
+        im_anat = nib.load(pfi_anat_FA)
 
-                study = sj_parameters['study']
-                category = sj_parameters['category']
+        assert im_segm.shape == im_anat.shape
 
-                pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
-                arrays_FA_k = []
-                for k_j in ptb_related_regions[k]:
-                    pfi_saved_data_FA = jph(pfo_subject, report_folder, '{}_FA_{}_{}.npy'.format(sj, labels_dict[k_j][-1].replace(' ', ''), k_j))
-                    arrays_FA_k.append(np.load(pfi_saved_data_FA))
+        for k, reg in zip(labels_list, labels_names):
 
-                unrolled_arrays_FA_k = np.concatenate(arrays_FA_k, axis=0)
-                if remove_3_sigma:
-                    three_std = 3 * np.std(unrolled_arrays_FA_k)
-                    mean = np.mean(unrolled_arrays_FA_k)
-                    unrolled_arrays_FA_k = [x for x in unrolled_arrays_FA_k if (x > mean - three_std)]
-                    unrolled_arrays_FA_k = [x for x in unrolled_arrays_FA_k if (x < mean + three_std)]
+            coords = np.where(im_segm.get_data() == k)
+            FA_region_k = im_anat.get_data()[coords].flatten()
 
-                vals_per_region_k.append(unrolled_arrays_FA_k)
+            pfi_sj_FA_regions = jph(pfo_sj_report, '{}_FA_{}_{}.csv'.format(sj, k, reg))
+            np.savetxt(pfi_sj_FA_regions, FA_region_k)
 
-            se_vals_per_region_k = pa.Series(vals_per_region_k, index=sj_list)
-            print se_vals_per_region_k
-            se_vals_per_region_k.name = 'FA per values, region {0}'.format(ptb_related_regions[k])
-            se_vals_per_region_k.to_pickle(jph(pfo_storage, 'FARegion{0}.pkl'.format(k)))
+            print('FA region {}, saved under {}'.format(k, pfi_sj_FA_regions))
 
-    # --> Collection 6: MD per regions
-    if controller['MD_per_regions']:
-        ldm = LdM(pfi_labels_descriptor)
-        labels_dict = ldm.get_dict()
-        for k in ptb_related_regions.keys():
-            print('MD per regions, all subjects, region {}'.format(k))
-            vals_per_region_k = []
-            for sj in sj_list:
-                sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+        del im_anat, im_segm
 
-                study = sj_parameters['study']
-                category = sj_parameters['category']
+    if controller['MD_per_region']:
+        """
+        Get the files under report, for subject sj, region reg and corresponding label lab as
+        <sj>_MD_<reg>_<lab>.csv
+        """
+        im_segm = nib.load(pfi_segm_S0)
+        im_anat = nib.load(pfi_anat_MD)
 
-                pfo_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
-                arrays_MD_k = []
-                for k_j in ptb_related_regions[k]:
-                    pfi_saved_data_MD = jph(pfo_subject, report_folder,
-                                            '{}_MD_{}_{}.npy'.format(sj, labels_dict[k_j][-1].replace(' ', ''), k_j))
-                    arrays_MD_k.append(np.load(pfi_saved_data_MD))
+        assert im_segm.shape == im_anat.shape
 
-                unrolled_arrays_MD_k = np.concatenate(arrays_MD_k, axis=0)
-                if remove_3_sigma:
-                    three_std = 3 * np.std(unrolled_arrays_MD_k)
-                    mean = np.mean(unrolled_arrays_MD_k)
-                    unrolled_arrays_MD_k = [x for x in unrolled_arrays_MD_k if (x > mean - three_std)]
-                    unrolled_arrays_MD_k = [x for x in unrolled_arrays_MD_k if (x < mean + three_std)]
+        for k, reg in zip(labels_list, labels_names):
+            coords = np.where(im_segm.get_data() == k)
+            MD_region_k = im_anat.get_data()[coords].flatten()
 
-                vals_per_region_k.append(unrolled_arrays_MD_k)
+            pfi_sj_MD_regions = jph(pfo_sj_report, '{}_MD_{}_{}.csv'.format(sj, k, reg))
+            np.savetxt(pfi_sj_MD_regions, MD_region_k)
 
-            se_vals_per_region_k = pa.Series(vals_per_region_k, index=sj_list)
-            se_vals_per_region_k.name = 'MD per values, region {0}'.format(ptb_related_regions[k])
-            se_vals_per_region_k.to_pickle(jph(pfo_storage, 'MDRegion{0}.pkl'.format(k)))
+            print('MD region {}, saved under {}'.format(k, pfi_sj_MD_regions))
 
+        del im_anat, im_segm
+
+    # ---------------------------
     # -------- STEREOTAXIC ------
+    # ---------------------------
+
+    # Path to file input:
+
+    pfo_sj_mod_stx = jph(root_subject, 'stereotaxic', 'mod')
+    pfo_sj_segm_stx = jph(root_subject, 'stereotaxic', 'segm')
+
+    pfo_sj_report_stx = jph(root_subject, 'stereotaxic', 'report')
+
+    if controller['Force_reset']:
+        os.system('rm -r {}'.format(pfo_sj_report_stx))
+
+    os.system('mkdir {}'.format(pfo_sj_report_stx))
+
+    pfi_segm_stx = jph(pfo_sj_segm_stx, '{}_segm.nii.gz'.format(sj))
+    if not os.path.exists(pfi_segm_stx):
+        pfi_segm_stx = jph(pfo_sj_segm_stx, 'automatic', '{}_{}.nii.gz'.format(sj, 'MV_P2'))
+
+    assert os.path.exists(pfi_segm_stx)
+
+    pfi_anat_FA_stx = jph(pfo_sj_mod_stx, '{}_FA.nii.gz'.format(sj))
+    pfi_anat_MD_stx = jph(pfo_sj_mod_stx, '{}_MD.nii.gz'.format(sj))
+
+    assert os.path.exists(pfi_segm_T1)
+    assert os.path.exists(pfi_segm_S0)
+
+    if controller['Volumes_per_region_stx']:
+        """
+        Get the files under report, for subject sj, region reg and corresponding label lab as:
+        <sj>_vol_regions.csv
+        """
+        im_segm = nib.load(pfi_segm_stx)
+        df_volumes = get_volumes_per_label(im_segm, labels=labels_list, labels_names=labels_names)
+
+        pfi_sj_vol_regions = jph(pfo_sj_report_stx, '{}stx_vol_regions.csv'.format(sj))
+        df_volumes.to_csv(pfi_sj_vol_regions)
+
+        print('Vols stereotaxic all regions saved under {}'.format(pfi_sj_vol_regions))
+
+    if controller['FA_per_region_stx']:
+        """
+        Get the files under report, for subject sj, region reg and corresponding label lab as
+        <sj>_FA_<reg>_<lab>.csv
+        """
+        im_segm = nib.load(pfi_segm_stx)
+        im_anat = nib.load(pfi_anat_FA_stx)
+
+        assert im_segm.shape == im_anat.shape
+
+        for k, reg in zip(labels_list, labels_names):
+            coords = np.where(im_segm.get_data() == k)
+            FA_region_k = im_anat.get_data()[coords].flatten()
+
+            pfi_sj_FA_regions_stx = jph(pfo_sj_report_stx, '{}stx_FA_{}_{}.csv'.format(sj, k, reg))
+            np.savetxt(pfi_sj_FA_regions_stx, FA_region_k)
+
+            print('FA stereotaxic region {}, saved under {}'.format(k, pfi_sj_FA_regions_stx))
+
+        del im_anat, im_segm
+
+    if controller['MD_per_region_stx']:
+        """
+        Get the files under report, for subject sj, region reg and corresponding label lab as
+        <sj>_MD_<reg>_<lab>.csv
+        """
+        im_segm = nib.load(pfi_segm_stx)
+        im_anat = nib.load(pfi_anat_MD_stx)
+
+        assert im_segm.shape == im_anat.shape
+
+        for k, reg in zip(labels_list, labels_names):
+            coords = np.where(im_segm.get_data() == k)
+            MD_region_k = im_anat.get_data()[coords].flatten()
+
+            pfi_sj_MD_regions_stx = jph(pfo_sj_report_stx, '{}stx_MD_{}_{}.csv'.format(sj, k, reg))
+            np.savetxt(pfi_sj_MD_regions_stx, MD_region_k)
+
+            print('MD stereotaxic region {}, saved under {}.'.format(k, pfi_sj_MD_regions_stx))
+
+        del im_anat, im_segm
 
 
+def generate_reports_from_list(sj_list, controller):
+    # Load regions with labels_descriptor_manager:
 
-def generate_reports(sj_list):
+    ldm = LdM(pfi_labels_descriptor)
+    label_descriptor_dict = ldm.get_dict()
 
-    controller = {'Volumes_per_regions' : True,
-                  'FA_per_regions'      : True,
-                  'MD_per_regions'      : True}
-    collect_data_from_subject_list(sj_list, controller=controller)
+    print label_descriptor_dict.keys()
+
+    for d in label_descriptor_dict.keys():
+        print("{0} : '{1}',".format(d, label_descriptor_dict[d][2]))
+
+    for sj_id in sj_list:
+        generate_reports_for_subject(sj_id, controller=controller, ldm=ldm)
 
 
 if __name__ == '__main__':
@@ -179,31 +230,27 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    # lsm.input_subjects = ['4302', '4303', '4304', '4305', '4501', '4504']
-    # lsm.input_subjects = ['0802t1']  # ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']  # , '4305']
-
-    # lsm.input_subjects = ['0802t1', ]
-    # lsm.input_subjects = ['0904t1']
-    # lsm.input_subjects = ['1501t1', ]
-    # lsm.input_subjects = ['12001', ]  # ['1201', '4602', '12001']
-
-    # lsm.input_subjects = ['F1Test', ]  # ['1201', '4602', '12001']
-    # lsm.input_subjects = ['F2Test', ]  # ['1201', '460A_move_to_stereotaxic_coordinates.pyc2', '12001']
-    # lsm.input_subjects = ['12607', ]  # ['1201', '4602', '12001']
-
     # lsm.input_subjects = ['12307', '12308', '12402']
     # lsm.input_subjects = ['12504', '12505', '12607']
     # lsm.input_subjects = ['12608', '12609', '12610']
 
-    lsm.input_subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
+    lsm.input_subjects =  ['12307', '12308', '12402', '12504', '12505', '12607', '12608', '12609', '12610']  # ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
-
 
     lsm.update_ls()
 
     print(lsm.ls)
 
-    generate_reports(lsm.ls)
+    controller_ = {'Force_reset'              : True,
+                   'Volumes_per_region'       : True,
+                   'FA_per_region'            : True,
+                   'MD_per_region'            : True,
+                   'Volumes_per_region_stx'   : True,
+                   'FA_per_region_stx'        : True,
+                   'MD_per_region_stx'        : True,
+                   }
+
+    generate_reports_from_list(lsm.ls, controller_)
 
 
 
