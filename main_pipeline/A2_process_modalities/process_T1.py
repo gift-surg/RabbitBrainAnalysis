@@ -35,7 +35,7 @@ Compute registration and lesion mask
 """
 
 
-def process_T1_per_subject(sj, step, options):
+def process_T1_per_subject(sj, step):
 
     print('\nProcessing T1 {} started.\n'.format(sj))
 
@@ -44,8 +44,7 @@ def process_T1_per_subject(sj, step, options):
     study = sj_parameters['study']
     category = sj_parameters['category']
 
-    if sj_parameters['options_T1'] is not None:
-        options = sj_parameters['options_T1']
+    options = sj_parameters['options_T1']
 
     pfo_input_sj_3D = jph(root_study_rabbits, '01_nifti', study, category, sj, sj + '_3D')
     pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
@@ -386,12 +385,12 @@ def process_T1_per_subject(sj, step, options):
         del pfi_3d_bias_field_corrected, pfi_3d_final_destination, cmd
 
 
-def process_T1_from_list(subj_list, controller, options):
+def process_T1_from_list(subj_list, controller):
 
     print '\n\n Processing T1 subjects from list {} \n'.format(subj_list)
     for sj in subj_list:
 
-        process_T1_per_subject(sj, controller, options)
+        process_T1_per_subject(sj, controller)
 
 
 if __name__ == '__main__':
@@ -403,12 +402,7 @@ if __name__ == '__main__':
                         'cut_masks'                : False,
                         'step_bfc'                 : False,
                         'create_reg_mask'          : True,
-                        'save_results'             : True}
-
-    controller_options = {'roi_mask' : '2502',  # can be 'slim', 'pivotal' or a string atlas subject name if you want to use a specific subject.
-                          'crop_roi' : False,
-                          'reg_mask' : 0,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
-                          }
+                        'save_results'             : False}
 
     lsm = ListSubjectsManager()
 
@@ -418,7 +412,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['12402']
+    lsm.input_subjects = ['13103']
     lsm.update_ls()
 
-    process_T1_from_list(lsm.ls, controller_steps, controller_options)
+    process_T1_from_list(lsm.ls, controller_steps)
