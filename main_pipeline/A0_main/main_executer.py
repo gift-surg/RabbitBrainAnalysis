@@ -19,6 +19,7 @@ from main_pipeline.A2_process_modalities.process_g_ratio import process_g_ratio_
 from main_pipeline.A3_register_template_over_all_subjects.A_move_to_stereotaxic_coordinates import move_to_stereotaxic_coordinate_from_list
 from main_pipeline.A3_register_template_over_all_subjects.B_spot_the_rabbit import spot_a_list_of_rabbits
 from main_pipeline.A3_register_template_over_all_subjects.C_bring_segmentation_back_to_original_coordinates import propagate_segmentation_in_original_space_from_list
+from main_pipeline.A4_data_collection.A0_generate_reports import generate_reports_from_list
 
 
 def main_runner(subj_list):
@@ -30,16 +31,16 @@ def main_runner(subj_list):
     # Set steps
 
     steps = {'reset_parameters'  : False,
-             'step_A1'           : False,
+             'step_A1'           : True,
              'step_A2_T1'        : True,
-             'step_A2_DWI'       : False,
+             'step_A2_DWI'       : True,
              'step_A2_MSME'      : False,
              'step_A2_T2maps'    : False,
              'step_A2_g_ratio'   : False,
              'step_A3_move'      : True,
              'step_A3_segment'   : True,
              'step_A3_move_back' : True,
-             'step_A4'           : False}
+             'step_A4'           : True}
 
     print('STEPS')
     for k in sorted(steps.keys()):
@@ -75,12 +76,7 @@ def main_runner(subj_list):
                                   'create_reg_mask'          : True,
                                   'save_results'             : True}
 
-        controller_options_A2_T1 = {'roi_mask': 'slim',  # can be 'slim', 'pivotal' or a string atlas subject name
-                                    'crop_roi': False,
-                                    'reg_mask': 5,  # can be the total number of gaussians, or 0 if you want to use 'quartile'
-                                    }
-
-        process_T1_from_list(subj_list, controller_steps_A2_T1, controller_options_A2_T1)
+        process_T1_from_list(subj_list, controller_steps_A2_T1)
 
     ''' Step A2 - DWI '''
     if steps['step_A2_DWI']:
@@ -188,6 +184,17 @@ def main_runner(subj_list):
 
         print('\nStep A4\n')
 
+        controller_A4 = {'Force_reset': True,
+                         'Volumes_per_region': True,
+                         'FA_per_region': True,
+                         'MD_per_region': True,
+                         'Volumes_per_region_stx': True,
+                         'FA_per_region_stx': True,
+                         'MD_per_region_stx': True,
+                         }
+
+        generate_reports_from_list(subj_list, controller_A4)
+
 if __name__ == '__main__':
 
     # assert os.path.isdir(root_study_rabbits), 'Connect to cluster / Pantopolio!'
@@ -218,9 +225,11 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['12504', '12505', '12607']
     # lsm.input_subjects = ['12608', '12609', '12610']
 
-    lsm.input_subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
+    # lsm.input_subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
 
+    # lsm.input_subjects = ['1201', '1203', '1305', '1404', '1507', '1510']
+    lsm.input_subjects = ['1702', '1805', '2002', '2502', '3301', '3404']
     
     lsm.update_ls()
 

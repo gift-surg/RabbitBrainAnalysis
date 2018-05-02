@@ -13,11 +13,11 @@ import nibabel as nib
 from os.path import join as jph
 import pickle
 
-from LABelsToolkit.tools.caliber.volumes_and_values import get_volumes_per_label
-from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
-
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
+
+from LABelsToolkit.tools.caliber.volumes_and_values import get_volumes_per_label
+from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
 
 
 def generate_reports_for_subject(sj, controller, ldm):
@@ -75,7 +75,8 @@ def generate_reports_for_subject(sj, controller, ldm):
         df_volumes = get_volumes_per_label(im_segm, labels=labels_list, labels_names=labels_names)
 
         pfi_sj_vol_regions = jph(pfo_sj_report, '{}_vol_regions.csv'.format(sj))
-        df_volumes.to_csv(pfi_sj_vol_regions)
+
+        df_volumes.to_csv(pfi_sj_vol_regions, index=False)
 
         print('Vols all regions saved under {}'.format(pfi_sj_vol_regions))
 
@@ -159,7 +160,7 @@ def generate_reports_for_subject(sj, controller, ldm):
         df_volumes = get_volumes_per_label(im_segm, labels=labels_list, labels_names=labels_names)
 
         pfi_sj_vol_regions = jph(pfo_sj_report_stx, '{}stx_vol_regions.csv'.format(sj))
-        df_volumes.to_csv(pfi_sj_vol_regions)
+        df_volumes.to_csv(pfi_sj_vol_regions, index=False)
 
         print('Vols stereotaxic all regions saved under {}'.format(pfi_sj_vol_regions))
 
@@ -234,20 +235,20 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['12504', '12505', '12607']
     # lsm.input_subjects = ['12608', '12609', '12610']
 
-    lsm.input_subjects   = ['12307', '12308', '12402', '12504', '12505', '12607', '12608', '12609', '12610']  # ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
+    lsm.input_subjects   = ['12307',  '12308', '12402', '12504', '12505', '12607', '12608', '12609', '12610']  # ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
 
     lsm.update_ls()
 
     print(lsm.ls)
 
-    controller_ = {'Force_reset'              : True,
+    controller_ = {'Force_reset'              : False,
                    'Volumes_per_region'       : True,
-                   'FA_per_region'            : True,
-                   'MD_per_region'            : True,
+                   'FA_per_region'            : False,
+                   'MD_per_region'            : False,
                    'Volumes_per_region_stx'   : True,
-                   'FA_per_region_stx'        : True,
-                   'MD_per_region_stx'        : True,
+                   'FA_per_region_stx'        : False,
+                   'MD_per_region_stx'        : False,
                    }
 
     generate_reports_from_list(lsm.ls, controller_)
