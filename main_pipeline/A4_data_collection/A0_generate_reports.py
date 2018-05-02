@@ -56,7 +56,7 @@ def generate_reports_for_subject(sj, controller, ldm):
     os.system('mkdir {}'.format(pfo_sj_report))
 
     # --- Path to file input
-
+    # allow for manual adjustment options:
     pfi_segm_T1 = jph(pfo_sj_segm, '{}_T1_segm.nii.gz'.format(sj))
     pfi_segm_S0 = jph(pfo_sj_segm, '{}_S0_segm.nii.gz'.format(sj))
 
@@ -139,7 +139,7 @@ def generate_reports_for_subject(sj, controller, ldm):
 
     os.system('mkdir {}'.format(pfo_sj_report_stx))
 
-    pfi_segm_stx = jph(pfo_sj_segm_stx, '{}_segm.nii.gz'.format(sj))
+    pfi_segm_stx = jph(pfo_sj_segm_stx, '{}_segm_man.nii.gz'.format(sj))
     if not os.path.exists(pfi_segm_stx):
         pfi_segm_stx = jph(pfo_sj_segm_stx, 'automatic', '{}_{}.nii.gz'.format(sj, 'MV_P2'))
 
