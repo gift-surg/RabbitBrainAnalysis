@@ -58,6 +58,7 @@ class SubjectParameters(object):
         self.comment               = ''
         self.in_atlas              = in_atlas
         self.b0_level              = 0
+        self.b0_to_use_in_fsldti   = -1  # -1 default means all the b0 layers. If only one layer is
         self.options_T1            = {'roi_mask' : '1305',  # can be 'slim', 'pivotal' or a string atlas subject name if you want to use a specific subject.
                                       'crop_roi' : False,
                                       'reg_mask' : 0,  # can be the total number of gaussians, or 0 if you want to use the given percentile
@@ -82,6 +83,7 @@ class SubjectParameters(object):
         d.update({'comment'               : self.comment})
         d.update({'in_atlas'              : self.in_atlas})
         d.update({'b0_level'              : self.b0_level})
+        d.update({'b0_to_use_in_fsldti'   : self.b0_to_use_in_fsldti})
         d.update({'options_T1'            : self.options_T1})
         return d
 

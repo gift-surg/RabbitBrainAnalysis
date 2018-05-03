@@ -1664,6 +1664,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    sp.b0_to_use_in_fsldti = 3
     sp.options_T1 = {'roi_mask': '1305',  # can be 'slim', 'pivotal' or a string atlas subject name
                      'crop_roi': False,
                      'reg_mask': 0,  # can be the total number of gaussians, or 0 if you want to use 'quartile'

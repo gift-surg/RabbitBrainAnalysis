@@ -6,8 +6,10 @@ from os.path import join as jph
 import pickle
 
 import numpy as np
+import nibabel as nib
 
 from LABelsToolkit.tools.aux_methods.sanity_checks import check_path_validity
+from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
 from LABelsToolkit.main import LABelsToolkit
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, num_cores_run
@@ -268,26 +270,85 @@ def process_DWI_per_subject(sj, controller):
     if controller['fsl tensor fitting']:
         print('- fsl tensor fitting {}'.format(sj))
         pfi_dwi_eddy_corrected = jph(pfo_tmp, sj + '_DWI_eddy.nii.gz')
-        pfi_bvals = jph(pfo_input_sj_DWI, sj + '_DWI_DwEffBval.txt')
-        pfi_bvects = jph(pfo_input_sj_DWI, sj + '_DWI_DwGradVec.txt')
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
-        assert check_path_validity(pfi_dwi_eddy_corrected)
-        assert os.path.exists(pfi_bvals)
-        assert os.path.exists(pfi_bvects)
-        assert check_path_validity(pfi_roi_mask)
-        pfi_analysis_fsl = jph(pfo_tmp, 'fsl_fit_' + sj)
-        here = os.getcwd()
-        cmd0 = 'cd {}'.format(pfo_tmp)
-        cmd1 = 'dtifit -k {0} -b {1} -r {2} -m {3} ' \
-               '-w --save_tensor -o {4}'.format(pfi_dwi_eddy_corrected,
-                                                pfi_bvals,
-                                                pfi_bvects,
-                                                pfi_roi_mask,
-                                                pfi_analysis_fsl)
-        cmd2 = 'cd {}'.format(here)
-        print_and_run(cmd0)
-        print_and_run(cmd1)
-        print_and_run(cmd2)
+
+        if sj_parameters['b0_to_use_in_fsldti'] > 0:
+
+            b0_tp_to_keep = sj_parameters['b0_to_use_in_fsldti']
+
+            # out of the initial n uses only the one at the selected timepoint.
+            pfi_bvals = jph(pfo_input_sj_DWI, sj + '_DWI_DwEffBval.txt')
+            pfi_bvects = jph(pfo_input_sj_DWI, sj + '_DWI_DwGradVec.txt')
+
+            bvals  = np.loadtxt(pfi_bvals)
+            bvects = np.loadtxt(pfi_bvects)
+
+            num_bzeros = np.sum(bvals == bvals[0])
+
+            assert b0_tp_to_keep < num_bzeros
+
+            bvals_new = np.concatenate([[bvals[0]], bvals[num_bzeros:]])
+            bvect_new = np.vstack([bvects[0, :].reshape(1, -1), bvects[num_bzeros:, :]])
+
+            pfi_bvals_new = jph(pfo_tmp, '{}_DWI_DwEffBval_s0tp{}.txt'.format(sj, b0_tp_to_keep))
+            pfi_bvects_new = jph(pfo_tmp, '{}_DWI_DwGradVec_s0tp{}.txt'.format(sj, b0_tp_to_keep))
+
+            np.savetxt(pfi_bvals_new, bvals_new)
+            np.savetxt(pfi_bvects_new, bvect_new)
+
+            im_eddy_corrected = nib.load(pfi_dwi_eddy_corrected)
+
+            x, y, z, t = im_eddy_corrected.shape
+
+            data_only_one_tp = np.concatenate([im_eddy_corrected.get_data()[..., b0_tp_to_keep].reshape(x, y, z, -1),
+                                               im_eddy_corrected.get_data()[..., num_bzeros:]] , axis=3)
+
+            np.testing.assert_array_equal(data_only_one_tp.shape, [x, y, z, t - num_bzeros + 1])
+
+            im_eddy_corrected_only_one_b0_tp = set_new_data(im_eddy_corrected, data_only_one_tp)
+
+            pfi_dwi_eddy_corrected_new = jph(pfo_tmp, '{}_DWI_eddy_s0tp{}.nii.gz'.format(sj, b0_tp_to_keep))
+            nib.save(im_eddy_corrected_only_one_b0_tp, pfi_dwi_eddy_corrected_new)
+
+            assert check_path_validity(pfi_dwi_eddy_corrected)
+            assert os.path.exists(pfi_bvals)
+            assert os.path.exists(pfi_bvects)
+            assert check_path_validity(pfi_roi_mask)
+            pfi_analysis_fsl = jph(pfo_tmp, 'fsl_fit_' + sj)
+            here = os.getcwd()
+            cmd0 = 'cd {}'.format(pfo_tmp)
+            cmd1 = 'dtifit -k {0} -b {1} -r {2} -m {3} ' \
+                   '-w --save_tensor -o {4}'.format(pfi_dwi_eddy_corrected_new,
+                                                    pfi_bvals_new,
+                                                    pfi_bvects_new,
+                                                    pfi_roi_mask,
+                                                    pfi_analysis_fsl)
+            cmd2 = 'cd {}'.format(here)
+            print_and_run(cmd0)
+            print_and_run(cmd1)
+            print_and_run(cmd2)
+
+        else:
+            pfi_bvals = jph(pfo_input_sj_DWI, sj + '_DWI_DwEffBval.txt')
+            pfi_bvects = jph(pfo_input_sj_DWI, sj + '_DWI_DwGradVec.txt')
+
+            assert check_path_validity(pfi_dwi_eddy_corrected)
+            assert os.path.exists(pfi_bvals)
+            assert os.path.exists(pfi_bvects)
+            assert check_path_validity(pfi_roi_mask)
+            pfi_analysis_fsl = jph(pfo_tmp, 'fsl_fit_' + sj)
+            here = os.getcwd()
+            cmd0 = 'cd {}'.format(pfo_tmp)
+            cmd1 = 'dtifit -k {0} -b {1} -r {2} -m {3} ' \
+                   '-w --save_tensor -o {4}'.format(pfi_dwi_eddy_corrected,
+                                                    pfi_bvals,
+                                                    pfi_bvects,
+                                                    pfi_roi_mask,
+                                                    pfi_analysis_fsl)
+            cmd2 = 'cd {}'.format(here)
+            print_and_run(cmd0)
+            print_and_run(cmd1)
+            print_and_run(cmd2)
         del pfi_dwi_eddy_corrected, pfi_bvals, pfi_bvects, pfi_roi_mask, pfi_analysis_fsl, cmd0, cmd1, cmd2
 
     if controller['adjust dti-based mod']:
@@ -389,6 +450,7 @@ def process_DWI_per_subject(sj, controller):
             print_and_run(cmd)
         del pfi_v1, pfi_s0, pfi_FA, pfi_MD, pfi_v1_new, pfi_s0_new, pfi_FA_new, pfi_MD_new
 
+
 def process_DWI_from_list(subj_list, controller):
 
     print '\n\n Processing DWI subjects in {} \n'.format(subj_list)
@@ -407,11 +469,11 @@ if __name__ == '__main__':
                       'cut mask S0'           : False,
                       'correct slope'         : False,
                       'eddy current'          : False,
-                      'fsl tensor fitting'    : False,
-                      'adjust dti-based mod'  : False,
-                      'bfc S0'                : False,
-                      'create lesion mask'    : False,
-                      'create reg masks'      : False,
+                      'fsl tensor fitting'    : True,
+                      'adjust dti-based mod'  : True,
+                      'bfc S0'                : True,
+                      'create lesion mask'    : True,
+                      'create reg masks'      : True,
                       'save results'          : True}
 
     lsm = ListSubjectsManager()
@@ -422,9 +484,12 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['2502']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    # lsm.input_subjects = ['12402']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
+
+    lsm.input_subjects = ['12402']
+
     lsm.update_ls()
 
     process_DWI_from_list(lsm.ls, controller_DWI)
