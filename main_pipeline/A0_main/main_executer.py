@@ -184,13 +184,13 @@ def main_runner(subj_list):
 
         print('\nStep A4\n')
 
-        controller_A4 = {'Force_reset': True,
-                         'Volumes_per_region': True,
-                         'FA_per_region': True,
-                         'MD_per_region': True,
-                         'Volumes_per_region_stx': True,
-                         'FA_per_region_stx': True,
-                         'MD_per_region_stx': True,
+        controller_A4 = {'Force_reset'             : True,
+                         'Volumes_per_region'      : True,
+                         'FA_per_region'           : True,
+                         'MD_per_region'           : True,
+                         'Volumes_per_region_stx'  : True,
+                         'FA_per_region_stx'       : True,
+                         'MD_per_region_stx'       : True,
                          }
 
         generate_reports_from_list(subj_list, controller_A4)
@@ -229,8 +229,10 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
 
     # lsm.input_subjects = ['1203', '1305', '1404', '1507', '1510']
-    lsm.input_subjects = ['1702', '1805', '2002', '2502', '3301', '3404']
-    
+    # lsm.input_subjects = ['1702', '1805', '2002', '2502', '3301', '3404']
+
+    lsm.input_subjects = ['12309', ]
+
     lsm.update_ls()
 
     print(lsm.ls)

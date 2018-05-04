@@ -50,11 +50,17 @@ def share_from_subject_list(sj_list, pfo_folder_destination, share):
 
 
 if __name__ == '__main__':
-    stuff_to_share = {'folders' : ['mod', 'segm', 'report'],
+    stuff_to_share = {'folders' : ['mod', 'segm', 'report'],  # 'mod', 'segm',
                       'stereotaxic' : True}
 
-    destination_folder = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/study/0_new_subjects'
+    destination_folder = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/study/ACS01'
 
-    sj_to_share = ['12307', '12308', '12402', '12504', '12505', '12607', '12608', '12609', '12610']
+    assert os.path.exists(destination_folder)
+
+    # sj_to_share = ['12307', '12308', '12402', '12504', '12505', '12607', '12608', '12609', '12610']
+
+    # sj_to_share = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
+
+    sj_to_share = ['12309']
 
     share_from_subject_list(sj_to_share, destination_folder, stuff_to_share)

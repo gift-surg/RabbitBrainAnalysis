@@ -272,9 +272,10 @@ def process_DWI_per_subject(sj, controller):
         pfi_dwi_eddy_corrected = jph(pfo_tmp, sj + '_DWI_eddy.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
 
-        if sj_parameters['b0_to_use_in_fsldti'] > 0:
+        if isinstance(sj_parameters['b0_to_use_in_fsldti'], list):
 
-            b0_tp_to_keep = sj_parameters['b0_to_use_in_fsldti']
+            b0_tps_to_keep = sj_parameters['b0_to_use_in_fsldti']
+            tag = str(b0_tps_to_keep).replace('[', '').replace(']', '').replace(',', '').replace(' ', '_')
 
             # out of the initial n uses only the one at the selected timepoint.
             pfi_bvals = jph(pfo_input_sj_DWI, sj + '_DWI_DwEffBval.txt')
@@ -285,13 +286,13 @@ def process_DWI_per_subject(sj, controller):
 
             num_bzeros = np.sum(bvals == bvals[0])
 
-            assert b0_tp_to_keep < num_bzeros
+            assert len(b0_tps_to_keep) < num_bzeros
 
-            bvals_new = np.concatenate([[bvals[0]], bvals[num_bzeros:]])
-            bvect_new = np.vstack([bvects[0, :].reshape(1, -1), bvects[num_bzeros:, :]])
+            bvals_new = np.concatenate([[bvals[0], ] * len(b0_tps_to_keep) , bvals[num_bzeros:]])
+            bvect_new = np.vstack([bvects[0, :].reshape(1, -1), ] * len(b0_tps_to_keep) + [bvects[num_bzeros:, :]])
 
-            pfi_bvals_new = jph(pfo_tmp, '{}_DWI_DwEffBval_s0tp{}.txt'.format(sj, b0_tp_to_keep))
-            pfi_bvects_new = jph(pfo_tmp, '{}_DWI_DwGradVec_s0tp{}.txt'.format(sj, b0_tp_to_keep))
+            pfi_bvals_new = jph(pfo_tmp, '{}_DWI_DwEffBval_s0tp{}.txt'.format(sj, tag))
+            pfi_bvects_new = jph(pfo_tmp, '{}_DWI_DwGradVec_s0tp{}.txt'.format(sj, tag))
 
             np.savetxt(pfi_bvals_new, bvals_new)
             np.savetxt(pfi_bvects_new, bvect_new)
@@ -300,14 +301,14 @@ def process_DWI_per_subject(sj, controller):
 
             x, y, z, t = im_eddy_corrected.shape
 
-            data_only_one_tp = np.concatenate([im_eddy_corrected.get_data()[..., b0_tp_to_keep].reshape(x, y, z, -1),
+            data_only_one_tp = np.concatenate([im_eddy_corrected.get_data()[..., b0_tps_to_keep].reshape(x, y, z, -1),
                                                im_eddy_corrected.get_data()[..., num_bzeros:]] , axis=3)
 
-            np.testing.assert_array_equal(data_only_one_tp.shape, [x, y, z, t - num_bzeros + 1])
+            np.testing.assert_array_equal(data_only_one_tp.shape, [x, y, z, t - num_bzeros + len(b0_tps_to_keep)])
 
             im_eddy_corrected_only_one_b0_tp = set_new_data(im_eddy_corrected, data_only_one_tp)
 
-            pfi_dwi_eddy_corrected_new = jph(pfo_tmp, '{}_DWI_eddy_s0tp{}.nii.gz'.format(sj, b0_tp_to_keep))
+            pfi_dwi_eddy_corrected_new = jph(pfo_tmp, '{}_DWI_eddy_s0tp{}.nii.gz'.format(sj, tag))
             nib.save(im_eddy_corrected_only_one_b0_tp, pfi_dwi_eddy_corrected_new)
 
             assert check_path_validity(pfi_dwi_eddy_corrected)

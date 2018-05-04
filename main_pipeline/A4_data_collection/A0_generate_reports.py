@@ -34,11 +34,6 @@ def generate_reports_for_subject(sj, controller, ldm):
     labels_list = label_descriptor_dict.keys()
     labels_names = [label_descriptor_dict[k][2].replace(' ', '') for k in label_descriptor_dict.keys()]
 
-    labels_nums = [label_descriptor_dict[k][2].replace(' ', '') for k in label_descriptor_dict.keys()]
-
-    print labels_names
-    print labels_list
-
     # --- paths to parameters and folders
 
     print('\nCollect report for subject {} started.\n'.format(sj))
@@ -146,6 +141,8 @@ def generate_reports_for_subject(sj, controller, ldm):
 
     pfi_segm_stx = jph(pfo_sj_segm_stx, '{}_segm_man.nii.gz'.format(sj))
     if not os.path.exists(pfi_segm_stx):
+        pfi_segm_stx = jph(pfo_sj_segm_stx, '{}_segm.nii.gz'.format(sj))
+    if not os.path.exists(pfi_segm_stx):
         pfi_segm_stx = jph(pfo_sj_segm_stx, 'automatic', '{}_{}.nii.gz'.format(sj, 'MV_P2'))
 
     assert os.path.exists(pfi_segm_stx)
@@ -240,20 +237,20 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['12504', '12505', '12607']
     # lsm.input_subjects = ['12608', '12609', '12610']
 
-    lsm.input_subjects   = ['12307',]  # '12308', '12402', '12504', '12505', '12607', '12608', '12609', '12610']  # ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
+    lsm.input_subjects   = ['1201']  # '12308', '12402', '12504', '12505', '12607', '12608', '12609', '12610']  # ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
 
     lsm.update_ls()
 
     print(lsm.ls)
 
-    controller_ = {'Force_reset'              : False,
-                   'Volumes_per_region'       : False,
-                   'FA_per_region'            : False,
-                   'MD_per_region'            : False,
-                   'Volumes_per_region_stx'   : False,
-                   'FA_per_region_stx'        : False,
-                   'MD_per_region_stx'        : False,
+    controller_ = {'Force_reset'              : True,
+                   'Volumes_per_region'       : True,
+                   'FA_per_region'            : True,
+                   'MD_per_region'            : True,
+                   'Volumes_per_region_stx'   : True,
+                   'FA_per_region_stx'        : True,
+                   'MD_per_region_stx'        : True,
                    }
 
     generate_reports_from_list(lsm.ls, controller_)

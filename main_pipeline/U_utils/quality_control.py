@@ -131,11 +131,11 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
 
-    lsm.input_subjects = ['12307', '12402']
+    lsm.input_subjects = ['12309']
 
     lsm.update_ls()
 
-    coordinates_ = 'stereotaxic'
+    coordinates_ = 'original'
     print('Quality control for subjects \n{}'.format(lsm.ls))
 
     open_from_list_subject(lsm.ls, coordinates_)
