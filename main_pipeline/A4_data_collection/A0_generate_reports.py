@@ -13,11 +13,11 @@ import nibabel as nib
 from os.path import join as jph
 import pickle
 
-from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
-from main_pipeline.A0_main.main_controller import ListSubjectsManager
-
 from LABelsToolkit.tools.caliber.volumes_and_values import get_volumes_per_label
 from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
+
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
+from main_pipeline.A0_main.main_controller import ListSubjectsManager
 
 
 def generate_reports_for_subject(sj, controller, ldm):
