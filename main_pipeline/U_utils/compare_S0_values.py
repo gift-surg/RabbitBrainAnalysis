@@ -94,6 +94,8 @@ def from_sj_list_to_S0_graphs_via_structs(sj_list):
 
         ax.errorbar(range(k, k + num_tp), struct_sj[1, :], yerr=[struct_sj[2, :], struct_sj[0, :]], fmt='--o')
 
+        # ax.errorbar(range(k, k + num_tp), struct_sj[1, :], fmt='--o')
+
         k += num_tp
 
     # xticks_minor = [1, 5, 7, 9, 11]
@@ -104,7 +106,7 @@ def from_sj_list_to_S0_graphs_via_structs(sj_list):
     ax.set_xticks(xticks)
     ax.set_xticklabels(sj_list)
 
-    ax.set_title('Mean and interquartile S0 below CC in DWI')
+    ax.set_title('Median (quartiles) S0 below CC in DWI')
     ax.set_xlabel('Subject Id')
     ax.set_ylabel('S0 values')
 
@@ -150,9 +152,16 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610']
+    # lsm.input_subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610']
+
+    lsm.input_subjects = ['12402', '12607', '12307', '12608', '12504', '12609', '12308', '12610', '12505', '12309']
+
 
     lsm.update_ls()
+
+    print(lsm.ls)
+
+    # subjects = ['12402', '12607', '12307', '12608', '12504', '12609', '12308', '12610', '12505', '12309']
 
     for sj_ in lsm.ls:
         if False:
