@@ -331,11 +331,16 @@ def process_T1_per_subject(sj, step):
             assert check_path_validity(pfi_roi_mask)
             pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
             percentile = sj_parameters['T1_window_percentile']
+
+            median_filter = sj_parameters['options_T1']['median_filter']
             percentile_lesion_mask_extractor(im_input_path=pfi_3d_bias_field_corrected,
                                              im_output_path=pfi_lesion_mask,
                                              im_mask_foreground_path=pfi_roi_mask,
                                              percentiles=percentile,
-                                             safety_on=False)
+                                             safety_on=False,
+                                             median_filter=median_filter,
+                                             pfo_tmp=pfo_tmp
+                                             )
 
             # final tuning:
             pfi_registration_mask = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')

@@ -5,6 +5,7 @@ from scipy.stats import norm
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 from sklearn.mixture import GaussianMixture
+from scipy.signal import medfilt
 
 from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
 from tools.definitions import root_dir
@@ -156,7 +157,15 @@ def normal_lesion_mask_extractor(im_input_path, im_output_path, im_mask_foregrou
 
 
 def percentile_lesion_mask_extractor(im_input_path, im_output_path, im_mask_foreground_path, percentiles,
-                                     safety_on=False):
+                                     safety_on=False, median_filter=False, pfo_tmp=None):
+    if median_filter:
+        im_input_name = os.path.basename(im_input_path).split('.')[0]
+        im_input_path_filtered = os.path.join(pfo_tmp, '{}_filtered.nii.gz'.format(im_input_name))
+        im = nib.load(im_input_path)
+        im_fil = set_new_data(im, medfilt(im.get_data()))
+        nib.save(im_fil, im_input_path_filtered)
+        im_input_path = im_input_path_filtered
+
     low_thr, up_thr = get_percentiles_range(im_input_path, percentiles=percentiles)
     cmd = '''seg_maths {0} -thr {3} {1};
              seg_maths {1} -uthr {4} {1};
@@ -164,7 +173,7 @@ def percentile_lesion_mask_extractor(im_input_path, im_output_path, im_mask_fore
              seg_maths {1} -add {2} {1};
              seg_maths {1} -replace 2 0 {1};
              seg_maths {1} -ero 0.7 {1};
-             seg_maths {1} -dil 1 {1};
+             seg_maths {1} -dil 2 {1};
              seg_maths {1} -mul {2} {1};
           '''.format(im_input_path, im_output_path, im_mask_foreground_path, low_thr, up_thr)
     print cmd

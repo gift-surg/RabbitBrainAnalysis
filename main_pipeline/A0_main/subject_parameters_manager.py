@@ -62,6 +62,7 @@ class SubjectParameters(object):
         self.options_T1            = {'roi_mask' : '1305',  # can be 'slim', 'pivotal' or a string atlas subject name if you want to use a specific subject.
                                       'crop_roi' : False,
                                       'reg_mask' : 0,  # can be the total number of gaussians, or 0 if you want to use the given percentile
+                                      'median_filter' : False
                                     }
 
     def get_as_dict(self):
