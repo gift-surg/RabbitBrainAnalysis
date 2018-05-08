@@ -417,7 +417,8 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['4901']
+    # lsm.input_subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
+    lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
     lsm.update_ls()
 
     process_T1_from_list(lsm.ls, controller_steps)

@@ -33,7 +33,7 @@ def main_runner(subj_list):
     steps = {'reset_parameters'  : False,
              'step_A1'           : False,
              'step_A2_T1'        : False,
-             'step_A2_DWI'       : True,
+             'step_A2_DWI'       : False,
              'step_A2_MSME'      : False,
              'step_A2_T2maps'    : False,
              'step_A2_g_ratio'   : False,
@@ -231,7 +231,10 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['1203', '1305', '1404', '1507', '1510']
     # lsm.input_subjects = ['1702', '1805', '2002', '2502', '3301', '3404']
 
-    lsm.input_subjects = ['4901', ]
+    # lsm.input_subjects = ['13108', ]
+
+    # lsm.input_subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
+    lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
 
     lsm.update_ls()
 

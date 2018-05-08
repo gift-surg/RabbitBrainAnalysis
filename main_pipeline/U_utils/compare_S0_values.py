@@ -39,7 +39,7 @@ def get_values_below_S0_in_DWI_for_subject(sj):
     values_below_S0_tps = OrderedDict()
 
     for tp in range(S0_timepoints):
-        print('--- {}'.format(tp))
+        print('--- timepoint {}'.format(tp))
         vals_below = im_dwi.get_data()[im_segm.get_data() == 218, tp].flatten()
 
         values_below_S0_tps.update({'tp{}'.format(tp) : vals_below})
@@ -92,9 +92,9 @@ def from_sj_list_to_S0_graphs_via_structs(sj_list):
         struct_sj = np.loadtxt(pfi_struct)
         num_tp = struct_sj.shape[1]
 
-        ax.errorbar(range(k, k + num_tp), struct_sj[1, :], yerr=[struct_sj[2, :], struct_sj[0, :]], fmt='--o')
+        # ax.errorbar(range(k, k + num_tp), struct_sj[1, :], yerr=[struct_sj[2, :], struct_sj[0, :]], fmt='--o')
 
-        # ax.errorbar(range(k, k + num_tp), struct_sj[1, :], fmt='--o')
+        ax.errorbar(range(k, k + num_tp), struct_sj[1, :], fmt='--o')
 
         k += num_tp
 
@@ -154,9 +154,9 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610']
 
-    lsm.input_subjects = ['12402', '12607', '12307', '12608', '12504', '12609', '12308', '12610', '12505', '12309']
-
-
+    # lsm.input_subjects = ['12402', '12607', '12307', '12608', '12504', '12609', '12308', '12610', '12505', '12309',]
+    lsm.input_subjects = ['12402', '12607', '12307', '12608', '12504', '12609', '12308', '12610', '12505', '12309'] + ['13103', '13108', '13301', '13307', '13401', '13403', '13404'] + ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
+    # lsm.input_subjects = ['13108']
     lsm.update_ls()
 
     print(lsm.ls)

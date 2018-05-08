@@ -12,7 +12,7 @@ from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescri
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
 
 
-root_output = jph(root_study_rabbits, 'B_stats', 'PTB_multi_atlas')
+root_output = jph(root_study_rabbits, 'B_stats', 'ACS_all')
 
 
 def subject_comparison_total_volume(sj_list, controller, subjects_grouping=None, coord_system='original'):
@@ -301,8 +301,8 @@ if __name__ == '__main__':
     # # subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
     # subjects_grouping_ = [4, 4, 1]
 
-    subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '2002', '3301', '1702', '1805', '2502', '3404']
-    subjects_grouping_ = [8, 4]
+    subjects = ['12307' , '12308', '12504', '12505', '12607', '12608', '12609', '12610', '12309', '12402'] + ['13103', '13108', '13301', '13307', '13401', '13403', '13404'] + ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
+    subjects_grouping_ = [4, 4, 1, 1, 14]
 
     ldm = LdM(pfi_labels_descriptor)
 
