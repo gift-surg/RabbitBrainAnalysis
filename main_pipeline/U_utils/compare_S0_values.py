@@ -11,7 +11,7 @@ from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 
 
-root_output = jph(root_study_rabbits, 'B_stats', 'S0ComparisonCC')
+root_output = jph(root_study_rabbits, 'B_stats', 'S0Comparison_denoised')
 S0_timepoints = 7
 
 
@@ -155,8 +155,8 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610']
 
     # lsm.input_subjects = ['12402', '12607', '12307', '12608', '12504', '12609', '12308', '12610', '12505', '12309',]
-    lsm.input_subjects = ['12402', '12607', '12307', '12608', '12504', '12609', '12308', '12610', '12505', '12309'] + ['13103', '13108', '13301', '13307', '13401', '13403', '13404'] + ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
-    # lsm.input_subjects = ['13108']
+    # lsm.input_subjects = ['12402', '12607', '12307', '12608', '12504', '12609', '12308', '12610', '12505', '12309'] + ['13103', '13108', '13301', '13307', '13401', '13403', '13404'] + ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
+    lsm.input_subjects = ['12308', '12308666']
     lsm.update_ls()
 
     print(lsm.ls)

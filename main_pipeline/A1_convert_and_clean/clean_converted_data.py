@@ -75,6 +75,7 @@ def clean_a_study(pfo_study):
                     if 'subscan_1' in fi_name:
                         print_and_run('rm {}'.format(jph(pfo_experiment_p, fi)))
                     else:
+                        print(fi_name)
                         # replace the second element (experiment number) separated between '_' by the acquisition_method
                         fi_name_components = fi_name.split('_')
                         fi_name_components[1] = acquisition_method
@@ -141,7 +142,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['4303', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['1201', ] # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

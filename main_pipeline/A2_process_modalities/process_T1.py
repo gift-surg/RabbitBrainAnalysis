@@ -401,13 +401,13 @@ def process_T1_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process T1, local run. ')
 
-    controller_steps = {'orient_to_standard'       : False,
-                        'create_roi_masks'         : False,
-                        'adjust_mask'              : False,
-                        'cut_masks'                : False,
-                        'step_bfc'                 : False,
+    controller_steps = {'orient_to_standard'       : True,
+                        'create_roi_masks'         : True,
+                        'adjust_mask'              : True,
+                        'cut_masks'                : True,
+                        'step_bfc'                 : True,
                         'create_reg_mask'          : True,
-                        'save_results'             : False}
+                        'save_results'             : True}
 
     lsm = ListSubjectsManager()
 
@@ -418,7 +418,8 @@ if __name__ == '__main__':
     lsm.execute_ACS_ex_vivo  = False
 
     # lsm.input_subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
-    lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
+    # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
+    lsm.input_subjects = ['4406', ]
     lsm.update_ls()
 
     process_T1_from_list(lsm.ls, controller_steps)
