@@ -13,7 +13,7 @@ root_MASKs           = jph(root_main_AFD_analysis, 'MASKs')
 root_SEGMs           = jph(root_main_AFD_analysis, 'SEGMs')
 root_intermediate    = jph(root_main_AFD_analysis, 'intermediate')
 root_output          = jph(root_main_AFD_analysis, 'output')
-tmp_folder           = jph(root_main_AFD_analysis, 'z_tmp')
+root_tmp             = jph(root_main_AFD_analysis, 'z_tmp')
 
 
 if __name__ == '__main__':
@@ -23,4 +23,4 @@ if __name__ == '__main__':
     os.system('mkdir {}'.format(root_SEGMs))
     os.system('mkdir {}'.format(root_intermediate))
     os.system('mkdir {}'.format(root_output))
-    os.system('mkdir {}'.format(tmp_folder))
+    os.system('mkdir {}'.format(root_tmp))

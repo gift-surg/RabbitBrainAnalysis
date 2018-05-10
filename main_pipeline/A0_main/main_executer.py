@@ -31,7 +31,7 @@ def main_runner(subj_list):
     # Set steps
 
     steps = {'reset_parameters'  : False,
-             'step_A1'           : True,
+             'step_A1'           : False,
              'step_A2_T1'        : True,
              'step_A2_DWI'       : True,
              'step_A2_MSME'      : False,
@@ -237,12 +237,12 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
 
     # ex vivo non in the Multi_atlas
-    # lsm.input_subjects = ['12001', '1505', '2503', '2608']  # A
+    # lsm.input_subjects = ['12001', '1505', '2503', '2608']  # Done
     # lsm.input_subjects = ['2702', '3303', '4302', '4303', '4304']  # B
     # lsm.input_subjects = ['4305', '4501', '4504', '4507']   # C - 4406 excluded as no T1 included
     # lsm.input_subjects = ['4601', '4602', '4603', ]
 
-    lsm.input_subjects = ['4901', '4903', '5001']  # New subjects - Do from T1
+    lsm.input_subjects = ['4901', '4903', '5001']  # A New subjects - Do from T1
 
     lsm.update_ls()
 
