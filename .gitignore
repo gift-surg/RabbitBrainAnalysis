@@ -12,3 +12,4 @@ nohup.out
 Job*
 output
 dwipreproc-*
+dwi2response-tmp-*

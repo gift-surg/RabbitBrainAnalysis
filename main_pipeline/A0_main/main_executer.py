@@ -242,7 +242,12 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['4305', '4501', '4504', '4507']   # C - 4406 excluded as no T1 included
     # lsm.input_subjects = ['4601', '4602', '4603', ]
 
-    lsm.input_subjects = ['4901', '4903', '5001']  # A New subjects - Do from T1
+    # lsm.input_subjects = ['4901', ]
+
+    # lsm.input_subjects = ['2702', '3303', '4302']  # from segmentation
+    lsm.input_subjects = ['5007', ]  # from T1 on - B  Still do to : '5003', '4504'
+
+    # lsm.input_subjects = ['4501', '4305', '4304']  # from DWI - A
 
     lsm.update_ls()
 

@@ -14,6 +14,8 @@ root_SEGMs           = jph(root_main_AFD_analysis, 'SEGMs')
 root_intermediate    = jph(root_main_AFD_analysis, 'intermediate')
 root_output          = jph(root_main_AFD_analysis, 'output')
 root_tmp             = jph(root_main_AFD_analysis, 'z_tmp')
+root_fod             = jph(root_main_AFD_analysis, 'FODs')
+root_fod_template    = jph(root_main_AFD_analysis, 'FODs_template')
 
 
 if __name__ == '__main__':
@@ -24,3 +26,5 @@ if __name__ == '__main__':
     os.system('mkdir {}'.format(root_intermediate))
     os.system('mkdir {}'.format(root_output))
     os.system('mkdir {}'.format(root_tmp))
+    os.system('mkdir {}'.format(root_fod))
+    os.system('mkdir {}'.format(root_fod_template))
