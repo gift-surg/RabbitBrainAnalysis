@@ -1,5 +1,6 @@
 """
-
+Module to share data on the dropbox folder with Hannes.
+Here is the
 """
 import os
 from os.path import join as jph
@@ -26,20 +27,29 @@ def share_subject(sj, pfo_folder_destination, share):
 
     root_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
 
-    assert os.path.exists(root_subject)
+    if not os.path.exists(root_subject):
+        print('Sj {}. Data folder {} does not exist.'.format(sj, root_subject))
+        return
 
     pfo_dest_sj = jph(pfo_folder_destination, sj)
 
-    os.system('rm -r {}'.format(pfo_dest_sj))
+    if os.path.exists(pfo_dest_sj):
+        if share['force']:
+            os.system('rm -r {}'.format(pfo_dest_sj))
+        else:
+            print('Sj {} already exists, not to be overwritten.'.format(sj))
+            return
+
     os.system('mkdir {}'.format(pfo_dest_sj))
 
     if share['folders'] == 'only_reports' :
+        print('Sj {} sharing only reports. '.format(sj))
         msg = ''
         pfo_report     = jph(root_subject, 'report')
         pfo_report_stx = jph(root_subject, 'stereotaxic', 'report')
 
         if not os.path.exists(pfo_report):
-            msg += 'Subject {} does not have a report folder\n'.format(sj)
+            msg += '- Sj {} does not have a report folder\n'.format(sj)
         else:
             pfo_report_destination = jph(pfo_dest_sj, 'report')
             print_and_run('cp -r {} {}'.format(pfo_report, pfo_report_destination), short_path_output=False)
@@ -57,6 +67,7 @@ def share_subject(sj, pfo_folder_destination, share):
             print(msg)
 
     else:
+        print('Sj {} sharing all data. '.format(sj))
         for f in share['folders']:
             pfo_mod_original = jph(root_subject, f)
             print_and_run('cp -r {} {}'.format(pfo_mod_original, pfo_dest_sj), short_path_output=False)
@@ -72,6 +83,7 @@ def share_subject(sj, pfo_folder_destination, share):
 
 def share_from_subject_list(sj_list, pfo_folder_destination, share):
 
+    print('Share data of subjects {} with Hannes. \n'.format(sj_list))
     for sj in sj_list:
         share_subject(sj, pfo_folder_destination=pfo_folder_destination, share=share)
 
@@ -85,12 +97,15 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
+    # lsm.input_subjects = ['4406', '4501', '4504', '4507', '4601', '4602', '4603', '4901', '4903', '5001', '5003', '5007']
+
     lsm.update_ls()
 
     print lsm.ls
 
     stuff_to_share = {'stereotaxic' : True,
-                      'folders': 'only_reports'  # can be 'only_reports' or list of folders as ['mod', 'segm', 'report']
+                      'folders': 'only_reports',  # can be 'only_reports' or list of folders as ['mod', 'segm', 'report']
+                      'force' : False
                       }
 
     destination_folder = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/study/PTBExVivo'

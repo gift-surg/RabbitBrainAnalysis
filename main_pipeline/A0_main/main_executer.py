@@ -245,12 +245,18 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['4901', ]
 
     # lsm.input_subjects = ['2702', '3303', '4302']  # from segmentation
-    lsm.input_subjects = ['5007', ]  # from T1 on - B  Still do to : '5003', '4504'
+    # lsm.input_subjects = ['5007', ]  # B from T1 on
 
-    # lsm.input_subjects = ['4501', '4305', '4304']  # from DWI - A
+    lsm.input_subjects = ['5003', '4504']  # C from T1 after break.
+
+    # lsm.input_subjects = ['4501', '4305', '4304']  # A from DWI - A
 
     lsm.update_ls()
 
     print(lsm.ls)
 
+    import time
+    print('on Sleep:')
+    time.sleep(4 * 3600)
+    print('Wake up!')
     main_runner(lsm.ls)
