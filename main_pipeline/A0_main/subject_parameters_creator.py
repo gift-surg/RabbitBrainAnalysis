@@ -283,7 +283,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
-    sp.in_atlas            = True
+    sp.in_atlas               = True
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -322,7 +322,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
-    sp.comment                = ''
+    sp.comment                = 'Bubble parietal and occipital cortex Left'
     sp.in_atlas            = True
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
@@ -342,7 +342,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
-    sp.comment                = ''
+    sp.comment                = 'Bubble parietal left'
     sp.in_atlas            = True
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
@@ -382,7 +382,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
-    sp.comment                = ''
+    sp.comment                = 'Low resolution original T1 (upsampled for template)'
     sp.in_atlas            = True
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
@@ -462,7 +462,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
-    sp.comment                = ''
+    sp.comment                = 'DWI slab-like motion artefact, T1 wrapping artefact'
     sp.in_atlas            = True
     sp.b0_level               = 7
     sp.save_as_txt(pfo_where_to_save)
@@ -483,7 +483,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
+    sp.comment = 'T1 motion and warping artefact, DWI severe motion artefact.'
     sp.in_atlas = False
     sp.b0_level = 7
     sp.save_as_txt(pfo_where_to_save)
@@ -525,7 +525,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
+    sp.comment = 'T1 warping artefacts'
     sp.in_atlas = False
     sp.b0_level = 7
     sp.save_as_txt(pfo_where_to_save)
@@ -567,7 +567,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
+    sp.comment = 'T1 warping artefacts'
     sp.in_atlas = False
     sp.b0_level = 7
     sp.save_as_txt(pfo_where_to_save)
@@ -588,7 +588,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
+    sp.comment = 'T1 warping artefacts'
     sp.in_atlas = False
     sp.b0_level = 7
     sp.save_as_txt(pfo_where_to_save)
@@ -630,7 +630,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
+    sp.comment = 'T1 warping, DWI severe motion'
     sp.in_atlas = False
     sp.b0_level = 7
     sp.save_as_txt(pfo_where_to_save)
@@ -651,7 +651,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
+    sp.comment = 'T1 small warping on cortex, small bubble on medial prefrontal cortex'
     sp.in_atlas = False
     sp.b0_level = 7
     sp.save_as_txt(pfo_where_to_save)
@@ -745,7 +745,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp = SubjectParameters('4901')
     sp.study = 'PTB'
     sp.category = 'ex_vivo'
-    sp.angles = [0, 0, 0]
+    sp.angles = [0, np.pi / 8, 0]
     sp.translation = [0, 0, 0]
     sp.threshold = 0.001
     sp.T1_window_percentile = (74.8, 97)
@@ -771,7 +771,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp = SubjectParameters('4903')
     sp.study = 'PTB'
     sp.category = 'ex_vivo'
-    sp.angles = [0, 0, 0]
+    sp.angles = [0, np.pi / 8, 0]
     sp.translation = [0, 0, 0]
     sp.threshold = 0.001
     sp.T1_window_percentile = (74.8, 97)
@@ -813,7 +813,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp = SubjectParameters('5001')
     sp.study = 'PTB'
     sp.category = 'ex_vivo'
-    sp.angles = [0, 0, 0]
+    sp.angles = [0, np.pi / 12, 0]
     sp.translation = [0, 0, 0]
     sp.threshold = 0.001
     sp.T1_window_percentile = (74.8, 97)
@@ -834,7 +834,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp = SubjectParameters('5003')
     sp.study = 'PTB'
     sp.category = 'ex_vivo'
-    sp.angles = [0, 0, 0]
+    sp.angles = [0, np.pi / 12, 0]
     sp.translation = [0, 0, 0]
     sp.threshold = 0.001
     sp.T1_window_percentile = (74.8, 97)
@@ -855,7 +855,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp = SubjectParameters('5007')
     sp.study = 'PTB'
     sp.category = 'ex_vivo'
-    sp.angles = [0, 0, 0]
+    sp.angles = [0, np.pi / 12, 0]
     sp.translation = [0, 0, 0]
     sp.threshold = 0.001
     sp.T1_window_percentile = (74.8, 97)

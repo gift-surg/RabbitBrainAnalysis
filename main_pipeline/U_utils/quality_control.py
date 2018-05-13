@@ -38,8 +38,10 @@ def open_subject(sj, coordinates, check_dice_if_in_atlas=True):
         pfo_sj_mod = jph(root_subject, 'mod')
         pfo_sj_segm = jph(root_subject, 'segm')
 
-        assert os.path.exists(pfo_sj_mod), pfo_sj_mod
-        assert os.path.exists(pfo_sj_segm), pfo_sj_segm
+        if not os.path.exists(pfo_sj_mod):
+            print('\n\n Not existing {}!!'.format(pfo_sj_mod))
+        if not os.path.exists(pfo_sj_segm):
+            print('\n\n Not existing {}!!'.format(pfo_sj_mod))
 
         # open T1 in one frame:
         cmd = 'itksnap -g {} -o '.format(jph(pfo_sj_mod, '{}_T1.nii.gz'.format(sj)))
@@ -60,8 +62,10 @@ def open_subject(sj, coordinates, check_dice_if_in_atlas=True):
         pfo_sj_mod = jph(root_subject, 'stereotaxic', 'mod')
         pfo_sj_segm = jph(root_subject, 'stereotaxic', 'segm')
 
-        assert os.path.exists(pfo_sj_mod), pfo_sj_mod
-        assert os.path.exists(pfo_sj_segm), pfo_sj_segm
+        if not os.path.exists(pfo_sj_mod):
+            print('\n\n Not existing {}!!'.format(pfo_sj_mod))
+        if not os.path.exists(pfo_sj_segm):
+            print('\n\n Not existing {}!!'.format(pfo_sj_mod))
 
         print pfo_sj_mod
         print pfo_sj_segm
@@ -82,8 +86,10 @@ def open_subject(sj, coordinates, check_dice_if_in_atlas=True):
             pfi_segm_strx = jph(root_subject, 'stereotaxic', 'segm', '{}_segm.nii.gz'.format(sj))
             pfi_segm_from_atlas = jph(root_atlas, sj, 'segm', '{}_segm.nii.gz'.format(sj))
 
-            assert os.path.exists(pfi_segm_strx)
-            assert os.path.exists(pfi_segm_from_atlas)
+            if not os.path.exists(pfi_segm_strx):
+                print('\n\n Not existing {}!!'.format(pfi_segm_strx))
+            if not os.path.exists(pfi_segm_from_atlas):
+                print('\n\n Not existing {}!!'.format(pfi_segm_from_atlas))
 
             lab = LaB()
             glob_dc = lab.measure.global_dist(pfi_segm_strx, pfi_segm_from_atlas, global_metrics=(global_dice_score, ))
@@ -130,9 +136,9 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
 
     # lsm.input_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
-
-    lsm.input_subjects = ['4901']
-
+    #
+    lsm.input_subjects = ['4406', '4501', '4504', '4507', '4601', '4602', '4603', '4901', '4903', '4905', '5001', '5003', '5007']
+    #
     lsm.update_ls()
 
     coordinates_ = 'original'
