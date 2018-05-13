@@ -92,12 +92,12 @@ if __name__ == '__main__':
     lsm = ListSubjectsManager()
 
     lsm.execute_PTB_ex_skull = False
-    lsm.execute_PTB_ex_vivo  = True
+    lsm.execute_PTB_ex_vivo  = False
     lsm.execute_PTB_in_vivo  = False
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    # lsm.input_subjects = ['4406', '4501', '4504', '4507', '4601', '4602', '4603', '4901', '4903', '5001', '5003', '5007']
+    lsm.input_subjects = ['4504', '4501', '4305', '4304', '4302', '5003', '5007']
 
     lsm.update_ls()
 
@@ -105,7 +105,7 @@ if __name__ == '__main__':
 
     stuff_to_share = {'stereotaxic' : True,
                       'folders': 'only_reports',  # can be 'only_reports' or list of folders as ['mod', 'segm', 'report']
-                      'force' : False
+                      'force' : True
                       }
 
     destination_folder = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/study/PTBExVivo'

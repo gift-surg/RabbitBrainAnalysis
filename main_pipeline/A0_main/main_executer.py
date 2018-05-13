@@ -31,7 +31,7 @@ def main_runner(subj_list):
     # Set steps
 
     steps = {'reset_parameters'  : False,
-             'step_A1'           : False,
+             'step_A1'           : True,
              'step_A2_T1'        : True,
              'step_A2_DWI'       : True,
              'step_A2_MSME'      : False,
@@ -209,45 +209,10 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    # lsm.input_subjects = ['4302', '4303', '4304', '4305', '4501', '4504']
-    # lsm.input_subjects = ['0802t1']  # ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']  # , '4305']
-
-    # lsm.input_subjects = ['0802t1', ]
-    # lsm.input_subjects = ['0904t1']
-    # lsm.input_subjects = ['1501t1', ]
-    # lsm.input_subjects = ['12001', ]  # ['1201', '4602', '12001']
-
-    # lsm.input_subjects = ['F1Test', ]  # ['1201', '4602', '12001']
-    # lsm.input_subjects = ['F2Test', ]  # ['1201', '460A_move_to_stereotaxic_coordinates.pyc2', '12001']
-    # lsm.input_subjects = ['12607', ]  # ['1201', '4602', '12001']
-
-    # lsm.input_subjects = ['12307', '12308', '12402']
-    # lsm.input_subjects = ['12504', '12505', '12607']
-    # lsm.input_subjects = ['12608', '12609', '12610']
-
-    # lsm.input_subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
-    # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
-
-    # lsm.input_subjects = ['1203', '1305', '1404', '1507', '1510']
-    # lsm.input_subjects = ['1702', '1805', '2002', '2502', '3301', '3404']
-
-    # lsm.input_subjects = ['13108', ]
-
-    # lsm.input_subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
-    # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
-
-    # ex vivo non in the Multi_atlas
-    # lsm.input_subjects = ['12001', '1505', '2503', '2608']  # Done
-    # lsm.input_subjects = ['2702', '3303', '4302', '4303', '4304']  # B
-    # lsm.input_subjects = ['4305', '4501', '4504', '4507']   # C - 4406 excluded as no T1 included
-    # lsm.input_subjects = ['4601', '4602', '4603', ]
-
-    # lsm.input_subjects = ['4901', ]
-
     # lsm.input_subjects = ['2702', '3303', '4302']  # from segmentation
     # lsm.input_subjects = ['5007', ]  # B from T1 on
 
-    lsm.input_subjects = ['5003', '4504']  # C from T1 after break.
+    lsm.input_subjects = ['4905',]  # C from T1 after break.
 
     # lsm.input_subjects = ['4501', '4305', '4304']  # A from DWI - A
 
@@ -255,8 +220,8 @@ if __name__ == '__main__':
 
     print(lsm.ls)
 
-    import time
-    print('on Sleep:')
-    time.sleep(4 * 3600)
-    print('Wake up!')
+    # import time
+    # print('on Sleep:')
+    # time.sleep(4 * 3600)
+    # print('Wake up!')
     main_runner(lsm.ls)

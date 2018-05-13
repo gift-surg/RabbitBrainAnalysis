@@ -16,6 +16,7 @@ import pickle
 from LABelsToolkit.tools.caliber.volumes_and_values import get_volumes_per_label
 from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
 
+from main_pipeline.A0_main.tag_collector import TagCollector
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 
@@ -208,6 +209,17 @@ def generate_reports_for_subject(sj, controller, ldm):
 
         del im_anat, im_segm
 
+    # ---------------------------
+    # -------- Generate TAG -----
+    # ---------------------------
+    if controller['Generate_tag']:
+        pfi_to_tag                = jph(root_subject, '{}_tag.txt'.format(sj))
+        pfi_to_sj_param_file      = jph(pfo_subjects_parameters, sj)
+        pfi_to_spotter_param_file = jph(root_subject, 'stereotaxic', 'z_SPOT_{}'.format(sj_parameters['study']),
+                                        'SPOT_parameters_records.txt')
+        tg = TagCollector(pfi_to_tag)
+        tg.update_tag(pfi_to_sj_param_file, pfi_to_spotter_param_file)
+
 
 def generate_reports_from_list(sj_list, controller):
     # Load regions with labels_descriptor_manager:
@@ -225,6 +237,7 @@ def generate_reports_from_list(sj_list, controller):
 
 
 if __name__ == '__main__':
+
     lsm = ListSubjectsManager()
 
     lsm.execute_PTB_ex_skull = False
@@ -251,6 +264,7 @@ if __name__ == '__main__':
                    'Volumes_per_region_stx'   : True,
                    'FA_per_region_stx'        : True,
                    'MD_per_region_stx'        : True,
+                   'Generate_tag'             : True
                    }
 
     generate_reports_from_list(lsm.ls, controller_)
