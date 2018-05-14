@@ -4,18 +4,20 @@ import pickle
 import numpy as np
 import nibabel as nib
 
-from LABelsToolkit.main import LABelsToolkit
-from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
-from LABelsToolkit.tools.image_colors_manipulations.relabeller import relabeller
-from LABelsToolkit.tools.aux_methods.sanity_checks import check_path_validity
-
-from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_atlas, num_cores_run, multi_atlas_subjects
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_atlas, num_cores_run, \
+    multi_atlas_subjects, root_atlas_BT, multi_atlas_brain_tissue_subjects
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero, orient2std
 from tools.auxiliary.utils import print_and_run
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_atlas
+from main_pipeline.U_utils.brain_tissue_multi_atlas_manager import extract_brain_tissue_from_multi_atlas
+
+from LABelsToolkit.main import LABelsToolkit
+from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
+from LABelsToolkit.tools.image_colors_manipulations.relabeller import relabeller
+from LABelsToolkit.tools.aux_methods.sanity_checks import check_path_validity
 
 from LABelsToolkit.tools.visualiser.see_volume import see_array
 from LABelsToolkit.tools.detections.get_segmentation import MoG
@@ -75,7 +77,7 @@ def process_T1_per_subject(sj, step):
 
     if step['create_roi_masks']:
 
-        if options['roi_mask'] == 'pivotal' or options['roi_mask'] in multi_atlas_subjects:
+        if options['roi_mask'] == 'pivotal' or options['roi_mask'] in multi_atlas_subjects or options['roi_mask'] == 'BT':
             print('- register roi masks and propagate it with representative {} on {}'.format(options['roi_mask'], sj))
 
             if options['roi_mask'] == 'pivotal':
@@ -94,7 +96,7 @@ def process_T1_per_subject(sj, step):
             assert check_path_validity(pfi_std)
 
             # --- Get the reference masks from the histologically oriented template ---
-           # reference subject:
+            # reference subject:
             pfi_sj_ref_coord_system = jph(root_atlas, reference_subject, 'mod', '{}_T1.nii.gz'.format(reference_subject))
             # original mask
             pfi_reference_roi_mask = jph(root_atlas, reference_subject, 'masks', '{}_roi_mask.nii.gz'.format(reference_subject))
@@ -149,6 +151,7 @@ def process_T1_per_subject(sj, step):
                 pfi_affine_transformation_ref_on_subject,
                 pfi_roi_mask_not_adjusted)
             print_and_run(cmd)
+
             del pfi_std, pfi_sj_ref_coord_system, pfi_reference_roi_mask, \
                 angle_parameter, angles, pfi_sj_ref_coord_system_hd_oriented, pfi_reference_roi_mask_hd_oriented,\
                 pfi_affine_transformation_ref_on_subject, pfi_3d_warped_ref_on_subject, pfi_roi_mask_not_adjusted, cmd
@@ -258,7 +261,29 @@ def process_T1_per_subject(sj, step):
             cmd = 'seg_LabFusion  -in {0} -out {1} -MV '.format(pfi_stack_roi_mask, pfi_roi_mask_not_adjusted_multi)
             print_and_run(cmd)
 
-    if step['adjust_mask']:
+        elif options['roi_mask'] == 'BT':
+            # Robust roi mask and brain tissue extraction from the multi atlas BT (brain tissue multi atlas).
+
+            # INPUT is the target T1, with a pre-mask from the preference subject created in the previous point.
+
+            pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
+            pfi_roi_mask_not_adjusted_from_pivot = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted.nii.gz')
+            assert check_path_validity(pfi_std)
+            assert check_path_validity(pfi_roi_mask_not_adjusted_from_pivot)
+
+            # OUTPUT:
+            pfi_roi_mask_not_adjusted = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted.nii.gz')
+            pfi_brain_mask = jph(pfo_tmp, sj + '_T1_brain_mask_from_BT.nii.gz')
+
+            extract_brain_tissue_from_multi_atlas(target_T1=pfi_std,
+                                                  target_pre_mask=pfi_roi_mask_not_adjusted_from_pivot,
+                                                  root_atlas_BT=root_atlas_BT,
+                                                  multi_atlas_subjects_list=multi_atlas_brain_tissue_subjects,
+                                                  output_roi_mask=pfi_roi_mask_not_adjusted,
+                                                  output_brain_mask=pfi_brain_mask,
+                                                  pfo_tmp=pfo_tmp)
+
+    if step['adjust_mask']:  # if slim, the mask adjustment should be at least + 3 dilation.
         print('- adjust mask {}'.format(sj))
         pfi_roi_mask_not_adjusted = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted_MV.nii.gz')
         if not os.path.exists(pfi_roi_mask_not_adjusted):
@@ -268,7 +293,7 @@ def process_T1_per_subject(sj, step):
         pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
 
         dilation_param = sj_parameters['T1_mask_dilation']
-        if dilation_param < 0:  # if negative use to erode.
+        if dilation_param < 0:  # if negative, erode.
             cmd = 'seg_maths {0} -ero {1} {2}'.format(pfi_roi_mask_not_adjusted,
                                                       -1 * dilation_param,
                                                       pfi_roi_mask)
@@ -323,62 +348,71 @@ def process_T1_per_subject(sj, step):
 
     if step['create_reg_mask']:
 
-        if options['reg_mask'] == 0:
-            print('remove percentiles, values added manually:')
-            pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
-            pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
-            assert check_path_validity(pfi_3d_bias_field_corrected)
-            assert check_path_validity(pfi_roi_mask)
-            pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
-            percentile = sj_parameters['T1_window_percentile']
 
-            median_filter = sj_parameters['options_T1']['median_filter']
-            percentile_lesion_mask_extractor(im_input_path=pfi_3d_bias_field_corrected,
-                                             im_output_path=pfi_lesion_mask,
-                                             im_mask_foreground_path=pfi_roi_mask,
-                                             percentiles=percentile,
-                                             safety_on=False,
-                                             median_filter=median_filter,
-                                             pfo_tmp=pfo_tmp
-                                             )
+        if options['roi_mask'] == 'BT':
+            # roi mask and brain tissue have already been extracted from the previous step.
+            # Here only need to extract the lesion mask and subtract to brain tissue.
 
-            # final tuning:
-            pfi_registration_mask = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
-            cmd = 'seg_maths {0} -sub {1} {2} '.format(pfi_roi_mask, pfi_lesion_mask, pfi_registration_mask)
-            print_and_run(cmd)
-            del pfi_roi_mask, pfi_lesion_mask, pfi_registration_mask, cmd
+            pass
 
-        elif options['reg_mask'] > 0:
-            K = options['reg_mask']
-            print('remove the first (not background) and the last gaussians after MoG fitting, with K = {}.'.format(K))
-            pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
-            pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
-            assert os.path.exists(pfi_3d_bias_field_corrected)
-            assert check_path_validity(pfi_roi_mask)
-            pfi_mog_segm = jph(pfo_tmp, '{}_mog_segm.nii.gz'.format(sj))
-            T1_bfc = nib.load(pfi_3d_bias_field_corrected)
-            roi_mask = nib.load(pfi_roi_mask)
-            c, p = MoG(T1_bfc, K=5, pre_process_median_filter=True, mask_im=roi_mask, pre_process_only_interquartile=True)
-            nib.save(c, '/Users/sebastiano/Desktop/zzz.nii.gz')
-            old_labels = list(range(K))  # [0, 1, 2, 3, 4]
-            new_labels = [1, ] * len(old_labels)
-            new_labels[0], new_labels[1], new_labels[-1] = 0, 0, 0  # [0, 0, 1, ..., 1, 0]
-            im_crisp = set_new_data(c, np.copy(relabeller(c.get_data(), old_labels, new_labels)), new_dtype=np.uint8)
-            nib.save(im_crisp, pfi_mog_segm)
+        else:
 
-            # final tuning:
-            pfi_registration_mask = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
-            cmd0 = 'seg_maths {0} -ero 3 {1}'.format(pfi_mog_segm, pfi_registration_mask)
-            cmd1 = 'seg_maths {0} -fill {0}'.format(pfi_registration_mask)
-            cmd2 = 'seg_maths {0} -dil 3 {0}'.format(pfi_registration_mask)
-            cmd3 = 'seg_maths {0} -fill {0}'.format(pfi_registration_mask)
+            if options['reg_mask'] == 0:
+                print('remove percentiles, values added manually:')
+                pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
+                pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
+                assert check_path_validity(pfi_3d_bias_field_corrected)
+                assert check_path_validity(pfi_roi_mask)
+                pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
+                percentile = sj_parameters['T1_window_percentile']
 
-            print_and_run(cmd0)
-            print_and_run(cmd1)
-            print_and_run(cmd2)
-            print_and_run(cmd3)
+                median_filter = sj_parameters['options_T1']['median_filter']
+                percentile_lesion_mask_extractor(im_input_path=pfi_3d_bias_field_corrected,
+                                                 im_output_path=pfi_lesion_mask,
+                                                 im_mask_foreground_path=pfi_roi_mask,
+                                                 percentiles=percentile,
+                                                 safety_on=False,
+                                                 median_filter=median_filter,
+                                                 pfo_tmp=pfo_tmp
+                                                 )
 
-            del pfi_3d_bias_field_corrected, p, c, T1_bfc, pfi_registration_mask, cmd0, cmd1, cmd2, cmd3
+                # final tuning:
+                pfi_registration_mask = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
+                cmd = 'seg_maths {0} -sub {1} {2} '.format(pfi_roi_mask, pfi_lesion_mask, pfi_registration_mask)
+                print_and_run(cmd)
+                del pfi_roi_mask, pfi_lesion_mask, pfi_registration_mask, cmd
+
+            elif options['reg_mask'] > 0:
+                K = options['reg_mask']
+                print('remove the first (not background) and the last gaussians after MoG fitting, with K = {}.'.format(K))
+                pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
+                pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
+                assert os.path.exists(pfi_3d_bias_field_corrected)
+                assert check_path_validity(pfi_roi_mask)
+                pfi_mog_segm = jph(pfo_tmp, '{}_mog_segm.nii.gz'.format(sj))
+                T1_bfc = nib.load(pfi_3d_bias_field_corrected)
+                roi_mask = nib.load(pfi_roi_mask)
+                c, p = MoG(T1_bfc, K=5, pre_process_median_filter=True, mask_im=roi_mask, pre_process_only_interquartile=True)
+                nib.save(c, '/Users/sebastiano/Desktop/zzz.nii.gz')
+                old_labels = list(range(K))  # [0, 1, 2, 3, 4]
+                new_labels = [1, ] * len(old_labels)
+                new_labels[0], new_labels[1], new_labels[-1] = 0, 0, 0  # [0, 0, 1, ..., 1, 0]
+                im_crisp = set_new_data(c, np.copy(relabeller(c.get_data(), old_labels, new_labels)), new_dtype=np.uint8)
+                nib.save(im_crisp, pfi_mog_segm)
+
+                # final tuning:
+                pfi_registration_mask = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
+                cmd0 = 'seg_maths {0} -ero 3 {1}'.format(pfi_mog_segm, pfi_registration_mask)
+                cmd1 = 'seg_maths {0} -fill {0}'.format(pfi_registration_mask)
+                cmd2 = 'seg_maths {0} -dil 3 {0}'.format(pfi_registration_mask)
+                cmd3 = 'seg_maths {0} -fill {0}'.format(pfi_registration_mask)
+
+                print_and_run(cmd0)
+                print_and_run(cmd1)
+                print_and_run(cmd2)
+                print_and_run(cmd3)
+
+                del pfi_3d_bias_field_corrected, p, c, T1_bfc, pfi_registration_mask, cmd0, cmd1, cmd2, cmd3
 
     if step['save_results']:
         print('- save results {}'.format(sj))
