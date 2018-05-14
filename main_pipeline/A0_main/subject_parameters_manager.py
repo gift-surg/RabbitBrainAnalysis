@@ -6,6 +6,10 @@ from collections import OrderedDict
 """
 To create load and modify paramters manager and related utils functions.
 The actual creation happens in subject_parameters_creator module.
+
+Notes on option_T1:
+    
+
 """
 
 

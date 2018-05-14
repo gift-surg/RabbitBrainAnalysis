@@ -31,7 +31,7 @@ def main_runner(subj_list):
     # Set steps
 
     steps = {'reset_parameters'  : False,
-             'step_A1'           : True,
+             'step_A1'           : False,
              'step_A2_T1'        : True,
              'step_A2_DWI'       : True,
              'step_A2_MSME'      : False,
@@ -209,12 +209,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    # lsm.input_subjects = ['2702', '3303', '4302']  # from segmentation
-    # lsm.input_subjects = ['5007', ]  # B from T1 on
+    # lsm.input_subjects = ['5009', ]  # A all
 
-    lsm.input_subjects = ['4905',]  # C from T1 after break.
-
-    # lsm.input_subjects = ['4501', '4305', '4304']  # A from DWI - A
+    lsm.input_subjects = ['4507', '4601', '4603']  # B
 
     lsm.update_ls()
 

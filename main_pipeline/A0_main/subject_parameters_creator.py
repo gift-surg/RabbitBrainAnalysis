@@ -546,7 +546,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
+    sp.comment = 'T1 warping artefact DWI unusable - extra DWI in external study'
     sp.in_atlas = False
     sp.b0_level = 7
     sp.save_as_txt(pfo_where_to_save)
@@ -672,7 +672,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
+    sp.comment = 'T1 warping artefact, DWI heavy motion artefact'
     sp.in_atlas = False
     sp.b0_level = 7
     sp.save_as_txt(pfo_where_to_save)
@@ -693,7 +693,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
+    sp.comment = 'T1 warping artefact, DWI heavy motion artefact'
     sp.in_atlas = False
     sp.b0_level = 7
     sp.save_as_txt(pfo_where_to_save)
@@ -714,7 +714,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
+    sp.comment = 'T1 warping artefact, DWI some motion artefact.'
     sp.in_atlas = False
     sp.b0_level = 7
     sp.save_as_txt(pfo_where_to_save)
@@ -735,7 +735,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed = False
     sp.bias_field_parameters = bfp_slow
     sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
+    sp.comment = 'T1 warping artefact, DWI motion artefact.'
     sp.in_atlas = False
     sp.b0_level = 7
     sp.save_as_txt(pfo_where_to_save)
@@ -853,6 +853,27 @@ def reset_parameters_files(pfo_where_to_save):
     del sp
 
     sp = SubjectParameters('5007')
+    sp.study = 'PTB'
+    sp.category = 'ex_vivo'
+    sp.angles = [0, np.pi / 12, 0]
+    sp.translation = [0, 0, 0]
+    sp.threshold = 0.001
+    sp.T1_window_percentile = (74.8, 97)
+    sp.S0_window_percentile = (1, 95)
+    sp.T1_mask_dilation = -2
+    sp.S0_mask_dilation = 0
+    sp.erosion_roi_mask = 0
+    sp.DWI_squashed = False
+    sp.bias_field_parameters = bfp_slow
+    sp.MSME_acquisition = 'high_res'
+    sp.comment = ''
+    sp.in_atlas = False
+    sp.b0_level = 7
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('5009')
     sp.study = 'PTB'
     sp.category = 'ex_vivo'
     sp.angles = [0, np.pi / 12, 0]

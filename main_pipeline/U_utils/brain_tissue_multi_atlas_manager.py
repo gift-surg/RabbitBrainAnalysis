@@ -7,10 +7,31 @@ import pickle
 from os.path import join as jph
 
 from tools.definitions import root_atlas_BT, pfo_subjects_parameters, multi_atlas_brain_tissue_subjects, \
-    root_study_rabbits
+    root_study_rabbits, num_cores_run, multi_atlas_subjects, root_atlas
 
 from LABelsToolkit.tools.aux_methods.utils import print_and_run
 from LABelsToolkit.main import LABelsToolkit
+
+
+def extract_brain_tissue_in_NI_multi_atlas():
+
+    for sj in multi_atlas_subjects:
+
+        print('Creating brain tissue for subject {} in NI multi atlas '.format(sj))
+
+        pfi_segm = jph(root_atlas, sj, 'segm', '{}_segm.nii.gz'.format(sj))
+        assert os.path.exists(pfi_segm)
+
+        pfi_brain_tissue = jph(root_atlas, sj, 'masks', '{}_brain_tissue.nii.gz'.format(sj))
+
+        print_and_run('cp {0} {1}'.format(pfi_segm, pfi_brain_tissue))
+
+        cmd = 'seg_maths {0} -bin {0}; ' \
+              'seg_maths {0} -dil 1 {0}; ' \
+              'seg_maths {0} -fill {0}; ' \
+              'seg_maths {0} -ero 1 {0} '.format(pfi_brain_tissue)
+
+        print_and_run(cmd)
 
 
 def create_brain_tissue_multi_atlas(sj_list, controller):
@@ -64,137 +85,170 @@ def create_brain_tissue_multi_atlas(sj_list, controller):
         print_and_run(cmd2)
 
 
-def extract_brain_tissue_from_multi_atlas(target_T1, output_roi_mask, output_brain_mask, target_pre_mask=None,
-                                          root_atlas_BT=root_atlas_BT,
-                                          multi_atlas_subjects_list=multi_atlas_brain_tissue_subjects,
+def extract_brain_tissue_from_multi_atlas(target_name, pfi_target_T1, output_brain_mask, pfi_target_pre_mask=None,
                                           pfo_tmp='.z_tmp', alpha=0):
     """
     sj: subjects in the multi-atlas. Target: element to be segmented.
-    :param target_T1:
-    :param output_roi_mask:
+    The multi atlas can ben the main one or a customised one!
+    :param target_name:
+    :param pfi_target_T1:
     :param output_brain_mask:
-    :param target_pre_mask:
-    :param root_atlas_BT:
-    :param multi_atlas_subjects_list:
+    :param pfi_target_pre_mask:
     :param pfo_tmp:
     :param alpha: angle to rotate the sj in the template
     :return:
     """
+    pri_target_param = jph(pfo_subjects_parameters, target_name)
+    if os.path.exists(pri_target_param):
+        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, target_name), 'r'))
+        options = sj_parameters['options_T1']
+    else:
+        options = {'roi_mask' : "BTMA",  # Can be BTMA, MA, Pivotal
+                   'pivot'    : '1305',  # name of a template reference to get the roi mask or a first approximation
+                   'slim'     : True,  # if you want to have the slim mask. 'roi_mask' must be "BTMA" or "MA".
+                   'crop_roi' : False,  # To cut the T1 according to the ROI mask.
+                   'reg_mask' : 0,  # can be the total number of gaussians for a MoG approach, or 0 if you want to use the given percentile
+                   'median_filter' : False  # if 'reg_mask' > 1 as pre-processing before the gaussians.
+                   }
 
-    assert os.path.exists(target_T1)
+    if options['roi_mask'] == 'MA':
+        mutli_atlas_subject_list = multi_atlas_subjects
+    elif options['roi_mask'] == 'BTMA':
+        mutli_atlas_subject_list = multi_atlas_brain_tissue_subjects
+    else:
+        raise IOError
 
+    list_brain_mask_registered_on_target = []
 
+    for sj in mutli_atlas_subject_list:
 
-    pfi_moving_T1 =
+        pfi_sj_T1_hd_oriented = jph(pfo_tmp, '{}_T1_header_oriented_on_{}.nii.gz'.format(sj, target_name))
+        pfi_sj_brain_tissue_hd_oriented = jph(pfo_tmp, '{}_brain_tissue_header_oriented_on_{}.nii.gz'.format(sj, target_name))
+        pfi_sj_roi_hd_oriented = jph(pfo_tmp, '{}_roi_mask_header_oriented_on_{}.nii.gz'.format(sj, target_name))
+        pfi_sj_reg_hd_oriented = jph(pfo_tmp, '{}_reg_mask_header_oriented_on_{}.nii.gz'.format(sj, target_name))
 
-        # --- Get the angle difference from histological (template) to bicommissural (data) and orient header ---
-        if isinstance(sj_parameters['angles'][0], list):
-            angles = sj_parameters['angles'][0]
+        print('- Orient header subject {} over the target {}'.format(sj, target_name))
+        
+        if options['roi_mask'] == 'MA':
+            pfi_sj_T1           = jph(root_atlas, sj, 'mod', '{}_T1.nii.gz'.format(sj))
+            pfi_sj_brain_tissue = jph(root_atlas, sj, 'masks', '{}_brain_tissue.nii.gz'.format(sj))
+            pfi_sj_roi          = jph(root_atlas, sj, 'masks', '{}_roi_mask.nii.gz'.format(sj))
+            pfi_sj_reg          = jph(root_atlas, sj, 'masks', '{}_reg_mask.nii.gz'.format(sj))
+
+            lm = LABelsToolkit()
+            lm.header.apply_small_rotation(pfi_sj_T1, pfi_sj_T1_hd_oriented,
+                                           angle=alpha, principal_axis='pitch')
+            lm.header.apply_small_rotation(pfi_sj_brain_tissue, pfi_sj_brain_tissue_hd_oriented,
+                                           angle=alpha, principal_axis='pitch')
+            lm.header.apply_small_rotation(pfi_sj_roi, pfi_sj_roi_hd_oriented,
+                                           angle=alpha, principal_axis='pitch')
+            lm.header.apply_small_rotation(pfi_sj_reg, pfi_sj_reg_hd_oriented,
+                                           angle=alpha, principal_axis='pitch')
+
+            if options['slim']:
+                pfi_reg_mask_for_registration_sj = jph(pfo_tmp, '{}_over_{}_reg_mask_for_reg_hd_oriented_slim.nii.gz'.format(sj, target_name))
+                    
+                cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_sj_brain_tissue_hd_oriented,
+                                                          pfi_sj_reg_hd_oriented,
+                                                          pfi_reg_mask_for_registration_sj)
+            else:
+                pfi_reg_mask_for_registration_sj = jph(pfo_tmp,
+                                                       '{}_over_{}_reg_mask_for_reg_hd_oriented_slim.nii.gz'.format(sj, target_name))
+            
+                cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_sj_roi_hd_oriented,
+                                                          pfi_sj_reg_hd_oriented,
+                                                          pfi_reg_mask_for_registration_sj)
+            print_and_run(cmd)
+
+        elif options['roi_mask'] == 'BTMA':
+            
+            pfi_sj_T1           = jph(root_atlas_BT, sj, '{}_T1.nii.gz'.format(sj))
+            pfi_sj_brain_tissue = jph(root_atlas_BT, sj, '{}_brain_tissue.nii.gz'.format(sj))
+            pfi_sj_roi          = jph(root_atlas_BT, sj, '{}_roi_mask.nii.gz'.format(sj))
+
+            lm = LABelsToolkit()
+            lm.header.apply_small_rotation(pfi_sj_T1, pfi_sj_T1_hd_oriented,
+                                           angle=alpha, principal_axis='pitch')
+            lm.header.apply_small_rotation(pfi_sj_brain_tissue, pfi_sj_brain_tissue_hd_oriented,
+                                           angle=alpha, principal_axis='pitch')
+            lm.header.apply_small_rotation(pfi_sj_roi, pfi_sj_roi_hd_oriented,
+                                           angle=alpha, principal_axis='pitch')
+            if options['slim']:
+                pfi_reg_mask_for_registration_sj = pfi_sj_brain_tissue_hd_oriented
+            else:
+                pfi_reg_mask_for_registration_sj = pfi_sj_roi_hd_oriented
         else:
-            angles = sj_parameters['angles']
+            raise IOError
 
-        angle_parameter = angles[1]
+        print('- Register subject {} over the target {}'.format(sj, target_name))
+        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_{0}_on_{1}.txt'.format(target_name, sj))
+        pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_{0}_on_{1}.nii.gz'.format(target_name, sj))
 
-        pfi_sj_ref_coord_system_hd_oriented = jph(pfo_tmp, 'reference_for_T1_hd_oriented.nii.gz')
-        pfi_reference_brain_tissue_hd_oriented = jph(pfo_tmp, 'reference_for_brain_tissue_hd_oriented.nii.gz')
-        pfi_reference_reg_mask_hd_oriented = jph(pfo_tmp, 'reference_for_reg_mask_hd_oriented.nii.gz')
+        if pfi_target_pre_mask is None:
+            cmd = 'reg_aladin -ref {0} -flo {1} -fmask {2} -aff {3} -res {4} -omp {5} -speeeeed '.format(
+                pfi_target_T1,
+                pfi_sj_T1_hd_oriented,
+                pfi_reg_mask_for_registration_sj,
+                pfi_affine_transformation_ref_on_subject,
+                pfi_3d_warped_ref_on_subject,
+                num_cores_run)
+            print cmd
 
-        lm = LABelsToolkit()
-        lm.header.apply_small_rotation(pfi_sj_ref_coord_system, pfi_sj_ref_coord_system_hd_oriented,
-                                       angle=angle_parameter, principal_axis='pitch')
-        lm.header.apply_small_rotation(pfi_reference_brain_tissue, pfi_reference_brain_tissue_hd_oriented,
-                                       angle=angle_parameter, principal_axis='pitch')
-        lm.header.apply_small_rotation(pfi_reference_reg_mask, pfi_reference_reg_mask_hd_oriented,
-                                       angle=angle_parameter, principal_axis='pitch')
+        else:
+            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -speeeeed '.format(
+                pfi_target_T1,
+                pfi_target_pre_mask,
+                pfi_sj_T1_hd_oriented,
+                pfi_reg_mask_for_registration_sj,
+                pfi_affine_transformation_ref_on_subject,
+                pfi_3d_warped_ref_on_subject,
+                num_cores_run)
+            print cmd
 
-        # set translational part to zero
-        lm.header.modify_translational_part(pfi_sj_ref_coord_system_hd_oriented, pfi_sj_ref_coord_system_hd_oriented,
-                                            np.array([0, 0, 0]))
-        lm.header.modify_translational_part(pfi_reference_brain_tissue_hd_oriented, pfi_reference_brain_tissue_hd_oriented,
-                                            np.array([0, 0, 0]))
-        lm.header.modify_translational_part(pfi_reference_reg_mask_hd_oriented, pfi_reference_reg_mask_hd_oriented,
-                                            np.array([0, 0, 0]))
-
-        # get the registration mask as reg_mask and brain tissue product:
-        pfi_reg_mask_times_brain_tissue_affine_for_sj = jph(pfo_tmp,
-                                                            'reference_for_roi_mask_times_brain_tissue_hd_oriented.nii.gz')
-        cmd = 'seg_maths {0} -mul {1} {2}'.format(pfi_reference_brain_tissue_hd_oriented,
-                                                  pfi_reference_reg_mask_hd_oriented,
-                                                  pfi_reg_mask_times_brain_tissue_affine_for_sj)
         print_and_run(cmd)
 
-        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'aff_ref_{0}_on_{1}.txt'.format(atlas_sj, sj))
-        pfi_3d_warped_ref_on_subject = jph(pfo_tmp, 'warp_ref_{0}_on_{1}.nii.gz'.format(atlas_sj, sj))
-        cmd = 'reg_aladin -ref {0} -flo {1} -fmask {2} -aff {3} -res {4} -omp {5} -speeeeed '.format(
-            pfi_std,
-            pfi_sj_ref_coord_system_hd_oriented,
-            pfi_reg_mask_times_brain_tissue_affine_for_sj,
-            pfi_affine_transformation_ref_on_subject,
-            pfi_3d_warped_ref_on_subject,
-            num_cores_run)
-        print cmd
-        print_and_run(cmd)
+        print('- Propagate registration to brain tissue mask, subject {} over the target {}'.format(sj, target_name))
 
-        print('- propagate roi masks {}'.format(sj))
-
-        assert check_path_validity(pfi_affine_transformation_ref_on_subject)
-        pfi_brain_tissue_from_multi_atlas_sj = \
-            jph(pfo_tmp, '{0}_T1_roi_mask_from_atlas{1}_not_adjusted.nii.gz'.format(sj, atlas_sj))
+        pfi_brain_tissue_from_multi_atlas_sj = jph(pfo_tmp, '{0}_T1_brain_tissue_from_atlas{1}.nii.gz'.format(
+            sj, target_name))
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
-            pfi_std,
-            pfi_reference_brain_tissue_hd_oriented,
+            pfi_target_T1,
+            pfi_sj_brain_tissue_hd_oriented,
             pfi_affine_transformation_ref_on_subject,
             pfi_brain_tissue_from_multi_atlas_sj)
         print_and_run(cmd)
 
         list_brain_mask_registered_on_target.append(pfi_brain_tissue_from_multi_atlas_sj)
 
-        # label fusion MV of the region of interest for the final region of interest:
+    print('- Create stack over the target {} and merge with MV. '.format(target_name))
 
-        # create the stack of the registered roi masks:
+    pfi_stack_brain_tissue = jph(pfo_tmp, '{0}_T1_brain_tissue_from_multi_atlas_{1}_stack.nii.gz'.format(
+        target_name, options['roi_mask']))
 
-
-    pfi_stack_roi_mask = jph(pfo_tmp, '{0}_T1_roi_masks_from_atlases_stack.nii.gz'.format(sj))
     lt = LABelsToolkit()
-    lt.manipulate_shape.stack_list_pfi_images(list_brain_mask_registered_on_target, pfi_stack_roi_mask)
-
-    # get output from the stack:
-    cmd = 'seg_maths {0}  -merge {1} {2} '.format(
-        jph(pfo_tmp, '{0}_T1_roi_mask_from_atlas{1}_not_adjusted.nii.gz'.format(sj, list_names_subjects_in_atlas[0])),
-        len(list_names_subjects_in_atlas) - 1,
-        4
-    )
-    for p in list_names_subjects_in_atlas[1:]:
-        cmd += ' {} '.format(jph(pfo_tmp, '{0}_T1_roi_mask_from_atlas{1}_not_adjusted.nii.gz'.format(sj, p)))
-    cmd += ' {} '.format(pfi_stack_roi_mask)
-    print_and_run(cmd)
+    lt.manipulate_shape.stack_list_pfi_images(list_brain_mask_registered_on_target, pfi_stack_brain_tissue)
 
     # merge the roi masks in one:
-    pfi_roi_mask_not_adjusted_multi = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted_MV.nii.gz')
-    cmd = 'seg_LabFusion  -in {0} -out {1} -MV '.format(pfi_stack_roi_mask, pfi_roi_mask_not_adjusted_multi)
+    # output_brain_mask = jph(pfo_tmp, sj + '_T1_brain_tissue_MV.nii.gz')
+    cmd = 'seg_LabFusion  -in {0} -out {1} -MV '.format(pfi_stack_brain_tissue, output_brain_mask)
     print_and_run(cmd)
-
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
 
-    controller_creator = {'Delete_first' : True}
+    if False:
+        extract_brain_tissue_in_NI_multi_atlas()
 
-    # create_brain_tissue_multi_atlas(multi_atlas_brain_tissue_subjects, controller_creator)
+    if False:
+        controller_creator = {'Delete_first' : True}
+        create_brain_tissue_multi_atlas(multi_atlas_brain_tissue_subjects, controller_creator)
 
-    extract_brain_tissue()
+    if True:
+        target_name_ = 'tt5007'
+        pfi_target_T1_ = '/Volumes/sebastianof/rabbits/A_MultiAtlas_BT/tt5007/tt5007_T1.nii.gz'
+        output_brain_mask_ = '/Volumes/sebastianof/rabbits/A_MultiAtlas_BT/tt5007/z_tmp/A_brain_mask.nii.gz'
+        pfo_tmp_ = '/Volumes/sebastianof/rabbits/A_MultiAtlas_BT/tt5007/z_tmp'
 
-
-
-
-
-
+        extract_brain_tissue_from_multi_atlas(target_name_, pfi_target_T1_, output_brain_mask_,
+                                              pfi_target_pre_mask=None,
+                                              pfo_tmp=pfo_tmp_, alpha=0)
