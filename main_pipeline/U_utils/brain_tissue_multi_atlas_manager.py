@@ -85,14 +85,14 @@ def create_brain_tissue_multi_atlas(sj_list, controller):
         print_and_run(cmd2)
 
 
-def extract_brain_tissue_from_multi_atlas(target_name, pfi_target_T1, output_brain_mask, pfi_target_pre_mask=None,
+def extract_brain_tissue_from_multi_atlas(target_name, pfi_target_T1, pfi_output_brain_mask, pfi_target_pre_mask=None,
                                           pfo_tmp='.z_tmp', alpha=0):
     """
     sj: subjects in the multi-atlas. Target: element to be segmented.
     The multi atlas can ben the main one or a customised one!
     :param target_name:
     :param pfi_target_T1:
-    :param output_brain_mask:
+    :param pfi_output_brain_mask:
     :param pfi_target_pre_mask:
     :param pfo_tmp:
     :param alpha: angle to rotate the sj in the template
@@ -104,10 +104,10 @@ def extract_brain_tissue_from_multi_atlas(target_name, pfi_target_T1, output_bra
         options = sj_parameters['options_T1']
     else:
         options = {'roi_mask' : "BTMA",  # Can be BTMA, MA, Pivotal
-                   'pivot'    : '1305',  # name of a template reference to get the roi mask or a first approximation
-                   'slim'     : True,  # if you want to have the slim mask. 'roi_mask' must be "BTMA" or "MA".
+                   'pivot'    : '1305',  # name of a template reference to get the roi mask or a first approximation (if in vivo '1504t1')
+                   'slim'     : False,  # if you want to have the slim mask. 'roi_mask' must be "BTMA" or "MA" for it to be true.
                    'crop_roi' : False,  # To cut the T1 according to the ROI mask.
-                   'reg_mask' : 0,  # can be the total number of gaussians for a MoG approach, or 0 if you want to use the given percentile
+                   'lesion_mask_method' : 0,  # can be the total number of gaussians for a MoG approach, or 0 if you want to use the given percentile
                    'median_filter' : False  # if 'reg_mask' > 1 as pre-processing before the gaussians.
                    }
 
@@ -210,7 +210,7 @@ def extract_brain_tissue_from_multi_atlas(target_name, pfi_target_T1, output_bra
         print('- Propagate registration to brain tissue mask, subject {} over the target {}'.format(sj, target_name))
 
         pfi_brain_tissue_from_multi_atlas_sj = jph(pfo_tmp, '{0}_T1_brain_tissue_from_atlas{1}.nii.gz'.format(
-            sj, target_name))
+            target_name, sj))
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_target_T1,
             pfi_sj_brain_tissue_hd_oriented,
@@ -222,7 +222,7 @@ def extract_brain_tissue_from_multi_atlas(target_name, pfi_target_T1, output_bra
 
     print('- Create stack over the target {} and merge with MV. '.format(target_name))
 
-    pfi_stack_brain_tissue = jph(pfo_tmp, '{0}_T1_brain_tissue_from_multi_atlas_{1}_stack.nii.gz'.format(
+    pfi_stack_brain_tissue = jph(pfo_tmp, '{0}_T1_brain_tissues_from_all_multi_atlas_{1}_stack.nii.gz'.format(
         target_name, options['roi_mask']))
 
     lt = LABelsToolkit()
@@ -230,7 +230,7 @@ def extract_brain_tissue_from_multi_atlas(target_name, pfi_target_T1, output_bra
 
     # merge the roi masks in one:
     # output_brain_mask = jph(pfo_tmp, sj + '_T1_brain_tissue_MV.nii.gz')
-    cmd = 'seg_LabFusion  -in {0} -out {1} -MV '.format(pfi_stack_brain_tissue, output_brain_mask)
+    cmd = 'seg_LabFusion  -in {0} -out {1} -MV '.format(pfi_stack_brain_tissue, pfi_output_brain_mask)
     print_and_run(cmd)
 
 

@@ -191,6 +191,7 @@ def main_runner(subj_list):
                          'Volumes_per_region_stx'  : True,
                          'FA_per_region_stx'       : True,
                          'MD_per_region_stx'       : True,
+                         'Generate_tag'            : True
                          }
 
         generate_reports_from_list(subj_list, controller_A4)

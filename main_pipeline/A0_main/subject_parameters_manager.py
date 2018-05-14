@@ -64,11 +64,13 @@ class SubjectParameters(object):
         self.b0_level              = 0
         self.b0_to_use_in_fsldti   = -1  # -1 default means all the b0 layers. If only one layer is
         self.spotter_tag           = 'P2'
-        self.options_T1            = {'roi_mask' : '1305',  # can be 'slim', 'pivotal' or a string atlas subject name if you want to use a specific subject.
-                                      'crop_roi' : False,
-                                      'reg_mask' : 0,  # can be the total number of gaussians, or 0 if you want to use the given percentile
-                                      'median_filter' : False
-                                    }
+        self.options_T1            = {'roi_mask' : "BTMA",  # Can be BTMA, MA, Pivotal
+                                      'pivot'    : '1305',  # name of a template reference to get the roi mask or a first approximation (if in vivo '1504t1')
+                                      'slim'     : False,  # if you want to have the slim mask. 'roi_mask' must be "BTMA" or "MA" for it to be true.
+                                      'crop_roi' : False,  # To cut the T1 according to the ROI mask.
+                                      'lesion_mask_method' : 0,  # can be the total number of gaussians for a MoG approach, or 0 if you want to use the given percentile
+                                      'median_filter' : True  # if 'reg_mask' > 1 as pre-processing before the gaussians.
+                                      }
 
     def get_as_dict(self):
         d = OrderedDict()
