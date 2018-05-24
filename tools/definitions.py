@@ -32,7 +32,7 @@ elif os.path.exists('/Volumes/LC/sebastianof/rabbits/'):
     root_study_rabbits = jph(root_main_hdd, 'rabbits')
     root_shared_records = jph(root_main_dropbox, 'study', 'C_records')
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc'
-    root_fit_apps = '/home/ferraris/software_lib/NiftyFit2/niftyfit-build/fit-apps/'
+    root_fit_apps = ''
     num_cores_run = 8
 
 elif os.path.exists('/Volumes/sebastianof/'):

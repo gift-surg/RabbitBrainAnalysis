@@ -31,16 +31,16 @@ def main_runner(subj_list):
     # Set steps
 
     steps = {'reset_parameters'  : False,
-             'step_A1'           : False,
-             'step_A2_T1'        : True,
-             'step_A2_DWI'       : True,
+             'step_A1'           : True,
+             'step_A2_T1'        : False,
+             'step_A2_DWI'       : False,
              'step_A2_MSME'      : False,
              'step_A2_T2maps'    : False,
              'step_A2_g_ratio'   : False,
-             'step_A3_move'      : True,
-             'step_A3_segment'   : True,
-             'step_A3_move_back' : True,
-             'step_A4'           : True}
+             'step_A3_move'      : False,
+             'step_A3_segment'   : False,
+             'step_A3_move_back' : False,
+             'step_A4'           : False}
 
     print('STEPS')
     for k in sorted(steps.keys()):
@@ -73,6 +73,7 @@ def main_runner(subj_list):
                                   'adjust_mask'              : True,
                                   'cut_masks'                : True,
                                   'step_bfc'                 : True,
+                                  'create_lesion_maks'       : True,
                                   'create_reg_mask'          : True,
                                   'save_results'             : True}
 
@@ -212,7 +213,7 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['5009', ]  # A all
 
-    lsm.input_subjects = ['4507', '4601', '4603']  # B
+    lsm.input_subjects = ['13102', '13201', '13402', '13403']
 
     lsm.update_ls()
 

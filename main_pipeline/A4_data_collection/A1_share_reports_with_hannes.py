@@ -97,7 +97,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['4905', ]  #['4504', '4501', '4305', '4304', '4302', '5003', '5007']
+    lsm.input_subjects = ['5009', ]  # ['4504', '4501', '4305', '4304', '4302', '5003', '5007']
 
     lsm.update_ls()
 

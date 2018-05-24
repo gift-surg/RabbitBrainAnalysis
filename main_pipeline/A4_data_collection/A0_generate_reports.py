@@ -214,8 +214,8 @@ def generate_reports_for_subject(sj, controller, ldm):
     # ---------------------------
     if controller['Generate_tag']:
         pfi_to_tag                = jph(root_subject, '{}_tag.txt'.format(sj))
-        pfi_to_sj_param_file      = jph(pfo_subjects_parameters, sj)
-        pfi_to_spotter_param_file = jph(root_subject, 'stereotaxic', 'z_SPOT_{}'.format(sj_parameters['study']),
+        pfi_to_sj_param_file      = jph(pfo_subjects_parameters, sj + '.txt')
+        pfi_to_spotter_param_file = jph(root_subject, 'stereotaxic', 'z_SPOT_{}'.format(sj_parameters['spotter_tag']),
                                         'SPOT_parameters_records.txt')
         tg = TagCollector(pfi_to_tag)
         tg.update_tag(pfi_to_sj_param_file, pfi_to_spotter_param_file)
@@ -250,7 +250,7 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['12504', '12505', '12607']
     # lsm.input_subjects = ['12608', '12609', '12610']
 
-    lsm.input_subjects   = ['5009']  # '12308', '12402', '12504', '12505', '12607', '12608', '12609', '12610']  # ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
+    lsm.input_subjects   = ['4601', '4603']  # ['5009']  # '12308', '12402', '12504', '12505', '12607', '12608', '12609', '12610']  # ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
 
     lsm.update_ls()
@@ -268,10 +268,3 @@ if __name__ == '__main__':
                    }
 
     generate_reports_from_list(lsm.ls, controller_)
-
-
-
-
-
-
-

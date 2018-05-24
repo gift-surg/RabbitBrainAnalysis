@@ -12,7 +12,7 @@ from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescri
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
 
 
-root_output = jph(root_study_rabbits, 'B_stats', 'ACS_all')
+root_output = jph(root_study_rabbits, 'B_stats', 'ACS_02')
 
 
 def subject_comparison_total_volume(sj_list, controller, subjects_grouping=None, coord_system='original'):
@@ -183,13 +183,14 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
     :param sj_list:
     :param ldm: label descriptor manager
     :param labels_num: plain list of labels that will define a macro region
+    :param subjects_grouping:
     :param controller:
     :param coord_system: 'original' or 'stereotaxic'
     :param mod: can be 'FA' or 'MD'
     :param cleaning: method to clean the data.
     :return:
     """
-    print('subject_comparison_values_below_labels_per_region {} for subjects {}'.format(labels_num, sj_list))
+    print('subject_comparison_values_below_labels_per_region {} for subjects {}, mod {}'.format(labels_num, sj_list, mod))
 
     dict_labels = ldm.get_dict()
     labels_names = [dict_labels[k][2].replace(' ', '') for k in labels_num]
@@ -278,6 +279,14 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
                     dpi=200)
         plt.close()
 
+    if controller['save_medians']:
+        with open(pfi_where_to_save_data_below_macro_region_for_mod_for_subjects, 'rb') as handle:
+            tot_data_distribution = pickle.load(handle)
+        se = pa.Series([np.median(tot_data_distribution[k]) for k in tot_data_distribution.keys()], index=tot_data_distribution.keys())
+        se = se.sort_index()
+
+        pfi_wher_to_save_medians = jph(root_output, 'Median_below_{}_region{}_{}.csv'.format(mod, macro_label_name, coord_system))
+        se.to_csv(pfi_wher_to_save_medians)
 
 if __name__ == '__main__':
 
@@ -287,6 +296,7 @@ if __name__ == '__main__':
 
     ptb_related_regions['CerebellarHemisphere']       = [179, 180]
     ptb_related_regions['Thalamus']                   = [83, 84]
+    ptb_related_regions['Hypothalamus']               = [109, 110]
     ptb_related_regions['Hippocampus']                = [31, 32]
     ptb_related_regions['InternalCapsule']            = [223, 224]
     ptb_related_regions['CaudateNucleus']             = [69, 70]
@@ -294,15 +304,37 @@ if __name__ == '__main__':
     ptb_related_regions['MedialPrefrontalAndFrontal'] = [5, 6, 7, 8]
     ptb_related_regions['AnteriorCommissure']         = [233]
 
-    controller_ = {'get_data'   : True,
-                   'get_graphs' : True}
+    controller_ = {'get_data'     : True,
+                   'get_graphs'   : True,
+                   'save_medians' : True}
 
     # subjects = ['12307' , '12308', '12504', '12505', '12607', '12608', '12609', '12610', '12309']
     # # subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
     # subjects_grouping_ = [4, 4, 1]
 
-    subjects = ['12307' , '12308', '12504', '12505', '12607', '12608', '12609', '12610', '12309', '12402'] + ['13103', '13108', '13301', '13307', '13401', '13403', '13404'] + ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
-    subjects_grouping_ = [4, 4, 1, 1, 14]
+    #
+    # subjects = ['12307' , '12308', '12504', '12505', '12607', '12608', '12609', '12610', '12309', '12402'] + ['13103', '13108', '13301', '13307', '13401', '13403', '13404'] + ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
+    # subjects_grouping_ = [4, 4, 1, 1, 14]
+
+    # subjects = ['12001', '1201', '1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002', '2502', '2503',
+    #             '2608', '2702', '3301', '3303', '3404', '4302', '4304', '4305',  '4501', '4504',
+    #             '4901', '4903', '4905', '5001', '5003', '5007', '5009']  # '4303', '4406', '4507', '4601','4602','4603',
+    #
+    # preterm = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '2002', '3301', '3303', '4901', '4903', '4905', '5001', '5003', '5007', '5009', '4302', '4304', '4305']
+    # term    = ['1702', '1805', '2502', '2503', '2608', '2702', '3404',  '4501', '4504', '12001']  # '4507', '4601', '4603'
+    #
+    #
+    # subjects = preterm + term
+    # subjects_grouping_ = [len(preterm), len(term)]
+
+    # print subjects_grouping_
+    # print sum(subjects_grouping_)
+
+    # subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610']
+    # subjects_grouping_ = [6, 4]
+
+    subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404', '13405', '13501', '13505', '13507', '13602', '13604', '13606']
+    subjects_grouping_ = None
 
     ldm = LdM(pfi_labels_descriptor)
 
@@ -333,7 +365,7 @@ if __name__ == '__main__':
                 # comparison MD
                 subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
                                                                   subjects_grouping_, macro_label_name=reg,
-                                                                  coord_system=coordinates, mod='MD', cleaning=None)
+                                                                      coord_system=coordinates, mod='MD', cleaning=None)
 
     # total volumes stereotaxic coordinates as histogram:
 

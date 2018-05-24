@@ -67,6 +67,18 @@ def process_T1_per_subject(sj, step):
     print_and_run('mkdir -p {}'.format(pfo_mask))
     print_and_run('mkdir -p {}'.format(pfo_tmp))
 
+    reference_subject = options['pivot']
+
+    # If the element is in  template retrieve the original roi mask, reg mask and
+    if sj_parameters['in_atlas']:
+        reference_subject = sj
+
+        # turn off all the unuseful stuff:
+        options['roi_mask'] = ''
+        step['adjust_mask'] = False  # Not always the best option, but good for good approximation
+        step['create_lesion_maks'] = False
+        step['create_reg_mask'] = False
+
     if step['orient_to_standard']:
         print('- orient to standard {}'.format(sj))
         pfi_input_original = jph(pfo_input_sj_3D, sj + '_3D.nii.gz')
@@ -77,10 +89,6 @@ def process_T1_per_subject(sj, step):
 
     if step['create_roi_masks']:
 
-        # TODO if the element is in  template retrieve the original roi mask, reg mask and
-
-        reference_subject = options['pivot']
-
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
         assert check_path_validity(pfi_std)
 
@@ -88,11 +96,12 @@ def process_T1_per_subject(sj, step):
         # reference subject:
         pfi_sj_ref_coord_system = jph(root_atlas, reference_subject, 'mod', '{}_T1.nii.gz'.format(reference_subject))
         # original mask
-        pfi_reference_roi_mask = jph(root_atlas, reference_subject, 'masks',
-                                     '{}_roi_mask.nii.gz'.format(reference_subject))
+        pfi_reference_roi_mask = jph(root_atlas, reference_subject, 'masks', '{}_roi_mask.nii.gz'.format(reference_subject))
+        pfi_reference_reg_mask = jph(root_atlas, reference_subject, 'masks', '{}_reg_mask.nii.gz'.format(reference_subject))
 
         assert check_path_validity(pfi_sj_ref_coord_system)
         assert check_path_validity(pfi_reference_roi_mask)
+        assert check_path_validity(pfi_reference_reg_mask)
 
         # --- Get the angle difference from histological (template) to bicommissural (data) and orient header ---
         if isinstance(sj_parameters['angles'][0], list):
@@ -105,12 +114,15 @@ def process_T1_per_subject(sj, step):
         print('Get initial roi mask using the pivot.')
 
         pfi_sj_ref_coord_system_hd_oriented = jph(pfo_tmp, 'reference_for_mask_registration.nii.gz')
-        pfi_reference_roi_mask_hd_oriented = jph(pfo_tmp, 'reference_for_mask_registration_mask.nii.gz')
+        pfi_reference_roi_mask_hd_oriented = jph(pfo_tmp, 'reference_for_mask_roi_mask.nii.gz')
+        pfi_reference_reg_mask_hd_oriented = jph(pfo_tmp, 'reference_for_mask_reg_mask.nii.gz')
 
         lm = LABelsToolkit()
         lm.header.apply_small_rotation(pfi_sj_ref_coord_system, pfi_sj_ref_coord_system_hd_oriented,
                                        angle=angle_parameter, principal_axis='pitch')
         lm.header.apply_small_rotation(pfi_reference_roi_mask, pfi_reference_roi_mask_hd_oriented,
+                                       angle=angle_parameter, principal_axis='pitch')
+        lm.header.apply_small_rotation(pfi_reference_reg_mask, pfi_reference_reg_mask_hd_oriented,
                                        angle=angle_parameter, principal_axis='pitch')
 
         # set translational part to zero
@@ -118,6 +130,8 @@ def process_T1_per_subject(sj, step):
         lm.header.modify_translational_part(pfi_sj_ref_coord_system_hd_oriented, pfi_sj_ref_coord_system_hd_oriented,
                                             np.array([0, 0, 0]))
         lm.header.modify_translational_part(pfi_reference_roi_mask_hd_oriented, pfi_reference_roi_mask_hd_oriented,
+                                            np.array([0, 0, 0]))
+        lm.header.modify_translational_part(pfi_reference_reg_mask_hd_oriented, pfi_reference_reg_mask_hd_oriented,
                                             np.array([0, 0, 0]))
 
         assert check_path_validity(pfi_sj_ref_coord_system_hd_oriented)
@@ -133,7 +147,7 @@ def process_T1_per_subject(sj, step):
             num_cores_run)
         print_and_run(cmd)
 
-        print('- propagate roi masks {}'.format(sj))
+        print('- propagate affine registration T1 to roi masks {}'.format(sj))
 
         assert check_path_validity(pfi_affine_transformation_ref_on_subject)
         pfi_roi_mask_not_adjusted = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted.nii.gz')
@@ -144,7 +158,24 @@ def process_T1_per_subject(sj, step):
             pfi_roi_mask_not_adjusted)
         print_and_run(cmd)
 
-        # TODO if in template keep on doing the registration.
+        pfi_reg_mask_not_adjusted = jph(pfo_tmp, sj + '_T1_reg_mask_not_adjusted.nii.gz')
+        cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
+            pfi_std,
+            pfi_reference_reg_mask_hd_oriented,
+            pfi_affine_transformation_ref_on_subject,
+            pfi_reg_mask_not_adjusted)
+        print_and_run(cmd)
+
+        if sj_parameters['in_atlas']:
+
+            # if in template just copy the masks as they are in the destination, and then manipulate
+            pfi_roi_mask = jph(pfo_mask, '{}_T1_roi_mask.nii.gz'.format(sj))
+            pfi_reg_mask = jph(pfo_mask, '{}_T1_reg_mask.nii.gz'.format(sj))
+
+            cmd = 'cp {} {}'.format(pfi_roi_mask_not_adjusted, pfi_roi_mask)
+            print_and_run(cmd)
+            cmd = 'cp {} {}'.format(pfi_reg_mask_not_adjusted, pfi_reg_mask)
+            print_and_run(cmd)
 
         del pfi_std, pfi_sj_ref_coord_system, pfi_reference_roi_mask, \
             angle_parameter, angles, pfi_sj_ref_coord_system_hd_oriented, pfi_reference_roi_mask_hd_oriented, \
@@ -187,7 +218,6 @@ def process_T1_per_subject(sj, step):
 
             cmd = 'seg_maths {0} -dil 3 {1}'.format(pfi_output_brain_mask,
                                                     pfi_roi_mask)
-
             del pfi_output_brain_mask
 
         else:
@@ -337,7 +367,6 @@ def process_T1_per_subject(sj, step):
         # output:
         pfi_reg_mask = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
 
-
         pfi_output_brain_mask = jph(pfo_mask, '{}_T1_brain_mask.nii.gz')
         if options['slim'] and os.path.exists(pfi_output_brain_mask):
             # --- CASE 1 A
@@ -387,11 +416,12 @@ def process_T1_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process T1, local run. ')
 
-    controller_steps = {'orient_to_standard'       : True,
+    controller_steps = {'orient_to_standard'       : False,
                         'create_roi_masks'         : True,
                         'adjust_mask'              : True,
                         'cut_masks'                : True,
-                        'step_bfc'                 : True,
+                        'step_bfc'                 : False,
+                        'create_lesion_maks'       : True,
                         'create_reg_mask'          : True,
                         'save_results'             : True}
 
@@ -405,7 +435,9 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
-    lsm.input_subjects = ['4406', ]
+    lsm.input_subjects = ['4304', ]
     lsm.update_ls()
+
+    print lsm.ls
 
     process_T1_from_list(lsm.ls, controller_steps)

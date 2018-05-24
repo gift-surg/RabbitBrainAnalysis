@@ -10,30 +10,52 @@ from collections import OrderedDict
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 
+from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
 
 root_output = jph(root_study_rabbits, 'B_stats', 'S0Comparison_denoised')
 S0_timepoints = 7
 
 
-def get_values_below_S0_in_DWI_for_subject(sj):
-    print('get_values_below_S0_in_DWI_for_subject {}'.format(sj))
-
+def get_first_timepoints(sj):
+    """
+    Much faster if only 7 slices instead of 199 are loaded at each one of the next step.
+    :param sj: subject name
+    :return:
+    """
+    print('> Get first timepoints {}'.format(sj))
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
     study = sj_parameters['study']
     category = sj_parameters['category']
 
     root_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
-
-    pfo_sj_segm = jph(root_subject, 'segm')
-
     pfi_DWI_Eddi_corrected = jph(root_subject, 'z_tmp', 'z_DWI', '{}_DWI_eddy.nii.gz'.format(sj))
+
+    im = nib.load(pfi_DWI_Eddi_corrected)
+
+    im_new = set_new_data(im, new_data=im.get_data()[..., :S0_timepoints])
+
+    pfi_only_S0 = jph(root_output, '{}_DWI_only_S0.nii.gz'.format(sj))
+    nib.save(im_new, pfi_only_S0)
+
+
+def get_values_below_S0_in_DWI_for_subject(sj):
+    print('get_values_below_S0_in_DWI_for_subject {}'.format(sj))
+    # Get sub-tp DWI.
+    pfi_only_S0 = jph(root_output, '{}_DWI_only_S0.nii.gz'.format(sj))
+
+    # Get segm
+    sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+    study = sj_parameters['study']
+    category = sj_parameters['category']
+    root_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
+    pfo_sj_segm = jph(root_subject, 'segm')
     pfi_segm = jph(pfo_sj_segm, '{}_S0_segm.nii.gz'.format(sj))
 
-    assert os.path.exists(pfi_DWI_Eddi_corrected)
+    assert os.path.exists(pfi_only_S0)
     assert os.path.exists(pfi_segm)
 
-    im_dwi = nib.load(pfi_DWI_Eddi_corrected)
+    im_dwi = nib.load(pfi_only_S0)
     im_segm = nib.load(pfi_segm)
 
     values_below_S0_tps = OrderedDict()
@@ -156,14 +178,28 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['12402', '12607', '12307', '12608', '12504', '12609', '12308', '12610', '12505', '12309',]
     # lsm.input_subjects = ['12402', '12607', '12307', '12608', '12504', '12609', '12308', '12610', '12505', '12309'] + ['13103', '13108', '13301', '13307', '13401', '13403', '13404'] + ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
-    lsm.input_subjects = ['12308', '12308666']
-    lsm.update_ls()
 
+    # preterm = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '2002', '3301', '3303', '4901', '4903', '4905',
+    #            '5001', '5003', '5007', '5009']
+    # term = ['1702', '1805', '2502', '2503', '2608', '2702', '3404']
+    # unknown = ['1201', '4302', '4304', '4305', '4501', '4504']
+    #
+    # lsm.input_subjects = preterm + term + unknown
+
+    lsm.input_subjects = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002', '2502']
+
+    lsm.update_ls()
+    #
+    # lsm.input_subjects = ['2503', '2608', '2702', '3301', '3303', '3404', '4302', '4304', '4305', '4501', '4504',
+    #                       '4901', '4903', '4905', '5001', '5003', '5007', '5009']
+    # lsm.update_ls()
     print(lsm.ls)
 
     # subjects = ['12402', '12607', '12307', '12608', '12504', '12609', '12308', '12610', '12505', '12309']
 
     for sj_ in lsm.ls:
+        if False:
+            get_first_timepoints(sj_)
         if False:
             get_values_below_S0_in_DWI_for_subject(sj_)
         if False:
