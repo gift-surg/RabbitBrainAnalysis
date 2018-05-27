@@ -166,6 +166,10 @@ def extract_brain_tissue_from_multi_atlas(target_name, pfi_target_T1, pfi_output
             pfi_sj_brain_tissue = jph(root_atlas_BT, sj, '{}_brain_tissue.nii.gz'.format(sj))
             pfi_sj_roi          = jph(root_atlas_BT, sj, '{}_roi_mask.nii.gz'.format(sj))
 
+            assert os.path.exists(pfi_sj_T1), pfi_sj_T1
+            assert os.path.exists(pfi_sj_brain_tissue), pfi_sj_brain_tissue
+            assert os.path.exists(pfi_sj_roi), pfi_sj_roi
+
             lm = LABelsToolkit()
             lm.header.apply_small_rotation(pfi_sj_T1, pfi_sj_T1_hd_oriented,
                                            angle=alpha, principal_axis='pitch')

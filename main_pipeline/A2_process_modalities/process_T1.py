@@ -187,7 +187,7 @@ def process_T1_per_subject(sj, step):
             # This should be modified to get the slim registration, otherwise is an overkill
             print('- Get roi masks from each subject of the multi-atlas {} on {}'.format(options['roi_mask'], sj))
 
-            pfi_target_T1 = jph(pfo_mod, '{}_T1.nii.gz'.format(sj))
+            pfi_target_T1 = jph(pfo_tmp, '{}_to_std.nii.gz'.format(sj))
             pfi_roi_mask_not_adjusted = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted.nii.gz')
 
             assert os.path.exists(pfi_target_T1), pfi_target_T1
@@ -435,7 +435,7 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
-    lsm.input_subjects = ['4304', ]
+    lsm.input_subjects = ['13102', ]
     lsm.update_ls()
 
     print lsm.ls
