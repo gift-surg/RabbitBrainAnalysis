@@ -143,14 +143,15 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
     list_subjects = [file_name for file_name in os.listdir(pfo_where_parameter_files_are_stored)
                      if not file_name.endswith(".txt")]
 
-    list_PTB_ex_skull = []
-    list_PTB_ex_vivo  = []
-    list_PTB_in_vivo  = []
-    list_PTB_op_skull = []
-    list_ACS_ex_vivo  = []
-    list_TEST_ex_vivo = []
-    list_comments     = []
-    list_leftovers    = []
+    list_PTB_ex_skull   = []
+    list_PTB_ex_vivo    = []
+    list_PTB_in_vivo    = []
+    list_PTB_op_skull   = []
+    list_ACS_ex_vivo01  = []
+    list_ACS_ex_vivo02  = []
+    list_TEST_ex_vivo   = []
+    list_comments       = []
+    list_leftovers      = []
     for k in list_subjects:
         subj_k_parameters = pickle.load(open(jph(pfo_where_parameter_files_are_stored, k), 'r'))
         if subj_k_parameters['study'] == 'PTB':
@@ -165,12 +166,12 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
             else:
                 raise IOError('Unrecognised category for subject {}'.format(k))
         elif subj_k_parameters['study'] == 'ACS':
-            if subj_k_parameters['category'] == 'ex_vivo':
-                list_ACS_ex_vivo.append(k)
-            elif subj_k_parameters['category'] == 'ex_vivo01':
-                list_ACS_ex_vivo.append(k)
+            if subj_k_parameters['category'] == 'ex_vivo01':
+                list_ACS_ex_vivo01.append(k)
+            elif subj_k_parameters['category'] == 'ex_vivo02':
+                list_ACS_ex_vivo02.append(k)
             else:
-                raise IOError('Unrecognised category for subject {}'.format(k))
+                raise IOError('Unrecognised category for subject {} ACS'.format(k))
         elif subj_k_parameters['study'] == 'TestStudy':
             if subj_k_parameters['category'] == 'ex_vivo':
                 list_TEST_ex_vivo.append(k)
@@ -185,7 +186,8 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
     list_PTB_ex_vivo.sort(key=float)
     list_PTB_in_vivo.sort()
     list_PTB_op_skull.sort(key=float)
-    list_ACS_ex_vivo.sort(key=float)
+    list_ACS_ex_vivo01.sort(key=float)
+    list_ACS_ex_vivo02.sort(key=float)
     list_TEST_ex_vivo.sort()
 
     list_comments.sort()
@@ -202,8 +204,11 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
     print('PTB_op_skull: ')
     print(list_PTB_op_skull, len(list_PTB_op_skull))
 
-    print('ACS_ex_vivo: ')
-    print(list_ACS_ex_vivo, len(list_ACS_ex_vivo))
+    print('ACS_ex_vivo 01: ')
+    print(list_ACS_ex_vivo01, len(list_ACS_ex_vivo01))
+
+    print('ACS_ex_vivo 02: ')
+    print(list_ACS_ex_vivo02, len(list_ACS_ex_vivo02))
 
     print('TestStudy_ex_vivo: ')
     print(list_TEST_ex_vivo, len(list_TEST_ex_vivo))

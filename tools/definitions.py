@@ -22,15 +22,21 @@ if os.path.exists('/cluster/project0'):
     root_fit_apps = '/home/ferraris/software_lib/NiftyFit2/niftyfit-build/fit-apps/'
     num_cores_run = 8
 
-elif os.path.exists('/Volumes/LC/sebastianof/rabbits/'):
-    print('You are on the external hdd')
-    root_main_hdd = '/Volumes/LC/sebastianof'
-    root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
-    root_atlas = jph(root_main_hdd, 'rabbits', 'A_MultiAtlas')
-    root_atlas_BT = jph(root_main_hdd, 'rabbits', 'A_MultiAtlas_BT')
-    root_docs = jph(root_main_dropbox, 'docs')
-    root_study_rabbits = jph(root_main_hdd, 'rabbits')
+elif os.path.exists('/Volumes/SmartWare/'):
+    print('You are on emporium')
+    root_main_emporium = '/Volumes/SmartWare/'
+
+    root_study_rabbits = jph(root_main_emporium, 'rabbit')
+    root_atlas         = jph(root_study_rabbits, 'A_MultiAtlas')
+    root_atlas_BT      = jph(root_study_rabbits, 'A_MultiAtlas_BT')
+    root_utils         = jph(root_study_rabbits, 'A_data', 'Utils')
+    root_utils         = jph(root_study_rabbits, 'A_data', 'Utils')
+    assert os.path.isdir(root_study_rabbits), 'Connect emporium'
+
+    root_main_dropbox   = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
     root_shared_records = jph(root_main_dropbox, 'study', 'C_records')
+    assert os.path.isdir(root_study_rabbits), 'No dropbox available'
+
     bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc'
     root_fit_apps = ''
     num_cores_run = 8
@@ -49,8 +55,21 @@ elif os.path.exists('/Volumes/sebastianof/'):
     root_fit_apps = ''
     num_cores_run = 8
 
+elif os.path.exists('/Volumes/LC/sebastianof/rabbits/'):
+    print('You are on the external hdd')
+    root_main_hdd = '/Volumes/LC/sebastianof'
+    root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
+    root_atlas = jph(root_main_hdd, 'rabbits', 'A_MultiAtlas')
+    root_atlas_BT = jph(root_main_hdd, 'rabbits', 'A_MultiAtlas_BT')
+    root_docs = jph(root_main_dropbox, 'docs')
+    root_study_rabbits = jph(root_main_hdd, 'rabbits')
+    root_shared_records = jph(root_main_dropbox, 'study', 'C_records')
+    bfc_corrector_cmd = '/Applications/niftk-16.1.0/NiftyView.app/Contents/MacOS/niftkMTPDbc'
+    root_fit_apps = ''
+    num_cores_run = 8
+
 else:
-    print('No source data! YOU ARE WORKING IN LOCAL!')
+    print('NO SOURCE DATA! YOU ARE WORKING IN LOCAL!')
     root_study_rabbits = ''
     root_utils = ''
     root_main_dropbox = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'

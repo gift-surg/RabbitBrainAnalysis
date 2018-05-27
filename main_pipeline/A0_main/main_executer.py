@@ -9,8 +9,10 @@ from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subj
 from tools.definitions import pfo_subjects_parameters, root_atlas
 
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
-from main_pipeline.A1_convert_and_clean.apply_converter_to_all_data import convert_subjects_from_list
-from main_pipeline.A1_convert_and_clean.clean_converted_data import cleaner_converted_data_from_list
+from main_pipeline.A1_convert_and_clean.unzip_to_tmp_folder import unzip_single_sj
+from main_pipeline.A1_convert_and_clean.apply_converter_to_all_data import convert_single_subject
+from main_pipeline.A1_convert_and_clean.delete_in_tmp_folder import delete_unzipped_raw_data_single_subject
+from main_pipeline.A1_convert_and_clean.clean_converted_data import cleaner_converted_data_single_subject
 from main_pipeline.A2_process_modalities.process_DWI import process_DWI_from_list
 from main_pipeline.A2_process_modalities.process_MSME import process_MSME_from_list
 from main_pipeline.A2_process_modalities.process_T1 import process_T1_from_list
@@ -31,7 +33,7 @@ def main_runner(subj_list):
     # Set steps
 
     steps = {'reset_parameters'  : False,
-             'step_A1'           : False,
+             'step_A1'           : True,
              'step_A2_T1'        : True,
              'step_A2_DWI'       : False,
              'step_A2_MSME'      : False,
@@ -60,9 +62,15 @@ def main_runner(subj_list):
 
     ''' Step A1 - convert, clean and create aliases '''
     if steps['step_A1']:
+
         print('\nStep A1\n')
-        convert_subjects_from_list(subj_list)
-        cleaner_converted_data_from_list(subj_list)
+
+        for sj in subj_list:
+            unzip_single_sj(sj)
+            convert_single_subject(sj)
+            delete_unzipped_raw_data_single_subject(sj)
+
+            cleaner_converted_data_single_subject(sj)
 
     ''' Step A2 - T1 '''
     if steps['step_A2_T1']:
@@ -213,7 +221,7 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['5009', ]  # A all
 
-    lsm.input_subjects = ['13102', '13201', '13402', '13403']
+    lsm.input_subjects = ['12307', '12308', '12308', '12402']
 
     lsm.update_ls()
 

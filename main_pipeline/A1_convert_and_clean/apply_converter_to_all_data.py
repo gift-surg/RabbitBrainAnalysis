@@ -10,32 +10,36 @@ from LABelsToolkit.tools.aux_methods.utils import print_and_run
 from LABelsToolkit.tools.aux_methods.sanity_checks import check_path_validity
 
 
+def convert_single_subject(sj):
+    print '\n\nSubj {} conversion!\n'.format(sj)
+
+    sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+
+    study = sj_parameters['study']
+    category = sj_parameters['category']
+
+    pfo_input_sj = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category, sj)
+    check_path_validity(pfo_input_sj)
+    pfo_output = jph(root_study_rabbits, '02_nifti', study, category)
+    pfo_output_sj = jph(root_study_rabbits, '02_nifti', study, category, sj)
+
+    if os.path.exists(pfo_output_sj):
+        cmd = 'rm -r {}'.format(pfo_output_sj)
+        print('Folder {} where to convert the study exists already... ERASED!'.format(pfo_output_sj))
+        print_and_run(cmd)
+
+    conv = Bruker2Nifti(pfo_input_sj, pfo_output, study_name=sj)
+    conv.correct_slope = True
+    conv.verbose = 1
+    conv.convert()
+
+
 def convert_subjects_from_list(subj_list):
 
     print '\n\n CONVERTING SUBJECTS {} \n'.format(subj_list)
 
     for sj in subj_list:
-        print '\n\nSubj {} conversion!\n'.format(sj)
-
-        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
-
-        study = sj_parameters['study']
-        category = sj_parameters['category']
-
-        pfo_input_sj = jph(root_study_rabbits, '00_raw_data', study, category, sj)
-        check_path_validity(pfo_input_sj)
-        pfo_output = jph(root_study_rabbits, '01_nifti', study, category)
-        pfo_output_sj = jph(root_study_rabbits, '01_nifti', study, category, sj)
-
-        if os.path.exists(pfo_output_sj):
-            cmd = 'rm -r {}'.format(pfo_output_sj)
-            print('Folder {} where to convert the study exists already... ERASED!'.format(pfo_output_sj))
-            print_and_run(cmd)
-
-        conv = Bruker2Nifti(pfo_input_sj, pfo_output, study_name=sj)
-        conv.correct_slope = True
-        conv.verbose = 1
-        conv.convert()
+        convert_single_subject(sj)
 
 
 if __name__ == '__main__':

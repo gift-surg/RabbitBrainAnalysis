@@ -115,21 +115,25 @@ def clean_a_study(pfo_study):
                 warnings.warn(cmd)
 
 
+def cleaner_converted_data_single_subject(sj):
+    sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+    study = sj_parameters['study']
+    category = sj_parameters['category']
+    pfo_to_be_cleaned = jph(root_study_rabbits, '02_nifti', study, category, sj)
+    assert os.path.exists(pfo_to_be_cleaned), pfo_to_be_cleaned
+
+    print 'Study subject {} cleaning. \n'.format(sj)
+
+    clean_a_study(pfo_to_be_cleaned)
+
+
 def cleaner_converted_data_from_list(subj_list):
 
     print '\n\n CLEANING CONVERTER SUBJECTS {} \n'.format(subj_list)
     print subj_list
 
     for sj in subj_list:
-        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
-        study = sj_parameters['study']
-        category = sj_parameters['category']
-        pfo_to_be_cleaned = jph(root_study_rabbits, '01_nifti', study, category, sj)
-        assert os.path.exists(pfo_to_be_cleaned), pfo_to_be_cleaned
-
-        print 'Study subject {} cleaning. \n'.format(sj)
-
-        clean_a_study(pfo_to_be_cleaned)
+        cleaner_converted_data_single_subject(sj)
 
 
 if __name__ == '__main__':
