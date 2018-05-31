@@ -23,6 +23,7 @@ def unzip_single_sj(sj):
 
     # to 00_raw_data_unzipped_TMP
     pfo_output = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category)
+    print_and_run('mkdir -p {}'.format(pfo_output))
 
     # Unizp:
     cmd = 'tar -xvf {} -C {}'.format(pfi_input_sj_zip, pfo_output)
@@ -39,11 +40,14 @@ def unzip_single_sj(sj):
             pfi_unzipped_new_name = jph(pfo_output, sj)
             cmd = 'mv {} {}'.format(pfi_unzipped_old_name, pfi_unzipped_new_name)
             print_and_run(cmd)
-            break
+        elif p == str(sj):
+            # file is already in the correct format
+            file_found += 1
 
     if file_found != 1:
         raise IOError('Unzipped file was saved with a different naming convention. We found {} with string {} in it. '
-                      'Manual work required.'.format(file_found, '_HVDM_{}_'.format(sj)))
+                      'Manual work required. (Probably two subjects with the same name? '
+                      'Probably different covention to save filenames?)'.format(file_found, '_HVDM_{}_'.format(sj)))
 
 
 def unzip_subjects_from_list(subj_list):
@@ -62,7 +66,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['13202', ]
+    lsm.input_subjects = ['0104', ]
     lsm.update_ls()
 
     print lsm.ls

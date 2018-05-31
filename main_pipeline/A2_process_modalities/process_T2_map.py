@@ -45,7 +45,7 @@ def process_T2_map_per_subject(sj, controller):
     study = sj_parameters['study']
     category = sj_parameters['category']
 
-    pfo_input_sj_MSME = jph(root_study_rabbits, '01_nifti', study, category, sj, sj + '_MSME')
+    pfo_input_sj_MSME = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_MSME')
     pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
     pfo_mod = jph(pfo_output_sj, 'mod')
 

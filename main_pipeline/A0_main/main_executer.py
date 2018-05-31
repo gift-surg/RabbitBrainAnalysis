@@ -1,3 +1,4 @@
+import os
 from os.path import join as jph
 
 from tools.auxiliary.sanity_checks import check_libraries
@@ -28,21 +29,18 @@ def main_runner(subj_list):
 
     check_libraries()
 
-    # TODO check subject list, if the parameter files are not available stop here!
-
     # Set steps
-
     steps = {'reset_parameters'  : False,
              'step_A1'           : True,
              'step_A2_T1'        : True,
-             'step_A2_DWI'       : False,
+             'step_A2_DWI'       : True,
              'step_A2_MSME'      : False,
              'step_A2_T2maps'    : False,
              'step_A2_g_ratio'   : False,
-             'step_A3_move'      : False,
-             'step_A3_segment'   : False,
-             'step_A3_move_back' : False,
-             'step_A4'           : False}
+             'step_A3_move'      : True,
+             'step_A3_segment'   : True,
+             'step_A3_move_back' : True,
+             'step_A4'           : True}
 
     print('STEPS')
     for k in sorted(steps.keys()):
@@ -59,6 +57,15 @@ def main_runner(subj_list):
         print(sjs)
         print('Parameter re-computed. The pipeline ends here')
         return
+
+    ''' check parameter files for each subjects: '''
+    list_of_not_in_parameters = []
+    for sj in subj_list:
+        pfi_sj_parameter = jph(pfo_subjects_parameters, sj)
+        if not os.path.exists(pfi_sj_parameter):
+            list_of_not_in_parameters.append(sj)
+    if len(list_of_not_in_parameters) > 0:
+        raise IOError('Subjects {} does not have parameters.'.format(list_of_not_in_parameters))
 
     ''' Step A1 - convert, clean and create aliases '''
     if steps['step_A1']:
@@ -221,7 +228,8 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['5009', ]  # A all
 
-    lsm.input_subjects = ['12307', '12308', '12308', '12402']
+    # lsm.input_subjects = ['13004', '13102', '13201', '13202', '13401', '13402', '13403']
+    lsm.input_subjects = ['13403retest', ]
 
     lsm.update_ls()
 

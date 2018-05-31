@@ -186,7 +186,7 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
     list_PTB_ex_vivo.sort(key=float)
     list_PTB_in_vivo.sort()
     list_PTB_op_skull.sort(key=float)
-    list_ACS_ex_vivo01.sort(key=float)
+    list_ACS_ex_vivo01.sort()
     list_ACS_ex_vivo02.sort(key=float)
     list_TEST_ex_vivo.sort()
 

@@ -137,11 +137,11 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
     #
-    lsm.input_subjects = ['4601', '4603']  # ['4406', '4501', '4504', '4507', '4601', '4602', '4603', '4901', '4903', '4905', '5001', '5003', '5007']
+    lsm.input_subjects = ['12610', ]  # ['4406', '4501', '4504', '4507', '4601', '4602', '4603', '4901', '4903', '4905', '5001', '5003', '5007']
     #
     lsm.update_ls()
 
-    coordinates_ = 'original'
+    coordinates_ = 'stereotaxic'
     print('Quality control for subjects \n{}'.format(lsm.ls))
 
     open_from_list_subject(lsm.ls, coordinates_)

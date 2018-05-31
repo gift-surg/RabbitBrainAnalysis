@@ -22,7 +22,7 @@ def data_to_folder_structure_for_subject(sj):
     study = sj_parameters['study']
     category = sj_parameters['category']
 
-    pfo_sj_nifti = jph(root_study_rabbits, '01_nifti', study, category, sj)
+    pfo_sj_nifti = jph(root_study_rabbits, '02_nifti', study, category, sj)
     pfo_sj_data = jph(root_study_rabbits, 'A_data', study, category, sj)
 
     assert os.path.exists(pfo_sj_nifti), pfo_sj_nifti

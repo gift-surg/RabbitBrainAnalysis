@@ -2,10 +2,11 @@ import os
 from os.path import join as jph
 import pickle
 
+from LABelsToolkit.tools.aux_methods.utils import print_and_run
+
 from tools.definitions import pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits
-from LABelsToolkit.tools.aux_methods.utils import print_and_run
 
 
 def delete_unzipped_raw_data_single_subject(sj):
@@ -21,8 +22,13 @@ def delete_unzipped_raw_data_single_subject(sj):
     assert os.path.exists(pfi_raw_unzipped)
 
     cmd = 'rm -r {}'.format(pfi_raw_unzipped)
-    print('Folder {} where unzip the study exists already... ERASED!'.format(pfo_output_sj))
     print_and_run(cmd)
+
+    pfi_file_for_MAC = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category, '__MACOSX')
+    if os.path.exists(pfi_file_for_MAC):
+        cmd = 'rm -r {}'.format(pfi_file_for_MAC)
+        print_and_run(cmd)
+
 
 def delete_unzipped_raw_data_from_list(subj_list):
     print '\n\n DELETING TMP CONVERTED SUBJECTS {} \n'.format(subj_list)

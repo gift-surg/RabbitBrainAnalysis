@@ -30,14 +30,14 @@ if 0:
     conv = Bruker2Nifti(source, destination, study_name='3604')
     conv.convert()
 
-    # clean_a_study('/Users/sebastianof/rabbits/01_nifti/PTB/ex_vivo/3604')
+    # clean_a_study('/Users/sebastianof/rabbits/02_nifti/PTB/ex_vivo/3604')
     clean_a_study('/Users/sebastiano/Downloads/ex_vivo/3604')
 
 if 1:
     source = '/Volumes/sebastianof/rabbits/00_raw_data/test_study/Trial_0702'
-    destination = '/Volumes/sebastianof/rabbits/01_nifti/test_study/'
+    destination = '/Volumes/sebastianof/rabbits/02_nifti/test_study/'
     conv = Bruker2Nifti(source, destination, study_name='Trial_0702')
     conv.convert()
 
-    # clean_a_study('/Users/sebastianof/rabbits/01_nifti/PTB/ex_vivo/3604')
-    clean_a_study('/Volumes/sebastianof/rabbits/01_nifti/test_study/Trial_0702')
+    # clean_a_study('/Users/sebastianof/rabbits/02_nifti/PTB/ex_vivo/3604')
+    clean_a_study('/Volumes/sebastianof/rabbits/02_nifti/test_study/Trial_0702')

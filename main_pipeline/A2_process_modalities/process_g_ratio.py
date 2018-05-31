@@ -24,8 +24,8 @@ def process_g_ratio_per_subject(sj, controller):
     study = sj_parameters['study']
     category = sj_parameters['category']
 
-    pfo_input_sj_DWI = jph(root_study_rabbits, '01_nifti', study, category, sj, sj + '_DWI')
-    pfo_input_sj_MSME = jph(root_study_rabbits, '01_nifti', study, category, sj, sj + '_MSME')
+    pfo_input_sj_DWI = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_DWI')
+    pfo_input_sj_MSME = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_MSME')
     pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
 
     # input sanity check:

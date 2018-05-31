@@ -21,7 +21,7 @@ def convert_single_subject(sj):
     pfo_input_sj = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category, sj)
     check_path_validity(pfo_input_sj)
     pfo_output = jph(root_study_rabbits, '02_nifti', study, category)
-    pfo_output_sj = jph(root_study_rabbits, '02_nifti', study, category, sj)
+    pfo_output_sj = jph(pfo_output, sj)
 
     if os.path.exists(pfo_output_sj):
         cmd = 'rm -r {}'.format(pfo_output_sj)
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['1201', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['13201', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

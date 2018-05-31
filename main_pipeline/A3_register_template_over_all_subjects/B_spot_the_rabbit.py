@@ -53,7 +53,7 @@ def spot_a_list_of_rabbits(subjects_list):
         spot_sj.bfc_corrector_cmd = bfc_corrector_cmd
         spot_sj.num_cores_run     = num_cores_run
 
-        if sj_parameters['category'] == 'ex_vivo':
+        if sj_parameters['category'] == 'ex_vivo' or sj_parameters['category'] == 'ex_vivo01' or sj_parameters['category'] == 'ex_vivo02':
 
             # --- Propagator option
             spot_sj.propagation_options['Affine_modalities']        = ('T1', 'FA')

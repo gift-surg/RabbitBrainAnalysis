@@ -52,7 +52,7 @@ def process_DWI_per_subject(sj, controller):
 
     study = sj_parameters['study']
     category = sj_parameters['category']
-    pfo_input_sj_DWI = jph(root_study_rabbits, '01_nifti', study, category, sj, sj + '_DWI')
+    pfo_input_sj_DWI = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_DWI')
     pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
 
     if sj not in list_all_subjects(pfo_subjects_parameters):

@@ -48,7 +48,7 @@ def process_T1_per_subject(sj, step):
 
     options = sj_parameters['options_T1']
 
-    pfo_input_sj_3D = jph(root_study_rabbits, '01_nifti', study, category, sj, sj + '_3D')
+    pfo_input_sj_3D = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_3D')
     pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
 
     # input sanity check:
@@ -193,7 +193,7 @@ def process_T1_per_subject(sj, step):
             assert os.path.exists(pfi_target_T1), pfi_target_T1
             assert os.path.exists(pfi_roi_mask_not_adjusted), pfi_roi_mask_not_adjusted
 
-            pfi_output_brain_mask = jph(pfo_mask, '{}_T1_brain_mask.nii.gz')
+            pfi_output_brain_mask = jph(pfo_mask, '{}_T1_brain_mask.nii.gz'.format(sj))
 
             alpha = 0
             if options['roi_mask'] == 'MA':
@@ -213,8 +213,8 @@ def process_T1_per_subject(sj, step):
 
         if options['roi_mask'] == 'BTMA' or options['roi_mask'] == 'MA':
             # -> we have a brain mask
-            pfi_output_brain_mask = jph(pfo_tmp, '{}_T1_brain_mask.nii.gz')
-            assert os.path.exists(pfi_output_brain_mask)
+            pfi_output_brain_mask = jph(pfo_mask, '{}_T1_brain_mask.nii.gz'.format(sj))
+            assert os.path.exists(pfi_output_brain_mask), pfi_output_brain_mask
 
             cmd = 'seg_maths {0} -dil 3 {1}'.format(pfi_output_brain_mask,
                                                     pfi_roi_mask)
@@ -367,14 +367,14 @@ def process_T1_per_subject(sj, step):
         # output:
         pfi_reg_mask = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
 
-        pfi_output_brain_mask = jph(pfo_mask, '{}_T1_brain_mask.nii.gz')
+        pfi_output_brain_mask = jph(pfo_mask, '{}_T1_brain_mask.nii.gz'.format(sj))
         if options['slim'] and os.path.exists(pfi_output_brain_mask):
             # --- CASE 1 A
             pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
             assert os.path.exists(pfi_lesion_mask), pfi_lesion_mask
 
             # registration mask = brain mask - lesion mask
-            pfi_brain_mask_and_lesion_mask = jph(pfo_tmp, '{}_T1_BM_and_LM.nii.gz')
+            pfi_brain_mask_and_lesion_mask = jph(pfo_tmp, '{}_T1_BM_and_LM.nii.gz'.format(sj))
             cmd11 = 'seg_maths {0} -mul {1} {2}'.format(pfi_output_brain_mask, pfi_lesion_mask, pfi_brain_mask_and_lesion_mask)
             print_and_run(cmd11)
             cmd22 = 'seg_maths {0} -sub {1} {2}'.format(pfi_output_brain_mask, pfi_brain_mask_and_lesion_mask, pfi_reg_mask)
@@ -417,10 +417,10 @@ if __name__ == '__main__':
     print('process T1, local run. ')
 
     controller_steps = {'orient_to_standard'       : False,
-                        'create_roi_masks'         : True,
+                        'create_roi_masks'         : False,
                         'adjust_mask'              : True,
                         'cut_masks'                : True,
-                        'step_bfc'                 : False,
+                        'step_bfc'                 : True,
                         'create_lesion_maks'       : True,
                         'create_reg_mask'          : True,
                         'save_results'             : True}
@@ -435,7 +435,7 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
-    lsm.input_subjects = ['13102', ]
+    lsm.input_subjects = ['13004', ]
     lsm.update_ls()
 
     print lsm.ls
