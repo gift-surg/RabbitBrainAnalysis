@@ -12,7 +12,7 @@ from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescri
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
 
 
-root_output = jph(root_study_rabbits, 'B_stats', 'ACS_02')
+root_output = jph(root_study_rabbits, 'B_stats', 'PTB_very_latest')
 
 
 def subject_comparison_total_volume(sj_list, controller, subjects_grouping=None, coord_system='original'):
@@ -177,7 +177,7 @@ def subject_comparison_volume_per_region(sj_list, ldm, labels_num, controller, s
 
 def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, controller, subjects_grouping=None,
                                                       macro_label_name=None, coord_system='original', mod='FA',
-                                                      cleaning=None):
+                                                      cleaning='', eroded=False):
     """
     Analyse the data in the report folder, FA or MD per region
     :param sj_list:
@@ -190,6 +190,7 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
     :param cleaning: method to clean the data.
     :return:
     """
+    print('\n\n-------------------')
     print('subject_comparison_values_below_labels_per_region {} for subjects {}, mod {}'.format(labels_num, sj_list, mod))
 
     dict_labels = ldm.get_dict()
@@ -202,8 +203,13 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
         macro_label_name = macro_label_name.strip().replace(' ', 'AND')
 
     # output data
-    pfi_where_to_save_data_below_macro_region_for_mod_for_subjects = \
-        jph(root_output, 'data_below_{}_regions_{}_{}.pickle'.format(mod, macro_label_name, coord_system))
+
+    if eroded:
+        pfi_where_to_save_data_below_macro_region_for_mod_for_subjects = \
+            jph(root_output, 'data_below_{}_regions_{}_{}{}_eroded.pickle'.format(mod, macro_label_name, coord_system, cleaning))
+    else:
+        pfi_where_to_save_data_below_macro_region_for_mod_for_subjects = \
+            jph(root_output, 'data_below_{}_regions_{}_{}{}.pickle'.format(mod, macro_label_name, coord_system, cleaning))
 
     if controller['get_data']:
         print('--- get data')
@@ -218,13 +224,23 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
             list_data_below_labels_for_sj = []
             for l, l_names in zip(labels_num, labels_names):
 
-                if coord_system == 'original':
-                    pfi_report_mod = jph(root_subject_input, 'report', '{}_{}_{}_{}.csv'.format(sj_id, mod, l, l_names))
-                elif coord_system == 'stereotaxic':
-                    pfi_report_mod = jph(root_subject_input, 'stereotaxic', 'report',
-                                          '{}stx_{}_{}_{}.csv'.format(sj_id, mod, l, l_names))
+                if eroded:
+
+                    if coord_system == 'original':
+                        pfi_report_mod = jph(root_subject_input, 'report', '{}_{}_{}_{}_eroded.csv'.format(sj_id, mod, l, l_names))
+                    elif coord_system == 'stereotaxic':
+                        pfi_report_mod = jph(root_subject_input, 'stereotaxic', 'report', '{}stx_{}_{}_{}_eroded.csv'.format(sj_id, mod, l, l_names))
+                    else:
+                        raise IOError
+
                 else:
-                    raise IOError
+
+                    if coord_system == 'original':
+                        pfi_report_mod = jph(root_subject_input, 'report', '{}_{}_{}_{}.csv'.format(sj_id, mod, l, l_names))
+                    elif coord_system == 'stereotaxic':
+                        pfi_report_mod = jph(root_subject_input, 'stereotaxic', 'report', '{}stx_{}_{}_{}.csv'.format(sj_id, mod, l, l_names))
+                    else:
+                        raise IOError
 
                 assert os.path.exists(pfi_report_mod), pfi_report_mod
 
@@ -232,10 +248,24 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
 
             all_data = np.concatenate(list_data_below_labels_for_sj)
 
-            if cleaning == 'remove outliers':
+            if cleaning == '':
+                pass
+
+            elif cleaning == '_no_outliers':
                 q25, q75 = np.percentile(all_data, 25), np.percentile(all_data, 75)
                 iqr = q75 - q25
-                all_data = all_data[(all_data > q25 - 1.5 * iqr) + (all_data < q75 + 1.5 * iqr)]
+                len_all_data = len(all_data)
+                all_data = [j for j in all_data if (q25 - 1.5 * iqr < j < q75 + 1.5 * iqr)]
+                print('outliers removed subject {}: {}'.format(sj_id, len_all_data - len(all_data)))
+
+            elif cleaning == '_only_iqr':
+                q25, q75 = np.percentile(all_data, 25), np.percentile(all_data, 75)
+                len_all_data = len(all_data)
+                all_data = [j for j in all_data if (q25 < j < q75)]
+                print('outside interquartile removed subject {}: {}'.format(sj_id, len_all_data - len(all_data)))
+
+            else:
+                raise IOError
 
             tot_data_distribution.update({sj_id: all_data})
 
@@ -275,7 +305,12 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
 
         # plt.show()
 
-        plt.savefig(jph(root_output, '{}region{}_{}.pdf'.format(mod, macro_label_name, coord_system)), format='pdf',
+        if eroded:
+            pfi_where_to_save_fig = jph(root_output, '{}region{}_{}{}_eroded.pdf'.format(mod, macro_label_name, coord_system, cleaning))
+        else:
+            pfi_where_to_save_fig = jph(root_output, '{}region{}_{}{}.pdf'.format(mod, macro_label_name, coord_system, cleaning))
+
+        plt.savefig(pfi_where_to_save_fig, format='pdf',
                     dpi=200)
         plt.close()
 
@@ -285,8 +320,12 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
         se = pa.Series([np.median(tot_data_distribution[k]) for k in tot_data_distribution.keys()], index=tot_data_distribution.keys())
         se = se.sort_index()
 
-        pfi_wher_to_save_medians = jph(root_output, 'Median_below_{}_region{}_{}.csv'.format(mod, macro_label_name, coord_system))
-        se.to_csv(pfi_wher_to_save_medians)
+        if eroded:
+            pfi_where_to_save_medians = jph(root_output, 'Median_below_{}_region{}_{}{}_eroded.csv'.format(mod, macro_label_name, coord_system, cleaning))
+        else:
+            pfi_where_to_save_medians = jph(root_output, 'Median_below_{}_region{}_{}{}.csv'.format(mod, macro_label_name, coord_system, cleaning))
+
+        se.to_csv(pfi_where_to_save_medians)
 
 if __name__ == '__main__':
 
@@ -308,46 +347,46 @@ if __name__ == '__main__':
                    'get_graphs'   : True,
                    'save_medians' : True}
 
-    # subjects = ['12307' , '12308', '12504', '12505', '12607', '12608', '12609', '12610', '12309']
-    # # subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
-    # subjects_grouping_ = [4, 4, 1]
+    preterm = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '2002',
+               '3301', '3303', '3404', '4302',  '4304', '4305', '4901',
+               '4903', '5001']
 
-    #
-    # subjects = ['12307' , '12308', '12504', '12505', '12607', '12608', '12609', '12610', '12309', '12402'] + ['13103', '13108', '13301', '13307', '13401', '13403', '13404'] + ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
-    # subjects_grouping_ = [4, 4, 1, 1, 14]
+    # '1501', '1504' '1508', '1509', '1511', '2013', '2202', '2205', '2206' : in vivo and not in subjects parameters.
+    # '4303','4406', :  rejected.
 
-    # subjects = ['12001', '1201', '1203', '1305', '1404', '1505', '1507', '1510', '1702', '1805', '2002', '2502', '2503',
-    #             '2608', '2702', '3301', '3303', '3404', '4302', '4304', '4305',  '4501', '4504',
-    #             '4901', '4903', '4905', '5001', '5003', '5007', '5009']  # '4303', '4406', '4507', '4601','4602','4603',
-    #
-    # preterm = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '2002', '3301', '3303', '4901', '4903', '4905', '5001', '5003', '5007', '5009', '4302', '4304', '4305']
-    # term    = ['1702', '1805', '2502', '2503', '2608', '2702', '3404',  '4501', '4504', '12001']  # '4507', '4601', '4603'
-    #
-    #
-    # subjects = preterm + term
-    # subjects_grouping_ = [len(preterm), len(term)]
+    term = ['1702', '1805', '2502', '2503', '2608',  '4501', '4504', '4507', '4601',  '4603', '13003', '13004',
+            '13005', '13006']
+    # '2605', '2702', '4602',  Rejected.
 
-    # print subjects_grouping_
-    # print sum(subjects_grouping_)
+    subjects = preterm + term
 
-    # subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610']
-    # subjects_grouping_ = [6, 4]
+    subjects_not_present = []
 
-    subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404', '13405', '13501', '13505', '13507', '13602', '13604', '13606']
-    subjects_grouping_ = None
+    for sj in subjects:
+        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
+        study = sj_parameters['study']
+        category = sj_parameters['category']
+        sj_report_input = jph(root_study_rabbits, 'A_data', study, category, sj, 'stereotaxic', 'report',)
+
+        if not os.path.exists(sj_report_input):
+            subjects_not_present.append(sj)
+
+    print subjects_not_present
+
+    subjects_grouping_ = [len(preterm), len(term)]
 
     ldm = LdM(pfi_labels_descriptor)
 
     if True:
         # total volumes stereotaxic coordinates as histogram:
         subject_comparison_total_volume(subjects, controller=controller_, subjects_grouping=subjects_grouping_,
-                                        coord_system='original')
+                                        coord_system='stereotaxic')
 
     if True:
         # single regions volume across subjects as histogram:
         for reg in ptb_related_regions.keys():
 
-            for coordinates in ['original', 'stereotaxic']:
+            for coordinates in ['stereotaxic']:  # 'original',
                 subject_comparison_volume_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
                                                      subjects_grouping_, macro_label_name=reg, coord_system=coordinates,
                                                      cleaning=None)
@@ -355,18 +394,57 @@ if __name__ == '__main__':
     if True:
         for reg in ptb_related_regions.keys():
 
-            for coordinates in ['original', 'stereotaxic']:
+            for coordinates in ['stereotaxic']:  # 'original',
 
-                # comparison FA
+                # ---- Without erosion
+
+                # comparison FA - no erosion, no outliers filter
                 subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
                                                                   subjects_grouping_, macro_label_name=reg,
-                                                                  coord_system=coordinates, mod='FA', cleaning=None)
+                                                                  coord_system=coordinates, mod='FA',
+                                                                  cleaning='', eroded=False)
 
-                # comparison MD
+                # comparison MD - no erosion, no outliers filter
                 subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
                                                                   subjects_grouping_, macro_label_name=reg,
-                                                                      coord_system=coordinates, mod='MD', cleaning=None)
+                                                                      coord_system=coordinates, mod='MD',
+                                                                      cleaning='', eroded=False)
 
-    # total volumes stereotaxic coordinates as histogram:
+                # comparison FA - no erosion, outliers filter
+                subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
+                                                                  subjects_grouping_, macro_label_name=reg,
+                                                                  coord_system=coordinates, mod='FA',
+                                                                  cleaning='_no_outliers', eroded=False)
 
+                # comparison MD - no erosion, outliers filter
+                subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
+                                                                  subjects_grouping_, macro_label_name=reg,
+                                                                  coord_system=coordinates, mod='MD',
+                                                                  cleaning='_no_outliers', eroded=False)
 
+                # # ---- With erosion
+                # if coordinates  == 'stereotaxic':
+                #
+                #     # comparison FA - erosion, no outliers filter
+                #     subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
+                #                                                       subjects_grouping_, macro_label_name=reg,
+                #                                                       coord_system=coordinates, mod='FA',
+                #                                                       cleaning='', eroded=True)
+                #
+                #     # comparison MD - erosion, no outliers filter
+                #     subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
+                #                                                       subjects_grouping_, macro_label_name=reg,
+                #                                                       coord_system=coordinates, mod='MD',
+                #                                                       cleaning='', eroded=True)
+                #
+                #     # comparison FA - erosion, outliers filter
+                #     subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
+                #                                                       subjects_grouping_, macro_label_name=reg,
+                #                                                       coord_system=coordinates, mod='FA',
+                #                                                       cleaning='_no_outliers', eroded=True)
+                #
+                #     # comparison MD - erosion, outliers filter
+                #     subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
+                #                                                       subjects_grouping_, macro_label_name=reg,
+                #                                                       coord_system=coordinates, mod='MD',
+                #                                                       cleaning='_no_outliers', eroded=True)

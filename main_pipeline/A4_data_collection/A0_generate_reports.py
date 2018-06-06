@@ -13,6 +13,7 @@ import nibabel as nib
 from os.path import join as jph
 import pickle
 
+from LABelsToolkit.main import LABelsToolkit as LaB
 from LABelsToolkit.tools.caliber.volumes_and_values import get_volumes_per_label
 from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
 
@@ -21,7 +22,25 @@ from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_l
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 
 
-def generate_reports_for_subject(sj, controller, ldm):
+def create_eroded_segmentations_if_not_already_created(pfi_segm_non_eroded, pfi_contour, pfi_segm_eroded):
+
+    if os.path.exists(pfi_segm_eroded):
+        print('eroded segmentation for {} already created.'.format(pfi_segm_eroded))
+    else:
+
+        print('Getting contour segmentation {}'.format(pfi_segm_non_eroded))
+
+        lab = LaB()
+        lab.manipulate_intensities.get_contour_from_segmentation(pfi_segm_non_eroded, pfi_contour, verbose=1)
+
+        cmd = 'seg_maths {} -sub {} {}'.format(pfi_segm_non_eroded, pfi_contour, pfi_segm_eroded)
+
+        print('Getting eroded segmentation {}'.format(pfi_segm_non_eroded))
+        print(cmd)
+        os.system(cmd)
+
+
+def generate_reports_for_subject(sj, controller, options, ldm):
     """
     :param sj: list of subjects
     :param ldm: instance of the class LabelsDescriptorManager from LABelsToolkit. This contains the informations
@@ -57,7 +76,6 @@ def generate_reports_for_subject(sj, controller, ldm):
     os.system('mkdir {}'.format(pfo_sj_report))
 
     # --- Path to file input
-    # allow for manual adjustment options:
     pfi_segm_T1 = jph(pfo_sj_segm, '{}_T1_segm.nii.gz'.format(sj))
     pfi_segm_S0 = jph(pfo_sj_segm, '{}_S0_segm.nii.gz'.format(sj))
 
@@ -91,7 +109,7 @@ def generate_reports_for_subject(sj, controller, ldm):
 
         assert im_segm.shape == im_anat.shape
 
-        for k, reg in zip(labels_list, labels_names):
+        for k, reg in zip(labels_list[1:], labels_names[1:]):
 
             coords = np.where(im_segm.get_data() == k)
             FA_region_k = im_anat.get_data()[coords].flatten()
@@ -113,7 +131,7 @@ def generate_reports_for_subject(sj, controller, ldm):
 
         assert im_segm.shape == im_anat.shape
 
-        for k, reg in zip(labels_list, labels_names):
+        for k, reg in zip(labels_list[1:], labels_names[1:]):
             coords = np.where(im_segm.get_data() == k)
             MD_region_k = im_anat.get_data()[coords].flatten()
 
@@ -126,7 +144,7 @@ def generate_reports_for_subject(sj, controller, ldm):
 
     # ---------------------------
     # -------- STEREOTAXIC ------
-    # ---------------------------
+    # ---------------------------  Eroded version of the segmentation can be done only in stereotaxic.
 
     # Path to file input:
 
@@ -140,11 +158,22 @@ def generate_reports_for_subject(sj, controller, ldm):
 
     os.system('mkdir {}'.format(pfo_sj_report_stx))
 
-    pfi_segm_stx = jph(pfo_sj_segm_stx, '{}_segm_man.nii.gz'.format(sj))
-    if not os.path.exists(pfi_segm_stx):
-        pfi_segm_stx = jph(pfo_sj_segm_stx, '{}_segm.nii.gz'.format(sj))
-    if not os.path.exists(pfi_segm_stx):
-        pfi_segm_stx = jph(pfo_sj_segm_stx, 'automatic', '{}_{}.nii.gz'.format(sj, 'MV_P2'))
+    # --- Select manually the input segmentation:
+
+    pfi_segm_stx = jph(pfo_sj_segm_stx, '{}_segm.nii.gz'.format(sj))
+
+    if options['erosion']:
+        print('Creating eroded segmentation if not already there\n')
+        pfi_segm_stx_contour = jph(pfo_sj_segm_stx, '{}_segm_contour.nii.gz'.format(sj))
+        pfi_segm_stx_eroded = jph(pfo_sj_segm_stx, '{}_segm_eroded.nii.gz'.format(sj))
+        create_eroded_segmentations_if_not_already_created(pfi_segm_stx, pfi_segm_stx_contour, pfi_segm_stx_eroded)
+
+    #
+    # if not os.path.exists(pfi_segm_stx):
+    #     pfi_segm_stx = jph(pfo_sj_segm_stx, '{}_segm_man.nii.gz'.format(sj))
+    #
+    # if not os.path.exists(pfi_segm_stx):
+    #     pfi_segm_stx = jph(pfo_sj_segm_stx, 'automatic', '{}_{}.nii.gz'.format(sj, 'MV_P2'))
 
     assert os.path.exists(pfi_segm_stx)
 
@@ -172,16 +201,25 @@ def generate_reports_for_subject(sj, controller, ldm):
         Get the files under report, for subject sj, region reg and corresponding label lab as
         <sj>_FA_<reg>_<lab>.csv
         """
-        im_segm = nib.load(pfi_segm_stx)
+
         im_anat = nib.load(pfi_anat_FA_stx)
+
+        if options['erosion']:
+            im_segm = nib.load(pfi_segm_stx_eroded)
+        else:
+            im_segm = nib.load(pfi_segm_stx)
 
         assert im_segm.shape == im_anat.shape
 
-        for k, reg in zip(labels_list, labels_names):
+        for k, reg in zip(labels_list[1:], labels_names[1:]):
             coords = np.where(im_segm.get_data() == k)
             FA_region_k = im_anat.get_data()[coords].flatten()
 
-            pfi_sj_FA_regions_stx = jph(pfo_sj_report_stx, '{}stx_FA_{}_{}.csv'.format(sj, k, reg))
+            if options['erosion']:
+                pfi_sj_FA_regions_stx = jph(pfo_sj_report_stx, '{}stx_FA_{}_{}_eroded.csv'.format(sj, k, reg))
+            else:
+                pfi_sj_FA_regions_stx = jph(pfo_sj_report_stx, '{}stx_FA_{}_{}.csv'.format(sj, k, reg))
+
             np.savetxt(pfi_sj_FA_regions_stx, FA_region_k)
 
             print('FA stereotaxic region {}, saved under {}'.format(k, pfi_sj_FA_regions_stx))
@@ -193,16 +231,24 @@ def generate_reports_for_subject(sj, controller, ldm):
         Get the files under report, for subject sj, region reg and corresponding label lab as
         <sj>_MD_<reg>_<lab>.csv
         """
-        im_segm = nib.load(pfi_segm_stx)
         im_anat = nib.load(pfi_anat_MD_stx)
+
+        if options['erosion']:
+            im_segm = nib.load(pfi_segm_stx_eroded)
+        else:
+            im_segm = nib.load(pfi_segm_stx)
 
         assert im_segm.shape == im_anat.shape
 
-        for k, reg in zip(labels_list, labels_names):
+        for k, reg in zip(labels_list[1:], labels_names[1:]):
             coords = np.where(im_segm.get_data() == k)
             MD_region_k = im_anat.get_data()[coords].flatten()
 
-            pfi_sj_MD_regions_stx = jph(pfo_sj_report_stx, '{}stx_MD_{}_{}.csv'.format(sj, k, reg))
+            if options['erosion']:
+                pfi_sj_MD_regions_stx = jph(pfo_sj_report_stx, '{}stx_MD_{}_{}_eroded.csv'.format(sj, k, reg))
+            else:
+                pfi_sj_MD_regions_stx = jph(pfo_sj_report_stx, '{}stx_MD_{}_{}.csv'.format(sj, k, reg))
+
             np.savetxt(pfi_sj_MD_regions_stx, MD_region_k)
 
             print('MD stereotaxic region {}, saved under {}.'.format(k, pfi_sj_MD_regions_stx))
@@ -221,7 +267,7 @@ def generate_reports_for_subject(sj, controller, ldm):
         tg.update_tag(pfi_to_sj_param_file, pfi_to_spotter_param_file)
 
 
-def generate_reports_from_list(sj_list, controller):
+def generate_reports_from_list(sj_list, controller, options):
     # Load regions with labels_descriptor_manager:
 
     ldm = LdM(pfi_labels_descriptor)
@@ -233,7 +279,7 @@ def generate_reports_from_list(sj_list, controller):
         print("{0} : '{1}',".format(d, label_descriptor_dict[d][2]))
 
     for sj_id in sj_list:
-        generate_reports_for_subject(sj_id, controller=controller, ldm=ldm)
+        generate_reports_for_subject(sj_id, controller=controller, ldm=ldm, options=options)
 
 
 if __name__ == '__main__':
@@ -250,21 +296,36 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['12504', '12505', '12607']
     # lsm.input_subjects = ['12608', '12609', '12610']
 
-    lsm.input_subjects   = ['4601', '4603']  # ['5009']  # '12308', '12402', '12504', '12505', '12607', '12608', '12609', '12610']  # ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
+    # lsm.input_subjects   = ['4601', '4603']  # ['5009']  # '12308', '12402', '12504', '12505', '12607', '12608', '12609', '12610']  # ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
+
+    preterm = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '2002', '3301', '3303', '3404', '4302', '4304',
+               '4305', '4901', '4903', '5001']
+
+    # '1501', '1504' '1508', '1509', '1511', '2013', '2202', '2205', '2206' : in vivo and not in subjects parameters.
+    # '4303','4406', :  rejected.
+
+    term = ['1702', '1805', '2502', '2503', '2608', '4501', '4504', '4507', '4601', '4603', '13003', '13004', '13005',
+            '13006']
+    # '2605', '2702', '4602',  Rejected.
+
+    lsm.input_subjects = preterm + term
+
 
     lsm.update_ls()
 
     print(lsm.ls)
 
-    controller_ = {'Force_reset'              : True,
-                   'Volumes_per_region'       : True,
-                   'FA_per_region'            : True,
-                   'MD_per_region'            : True,
-                   'Volumes_per_region_stx'   : True,
+    controller_ = {'Force_reset'              : False,
+                   'Volumes_per_region'       : False,
+                   'FA_per_region'            : False,
+                   'MD_per_region'            : False,
+                   'Volumes_per_region_stx'   : False,
                    'FA_per_region_stx'        : True,
                    'MD_per_region_stx'        : True,
-                   'Generate_tag'             : True
+                   'Generate_tag'             : False
                    }
 
-    generate_reports_from_list(lsm.ls, controller_)
+    options_ = {'erosion': True}
+
+    generate_reports_from_list(lsm.ls, controller_, options_)

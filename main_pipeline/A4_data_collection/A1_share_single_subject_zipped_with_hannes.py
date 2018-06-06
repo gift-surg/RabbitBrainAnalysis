@@ -45,7 +45,20 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['13004', ]
+    # preterm = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '2002',
+    #            '3301', '3303', '3404', '4302', '4304', '4305', '4901',
+    #            '4903', '5001']
+    #
+    # # '1501', '1504' '1508', '1509', '1511', '2013', '2202', '2205', '2206' : in vivo and not in subjects parameters.
+    # # '4303','4406', :  not yet elaborated.
+    #
+    # term = ['2502', '2503', '2608', '4501', '4504', '4507', '4601', '4603', '13003', '13004',
+    #         '13005', '13006']
+    # # '2605', '2702', '4602',  not yet elaborated.
+    #
+    # lsm.input_subjects = preterm + term
+
+    lsm.input_subjects = ['1702', '1805']
 
     lsm.update_ls()
 
