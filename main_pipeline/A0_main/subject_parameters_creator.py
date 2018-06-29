@@ -2053,8 +2053,8 @@ def reset_parameters_files(pfo_where_to_save):
     sp.in_atlas = False
     sp.b0_level = 7
     sp.options_T1 = {'roi_mask': "BTMA",  # Can be BTMA, MA, Pivotal
-                     'pivot': '1305', # name of a template reference to get the roi mask or a first approximation (if in vivo '1504t1')
-                     'slim': False,  # if you want to have the slim mask. 'roi_mask' must be "BTMA" or "MA" for it to be true.
+                     'pivot': '1305',  # name of a template reference to get the roi mask or a first approximation (if in vivo '1504t1')
+                     'slim': False,  # if you want to use the slim mask. 'roi_mask' must be "BTMA" or "MA" for it to be true.
                      'crop_roi': False,  # To cut the T1 according to the ROI mask.
                      'lesion_mask_method': 0,  # can be the total number of gaussians for a MoG approach, or 0 if you want to use the given percentile
                      'median_filter': True  # if 'reg_mask' > 1 as pre-processing before the gaussians.
@@ -2080,7 +2080,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
-    sp.options_T1 = {'roi_mask': "BTMA",  # Can be BTMA, MA, Pivotal
+    sp.options_T1 = {'roi_mask': "BTMA",
                      'pivot': '1305',
                      # name of a template reference to get the roi mask or a first approximation (if in vivo '1504t1')
                      'slim': False,

@@ -12,7 +12,7 @@ from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescri
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
 
 
-root_output = jph(root_study_rabbits, 'B_stats', 'PTB_very_latest')
+root_output = jph(root_study_rabbits, 'B_stats', 'ACS_01_New')
 
 
 def subject_comparison_total_volume(sj_list, controller, subjects_grouping=None, coord_system='original'):
@@ -346,21 +346,27 @@ if __name__ == '__main__':
     controller_ = {'get_data'     : True,
                    'get_graphs'   : True,
                    'save_medians' : True}
-
-    preterm = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '2002',
-               '3301', '3303', '3404', '4302',  '4304', '4305', '4901',
-               '4903', '5001']
-
-    # '1501', '1504' '1508', '1509', '1511', '2013', '2202', '2205', '2206' : in vivo and not in subjects parameters.
-    # '4303','4406', :  rejected.
-
-    term = ['1702', '1805', '2502', '2503', '2608',  '4501', '4504', '4507', '4601',  '4603', '13003', '13004',
-            '13005', '13006']
-    # '2605', '2702', '4602',  Rejected.
-
-    subjects = preterm + term
+    #
+    # preterm = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '2002',
+    #            '3301', '3303', '3404', '4302',  '4304', '4305', '4901',
+    #            '4903', '5001']
+    #
+    # # '1501', '1504' '1508', '1509', '1511', '2013', '2202', '2205', '2206' : in vivo and not in subjects parameters.
+    # # '4303','4406', :  rejected.
+    #
+    # term = ['1702', '1805', '2502', '2503', '2608',  '4501', '4504', '4507', '4601',  '4603', '13003', '13004',
+    #         '13005', '13006']
+    # # '2605', '2702', '4602',  Rejected.
+    #
+    # subjects = preterm + term
+    # subjects_grouping_ = [len(preterm), len(term)]
+    #
 
     subjects_not_present = []
+
+    subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610', '13102', '13201', '13202', '13401', '13402', '13403', '13403retest']
+
+    subjects_grouping_ = None
 
     for sj in subjects:
         sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
@@ -372,8 +378,6 @@ if __name__ == '__main__':
             subjects_not_present.append(sj)
 
     print subjects_not_present
-
-    subjects_grouping_ = [len(preterm), len(term)]
 
     ldm = LdM(pfi_labels_descriptor)
 
@@ -396,7 +400,7 @@ if __name__ == '__main__':
 
             for coordinates in ['stereotaxic']:  # 'original',
 
-                # ---- Without erosion
+                # # ---- Without erosion
 
                 # comparison FA - no erosion, no outliers filter
                 subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,

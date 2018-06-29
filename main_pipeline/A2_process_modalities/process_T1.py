@@ -181,7 +181,8 @@ def process_T1_per_subject(sj, step):
             angle_parameter, angles, pfi_sj_ref_coord_system_hd_oriented, pfi_reference_roi_mask_hd_oriented, \
             pfi_affine_transformation_ref_on_subject, pfi_3d_warped_ref_on_subject, cmd
 
-        if options['roi_mask'] == 'BTMA' or options['roi_mask'] == 'MA':
+        # Selecting the roi mask extraction modality if not in atlas
+        if options['roi_mask'] == 'BTMA' or options['roi_mask'] == 'MA' and not sj_parameters['in_atlas']:
 
             # Robust roi extraction - uses the binarised brain tissue for the partial skull stripping.
             # This should be modified to get the slim registration, otherwise is an overkill
@@ -389,7 +390,7 @@ def process_T1_per_subject(sj, step):
             assert os.path.exists(pfi_roi_mask), pfi_roi_mask
             assert os.path.exists(pfi_lesion_mask), pfi_lesion_mask
 
-            pfi_roi_mask_and_lesion_mask = jph(pfo_tmp, '{}_T1_ROI_and_LM.nii.gz')
+            pfi_roi_mask_and_lesion_mask = jph(pfo_tmp, '{}_T1_ROI_and_LM.nii.gz'.format(sj))
             cmd11 = 'seg_maths {0} -mul {1} {2}'.format(pfi_roi_mask, pfi_lesion_mask, pfi_roi_mask_and_lesion_mask)
             print_and_run(cmd11)
             cmd22 = 'seg_maths {0} -sub {1} {2}'.format(pfi_roi_mask, pfi_roi_mask_and_lesion_mask, pfi_reg_mask)
@@ -419,7 +420,7 @@ if __name__ == '__main__':
     controller_steps = {'orient_to_standard'       : False,
                         'create_roi_masks'         : False,
                         'adjust_mask'              : True,
-                        'cut_masks'                : True,
+                        'cut_masks'                : False,
                         'step_bfc'                 : True,
                         'create_lesion_maks'       : True,
                         'create_reg_mask'          : True,
@@ -433,9 +434,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    # lsm.input_subjects = ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
+    lsm.input_subjects = ['13102', '13201', '13202', '13401', '13402', '13403', '13403retest']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
-    lsm.input_subjects = ['13004', ]
+    # lsm.input_subjects = ['13004', ]
     lsm.update_ls()
 
     print lsm.ls

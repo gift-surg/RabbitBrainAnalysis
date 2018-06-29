@@ -64,7 +64,7 @@ class SubjectParameters(object):
         self.b0_level              = 0
         self.b0_to_use_in_fsldti   = -1  # -1 default means all the b0 layers. If only one layer is
         self.spotter_tag           = 'P2'
-        self.options_T1            = {'roi_mask' : "BTMA",  # Can be BTMA, MA, Pivotal
+        self.options_T1            = {'roi_mask' : "Pivotal",  # Can be BTMA, MA, Pivotal
                                       'pivot'    : '1305',  # name of a template reference to get the roi mask or a first approximation (if in vivo '1504t1')
                                       'slim'     : False,  # if you want to have the slim mask. 'roi_mask' must be "BTMA" or "MA" for it to be true.
                                       'crop_roi' : False,  # To cut the T1 according to the ROI mask.
