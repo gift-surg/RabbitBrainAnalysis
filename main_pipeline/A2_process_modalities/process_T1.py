@@ -217,8 +217,9 @@ def process_T1_per_subject(sj, step):
             pfi_output_brain_mask = jph(pfo_mask, '{}_T1_brain_mask.nii.gz'.format(sj))
             assert os.path.exists(pfi_output_brain_mask), pfi_output_brain_mask
 
-            cmd = 'seg_maths {0} -dil 3 {1}'.format(pfi_output_brain_mask,
-                                                    pfi_roi_mask)
+            cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_output_brain_mask,
+                                                      options['mask_dilation'],
+                                                      pfi_roi_mask)
             del pfi_output_brain_mask
 
         else:
@@ -226,7 +227,7 @@ def process_T1_per_subject(sj, step):
             pfi_roi_mask_not_adjusted = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted.nii.gz')
             assert os.path.exists(pfi_roi_mask_not_adjusted), pfi_roi_mask_not_adjusted
 
-            dilation_param = sj_parameters['T1_mask_dilation']
+            dilation_param = options['mask_dilation']
             if dilation_param < 0:  # if negative, erode.
                 cmd = 'seg_maths {0} -ero {1} {2}'.format(pfi_roi_mask_not_adjusted,
                                                           -1 * dilation_param,
@@ -420,7 +421,7 @@ if __name__ == '__main__':
     controller_steps = {'orient_to_standard'       : False,
                         'create_roi_masks'         : False,
                         'adjust_mask'              : True,
-                        'cut_masks'                : False,
+                        'cut_masks'                : True,
                         'step_bfc'                 : True,
                         'create_lesion_maks'       : True,
                         'create_reg_mask'          : True,

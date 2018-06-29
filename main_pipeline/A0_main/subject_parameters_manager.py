@@ -19,7 +19,7 @@ class SubjectParameters(object):
     """
     def __init__(self, subject_name, study='', category='', angles=(0, 0, 0), translation=(0, 0, 0), threshold=300,
                  T1_window_percentile=(5, 95), S0_window_percentile=(1, 99),
-                 T1_mask_dilation=0, S0_mask_dilation=0,
+                 T1_mask_dilation=1, S0_mask_dilation=0,
                  erosion_roi_mask=1, DWI_squashed=False,
                  bias_field_parameters=(0.001, (50, 50, 50, 50), 0.15, 0.01, 200, (4, 4, 4), 3),
                  MSME_acquisition='high_res', in_atlas=False):
@@ -51,11 +51,6 @@ class SubjectParameters(object):
         self.angles                = angles
         self.translation           = translation
         self.threshold             = threshold
-        self.T1_window_percentile  = T1_window_percentile
-        self.S0_window_percentile  = S0_window_percentile
-        self.T1_mask_dilation      = T1_mask_dilation
-        self.S0_mask_dilation      = S0_mask_dilation
-        self.erosion_roi_mask      = erosion_roi_mask
         self.DWI_squashed          = DWI_squashed
         self.bias_field_parameters = bias_field_parameters
         self.MSME_acquisition      = MSME_acquisition
@@ -64,12 +59,17 @@ class SubjectParameters(object):
         self.b0_level              = 0
         self.b0_to_use_in_fsldti   = -1  # -1 default means all the b0 layers. If only one layer is
         self.spotter_tag           = 'P2'
-        self.options_T1            = {'roi_mask' : "Pivotal",  # Can be BTMA, MA, Pivotal
-                                      'pivot'    : '1305',  # name of a template reference to get the roi mask or a first approximation (if in vivo '1504t1')
-                                      'slim'     : False,  # if you want to have the slim mask. 'roi_mask' must be "BTMA" or "MA" for it to be true.
-                                      'crop_roi' : False,  # To cut the T1 according to the ROI mask.
+        self.options_S0            = {'window_percentile' : S0_window_percentile,
+                                      'mask_dilation'     : S0_mask_dilation}
+
+        self.options_T1            = {'roi_mask'           : "Pivotal",  # Can be BTMA, MA, Pivotal
+                                      'maks_dilation'      : T1_mask_dilation,
+                                      'window_percentile'  : T1_window_percentile,
+                                      'pivot'              : '1305',     # name of a template reference to get the roi mask or a first approximation (if in vivo '1504t1')
+                                      'slim'               : False,  # if you want to have the slim mask. 'roi_mask' must be "BTMA" or "MA" for it to be true.
+                                      'crop_roi'           : False,  # To cut the T1 according to the ROI mask.
                                       'lesion_mask_method' : 0,  # can be the total number of gaussians for a MoG approach, or 0 if you want to use the given percentile
-                                      'median_filter' : True  # if 'reg_mask' > 1 as pre-processing before the gaussians.
+                                      'median_filter'      : True  # if 'reg_mask' > 1 as pre-processing before the gaussians.
                                       }
 
     def get_as_dict(self):
@@ -80,11 +80,6 @@ class SubjectParameters(object):
         d.update({'angles'                : self.angles})
         d.update({'translation'           : self.translation})
         d.update({'threshold'             : self.threshold})
-        d.update({'T1_window_percentile'  : self.T1_window_percentile})
-        d.update({'S0_window_percentile'  : self.S0_window_percentile})
-        d.update({'T1_mask_dilation'      : self.T1_mask_dilation})
-        d.update({'S0_mask_dilation'      : self.S0_mask_dilation})
-        d.update({'erosion_roi_mask'      : self.erosion_roi_mask})
         d.update({'DWI_squashed'          : self.DWI_squashed})
         d.update({'bias_field_parameters' : self.bias_field_parameters})
         d.update({'MSME_acquisition'      : self.MSME_acquisition})
@@ -93,6 +88,7 @@ class SubjectParameters(object):
         d.update({'b0_level'              : self.b0_level})
         d.update({'b0_to_use_in_fsldti'   : self.b0_to_use_in_fsldti})
         d.update({'options_T1'            : self.options_T1})
+        d.update({'options_S0'            : self.options_S0})
         d.update({'spotter_tag'           : self.spotter_tag})
         return d
 
