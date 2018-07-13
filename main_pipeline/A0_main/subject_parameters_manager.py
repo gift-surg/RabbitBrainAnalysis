@@ -145,6 +145,7 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
     list_PTB_op_skull   = []
     list_ACS_ex_vivo01  = []
     list_ACS_ex_vivo02  = []
+    list_W8_first_trial = []
     list_TEST_ex_vivo   = []
     list_comments       = []
     list_leftovers      = []
@@ -168,6 +169,9 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
                 list_ACS_ex_vivo02.append(k)
             else:
                 raise IOError('Unrecognised category for subject {} ACS'.format(k))
+        elif subj_k_parameters['study'] == 'W8':
+            if subj_k_parameters['category'] == 'first_trial':
+                list_W8_first_trial.append(k)
         elif subj_k_parameters['study'] == 'TestStudy':
             if subj_k_parameters['category'] == 'ex_vivo':
                 list_TEST_ex_vivo.append(k)
@@ -188,24 +192,26 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
 
     list_comments.sort()
 
-    print('PTB_ex_skull: ')
+    print('\nPTB_ex_skull: ')
     print(list_PTB_ex_skull , len(list_PTB_ex_skull))
 
-    print('PTB_ex_vivo: ')
+    print('\nPTB_ex_vivo: ')
     print(list_PTB_ex_vivo, len(list_PTB_ex_vivo))
 
-    print('PTB_in_vivo: ')
+    print('\nPTB_in_vivo: ')
     print(list_PTB_in_vivo, len(list_PTB_in_vivo))
 
-    print('PTB_op_skull: ')
+    print('\nPTB_op_skull: ')
     print(list_PTB_op_skull, len(list_PTB_op_skull))
 
-    print('ACS_ex_vivo 01: ')
+    print('\nACS_ex_vivo 01: ')
     print(list_ACS_ex_vivo01, len(list_ACS_ex_vivo01))
 
-    print('ACS_ex_vivo 02: ')
+    print('\nACS_ex_vivo 02: ')
     print(list_ACS_ex_vivo02, len(list_ACS_ex_vivo02))
 
-    print('TestStudy_ex_vivo: ')
-    print(list_TEST_ex_vivo, len(list_TEST_ex_vivo))
+    print('\nWeek 8 first trial: ')
+    print(list_W8_first_trial, len(list_W8_first_trial))
 
+    print('\nTestStudy_ex_vivo: ')
+    print(list_TEST_ex_vivo, len(list_TEST_ex_vivo))

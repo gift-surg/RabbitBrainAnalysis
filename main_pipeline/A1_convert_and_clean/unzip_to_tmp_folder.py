@@ -8,7 +8,7 @@ from tools.definitions import root_study_rabbits
 from LABelsToolkit.tools.aux_methods.utils import print_and_run
 
 
-def unzip_single_sj(sj):
+def unzip_single_sj(sj, controller):
 
     print('- Unzip subject {} '.format(sj))
 
@@ -23,40 +23,48 @@ def unzip_single_sj(sj):
 
     # to 00_raw_data_unzipped_TMP
     pfo_output = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category)
-    print_and_run('mkdir -p {}'.format(pfo_output))
 
-    # Unizp:
-    cmd = 'tar -xvf {} -C {}'.format(pfi_input_sj_zip, pfo_output)
-    print cmd
-    print_and_run(cmd)
+    if controller['create_tmp_folder_structure']:
+        print_and_run('mkdir -p {}'.format(pfo_output))
+
+    if controller['unzip']:
+        cmd = 'tar -xvf {} -C {}'.format(pfi_input_sj_zip, pfo_output)
+        print cmd
+        print_and_run(cmd)
 
     # Rename:
-    file_found = 0
-    for p in os.listdir(pfo_output):
+    if controller['rename']:
+        file_found = 0
+        for p in os.listdir(pfo_output):
 
-        if '_HVDM_{}_'.format(sj) in p:
-            file_found += 1
-            pfi_unzipped_old_name = jph(pfo_output, p)
-            pfi_unzipped_new_name = jph(pfo_output, sj)
-            cmd = 'mv {} {}'.format(pfi_unzipped_old_name, pfi_unzipped_new_name)
-            print_and_run(cmd)
-        elif p == str(sj):
-            # file is already in the correct format
-            file_found += 1
+            if '_HVDM_{}_'.format(sj) in p or '_{}_'.format(sj) in p:
+                file_found += 1
+                pfi_unzipped_old_name = jph(pfo_output, p)
+                pfi_unzipped_new_name = jph(pfo_output, sj)
+                cmd = 'mv {} {}'.format(pfi_unzipped_old_name, pfi_unzipped_new_name)
+                print_and_run(cmd)
+            elif p == str(sj):
+                # file is already in the correct format
+                file_found += 1
 
-    if file_found != 1:
-        raise IOError('Unzipped file was saved with a different naming convention. We found {} with string {} in it. '
-                      'Manual work required. (Probably two subjects with the same name? '
-                      'Probably different covention to save filenames?)'.format(file_found, '_HVDM_{}_'.format(sj)))
+        if file_found != 1:
+            raise IOError('Unzipped file was saved with a different naming convention. We found {} with string {} in it. '
+                          'Manual work required. (Probably two subjects with the same name? '
+                          'Probably different covention to save filenames?)'.format(file_found, '_HVDM_{}_'.format(sj)))
 
 
-def unzip_subjects_from_list(subj_list):
+def unzip_subjects_from_list(subj_list, controller):
     print('\n\n UNZIPPING SUBJECTS {} \n'.format(subj_list))
     for sj in subj_list:
-        unzip_single_sj(sj)
+        unzip_single_sj(sj, controller)
 
 
 if __name__ == '__main__':
+
+    controller_ = {'create_tmp_folder_structure' : False,
+                   'unzip'                       : False,
+                   'rename'                      : True
+                   }
 
     lsm = ListSubjectsManager()
 
@@ -66,9 +74,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['0104', ]
+    lsm.input_subjects = ['125930', ]
     lsm.update_ls()
 
     print lsm.ls
 
-    unzip_subjects_from_list(lsm.ls)
+    unzip_subjects_from_list(lsm.ls, controller_)
