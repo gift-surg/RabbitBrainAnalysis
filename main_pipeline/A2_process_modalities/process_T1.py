@@ -217,10 +217,19 @@ def process_T1_per_subject(sj, step):
             pfi_output_brain_mask = jph(pfo_mask, '{}_T1_brain_mask.nii.gz'.format(sj))
             assert os.path.exists(pfi_output_brain_mask), pfi_output_brain_mask
 
-            cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_output_brain_mask,
-                                                      options['mask_dilation'],
-                                                      pfi_roi_mask)
-            del pfi_output_brain_mask
+            dilation_param = options['mask_dilation']
+            if dilation_param < 0:  # if negative, erode.
+                cmd = 'seg_maths {0} -ero {1} {2}'.format(pfi_output_brain_mask,
+                                                          -1 * dilation_param,
+                                                          pfi_roi_mask)
+            elif dilation_param > 0:
+                cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_output_brain_mask,
+                                                          dilation_param,
+                                                          pfi_roi_mask)
+            else:
+                cmd = 'cp {} {}'.format(pfi_output_brain_mask, pfi_roi_mask)
+
+            del pfi_output_brain_mask, dilation_param
 
         else:
             # -> we DO NOT have a brain mask: so we adjust the pivot-based roi-mask based on the param dilation factor
@@ -419,7 +428,7 @@ if __name__ == '__main__':
     print('process T1, local run. ')
 
     controller_steps = {'orient_to_standard'       : False,
-                        'create_roi_masks'         : False,
+                        'create_roi_masks'         : True,
                         'adjust_mask'              : True,
                         'cut_masks'                : True,
                         'step_bfc'                 : True,
