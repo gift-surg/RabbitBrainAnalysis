@@ -452,3 +452,6 @@ if __name__ == '__main__':
                 #                                                       subjects_grouping_, macro_label_name=reg,
                 #                                                       coord_system=coordinates, mod='MD',
                 #                                                       cleaning='_no_outliers', eroded=True)
+
+# get the values of boxplot from
+# https://stackoverflow.com/questions/29779079/adding-a-scatter-of-points-to-a-boxplot-using-matplotlib/43380973#43380973

@@ -576,241 +576,313 @@ def reset_parameters_files(pfo_where_to_save):
     del sp
 
     sp = SubjectParameters('3303')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [[0, np.pi / 8, 0], [0, np.pi / 6, 0]]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 0.001
-    sp.T1_window_percentile = (5, 90)
-    sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = 2
-    sp.S0_mask_dilation = 3
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = 'T1 motion and warping artefact, DWI severe motion artefact.'
-    sp.in_atlas = False
-    sp.b0_level = 7
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [[0, np.pi / 8, 0], [0, np.pi / 6, 0]]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = 'T1 motion and warping artefact, DWI severe motion artefact.'
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('3404')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [[0, np.pi / 8, 0], [0, np.pi / 6, 0]]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 0.001
-    sp.T1_window_percentile = (5, 90)
-    sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = 1
-    sp.S0_mask_dilation = 2
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = True
-    sp.b0_level = 7
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [[0, np.pi / 8, 0], [0, np.pi / 6, 0]]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = True
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 2}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 90),
+                                 'maks_dilation'      : 1,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('4302')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, np.pi / 6, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 0.001
-    sp.T1_window_percentile = (18, 92)
-    sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = 0
-    sp.S0_mask_dilation = 2
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = 'T1 warping artefacts'
-    sp.in_atlas = False
-    sp.b0_level = 7
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, np.pi / 6, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = 'T1 warping artefacts'
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 2}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (18, 95),
+                                 'maks_dilation'      : 0,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('4303')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 0.001
-    sp.T1_window_percentile = (12, 92)
-    sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = -1
-    sp.S0_mask_dilation = 2
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = 'T1 warping artefact DWI unusable - extra DWI in external study'
-    sp.in_atlas = False
-    sp.b0_level = 7
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = 'T1 warping artefact DWI unusable - extra DWI in external study'
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 2}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (12, 95),
+                                 'maks_dilation'      : -1,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('4304')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 0.001
-    sp.T1_window_percentile = (12, 92)
-    sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = 1
-    sp.S0_mask_dilation = 0
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = 'T1 warping artefacts'
-    sp.in_atlas = False
-    sp.b0_level = 7
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = 'T1 warping artefacts'
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 0}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (12, 92),
+                                 'maks_dilation'      : 1,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('4305')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 0.001
-    sp.T1_window_percentile = (12, 92)
-    sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = 1
-    sp.S0_mask_dilation = 2
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = 'T1 warping artefacts'
-    sp.in_atlas = False
-    sp.b0_level = 7
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = 'T1 warping artefacts'
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 2}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (12, 92),
+                                 'maks_dilation'      : 1,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('4406')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, 0, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 0.001
-    sp.T1_window_percentile = (12, 92)
-    sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = 1
-    sp.S0_mask_dilation = 2
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = 'No T1'
-    sp.in_atlas = False
-    sp.b0_level = 7
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, 0, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = 'No T1'
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 2}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (12, 92),
+                                 'maks_dilation'      : 1,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('4501')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 0.001
-    sp.T1_window_percentile = (15, 95)
-    sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = 5
-    sp.S0_mask_dilation = 2
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = 'T1 warping, DWI severe motion'
-    sp.in_atlas = False
-    sp.b0_level = 7
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = 'T1 warping, DWI severe motion'
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 2}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (15, 95),
+                                 'maks_dilation'      : 5,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('4504')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, 0, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 0.001
-    sp.T1_window_percentile = (12, 92)
-    sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = 1
-    sp.S0_mask_dilation = 2
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = 'T1 small warping on cortex, small bubble on medial prefrontal cortex'
-    sp.in_atlas = False
-    sp.b0_level = 7
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, 0, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = 'T1 small warping on cortex, small bubble on medial prefrontal cortex'
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 2}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (12, 92),
+                                 'maks_dilation'      : 1,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('4507')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, 0, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 0.001
-    sp.T1_window_percentile = (12, 92)
-    sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = 1
-    sp.S0_mask_dilation = 2
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = 'T1 warping artefact, DWI heavy motion artefact'
-    sp.in_atlas = False
-    sp.b0_level = 7
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, 0, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = 'T1 warping artefact, DWI heavy motion artefact'
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 2}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (12, 92),
+                                 'maks_dilation'      : 1,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('4601')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, 0, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 0.001
-    sp.T1_window_percentile = (12, 92)
-    sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = 1
-    sp.S0_mask_dilation = 2
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = 'T1 warping artefact, DWI heavy motion artefact'
-    sp.in_atlas = False
-    sp.b0_level = 7
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, 0, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = 'T1 warping artefact, DWI heavy motion artefact'
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 2}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (12, 92),
+                                 'maks_dilation'      : 1,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('4602')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, 0, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 0.001
-    sp.T1_window_percentile = (12, 92)
-    sp.S0_window_percentile = (1, 95)
-    sp.T1_mask_dilation = 1
-    sp.S0_mask_dilation = 2
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = 'T1 warping artefact, DWI some motion artefact.'
-    sp.in_atlas = False
-    sp.b0_level = 7
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, 0, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = 'T1 warping artefact, DWI some motion artefact.'
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 2}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (12, 92),
+                                 'maks_dilation'      : 1,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -831,6 +903,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = 'T1 warping artefact, DWI motion artefact.'
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -851,13 +935,17 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
-    sp.options_T1 = {'roi_mask' : "BTMA",  # Can be BTMA, MA, Pivotal
-                     'pivot'    : '2502',  # name of a template reference to get the roi mask or a first approximation (if in vivo '1504t1')
-                     'slim'     : False,  # if you want to have the slim mask. 'roi_mask' must be "BTMA" or "MA" for it to be true.
-                     'crop_roi' : False,  # To cut the T1 according to the ROI mask.
-                     'lesion_mask_method' : 0,  # can be the total number of gaussians for a MoG approach, or 0 if you want to use the given percentile
-                     'median_filter' : True  # if 'reg_mask' > 1 as pre-processing before the gaussians.
-                     }
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}'''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -878,6 +966,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -898,6 +998,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -918,6 +1030,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -938,6 +1062,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -958,6 +1094,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -978,6 +1126,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -998,6 +1158,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1020,6 +1192,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1040,6 +1224,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1060,6 +1256,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1080,6 +1288,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1100,6 +1320,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1120,6 +1352,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1140,6 +1384,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1160,6 +1416,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1180,6 +1448,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = ''
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1200,6 +1480,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment = '20 days old, some tissue decay.'
     sp.in_atlas = False
     sp.b0_level = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1221,6 +1513,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1240,6 +1544,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1259,6 +1575,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1278,6 +1606,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1297,6 +1637,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1316,6 +1668,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1335,6 +1699,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1354,6 +1730,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1373,6 +1761,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1392,6 +1792,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1411,6 +1823,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1430,6 +1854,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1449,6 +1885,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = 'Coil problem'
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1468,6 +1916,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = 'Coil problem'
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1489,6 +1949,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1508,6 +1980,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas            = False
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1530,6 +2014,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1550,6 +2046,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas            = False
     sp.b0_level               = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1570,6 +2078,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas            = False
     sp.b0_level               = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1590,6 +2110,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = 'Dumped, too much ghosting in the DWI.'
     sp.in_atlas            = False
     sp.b0_level = 6
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1610,6 +2142,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas            = False
     sp.b0_level               = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1630,6 +2174,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas            = False
     sp.b0_level               = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1650,6 +2206,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas            = False
     sp.b0_level               = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1670,6 +2238,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas            = False
     sp.b0_level               = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1690,6 +2270,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas            = False
     sp.b0_level               = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1710,6 +2302,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = 'Dumped as too much ghosting artefact in the MRI'
     sp.in_atlas            = False
     sp.b0_level               = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1730,6 +2334,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas            = False
     sp.b0_level               = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1750,6 +2366,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = 'Almost dumped, ghosted DWI can provide noisy information.'
     sp.in_atlas            = False
     sp.b0_level               = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1770,6 +2398,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = 'Dupmed, too much ghosting in the DWI'
     sp.in_atlas               = False
     sp.b0_level               = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -1790,6 +2430,18 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
+    '''
+    sp.options_S0             = {'window_percentile'  : (1, 95),
+                                 'mask_dilation'      : 3}
+    sp.options_T1             = {'roi_mask'           : "Pivotal",
+                                 'window_percentile'  : (5, 95),
+                                 'maks_dilation'      : 2,
+                                 'pivot'              : '1305',
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    '''
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
