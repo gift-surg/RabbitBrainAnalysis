@@ -38,7 +38,8 @@ def reset_parameters_files(pfo_where_to_save):
     :return: Storage room filled with the adequate parameters.
     """
 
-    # TODO move to individual JSON files. Build an interface for the JSON files. Then eliminate this shameful module.
+    # TODO move to individual JSON files. Build an interface for the JSON files with a graph-based structure.
+    # ...Then eliminate this shameful module! -- Use protocol buffer? --
 
     # some parameters:
     bfp_slow = [0.001, (50, 50, 50, 50), 0.15, 0.01, 200, (4, 4, 4), 3]
@@ -71,7 +72,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (0.1, 99.9),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -95,7 +95,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (0.1, 99.9),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -119,7 +118,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (0.1, 99.9),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -143,7 +141,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (0.1, 99.9),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -167,7 +164,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (0.1, 99.9),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -191,7 +187,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (0.1, 99.9),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -218,7 +213,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : 1.5,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -243,7 +237,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : 3.5,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -268,7 +261,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : 0.5,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -293,7 +285,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : -0.5,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -318,7 +309,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -343,7 +333,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -368,7 +357,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : -3.5,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -393,7 +381,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : 2.5,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -418,7 +405,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : 4,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -443,7 +429,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : -3,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -468,7 +453,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : 1.5,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -493,7 +477,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : 3,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -518,7 +501,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -543,7 +525,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 90),
                                  'maks_dilation'      : 0.5,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -569,7 +550,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 90),
                                  'maks_dilation'      : 2,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -595,7 +575,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 95),
                                  'maks_dilation'      : 2,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -621,7 +600,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 90),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -647,7 +625,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (18, 95),
                                  'maks_dilation'      : 0,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -673,7 +650,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 95),
                                  'maks_dilation'      : -1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -699,7 +675,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -725,7 +700,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -751,7 +725,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -777,7 +750,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (15, 95),
                                  'maks_dilation'      : 5,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -803,7 +775,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -829,7 +800,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -855,7 +825,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -881,7 +850,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -907,7 +875,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -933,7 +900,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (74.8, 95),
                                  'maks_dilation'      : -2,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -959,7 +925,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (75, 97),
                                  'maks_dilation'      : -2,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -985,7 +950,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (75, 97),
                                  'maks_dilation'      : -2,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1011,7 +975,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (75, 97),
                                  'maks_dilation'      : -2,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1037,7 +1000,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (75, 97),
                                  'maks_dilation'      : -2,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1063,7 +1025,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (75, 97),
                                  'maks_dilation'      : -2,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1089,7 +1050,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (75, 97),
                                  'maks_dilation'      : -2,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1115,7 +1075,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 90),
                                  'maks_dilation'      : 2,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1143,7 +1102,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1169,7 +1127,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1195,7 +1152,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1221,7 +1177,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 91),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1247,7 +1202,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1273,7 +1227,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1299,7 +1252,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1325,7 +1277,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1351,7 +1302,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1377,7 +1327,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (12, 92),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1404,7 +1353,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1429,7 +1377,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1454,7 +1401,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1479,7 +1425,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1504,7 +1449,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1529,7 +1473,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1554,7 +1497,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1579,7 +1521,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1604,7 +1545,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1629,7 +1569,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1654,7 +1593,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1679,7 +1617,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1704,7 +1641,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1729,7 +1665,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1756,7 +1691,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1781,7 +1715,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (10, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1809,7 +1742,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1835,7 +1767,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1861,7 +1792,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1887,7 +1817,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1913,7 +1842,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1939,7 +1867,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1965,7 +1892,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -1991,7 +1917,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (2, 96),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2017,7 +1942,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2043,7 +1967,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2069,7 +1992,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2095,7 +2017,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2121,7 +2042,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2147,7 +2067,6 @@ def reset_parameters_files(pfo_where_to_save):
                                  'window_percentile'  : (5, 98),
                                  'maks_dilation'      : 1,
                                  'pivot'              : '1305',
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2169,13 +2088,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2195,13 +2113,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2221,13 +2138,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2247,14 +2163,14 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.b0_to_use_in_fsldti    = [0, 1, 2]  # TODO Investigate further!!
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    # TODO Investigate further. Abnormalities in the DWI first levels.
+    sp.b0_to_use_in_fsldti    = [0, 1, 2]
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2274,13 +2190,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2300,13 +2215,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2326,13 +2240,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2352,13 +2265,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2378,13 +2290,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2404,13 +2315,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2430,13 +2340,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
-                                 'mask_dilation'      : 9,
-                                 'window_percentile'  : (20, 100),
-                                 'slim'               : False,
+                                 'mask_dilation'      : -2,
+                                 'window_percentile'  : (30, 95),
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2456,13 +2365,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : -4,
                                  'window_percentile'  : (15, 100),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2484,11 +2392,10 @@ def reset_parameters_files(pfo_where_to_save):
     sp.b0_level               = 7
     sp.options_S0             = {'window_percentile'  : (5, 99),
                                  'mask_dilation'      : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (2, 100),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2508,13 +2415,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (3, 100),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2534,13 +2440,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (3, 100),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2560,13 +2465,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (3, 100),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2586,13 +2490,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 1,
                                  'window_percentile'  : (0, 100),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2614,13 +2517,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 1,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2640,13 +2542,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2666,13 +2567,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2692,13 +2592,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
@@ -2720,13 +2619,12 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1}
-    sp.options_T1             = {'roi_mask'           : 'BTMA',
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
-                                 'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}

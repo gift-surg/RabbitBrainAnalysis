@@ -62,15 +62,15 @@ class SubjectParameters(object):
         self.options_S0            = {'window_percentile' : S0_window_percentile,
                                       'mask_dilation'     : S0_mask_dilation}
 
-        self.options_T1            = {'roi_mask'           : "Pivotal",  # Can be BTMA, MA, Pivotal
+        self.options_T1            = {'roi_mask'           : "Pivotal",  # Can be only Pivotal in this version.
+                                      'pivot'              : '1305',  # name of a template reference to get the roi mask or a first approximation (if in vivo '1504t1')
                                       'maks_dilation'      : T1_mask_dilation,
                                       'window_percentile'  : T1_window_percentile,
-                                      'pivot'              : '1305',     # name of a template reference to get the roi mask or a first approximation (if in vivo '1504t1')
-                                      'slim'               : False,  # if you want to have the slim mask. 'roi_mask' must be "BTMA" or "MA" for it to be true.
                                       'crop_roi'           : False,  # To cut the T1 according to the ROI mask.
                                       'lesion_mask_method' : 0,  # can be the total number of gaussians for a MoG approach, or 0 if you want to use the given percentile
                                       'median_filter'      : True  # if 'reg_mask' > 1 as pre-processing before the gaussians.
                                       }
+        self.options_brain_mask    = {'method'             :  None}  # can be None, 'BTMA' or 'MA' or 'BTMA_MA' according to the model.
 
     def get_as_dict(self):
         d = OrderedDict()
@@ -89,6 +89,7 @@ class SubjectParameters(object):
         d.update({'b0_to_use_in_fsldti'   : self.b0_to_use_in_fsldti})
         d.update({'options_T1'            : self.options_T1})
         d.update({'options_S0'            : self.options_S0})
+        d.update({'options_brain_mask'    : self.options_brain_mask})
         d.update({'spotter_tag'           : self.spotter_tag})
         return d
 

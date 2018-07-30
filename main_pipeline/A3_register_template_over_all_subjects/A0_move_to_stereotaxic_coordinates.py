@@ -48,7 +48,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
     assert os.path.exists(pfi_reg_mask_reference_atlas), pfi_reg_mask_reference_atlas
 
     pfo_tmp = jph(pfo_sj, 'z_tmp', 'z_sc_aligment'.format(sj))
-    pfo_sc_sj = jph(pfo_sj, 'stereotaxic'.format(sj))
+    pfo_sc_sj = jph(pfo_sj, 'stereotaxic')
     pfo_sc_sj_mod = jph(pfo_sc_sj, 'mod')
     pfo_sc_sj_masks = jph(pfo_sc_sj, 'masks')
 

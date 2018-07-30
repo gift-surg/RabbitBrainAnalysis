@@ -14,7 +14,12 @@ from LABelsToolkit.main import LABelsToolkit
 
 
 def extract_brain_tissue_in_NI_multi_atlas():
-
+    """
+    From the existing multi-atlas with the parcellation, this method the binary mask for the brain tissue.
+    This is performed for each subject.
+    Multi-atlas considered is the one located at the global variable root_atlas
+    :return:
+    """
     for sj in multi_atlas_subjects:
 
         print('Creating brain tissue for subject {} in NI multi atlas '.format(sj))
@@ -85,9 +90,34 @@ def create_brain_tissue_multi_atlas(sj_list, controller):
         print_and_run(cmd2)
 
 
-def extract_brain_tissue_from_multi_atlas(target_name, pfi_target_T1, pfi_output_brain_mask, pfi_target_pre_mask=None,
+
+def extract_brain_tissue_from_multi_atlas_list_stereotaxic(target_name,
+                                                           multi_atlas_list,
+                                                           pfo_tmp,
+                                                           pfi_output,
+                                                           options):
+    """
+    :param target_name:
+    :param multi_atlas_list:
+    :param pfo_tmp:
+    :param pfi_output:
+    :param options:
+    :return:
+    """
+
+    pass
+
+def extract_brain_tissue_from_multi_atlas(target_name,
+                                          pfi_target_T1,
+                                          pfi_output_brain_mask,
+                                          options,
+                                          pfi_target_pre_mask=None,
                                           pfo_tmp='.z_tmp', alpha=0):
     """
+    ---
+    OLD  moved in stereotaxic coordinates in the new version:
+     extract_brain_tissue_from_multi_atlas_list_stereotaxic
+    ---
     sj: subjects in the multi-atlas. Target: element to be segmented.
     The multi atlas can ben the main one or a customised one!
     :param target_name:
@@ -99,22 +129,13 @@ def extract_brain_tissue_from_multi_atlas(target_name, pfi_target_T1, pfi_output
     :return:
     """
     pri_target_param = jph(pfo_subjects_parameters, target_name)
-    if os.path.exists(pri_target_param):
-        sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, target_name), 'r'))
-        options = sj_parameters['options_T1']
-    else:
-        options = {'roi_mask' : "BTMA",  # Can be BTMA, MA, Pivotal
-                   'pivot'    : '1305',  # name of a template reference to get the roi mask or a first approximation (if in vivo '1504t1')
-                   'slim'     : False,  # if you want to have the slim mask. 'roi_mask' must be "BTMA" or "MA" for it to be true.
-                   'crop_roi' : False,  # To cut the T1 according to the ROI mask.
-                   'lesion_mask_method' : 0,  # can be the total number of gaussians for a MoG approach, or 0 if you want to use the given percentile
-                   'median_filter' : False  # if 'reg_mask' > 1 as pre-processing before the gaussians.
-                   }
 
-    if options['roi_mask'] == 'MA':
+    if options['modality'] == 'MA':
         mutli_atlas_subject_list = multi_atlas_subjects
-    elif options['roi_mask'] == 'BTMA':
+    elif options['modality'] == 'BTMA':
         mutli_atlas_subject_list = multi_atlas_brain_tissue_subjects
+    elif options['modality'] == 'BTMA_MA' or options['modality'] == 'MA_BTMA':
+        mutli_atlas_subject_list = multi_atlas_brain_tissue_subjects + multi_atlas_subjects
     else:
         raise IOError
 
