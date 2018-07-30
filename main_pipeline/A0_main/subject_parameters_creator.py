@@ -26,6 +26,8 @@ def reset_parameters_files(pfo_where_to_save):
     numberOfControlPoints = (4, 4, 4)
     splineOrder = 3
 
+    it will be in one line: [0.001, (50, 50, 50, 50), 0.15, 0.01, 200, (4, 4, 4), 3]
+
     Angles order
     ----------
     Axial Angle, angle of the axial orientation sign from L to R,
@@ -2480,16 +2482,16 @@ def reset_parameters_files(pfo_where_to_save):
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
-    sp.options_S0             = {'window_percentile': (5, 99),
-                                 'mask_dilation': 1}
-    sp.options_T1             = {'roi_mask': 'BTMA',
-                                 'pivot': '1305',
-                                 'mask_dilation': 5,
-                                 'window_percentile': (2, 100),
-                                 'slim': False,
-                                 'crop_roi': False,
-                                 'lesion_mask_method': 0,
-                                 'median_filter': True}
+    sp.options_S0             = {'window_percentile'  : (5, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (2, 100),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
