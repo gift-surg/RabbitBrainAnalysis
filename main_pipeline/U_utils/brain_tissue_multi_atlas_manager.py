@@ -6,20 +6,25 @@ import os
 import pickle
 from os.path import join as jph
 
-from tools.definitions import root_atlas_BT, pfo_subjects_parameters, multi_atlas_brain_tissue_subjects, \
-    root_study_rabbits, num_cores_run, multi_atlas_subjects, root_atlas
+from tools.definitions import root_atlas_BT, pfo_subjects_parameters, multi_atlas_BT_subjects, \
+    root_study_rabbits, num_cores_run, multi_atlas_subjects, root_atlas, root_main_dropbox
 
 from LABelsToolkit.tools.aux_methods.utils import print_and_run
 from LABelsToolkit.main import LABelsToolkit
 
 
-def extract_brain_tissue_in_NI_multi_atlas():
+def extract_brain_tissue_in_NI_multi_atlas(pfo_multi_atlas=None):
     """
     From the existing multi-atlas with the parcellation, this method the binary mask for the brain tissue.
     This is performed for each subject.
     Multi-atlas considered is the one located at the global variable root_atlas
+    :param pfo_multi_atlas:
     :return:
     """
+
+    if pfo_multi_atlas is None:
+        pfo_multi_atlas = root_atlas
+
     for sj in multi_atlas_subjects:
 
         print('Creating brain tissue for subject {} in NI multi atlas '.format(sj))
@@ -104,8 +109,9 @@ def extract_brain_tissue_from_multi_atlas_list_stereotaxic(target_name,
     :param options:
     :return:
     """
+    print(options)
 
-    pass
+    # -- TODO !!
 
 def extract_brain_tissue_from_multi_atlas(target_name,
                                           pfi_target_T1,
@@ -133,9 +139,9 @@ def extract_brain_tissue_from_multi_atlas(target_name,
     if options['modality'] == 'MA':
         mutli_atlas_subject_list = multi_atlas_subjects
     elif options['modality'] == 'BTMA':
-        mutli_atlas_subject_list = multi_atlas_brain_tissue_subjects
+        mutli_atlas_subject_list = multi_atlas_BT_subjects
     elif options['modality'] == 'BTMA_MA' or options['modality'] == 'MA_BTMA':
-        mutli_atlas_subject_list = multi_atlas_brain_tissue_subjects + multi_atlas_subjects
+        mutli_atlas_subject_list = multi_atlas_BT_subjects + multi_atlas_subjects
     else:
         raise IOError
 
@@ -259,14 +265,15 @@ def extract_brain_tissue_from_multi_atlas(target_name,
     print_and_run(cmd)
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
+if False:
 
     if False:
         extract_brain_tissue_in_NI_multi_atlas()
 
     if False:
         controller_creator = {'Delete_first' : True}
-        create_brain_tissue_multi_atlas(multi_atlas_brain_tissue_subjects, controller_creator)
+        create_brain_tissue_multi_atlas(multi_atlas_BT_subjects, controller_creator)
 
     if True:
         target_name_ = 'tt5007'
@@ -277,3 +284,26 @@ if __name__ == '__main__':
         extract_brain_tissue_from_multi_atlas(target_name_, pfi_target_T1_, output_brain_mask_,
                                               pfi_target_pre_mask=None,
                                               pfo_tmp=pfo_tmp_, alpha=0)
+
+
+if __name__ == '__main__':
+
+    root_atlas_special = jph(root_study_rabbits, 'A_MultiAtlas_BT_new')
+    assert os.path.exists(root_atlas_special)
+    for sj in ['2503', '2608', '2702', '4504', '4903', '4905', '5001', '5007']:
+
+        print('Creating brain tissue for subject {} in NI multi atlas '.format(sj))
+
+        pfi_segm = jph(root_atlas_special, sj, '{}_segm.nii.gz'.format(sj))
+        assert os.path.exists(pfi_segm)
+
+        pfi_brain_tissue = jph(root_atlas_special, sj, '{}_brain_mask.nii.gz'.format(sj))
+
+        print_and_run('cp {0} {1}'.format(pfi_segm, pfi_brain_tissue))
+
+        cmd = 'seg_maths {0} -bin {0}; ' \
+              'seg_maths {0} -dil 1 {0}; ' \
+              'seg_maths {0} -fill {0}; ' \
+              'seg_maths {0} -ero 1 {0} '.format(pfi_brain_tissue)
+
+        print_and_run(cmd)

@@ -6,7 +6,7 @@ root_dir = os.path.abspath(os.path.dirname(__file__))
 pfo_local_output = jph(os.path.dirname(root_dir), 'output')
 
 multi_atlas_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
-multi_atlas_brain_tissue_subjects = ['2503', '2608', '2702', '4504', '4903', '4905', '5001', '5007']
+multi_atlas_BT_subjects = ['2503', '2608', '2702', '4504', '4903', '4905', '5001', '5007']
 
 if os.path.exists('/cluster/project0'):
     print('You are on the cluster')
