@@ -1332,17 +1332,17 @@ def reset_parameters_files(pfo_where_to_save):
     del sp
 
     sp = SubjectParameters('F2Test')
-    sp.study = 'TestStudy'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, 0, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 0.001
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
+    sp.study                  = 'TestStudy'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, 0, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 0.001
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
@@ -2168,8 +2168,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.in_atlas               = False
     sp.b0_level               = 7
     sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1
-                                 }
+                                 'mask_dilation'     : 1}
     sp.options_T1             = {'roi_mask'           : 'BTMA',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
@@ -2177,8 +2176,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
-                                 'median_filter'      : True
-                                 }
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -2196,8 +2194,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.in_atlas               = False
     sp.b0_level               = 7
     sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1
-                                }
+                                 'mask_dilation'     : 1}
     sp.options_T1             = {'roi_mask'           : 'BTMA',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
@@ -2205,430 +2202,398 @@ def reset_parameters_files(pfo_where_to_save):
                                  'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
-                                 'median_filter'      : True
-                                }
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('12309')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 6, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
+    sp                        = SubjectParameters('12309')
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 6, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (5, 98),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
-    sp = SubjectParameters('12402')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 6, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.b0_to_use_in_fsldti = [0, 1, 2]  # TODO Investigate further!!
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',  
-                     'pivot'              : '1305',  
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,  
-                     'crop_roi'           : False,  
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True  
-                     }
-
+    sp                        = SubjectParameters('12402')
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 6, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.b0_to_use_in_fsldti    = [0, 1, 2]  # TODO Investigate further!!
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (5, 98),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('12504')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 6, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 6, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (5, 98),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('12505')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 6, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 6, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (5, 98),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('12607')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 6, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 6, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (5, 98),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('12608')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 6, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 6, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (5, 98),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('12609')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 6, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 6, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (5, 98),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('12610')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 6, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 6, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (5, 98),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('13102')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 9,
+                                 'window_percentile'  : (20, 100),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('13201')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
-    sp.save_as_txt(pfo_where_to_save)
-    sp.dump_with_pickle(pfo_where_to_save)
-    del sp
-
-    sp = SubjectParameters('13401')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
-    sp.save_as_txt(pfo_where_to_save)
-    sp.dump_with_pickle(pfo_where_to_save)
-    del sp
-
-    sp = SubjectParameters('13402')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
-    sp.save_as_txt(pfo_where_to_save)
-    sp.dump_with_pickle(pfo_where_to_save)
-    del sp
-
-    sp = SubjectParameters('13403')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : -4,
+                                 'window_percentile'  : (15, 100),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('13202')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile': (5, 99),
+                                 'mask_dilation': 1}
+    sp.options_T1             = {'roi_mask': 'BTMA',
+                                 'pivot': '1305',
+                                 'mask_dilation': 5,
+                                 'window_percentile': (2, 100),
+                                 'slim': False,
+                                 'crop_roi': False,
+                                 'lesion_mask_method': 0,
+                                 'median_filter': True}
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('13401')
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (3, 100),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('13402')
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (3, 100),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('13403')
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (3, 100),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
     sp = SubjectParameters('13403retest')
-    sp.study = 'ACS'
-    sp.category = 'ex_vivo01'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 1,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 1,
+                                 'window_percentile'  : (0, 100),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -2636,104 +2601,45 @@ def reset_parameters_files(pfo_where_to_save):
     '  -----------  PTB ex vivo  ------------------- '
 
     sp = SubjectParameters('13003')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'Pivotal',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 1,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
-    sp.save_as_txt(pfo_where_to_save)
-    sp.dump_with_pickle(pfo_where_to_save)
-    del sp
-
-    sp = SubjectParameters('13004')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
-    sp.save_as_txt(pfo_where_to_save)
-    sp.dump_with_pickle(pfo_where_to_save)
-    del sp
-
-    sp = SubjectParameters('13005')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
-    sp.bias_field_parameters = bfp_slow
-    sp.MSME_acquisition = 'high_res'
-    sp.comment = ''
-    sp.in_atlas = False
-    sp.b0_level = 7
-    sp.options_S0 = {'window_percentile' : (1, 99),
-                     'mask_dilation'     : 1
-                     }
-    sp.options_T1 = {'roi_mask'           : 'BTMA',
-                     'pivot'              : '1305',
-                     'mask_dilation'      : 5,
-                     'window_percentile'  : (5, 98),
-                     'slim'               : False,
-                     'crop_roi'           : False,
-                     'lesion_mask_method' : 0,
-                     'median_filter'      : True
-                     }
-    sp.save_as_txt(pfo_where_to_save)
-    sp.dump_with_pickle(pfo_where_to_save)
-    del sp
-
-    sp = SubjectParameters('13006')
-    sp.study = 'PTB'
-    sp.category = 'ex_vivo'
-    sp.angles = [0, np.pi / 8, 0]
-    sp.translation = [0, 0, 0]
-    sp.threshold = 18
-    sp.DWI_squashed = False
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
     sp.in_atlas               = False
     sp.b0_level               = 7
     sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1
-                                 }
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 1,
+                                 'window_percentile'  : (5, 98),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('13004')
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
     sp.options_T1             = {'roi_mask'           : 'BTMA',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
@@ -2741,8 +2647,59 @@ def reset_parameters_files(pfo_where_to_save):
                                  'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
-                                 'median_filter'      : True
-                                 }
+                                 'median_filter'      : True}
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('13005')
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (5, 98),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('13006')
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile' : (1, 99),
+                                 'mask_dilation'     : 1}
+    sp.options_T1             = {'roi_mask'           : 'BTMA',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (5, 98),
+                                 'slim'               : False,
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -2762,8 +2719,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.in_atlas               = False
     sp.b0_level               = 7
     sp.options_S0             = {'window_percentile' : (1, 99),
-                                 'mask_dilation'     : 1
-                                 }
+                                 'mask_dilation'     : 1}
     sp.options_T1             = {'roi_mask'           : 'BTMA',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : 5,
@@ -2771,8 +2727,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'slim'               : False,
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
-                                 'median_filter'      : True
-                                 }
+                                 'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp

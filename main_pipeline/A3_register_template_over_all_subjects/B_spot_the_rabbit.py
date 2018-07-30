@@ -135,7 +135,9 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['1501t1', ]
     # lsm.input_subjects = ['11806']
     # lsm.input_subjects = ['F1Test']
-    lsm.input_subjects = ['F2Test']
+
+    lsm.input_subjects = ['13201']
+    # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
 
 
     lsm.update_ls()

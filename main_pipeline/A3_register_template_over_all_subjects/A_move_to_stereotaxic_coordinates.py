@@ -317,7 +317,7 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['0802t1', ]
     # lsm.input_subjects = ['0904t1']
     # lsm.input_subjects = ['1501t1', ]
-    lsm.input_subjects = ['13103']
+    lsm.input_subjects = ['13201']
     lsm.update_ls()
 
     move_to_stereotaxic_coordinate_from_list(lsm.ls, controller_, options_)

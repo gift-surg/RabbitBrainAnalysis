@@ -308,7 +308,7 @@ def process_T1_per_subject(sj, step):
             assert check_path_validity(pfi_3d_bias_field_corrected)
             assert check_path_validity(pfi_roi_mask)
 
-            percentile = sj_parameters['T1_window_percentile']
+            percentile = sj_parameters['options_T1']['window_percentile']
 
             median_filter = sj_parameters['options_T1']['median_filter']
             percentile_lesion_mask_extractor(im_input_path=pfi_3d_bias_field_corrected,
@@ -428,10 +428,10 @@ if __name__ == '__main__':
     print('process T1, local run. ')
 
     controller_steps = {'orient_to_standard'       : False,
-                        'create_roi_masks'         : True,
-                        'adjust_mask'              : True,
-                        'cut_masks'                : True,
-                        'step_bfc'                 : True,
+                        'create_roi_masks'         : False,
+                        'adjust_mask'              : False,
+                        'cut_masks'                : False,
+                        'step_bfc'                 : False,
                         'create_lesion_maks'       : True,
                         'create_reg_mask'          : True,
                         'save_results'             : True}
@@ -444,7 +444,8 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['13102', '13201', '13202', '13401', '13402', '13403', '13403retest']
+    lsm.input_subjects = ['13102', ]  #
+    # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
     # lsm.input_subjects = ['13004', ]
     lsm.update_ls()
