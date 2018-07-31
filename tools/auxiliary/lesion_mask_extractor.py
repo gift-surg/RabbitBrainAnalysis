@@ -211,7 +211,7 @@ def lesion_masks_extractor_cc_based_path(im_input_path, im_output_path, im_mask_
     if save_intermediate:
         im_output_path_intermediate = os.path.join(os.path.dirname(im_output_path), 'z_intermediate.nii.gz')
         cmd_mid = 'cp {0} {1}'.format(im_output_path, im_output_path_intermediate)
-        print_and_run(md_mid)
+        print_and_run(cmd_mid)
 
     cmd2 = '''seg_maths  {0} -smol 1.2 {0};
              seg_maths {0} -dil 1 {0};
