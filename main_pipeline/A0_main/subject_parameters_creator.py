@@ -2345,10 +2345,10 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : -2,
-                                 'window_percentile'  : (30, 95),
+                                 'window_percentile'  : (75, 100),
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
-                                 'median_filter'      : True}
+                                 'median_filter'      : False}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp

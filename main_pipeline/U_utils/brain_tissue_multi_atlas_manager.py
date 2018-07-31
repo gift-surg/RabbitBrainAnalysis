@@ -30,9 +30,9 @@ def extract_brain_tissue_in_NI_multi_atlas():
 
         print_and_run('cp {0} {1}'.format(pfi_segm, pfi_brain_tissue))
 
-        cmd = 'seg_maths {0} -bin {0}; ' \
+        cmd = 'seg_maths {0} -bin {0}; '   \
               'seg_maths {0} -dil 1 {0}; ' \
-              'seg_maths {0} -fill {0}; ' \
+              'seg_maths {0} -fill {0}; '  \
               'seg_maths {0} -ero 1 {0} '.format(pfi_brain_tissue)
 
         print_and_run(cmd)
@@ -73,9 +73,9 @@ def create_brain_tissue_multi_atlas(sj_list, controller):
         # Elaborate data in destination:
         # -- from segmentation to brain tissue:
 
-        cmd = 'seg_maths {0} -bin {0}; ' \
+        cmd = 'seg_maths {0} -bin {0}; '   \
               'seg_maths {0} -dil 1 {0}; ' \
-              'seg_maths {0} -fill {0}; ' \
+              'seg_maths {0} -fill {0}; '  \
               'seg_maths {0} -ero 1 {0} '.format(pfi_brain_tissue_sj_BT)
 
         print_and_run(cmd)
@@ -103,61 +103,78 @@ def extract_brain_tissue_from_multi_atlas_list_stereotaxic(target_name,
     :param options:
     :return:
     """
+    assert os.path.exists(pfo_tmp)
+
     # parameters target:
+    sj_parameters = pickle.load(open(jph(defs.pfo_subjects_parameters, target_name), 'r'))
+
+    study    = sj_parameters['study']
+    category = sj_parameters['category']
 
     # input target:
-    pfi_target_sj_T1        = ''
-    pfi_target_sj_reg_mask  = ''
+    root_target_sj = jph(defs.root_study_rabbits, study, category, target_name)
+
+    pfi_target_sj_T1        = jph(root_target_sj, 'mod', '{}_T1.nii.gz'.format(target_name))
+    pfi_target_sj_reg_mask  = jph(root_target_sj, 'masks', '{}_reg_mask.nii.gz'.format(target_name))
+
+    assert os.path.exists(pfi_target_sj_T1), pfi_target_sj_T1
+    assert os.path.exists(pfi_target_sj_reg_mask), pfi_target_sj_reg_mask
 
     # list of final intermediate output:
     list_pfi_brain_mask_registered_on_target = []
+    list_pfi_T1_registered_on_target         = []
 
     for atlas_sj in multi_atlas_list:
 
         # input selected atlas_sj
         if atlas_sj in defs.multi_atlas_subjects:
-            pfi_atlas_sj_T1         = jph()
-            pfi_atlas_sj_reg_mask   = jph()
-            pfi_atlas_sj_brain_mask = jph()
+            root_atlas_sj = jph(defs.root_atlas, atlas_sj)
+            pfi_atlas_sj_T1         = jph(root_atlas_sj, 'mod', '{}_T1.nii.gz'.format(atlas_sj))
+            pfi_atlas_sj_reg_mask   = jph(root_atlas_sj, 'masks', '{}_reg_mask.nii.gz'.format(atlas_sj))
+            pfi_atlas_sj_brain_mask = jph(root_atlas_sj, 'masks', '{}_brain_mask.nii.gz'.format(atlas_sj))
         elif atlas_sj in defs.multi_atlas_BT_subjects:
-            pfi_atlas_sj_T1         = jph()
-            pfi_atlas_sj_reg_mask   = jph()
-            pfi_atlas_sj_brain_mask = jph()
+            root_atlas_name_BT = jph(defs.root_atlas_BT, atlas_sj)
+            pfi_atlas_sj_T1         = jph(root_atlas_name_BT, '{}_T1.nii.gz'.format(atlas_sj))
+            pfi_atlas_sj_reg_mask   = jph(root_atlas_name_BT, '{}_reg_mask.nii.gz'.format(atlas_sj))
+            pfi_atlas_sj_brain_mask = jph(root_atlas_name_BT, '{}_brain_mask.nii.gz'.format(atlas_sj))
         else:
-            raise IOError('subject {} is not in a known multi-atlas'.format(atlas_sj))
-
-        assert os.path.exists(pfi_target_sj_T1),       pfi_target_sj_T1
-        assert os.path.exists(pfi_target_sj_reg_mask), pfi_target_sj_reg_mask
+            raise IOError('Subject {} is not in a known or provided multi-atlas.'.format(atlas_sj))
 
         assert os.path.exists(pfi_atlas_sj_T1),         pfi_atlas_sj_T1
         assert os.path.exists(pfi_atlas_sj_reg_mask),   pfi_atlas_sj_reg_mask
         assert os.path.exists(pfi_atlas_sj_brain_mask), pfi_atlas_sj_brain_mask
 
         # intermediate output: AFFINE
-        pfi_affine_transformation_ref_on_subject = jph()
-        pfi_affine_warped_ref_on_subject         = jph()
+        pfi_affine_transformation_ref_on_subject = jph(pfo_tmp, 'target{}_floating{}_aff_transformation.txt'.format(target_name, atlas_sj))
+        pfi_affine_warped_ref_on_subject         = jph(pfo_tmp, 'target{}_floating{}_aff_warped.nii.gz'.format(target_name, atlas_sj))
 
         # AFFINE step
         cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -speeeeed '.format(
-            pfi_target_sj_T1,
-            pfi_target_sj_reg_mask,
-            pfi_atlas_sj_T1,
-            pfi_atlas_sj_reg_mask,
+            pfi_target_sj_T1, pfi_target_sj_reg_mask, pfi_atlas_sj_T1, pfi_atlas_sj_reg_mask,
             pfi_affine_transformation_ref_on_subject,
             pfi_affine_warped_ref_on_subject,
             defs.num_cores_run)
         print_and_run(cmd)
 
         # intermediate output: NON-RIGID
-        pfi_nrig_cpp_ref_on_subject    = jph()
-        pfi_nrig_warped_ref_on_subject = jph()
+        pfi_nrig_cpp_ref_on_subject    = jph(pfo_tmp, 'target{}_floating{}_nrigid_cpp.nii.gz'.format(target_name, atlas_sj))
+        pfi_nrig_warped_ref_on_subject = jph(pfo_tmp, 'target{}_floating{}_nrigid_warped.nii.gz'.format(target_name, atlas_sj))
 
         # NON-RIGID step
-        cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -cpp {5} -res {6} -omp'
+        nrig_options = ' -be 0.8 -jl 0.5 '
+        cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -cpp {5} -res {6} {7} -omp {8}'.format(
+            pfi_target_sj_T1, pfi_target_sj_reg_mask,
+            pfi_atlas_sj_T1, pfi_atlas_sj_reg_mask,
+            pfi_affine_transformation_ref_on_subject,
+            pfi_nrig_cpp_ref_on_subject,
+            pfi_nrig_warped_ref_on_subject,
+            nrig_options,
+            defs.num_cores_run)
 
         print_and_run(cmd)
 
-        print('- Propagate registration to brain tissue mask, subject {} over the target {}'.format(atlas_sj, target_name))
+        print('- Propagate registration to brain tissue mask, subject {0} over the target {1}'.format(
+            atlas_sj, target_name))
 
         # Output brain tissue after affine trasformation, must include the atlas_sj name in the naming.
         pfi_brain_tissue_from_multi_atlas_sj = jph(pfo_tmp, '{0}_T1_brain_tissue_from_atlas{1}.nii.gz'.format(
@@ -169,18 +186,31 @@ def extract_brain_tissue_from_multi_atlas_list_stereotaxic(target_name,
             pfi_brain_tissue_from_multi_atlas_sj)
         print_and_run(cmd)
 
+        # Append path to output files ot the respective lists.
         list_pfi_brain_mask_registered_on_target.append(pfi_brain_tissue_from_multi_atlas_sj)
+        list_pfi_T1_registered_on_target.append(pfi_nrig_warped_ref_on_subject)
 
-    print('- Create stack over the target {} and merge with MV. '.format(target_name))
+    print('- Create stack of the brain masks warped over the target {} and merge with MV. '.format(target_name))
 
-    pfi_stack_brain_tissue = jph(pfo_tmp, '{0}_T1_brain_tissues_from_all_multi_atlas_{1}_stack.nii.gz'.format(
+    # Create stack of warped brain mask
+    pfi_stack_brain_mask = jph(pfo_tmp, 'a_stack_brain_tissues_target{0}_multiAtlas{1}.nii.gz'.format(
         target_name, options['roi_mask']))
 
     lt = LABelsToolkit()
-    lt.manipulate_shape.stack_list_pfi_images(list_pfi_brain_mask_registered_on_target, pfi_stack_brain_tissue)
+    lt.manipulate_shape.stack_list_pfi_images(list_pfi_brain_mask_registered_on_target, pfi_stack_brain_mask)
+    del lt
 
-    # merge the roi masks in one:
-    cmd = 'seg_LabFusion  -in {0} -out {1} -MV '.format(pfi_stack_brain_tissue, pfi_output_brain_mask)
+    # Create stack of warped T1
+    pfi_stack_T1 = jph(pfo_tmp, 'a_stack_T1_target{0}_multiAtlas{1}.nii.gz'.format(
+        target_name, options['roi_mask']))
+
+    lt = LABelsToolkit()
+    lt.manipulate_shape.stack_list_pfi_images(list_pfi_T1_registered_on_target, pfi_stack_T1)
+    del lt
+
+    # merge the roi masks in one (Majority voting for now):
+    cmd = 'seg_LabFusion -in {0} -out {1} -MV '.format(pfi_stack_brain_mask, pfi_output_brain_mask)
+    # cmd = 'seg_LabFusion -in {0} -out {1} -STAPLE '.format(pfi_stack_brain_mask, pfi_output_brain_mask)
     print_and_run(cmd)
 
 

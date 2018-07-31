@@ -117,10 +117,15 @@ def simple_lesion_mask_extractor_path(im_input_path, im_output_path, im_mask_for
 
 
 # --- Auxiliaries
-def get_percentiles_range(pfi_im_input, percentiles=(15, 95)):
+def get_percentiles_range(pfi_im_input, percentiles=(15, 95), pfi_im_mask=None):
     assert os.path.exists(pfi_im_input)
     im = nib.load(pfi_im_input)
     im_data = im.get_data().flatten()
+    if pfi_im_mask is not None:
+        im_mask = nib.load(pfi_im_input)
+        im_mask_data = im_mask.get_data().flatten()
+        im_data = im_data * im_mask_data
+
     non_zero_data = im_data[np.where(np.nan_to_num(im_data) > 1e-6)]
     if len(non_zero_data) > 0:
         low_p = np.percentile(non_zero_data, percentiles[0])
@@ -166,14 +171,15 @@ def percentile_lesion_mask_extractor(im_input_path, im_output_path, im_mask_fore
         nib.save(im_fil, im_input_path_filtered)
         im_input_path = im_input_path_filtered
 
-    low_thr, up_thr = get_percentiles_range(im_input_path, percentiles=percentiles)
+    low_thr, up_thr = get_percentiles_range(im_input_path, percentiles=percentiles, pfi_im_mask=None)
+
     cmd = '''seg_maths {0} -thr {3} {1};
              seg_maths {1} -uthr {4} {1};
              seg_maths {1} -bin {1};
              seg_maths {1} -add {2} {1};
              seg_maths {1} -replace 2 0 {1};
-             seg_maths {1} -ero 1 {1};
              seg_maths {1} -dil 1 {1};
+             seg_maths {1} -ero 1 {1};
              seg_maths {1} -mul {2} {1};
           '''.format(im_input_path, im_output_path, im_mask_foreground_path, low_thr, up_thr)
     print cmd
@@ -205,6 +211,7 @@ def lesion_masks_extractor_cc_based_path(im_input_path, im_output_path, im_mask_
     if save_intermediate:
         im_output_path_intermediate = os.path.join(os.path.dirname(im_output_path), 'z_intermediate.nii.gz')
         cmd_mid = 'cp {0} {1}'.format(im_output_path, im_output_path_intermediate)
+        print_and_run(md_mid)
 
     cmd2 = '''seg_maths  {0} -smol 1.2 {0};
              seg_maths {0} -dil 1 {0};

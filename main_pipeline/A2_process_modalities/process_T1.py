@@ -249,15 +249,19 @@ def process_T1_per_subject(sj, steps):
         pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
 
         if options_T1['lesion_mask_method'] == 0:
-            print('remove percentiles, values added manually:')
+
+            percentile = sj_parameters['options_T1']['window_percentile']
+            median_filter = sj_parameters['options_T1']['median_filter']
+
+            print('remove percentiles, values added manually: percentile {}, median filter {}'.format(
+                percentile, median_filter))
+
             pfi_3d_bias_field_corrected = jph(pfo_tmp, sj + '_bfc.nii.gz')
             pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
+
             assert check_path_validity(pfi_3d_bias_field_corrected)
             assert check_path_validity(pfi_roi_mask)
 
-            percentile = sj_parameters['options_T1']['window_percentile']
-
-            median_filter = sj_parameters['options_T1']['median_filter']
             percentile_lesion_mask_extractor(im_input_path=pfi_3d_bias_field_corrected,
                                              im_output_path=pfi_lesion_mask,
                                              im_mask_foreground_path=pfi_roi_mask,
@@ -347,11 +351,11 @@ def process_T1_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('Process T1, local run.')
 
-    controller_steps = {'orient_to_standard'       : True,
-                        'create_roi_masks'         : True,
-                        'adjust_mask'              : True,
-                        'cut_masks'                : True,
-                        'step_bfc'                 : True,
+    controller_steps = {'orient_to_standard'       : False,
+                        'create_roi_masks'         : False,
+                        'adjust_mask'              : False,
+                        'cut_masks'                : False,
+                        'step_bfc'                 : False,
                         'create_lesion_maks'       : True,
                         'create_reg_mask'          : True,
                         'save_results'             : True}
