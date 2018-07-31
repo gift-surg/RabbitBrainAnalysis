@@ -112,10 +112,10 @@ def extract_brain_tissue_from_multi_atlas_list_stereotaxic(target_name,
     category = sj_parameters['category']
 
     # input target:
-    root_target_sj = jph(defs.root_study_rabbits, study, category, target_name)
+    root_target_sj = jph(defs.root_study_rabbits, 'A_data', study, category, target_name)
 
-    pfi_target_sj_T1        = jph(root_target_sj, 'mod', '{}_T1.nii.gz'.format(target_name))
-    pfi_target_sj_reg_mask  = jph(root_target_sj, 'masks', '{}_reg_mask.nii.gz'.format(target_name))
+    pfi_target_sj_T1        = jph(root_target_sj, 'stereotaxic', 'mod', '{}_T1.nii.gz'.format(target_name))
+    pfi_target_sj_reg_mask  = jph(root_target_sj, 'stereotaxic', 'masks', '{}_T1_reg_mask.nii.gz'.format(target_name))
 
     assert os.path.exists(pfi_target_sj_T1), pfi_target_sj_T1
     assert os.path.exists(pfi_target_sj_reg_mask), pfi_target_sj_reg_mask

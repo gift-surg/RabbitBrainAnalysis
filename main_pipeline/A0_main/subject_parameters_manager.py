@@ -60,8 +60,8 @@ class SubjectParameters(object):
         self.b0_to_use_in_fsldti   = -1  # -1 default means all the b0 layers. If only one layer is
         self.spotter_tag           = 'P2'
         self.options_S0            = {'window_percentile' : S0_window_percentile,
-                                      'mask_dilation'     : S0_mask_dilation}
-
+                                      'mask_dilation'     : S0_mask_dilation
+                                      }
         self.options_T1            = {'roi_mask'           : "Pivotal",  # Can be only Pivotal in this version.
                                       'pivot'              : '1305',  # name of a template reference to get the roi mask or a first approximation (if in vivo '1504t1')
                                       'maks_dilation'      : T1_mask_dilation,

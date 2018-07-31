@@ -2349,6 +2349,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : False}
+    sp.options_brain_mask     = {'method'             : 'MA'}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp

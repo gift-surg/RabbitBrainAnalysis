@@ -33,15 +33,13 @@ def get_brain_mask_per_subject(sj, sj_parameters):
     # Target folder in stereotaxic coordinates:
     pfo_sj = jph(defs.root_study_rabbits, 'A_data', study, category, sj)
     pfo_sc_sj = jph(pfo_sj, 'stereotaxic')
-    pfo_sc_sj_mod = jph(pfo_sc_sj, 'mod')
-    pfo_sc_sj_masks = jph(pfo_sc_sj, 'masks')
 
     pfo_tmp = jph(pfo_sc_sj, 'z_tmp_generate_brain_mask')
     cmd = 'mkdir -p {}'.format(pfo_tmp)
     print_and_run(cmd)
 
     # FINAL Output
-    pfi_brain_mask_sj = jph(pfo_sc_sj_masks, '{}_brain_mask.nii.gz'.format(sj))
+    pfi_brain_mask_sj = jph(pfo_sc_sj, 'masks', '{}_brain_mask.nii.gz'.format(sj))
 
     # IF subject is in multi-atlas just copy the brain_mask to the new destination.
     if sj in defs.multi_atlas_subjects:
@@ -61,11 +59,11 @@ def get_brain_mask_per_subject(sj, sj_parameters):
 
     # ELSE: get the list of subjects of the atlas
     else:
-        if options_brain_mask['modality'] == 'MA':
+        if options_brain_mask['method'] == 'MA':
             mutli_atlas_subject_list = defs.multi_atlas_subjects
-        elif options_brain_mask['modality'] == 'BTMA':
+        elif options_brain_mask['method'] == 'BTMA':
             mutli_atlas_subject_list = defs.multi_atlas_BT_subjects
-        elif options_brain_mask['modality'] == 'BTMA_MA' or options_brain_mask['modality'] == 'MA_BTMA':
+        elif options_brain_mask['method'] == 'BTMA_MA' or options_brain_mask['method'] == 'MA_BTMA':
             mutli_atlas_subject_list = defs.multi_atlas_BT_subjects + defs.multi_atlas_subjects
         else:
             raise IOError
