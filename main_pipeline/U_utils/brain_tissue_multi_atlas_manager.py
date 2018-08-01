@@ -161,7 +161,7 @@ def extract_brain_tissue_from_multi_atlas_list_stereotaxic(target_name,
         pfi_nrig_warped_ref_on_subject = jph(pfo_tmp, 'target{}_floating{}_nrigid_warped.nii.gz'.format(target_name, atlas_sj))
 
         # NON-RIGID step
-        nrig_options = ' -be 0.8 -jl 0.5 '
+        nrig_options = ' -be 0.8 -le 0.5 '  # -jl 0.5
         cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -cpp {5} -res {6} {7} -omp {8}'.format(
             pfi_target_sj_T1, pfi_target_sj_reg_mask,
             pfi_atlas_sj_T1, pfi_atlas_sj_reg_mask,
@@ -170,14 +170,13 @@ def extract_brain_tissue_from_multi_atlas_list_stereotaxic(target_name,
             pfi_nrig_warped_ref_on_subject,
             nrig_options,
             defs.num_cores_run)
-
         print_and_run(cmd)
 
         print('- Propagate registration to brain tissue mask, subject {0} over the target {1}'.format(
             atlas_sj, target_name))
 
         # Output brain tissue after affine trasformation, must include the atlas_sj name in the naming.
-        pfi_brain_tissue_from_multi_atlas_sj = jph(pfo_tmp, '{0}_T1_brain_tissue_from_atlas{1}.nii.gz'.format(
+        pfi_brain_tissue_from_multi_atlas_sj = jph(pfo_tmp, 'target{0}_floating{1}_nrigid_warped_brain_mask.nii.gz'.format(
             target_name, atlas_sj))
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_target_sj_T1,
@@ -194,7 +193,7 @@ def extract_brain_tissue_from_multi_atlas_list_stereotaxic(target_name,
 
     # Create stack of warped brain mask
     pfi_stack_brain_mask = jph(pfo_tmp, 'a_stack_brain_tissues_target{0}_multiAtlas{1}.nii.gz'.format(
-        target_name, options['roi_mask']))
+        target_name, options['method']))
 
     lt = LABelsToolkit()
     lt.manipulate_shape.stack_list_pfi_images(list_pfi_brain_mask_registered_on_target, pfi_stack_brain_mask)
@@ -202,7 +201,7 @@ def extract_brain_tissue_from_multi_atlas_list_stereotaxic(target_name,
 
     # Create stack of warped T1
     pfi_stack_T1 = jph(pfo_tmp, 'a_stack_T1_target{0}_multiAtlas{1}.nii.gz'.format(
-        target_name, options['roi_mask']))
+        target_name, options['method']))
 
     lt = LABelsToolkit()
     lt.manipulate_shape.stack_list_pfi_images(list_pfi_T1_registered_on_target, pfi_stack_T1)

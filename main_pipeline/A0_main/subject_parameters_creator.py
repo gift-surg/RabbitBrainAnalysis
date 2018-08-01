@@ -70,7 +70,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'     : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (0.1, 99.9),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -93,7 +93,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (0.1, 99.9),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -116,7 +116,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (0.1, 99.9),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -139,7 +139,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (0.1, 99.9),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -162,7 +162,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (0.1, 99.9),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -185,7 +185,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (0.1, 99.9),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -211,7 +211,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : 1.5,
+                                 'mask_dilation'      : 1.5,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -235,7 +235,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : 3.5,
+                                 'mask_dilation'      : 3.5,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -259,7 +259,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : 0.5,
+                                 'mask_dilation'      : 0.5,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -283,7 +283,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : -0.5,
+                                 'mask_dilation'      : -0.5,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -307,7 +307,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -331,7 +331,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -355,7 +355,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : -3.5,
+                                 'mask_dilation'      : -3.5,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -379,7 +379,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : 2.5,
+                                 'mask_dilation'      : 2.5,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -403,7 +403,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : 4,
+                                 'mask_dilation'      : 4,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -427,7 +427,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : -3,
+                                 'mask_dilation'      : -3,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -451,7 +451,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : 1.5,
+                                 'mask_dilation'      : 1.5,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -474,8 +474,8 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : 3,
+                                 'window_percentile'  : (60, 100),
+                                 'mask_dilation'      : 3,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -499,7 +499,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -523,7 +523,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 90),
-                                 'maks_dilation'      : 0.5,
+                                 'mask_dilation'      : 0.5,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -548,7 +548,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 3}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 90),
-                                 'maks_dilation'      : 2,
+                                 'mask_dilation'      : 2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -573,7 +573,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 3}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 95),
-                                 'maks_dilation'      : 2,
+                                 'mask_dilation'      : 2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -598,7 +598,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 90),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -623,7 +623,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (18, 95),
-                                 'maks_dilation'      : 0,
+                                 'mask_dilation'      : 0,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -648,7 +648,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 95),
-                                 'maks_dilation'      : -1,
+                                 'mask_dilation'      : -1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -673,7 +673,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 0}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -698,7 +698,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -723,7 +723,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -748,7 +748,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (15, 95),
-                                 'maks_dilation'      : 5,
+                                 'mask_dilation'      : 5,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -773,7 +773,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -798,7 +798,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -823,7 +823,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -848,7 +848,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -873,7 +873,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -898,7 +898,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 0}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (74.8, 95),
-                                 'maks_dilation'      : -2,
+                                 'mask_dilation'      : -2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -923,7 +923,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 0}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (75, 97),
-                                 'maks_dilation'      : -2,
+                                 'mask_dilation'      : -2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -948,7 +948,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 0}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (75, 97),
-                                 'maks_dilation'      : -2,
+                                 'mask_dilation'      : -2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -973,7 +973,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 0}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (75, 97),
-                                 'maks_dilation'      : -2,
+                                 'mask_dilation'      : -2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -998,7 +998,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 0}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (75, 97),
-                                 'maks_dilation'      : -2,
+                                 'mask_dilation'      : -2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1023,7 +1023,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 0}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (75, 97),
-                                 'maks_dilation'      : -2,
+                                 'mask_dilation'      : -2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1048,7 +1048,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 0}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (75, 97),
-                                 'maks_dilation'      : -2,
+                                 'mask_dilation'      : -2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1073,7 +1073,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 90),
-                                 'maks_dilation'      : 2,
+                                 'mask_dilation'      : 2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1100,7 +1100,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1125,7 +1125,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1150,7 +1150,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1175,7 +1175,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 91),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1200,7 +1200,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1225,7 +1225,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1250,7 +1250,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1275,7 +1275,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1300,7 +1300,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1325,7 +1325,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (12, 92),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1351,7 +1351,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1375,7 +1375,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1399,7 +1399,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1423,7 +1423,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1447,7 +1447,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1471,7 +1471,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1495,7 +1495,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1519,7 +1519,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1543,7 +1543,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1567,7 +1567,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1591,7 +1591,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1615,7 +1615,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1639,7 +1639,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1663,7 +1663,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1689,7 +1689,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1713,7 +1713,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (10, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1740,7 +1740,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1765,7 +1765,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1790,7 +1790,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1815,7 +1815,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1840,7 +1840,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1865,7 +1865,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1890,7 +1890,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1915,7 +1915,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (2, 96),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1940,7 +1940,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1965,7 +1965,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -1990,7 +1990,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -2015,7 +2015,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -2040,7 +2040,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -2065,7 +2065,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
                                  'window_percentile'  : (5, 98),
-                                 'maks_dilation'      : 1,
+                                 'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
@@ -2349,7 +2349,7 @@ def reset_parameters_files(pfo_where_to_save):
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : False}
-    sp.options_brain_mask     = {'method'             : 'MA'}
+    sp.options_brain_mask     = {'method'             : 'BTMA'}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
