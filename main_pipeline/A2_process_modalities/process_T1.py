@@ -361,7 +361,7 @@ if __name__ == '__main__':
     print('Process T1, local run.')
 
     controller_steps = {'orient_to_standard'       : False,
-                        'create_roi_masks'         : True,
+                        'create_roi_masks'         : False,
                         'adjust_mask'              : False,
                         'cut_masks'                : False,
                         'step_bfc'                 : False,
@@ -377,7 +377,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['2702', '3301', '3303', '3404', '4302']  #  '2702',
+    lsm.input_subjects = ['4302', ]  #  '2702', '3404', '4302'
     # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
     # lsm.input_subjects = ['13004', ]

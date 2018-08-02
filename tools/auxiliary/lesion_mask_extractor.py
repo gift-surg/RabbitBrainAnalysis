@@ -178,7 +178,7 @@ def percentile_lesion_mask_extractor(im_input_path, im_output_path, im_mask_fore
              seg_maths {1} -bin {1};
              seg_maths {1} -add {2} {1};
              seg_maths {1} -replace 2 0 {1};
-             seg_maths {1} -dil 1 {1};
+             seg_maths {1} -dil 2 {1};
              seg_maths {1} -ero 1 {1};
              seg_maths {1} -mul {2} {1};
           '''.format(im_input_path, im_output_path, im_mask_foreground_path, low_thr, up_thr)

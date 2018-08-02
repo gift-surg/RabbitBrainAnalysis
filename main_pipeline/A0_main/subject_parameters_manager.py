@@ -47,6 +47,7 @@ class SubjectParameters(object):
 
         self.study                 = study
         self.category              = category
+        self.merge_with            = None
         self.leading_modality      = 'T1'
         self.angles                = angles
         self.translation           = translation
@@ -76,6 +77,7 @@ class SubjectParameters(object):
         d = OrderedDict()
         d.update({'study'                 : self.study})
         d.update({'category'              : self.category})
+        d.update({'merge_with'            : self.merge_with})
         d.update({'leading_modality'      : self.leading_modality})
         d.update({'angles'                : self.angles})
         d.update({'translation'           : self.translation})

@@ -572,7 +572,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 3}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (65, 99.8),
+                                 'window_percentile'  : (55, 99.8),
                                  'mask_dilation'      : 2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
@@ -597,7 +597,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (65, 99.8),
+                                 'window_percentile'  : (20, 90),
                                  'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
@@ -622,7 +622,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (65, 99.8),
+                                 'window_percentile'  : (70, 99.98),
                                  'mask_dilation'      : 0,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
@@ -641,7 +641,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
-    sp.comment                = 'T1 warping artefact DWI unusable - extra DWI in external study'
+    sp.comment                = 'T1 warping artefact DWI unusable - DWI acquired in external study'
     sp.in_atlas               = False
     sp.b0_level               = 7
     sp.options_S0             = {'window_percentile'  : (1, 95),
@@ -656,6 +656,15 @@ def reset_parameters_files(pfo_where_to_save):
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
+
+    sp = SubjectParameters('4303DWI')
+    sp.study                  = 'PTB'
+    sp.category               = 'ex_vivo'
+    sp.merge_with             = '4303'
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
 
     sp = SubjectParameters('4304')
     sp.study                  = 'PTB'
@@ -772,7 +781,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (12, 92),
+                                 'window_percentile'  : (35, 99.8),
                                  'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
@@ -922,7 +931,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 0}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (75, 97),
+                                 'window_percentile'  : (80, 99.5),  # 75, 97
                                  'mask_dilation'      : -2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
@@ -947,7 +956,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 0}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (75, 97),
+                                 'window_percentile'  : (80, 99.5),
                                  'mask_dilation'      : -2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
@@ -972,7 +981,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 0}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (75, 97),
+                                 'window_percentile'  : (80, 99),
                                  'mask_dilation'      : -2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
@@ -997,7 +1006,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 0}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (75, 97),
+                                 'window_percentile'  : (80, 99),
                                  'mask_dilation'      : -2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
@@ -1022,7 +1031,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 0}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (75, 97),
+                                 'window_percentile'  : (83, 99.3),
                                  'mask_dilation'      : -2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
