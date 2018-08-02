@@ -71,7 +71,6 @@ def process_T1_per_subject(sj, steps):
         options_T1['roi_mask']      = ''
         steps['adjust_mask']        = False
         steps['create_lesion_maks'] = False
-        steps['create_reg_mask']    = False
 
     if steps['orient_to_standard']:
         print('- orient to standard {}'.format(sj))
@@ -141,8 +140,6 @@ def process_T1_per_subject(sj, steps):
         print_and_run(cmd)
 
         print('- propagate affine registration T1 to roi masks {}'.format(sj))
-
-        assert check_path_validity(pfi_affine_transformation_ref_on_subject)
         pfi_roi_mask_not_adjusted = jph(pfo_tmp, sj + '_T1_roi_mask_not_adjusted.nii.gz')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_std,
@@ -151,6 +148,7 @@ def process_T1_per_subject(sj, steps):
             pfi_roi_mask_not_adjusted)
         print_and_run(cmd)
 
+        print('- propagate affine registration T1 to reg masks {}'.format(sj))
         pfi_reg_mask_not_adjusted = jph(pfo_tmp, sj + '_T1_reg_mask_not_adjusted.nii.gz')
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_std,
@@ -163,12 +161,12 @@ def process_T1_per_subject(sj, steps):
 
             # if sj is in multi-atlas just copy the masks as they are in the destination, and then manipulate
             pfi_roi_mask = jph(pfo_mask, '{}_T1_roi_mask.nii.gz'.format(sj))
-            pfi_reg_mask = jph(pfo_mask, '{}_T1_reg_mask.nii.gz'.format(sj))
+            # pfi_reg_mask = jph(pfo_mask, '{}_T1_reg_mask.nii.gz'.format(sj))
 
             cmd = 'cp {} {}'.format(pfi_roi_mask_not_adjusted, pfi_roi_mask)
             print_and_run(cmd)
-            cmd = 'cp {} {}'.format(pfi_reg_mask_not_adjusted, pfi_reg_mask)
-            print_and_run(cmd)
+            # cmd = 'cp {} {}'.format(pfi_reg_mask_not_adjusted, pfi_reg_mask)
+            # print_and_run(cmd)
 
         del pfi_std, pfi_sj_ref_coord_system, pfi_reference_roi_mask, \
             angle_parameter, angles, pfi_sj_ref_coord_system_hd_oriented, pfi_reference_roi_mask_hd_oriented, \
@@ -309,26 +307,37 @@ def process_T1_per_subject(sj, steps):
 
     if steps['create_reg_mask']:
 
-        print('Extract lesion mask: Subject {}'.format(sj))
+        if sj_parameters['in_atlas']:
+            print('Get registration mask: Subject {} is in atlas'.format(sj))
 
-        # output:
-        pfi_reg_mask = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
+            pfi_reg_mask_not_adjusted = jph(pfo_tmp, '{}_T1_reg_mask_not_adjusted.nii.gz'.format(sj))
+            assert os.path.exists(pfi_reg_mask_not_adjusted), \
+                'Processing T1, subject {}. Run the step create_roi_mask first'.format(sj)
 
-        pfi_output_brain_mask = jph(pfo_mask, '{}_T1_brain_mask.nii.gz'.format(sj))
+            pfi_reg_mask = jph(pfo_mask, '{}_T1_reg_mask.nii.gz'.format(sj))
 
-        # --- CASE 1 B or CASE 2
-        # registration mask = roi mask - lesion mask
-        pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
-        pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
+            cmd = 'cp {} {}'.format(pfi_reg_mask_not_adjusted, pfi_reg_mask)
+            print_and_run(cmd)
 
-        assert os.path.exists(pfi_roi_mask), pfi_roi_mask
-        assert os.path.exists(pfi_lesion_mask), pfi_lesion_mask
+        else:
 
-        pfi_roi_mask_and_lesion_mask = jph(pfo_tmp, '{}_T1_ROI_and_LM.nii.gz'.format(sj))
-        cmd11 = 'seg_maths {0} -mul {1} {2}'.format(pfi_roi_mask, pfi_lesion_mask, pfi_roi_mask_and_lesion_mask)
-        print_and_run(cmd11)
-        cmd22 = 'seg_maths {0} -sub {1} {2}'.format(pfi_roi_mask, pfi_roi_mask_and_lesion_mask, pfi_reg_mask)
-        print_and_run(cmd22)
+            print('Create registration mask: Subject {}'.format(sj))
+
+            # output:
+            pfi_reg_mask = jph(pfo_mask, sj + '_T1_reg_mask.nii.gz')
+
+            # registration mask is defined as the difference between roi_mask and lesion_mask
+            pfi_roi_mask = jph(pfo_mask, sj + '_T1_roi_mask.nii.gz')
+            pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
+
+            assert os.path.exists(pfi_roi_mask), pfi_roi_mask
+            assert os.path.exists(pfi_lesion_mask), pfi_lesion_mask
+
+            pfi_roi_mask_and_lesion_mask = jph(pfo_tmp, '{}_T1_ROI_and_LM.nii.gz'.format(sj))
+            cmd11 = 'seg_maths {0} -mul {1} {2}'.format(pfi_roi_mask, pfi_lesion_mask, pfi_roi_mask_and_lesion_mask)
+            print_and_run(cmd11)
+            cmd22 = 'seg_maths {0} -sub {1} {2}'.format(pfi_roi_mask, pfi_roi_mask_and_lesion_mask, pfi_reg_mask)
+            print_and_run(cmd22)
 
     if steps['save_results']:
         print('- save results {}'.format(sj))
@@ -352,7 +361,7 @@ if __name__ == '__main__':
     print('Process T1, local run.')
 
     controller_steps = {'orient_to_standard'       : False,
-                        'create_roi_masks'         : False,
+                        'create_roi_masks'         : True,
                         'adjust_mask'              : False,
                         'cut_masks'                : False,
                         'step_bfc'                 : False,
@@ -368,7 +377,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['2608', ]  #
+    lsm.input_subjects = ['2702', '3301', '3303', '3404', '4302']  #  '2702',
     # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
     # lsm.input_subjects = ['13004', ]

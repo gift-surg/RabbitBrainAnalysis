@@ -162,7 +162,7 @@ def normal_lesion_mask_extractor(im_input_path, im_output_path, im_mask_foregrou
 
 
 def percentile_lesion_mask_extractor(im_input_path, im_output_path, im_mask_foreground_path, percentiles,
-                                     safety_on=False, median_filter=False, pfo_tmp=None):
+                                     safety_on=False, median_filter=False, pfo_tmp=None, verbose=True):
     if median_filter:
         im_input_name = os.path.basename(im_input_path).split('.')[0]
         im_input_path_filtered = os.path.join(pfo_tmp, '{}_filtered.nii.gz'.format(im_input_name))
@@ -182,7 +182,12 @@ def percentile_lesion_mask_extractor(im_input_path, im_output_path, im_mask_fore
              seg_maths {1} -ero 1 {1};
              seg_maths {1} -mul {2} {1};
           '''.format(im_input_path, im_output_path, im_mask_foreground_path, low_thr, up_thr)
-    print cmd
+
+    if verbose:
+        print('\nLower {}-percentile: {} '.format(percentiles[0], low_thr))
+        print('Upper {}-percentile: {} \n'.format(percentiles[1], up_thr))
+        print(cmd)
+
     if not safety_on:
         print_and_run(cmd)
 

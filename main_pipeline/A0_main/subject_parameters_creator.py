@@ -522,7 +522,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (60, 100),
+                                 'window_percentile'  : (63, 99.7),
                                  'mask_dilation'      : 0.5,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
@@ -547,7 +547,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 3}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (5, 90),
+                                 'window_percentile'  : (65, 99.8),
                                  'mask_dilation'      : 2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
@@ -572,7 +572,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 3}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (5, 95),
+                                 'window_percentile'  : (65, 99.8),
                                  'mask_dilation'      : 2,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
@@ -597,7 +597,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (5, 90),
+                                 'window_percentile'  : (65, 99.8),
                                  'mask_dilation'      : 1,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
@@ -622,7 +622,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 95),
                                  'mask_dilation'      : 2}
     sp.options_T1             = {'roi_mask'           : "Pivotal",
-                                 'window_percentile'  : (18, 95),
+                                 'window_percentile'  : (65, 99.8),
                                  'mask_dilation'      : 0,
                                  'pivot'              : '1305',
                                  'crop_roi'           : False,
