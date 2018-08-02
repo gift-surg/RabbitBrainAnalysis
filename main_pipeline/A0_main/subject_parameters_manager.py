@@ -17,10 +17,11 @@ class SubjectParameters(object):
     """
     Simple class container to provide the parameters required to manipulate each element independently.
     """
-    def __init__(self, subject_name, study='', category='', angles=(0, 0, 0), translation=(0, 0, 0), threshold=300,
+    def __init__(self, subject_name, study='', category='',
+                 merge_with=None, acquisition_selection=None,
+                 angles=(0, 0, 0), translation=(0, 0, 0), threshold=300,
                  T1_window_percentile=(5, 95), S0_window_percentile=(1, 99),
-                 T1_mask_dilation=1, S0_mask_dilation=0,
-                 erosion_roi_mask=1, DWI_squashed=False,
+                 T1_mask_dilation=1, S0_mask_dilation=0, DWI_squashed=False,
                  bias_field_parameters=(0.001, (50, 50, 50, 50), 0.15, 0.01, 200, (4, 4, 4), 3),
                  MSME_acquisition='high_res', in_atlas=False):
         """
@@ -28,6 +29,12 @@ class SubjectParameters(object):
         :param subject_name:
         :param study:
         :param category:
+        :param merge_with: If the acquisition session was split in two acquisitions, set the list of the related zip in
+                           merge_with. must be a list or none.
+        :param acquisition_selection: If more than one T1 or DWI had been performed in the same session, have to select
+                                      which one you want. Must be set manually after seeing the data for the first time.
+                                      Must be None or a dictionary {modality : selected suffix}
+                                      e.g. {'DWI': 2ext}
         :param angles: [0, 0, 0] : same angle set for all modalities.
                        [[0, 0, 0], [0, np.pi / 6, 0]] a different angle for each modality.
                        In that order for this pipeline: T1, DWI, MSME.
@@ -37,17 +44,16 @@ class SubjectParameters(object):
         :param S0_window_percentile:
         :param T1_mask_dilation:
         :param S0_mask_dilation:
-        :param erosion_roi_mask:
         :param DWI_squashed:
         :param bias_field_parameters:
         :param MSME_acquisition:
         :param in_atlas:
         """
         self.subject_name = subject_name
-
         self.study                 = study
         self.category              = category
-        self.merge_with            = None  # Must be a list or none.
+        self.merge_with            = merge_with
+        self.acquisition_selection = acquisition_selection
         self.leading_modality      = 'T1'
         self.angles                = angles
         self.translation           = translation

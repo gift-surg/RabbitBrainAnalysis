@@ -38,6 +38,7 @@ def delete_unzipped_raw_data_single_subject(sj):
     # |---> Secondary study to be merged. If any convert it as well (conversion must have happened in module B_).
     sj_exts = sj_parameters['merge_with']
     if sj_exts is not None:
+        print('\nExternal files related to subject {} found. Deletion zip started.'.format(sj))
         for sj_ext in sj_exts:
             pfi_raw_unzipped = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category, sj_ext)
             pfi_file_for_MAC = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category, '__MACOSX')
@@ -60,7 +61,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['125930', ]
+    lsm.input_subjects = ['4303', ]
     lsm.update_ls()
 
     print lsm.ls

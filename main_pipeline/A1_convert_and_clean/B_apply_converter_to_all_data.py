@@ -45,13 +45,13 @@ def convert_single_subject(sj):
     assert os.path.exists(pfo_input_sj), pfo_input_sj
     pfo_output = jph(root_study_rabbits, '02_nifti', study, category)
 
-    # converter_given_pfo_input_and_pfo_output(pfo_input_sj, pfo_output, sj)  # TODO uncomment
+    converter_given_pfo_input_and_pfo_output(pfo_input_sj, pfo_output, sj)
 
     # Check for external files
     # |---> Secondary study to be merged. If any convert it as well (unzipping must have happened in module A_).
     sj_exts = sj_parameters['merge_with']
     if sj_exts is not None:
-        print('Converting file {} for subject {}'.format(sj_exts, sj))
+        print('\nExternal files related to subject {} found. Conversion in started.'.format(sj))
         for sj_ext in sj_exts:
             print('Converting file {} associated with subject {}'.format(sj_ext, sj))
             pfo_input_sj_ext = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category, sj_ext)

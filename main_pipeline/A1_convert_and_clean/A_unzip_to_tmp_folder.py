@@ -49,6 +49,10 @@ def unzipper_given_pfi_input_and_pfo_output(pfi_in, pfo_out, sj_name, controller
                 'Manual work required. (Probably two subjects with the same name? '
                 'Probably different covention to save filenames?)'.format(file_found, '_HVDM_{}_'.format(sj_name)))
 
+        pfi_ds_store_mac = jph(pfo_out, sj_name, '.DS_Store')
+        if os.path.exists(pfi_ds_store_mac):
+            print_and_run('rm {}'.format(pfi_ds_store_mac))
+
 
 def unzip_single_sj(sj, controller):
 
@@ -76,8 +80,10 @@ def unzip_single_sj(sj, controller):
 
             if not os.path.exists(pfi_input_sj_ext_zip):
                 raise IOError('Declared external study for subject {} in folder {} not found'.format(sj_ext, pfi_input_sj_ext_zip))
-            pfo_output_sj_ext = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category, sj_ext)
+            pfo_output_sj_ext = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category)
+
             unzipper_given_pfi_input_and_pfo_output(pfi_input_sj_ext_zip, pfo_output_sj_ext, sj_ext, controller)
+
             print('\n\n')
 
 

@@ -11,10 +11,17 @@ from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 
 
-def clean_a_study(pfo_study):
+def clean_a_study(pfo_study, name_study_cleaned, suffix_acquisition_method=''):
+    """
+    General cleaner to provide the converted study with tidy names and structure.
+    :param pfo_study: path to folder study to clean
+    :param name_study_cleaned:  name you want the study to have after cleaning
+    :param suffix_acquisition_method: extra suffix for the acquisition method, used when there are external files.
+    :return:
+    """
 
     if not os.path.exists(pfo_study):
-        raise IOError('Cannot clean unexisting studies at {}'.format(pfo_study))
+        raise IOError('Cannot clean non-existing studies at {}'.format(pfo_study))
 
     list_experiments = list(np.sort(list(set(os.listdir(pfo_study)) - {'.DS_Store'})))
 
@@ -31,11 +38,12 @@ def clean_a_study(pfo_study):
             acquisition_method = fi_acquisition_method.read()
             fi_acquisition_method.close()
 
+            acquisition_method += suffix_acquisition_method
+
             print acquisition_method
 
             list_files_in_experiment = list(set(os.listdir(pfo_experiment_p)) - {'.DS_Store', 'acquisition_method.txt'})
-            list_nii_gz_in_experiment = [j for j in list_files_in_experiment
-                                         if j.endswith('.nii.gz')]
+            list_nii_gz_in_experiment = [j for j in list_files_in_experiment if j.endswith('.nii.gz')]
 
             num_nii = len(list_nii_gz_in_experiment)
 
@@ -78,6 +86,7 @@ def clean_a_study(pfo_study):
                         print(fi_name)
                         # replace the second element (experiment number) separated between '_' by the acquisition_method
                         fi_name_components = fi_name.split('_')
+                        fi_name_components[0] = name_study_cleaned
                         fi_name_components[1] = acquisition_method
                         # get the stack back:
                         new_fi = ''
@@ -98,7 +107,7 @@ def clean_a_study(pfo_study):
                         print_and_run(cmd)
 
             # rename the folder p containing the files:
-            new_p = p.split('_')[0] + '_' + acquisition_method
+            new_p = '{}_{}'.format(name_study_cleaned, acquisition_method)  # '{}_{}'.format(p.split('_')[0], acquisition_method)
             cmd = 'mv {} {}'.format(pfo_experiment_p, jph(pfo_study, new_p))
             print_and_run(cmd)
 
@@ -115,24 +124,40 @@ def clean_a_study(pfo_study):
                 warnings.warn(cmd)
 
 
+def merge_two_study_folders(pfo_main_study, pfo_secondary_study):
+    """
+    Move from secondary study to main study with added suffix.
+    :param pfo_main_study:
+    :param pfo_secondary_study:
+    :param suffix:
+    :return:
+    """
+    for name_to_be_moved in list(set(os.listdir(pfo_secondary_study)) - {'.DS_Store'}):
+        name_after_move = name_to_be_moved
+        cmd = 'mv {} {}'.format(jph(pfo_secondary_study, name_to_be_moved), jph(pfo_main_study, name_after_move))
+        print_and_run(cmd)
+
+
 def cleaner_converted_data_single_subject(sj):
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
     study = sj_parameters['study']
     category = sj_parameters['category']
     pfo_to_be_cleaned = jph(root_study_rabbits, '02_nifti', study, category, sj)
     assert os.path.exists(pfo_to_be_cleaned), pfo_to_be_cleaned
-
     print 'Study subject {} cleaning. \n'.format(sj)
-
-    clean_a_study(pfo_to_be_cleaned)
+    clean_a_study(pfo_to_be_cleaned, name_study_cleaned=sj)
 
     sj_exts = sj_parameters['merge_with']
     if sj_exts is not None:
-        for sj_ext in sj_exts:
-
-            # TODO
-            pass
-
+        print('\nExternal files related to subject {} found. Cleaning started.'.format(sj))
+        for ext_id, sj_ext in enumerate(sj_exts):
+            pfo_to_be_cleaned_ext = jph(root_study_rabbits, '02_nifti', study, category, sj_ext)
+            assert os.path.exists(pfo_to_be_cleaned_ext), pfo_to_be_cleaned_ext
+            print 'Study subject{}, external related study {} cleaning. \n'.format(sj, sj_ext)
+            # clean in its folder
+            clean_a_study(pfo_to_be_cleaned_ext, sj, suffix_acquisition_method='ext{}'.format(ext_id))
+            # Merge with the main folder
+            merge_two_study_folders(pfo_to_be_cleaned, pfo_to_be_cleaned_ext)
 
 
 def cleaner_converted_data_from_list(subj_list):
@@ -154,7 +179,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['125930', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['4303', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()
