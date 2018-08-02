@@ -47,7 +47,7 @@ class SubjectParameters(object):
 
         self.study                 = study
         self.category              = category
-        self.merge_with            = None
+        self.merge_with            = None  # Must be a list or none.
         self.leading_modality      = 'T1'
         self.angles                = angles
         self.translation           = translation

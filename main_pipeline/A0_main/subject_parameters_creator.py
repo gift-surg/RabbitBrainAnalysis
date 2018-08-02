@@ -635,7 +635,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp = SubjectParameters('4303')
     sp.study                  = 'PTB'
     sp.category               = 'ex_vivo'
-    sp.merge_with             = '4303DWI'
+    sp.merge_with             = ['4303DWI', ]
     sp.angles                 = [0, np.pi / 8, 0]
     sp.translation            = [0, 0, 0]
     sp.threshold              = 0.001
@@ -657,6 +657,13 @@ def reset_parameters_files(pfo_where_to_save):
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
+
+    # sp = SubjectParameters('4303DWI')
+    # sp.study                    = 'PTB'
+    # sp.category                 = 'ex_vivo'
+    # sp.save_as_txt(pfo_where_to_save)
+    # sp.dump_with_pickle(pfo_where_to_save)
+    # del sp
 
     sp = SubjectParameters('4304')
     sp.study                  = 'PTB'

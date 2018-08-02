@@ -7,10 +7,33 @@ from tools.definitions import pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits
 from LABelsToolkit.tools.aux_methods.utils import print_and_run
-from LABelsToolkit.tools.aux_methods.sanity_checks import check_path_validity
+
+
+def converter_given_pfo_input_and_pfo_output(pfo_input_sj, pfo_output, sj_name):
+    """
+    Converter auxiliary function related to subject name and path to folder to convert and where to convert.
+    Externalised to avoid code repetitions, as called twice.
+    :param pfo_input_sj: input folder to convert
+    :param pfo_output: input folder where to convert
+    :param sj_name: usual sj parameter
+    :return:
+    """
+    print_and_run('mkdir -p {}'.format(pfo_output))
+    pfo_output_sj = jph(pfo_output, sj_name)
+
+    if os.path.exists(pfo_output_sj):
+        cmd = 'rm -r {}'.format(pfo_output_sj)
+        print('Folder {} where to convert the study exists already... ERASED!'.format(pfo_output_sj))
+        print_and_run(cmd)
+
+    conv = Bruker2Nifti(pfo_input_sj, pfo_output, study_name=sj_name)
+    conv.correct_slope = True
+    conv.verbose = 1
+    conv.convert()
 
 
 def convert_single_subject(sj):
+
     print '\n\nSubj {} conversion!\n'.format(sj)
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
@@ -19,49 +42,23 @@ def convert_single_subject(sj):
     category = sj_parameters['category']
 
     pfo_input_sj = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category, sj)
-    check_path_validity(pfo_input_sj)
+    assert os.path.exists(pfo_input_sj), pfo_input_sj
     pfo_output = jph(root_study_rabbits, '02_nifti', study, category)
-    print_and_run('mkdir -p {}'.format(pfo_output))
-    pfo_output_sj = jph(pfo_output, sj)
 
-    if os.path.exists(pfo_output_sj):
-        cmd = 'rm -r {}'.format(pfo_output_sj)
-        print('Folder {} where to convert the study exists already... ERASED!'.format(pfo_output_sj))
-        print_and_run(cmd)
+    # converter_given_pfo_input_and_pfo_output(pfo_input_sj, pfo_output, sj)  # TODO uncomment
 
-    conv = Bruker2Nifti(pfo_input_sj, pfo_output, study_name=sj)
-    conv.correct_slope = True
-    conv.verbose = 1
-    conv.convert()
+    # Check for external files
+    # |---> Secondary study to be merged. If any convert it as well (unzipping must have happened in module A_).
+    sj_exts = sj_parameters['merge_with']
+    if sj_exts is not None:
+        print('Converting file {} for subject {}'.format(sj_exts, sj))
+        for sj_ext in sj_exts:
+            print('Converting file {} associated with subject {}'.format(sj_ext, sj))
+            pfo_input_sj_ext = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category, sj_ext)
+            assert os.path.exists(pfo_input_sj_ext), pfo_input_sj_ext
+            pfo_output_ext = jph(root_study_rabbits, '02_nifti', study, category)
 
-    # check for external files - secondary study to be merged
-    if sj_parameters['merge_with'] is not None:
-
-        sj_ext = sj_parameters['merge_with']
-
-        # phase 0: unzip:
-        pfo_input_sj_ext_zipped = jph(root_study_rabbits, '00_raw_data_zipped', study, category, sj_ext)
-
-        if not os.path.exists(pfo_input_sj_ext_zipped):
-            raise IOError('Declared external study for subject {} in folder {} not found'.format(sj, pfo_input_sj_ext_zipped))
-
-        pfo_input_sj_ext = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category, sj_ext)
-        cmd = 'tar -xvf {} -C {}'.format(pfo_input_sj_ext_zipped, pfo_input_sj_ext)
-        print cmd
-        print_and_run(cmd)
-
-        # Phase 1: convert:
-        pfo_output_ext = jph(root_study_rabbits, '02_nifti', study, category)
-
-        conv = Bruker2Nifti(pfo_input_sj_ext, pfo_output_ext, study_name=sj_ext)
-        conv.correct_slope = True
-        conv.verbose = 1
-        conv.convert()
-
-        # Phase 2: merge the two folder structures with extra names:
-        pfo_output_sj_ext = jph(root_study_rabbits, '02_nifti', study, category, sj_ext)
-
-        # for each folder in the externally converted file, move them in the main study with additional name.
+            converter_given_pfo_input_and_pfo_output(pfo_input_sj_ext, pfo_output_ext, sj_ext)
 
 
 def convert_subjects_from_list(subj_list):

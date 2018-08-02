@@ -77,9 +77,9 @@ def main_runner(subj_list):
         print('\nStep A1\n')
 
         for sj in subj_list:
-            controller_unzip = {'create_tmp_folder_structure': True,
-                                'unzip'                      : True,
-                                'rename'                     : True}
+            controller_unzip = {'create_tmp_folder_structure' : True,
+                                'unzip'                       : True,
+                                'rename'                      : True}
 
             unzip_single_sj(sj, controller_unzip)
             convert_single_subject(sj)

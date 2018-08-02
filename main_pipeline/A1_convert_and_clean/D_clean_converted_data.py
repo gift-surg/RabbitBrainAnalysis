@@ -126,6 +126,14 @@ def cleaner_converted_data_single_subject(sj):
 
     clean_a_study(pfo_to_be_cleaned)
 
+    sj_exts = sj_parameters['merge_with']
+    if sj_exts is not None:
+        for sj_ext in sj_exts:
+
+            # TODO
+            pass
+
+
 
 def cleaner_converted_data_from_list(subj_list):
 
