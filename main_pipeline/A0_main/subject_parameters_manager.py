@@ -33,8 +33,10 @@ class SubjectParameters(object):
                            merge_with. must be a list or none.
         :param acquisition_selection: If more than one T1 or DWI had been performed in the same session, have to select
                                       which one you want. Must be set manually after seeing the data for the first time.
-                                      Must be None or a dictionary {modality : selected suffix}
-                                      e.g. {'DWI': 2ext}
+                                      Must be None or a dictionary {modality : selected suffix}, if nothing is provided
+                                      then the default no suffix is taken.
+                                      e.g. {'DWI': '2ext1', 'T1' : '1'} will take the DWI with suffix 2ext1 and the T1
+                                      with suffix 1.
         :param angles: [0, 0, 0] : same angle set for all modalities.
                        [[0, 0, 0], [0, np.pi / 6, 0]] a different angle for each modality.
                        In that order for this pipeline: T1, DWI, MSME.

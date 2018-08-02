@@ -38,8 +38,6 @@ def clean_a_study(pfo_study, name_study_cleaned, suffix_acquisition_method=''):
             acquisition_method = fi_acquisition_method.read()
             fi_acquisition_method.close()
 
-            acquisition_method += suffix_acquisition_method
-
             print acquisition_method
 
             list_files_in_experiment = list(set(os.listdir(pfo_experiment_p)) - {'.DS_Store', 'acquisition_method.txt'})
@@ -58,6 +56,8 @@ def clean_a_study(pfo_study, name_study_cleaned, suffix_acquisition_method=''):
                 acquisition_method = 'MSME'
             elif acquisition_method == 'DtiEpi':
                 acquisition_method = 'DWI'
+
+            acquisition_method += suffix_acquisition_method
 
             experiments_methods_list.append(acquisition_method)
 
@@ -136,6 +136,7 @@ def merge_two_study_folders(pfo_main_study, pfo_secondary_study):
         name_after_move = name_to_be_moved
         cmd = 'mv {} {}'.format(jph(pfo_secondary_study, name_to_be_moved), jph(pfo_main_study, name_after_move))
         print_and_run(cmd)
+    print_and_run('rm -r {}'.format(pfo_secondary_study))
 
 
 def cleaner_converted_data_single_subject(sj):
@@ -145,7 +146,7 @@ def cleaner_converted_data_single_subject(sj):
     pfo_to_be_cleaned = jph(root_study_rabbits, '02_nifti', study, category, sj)
     assert os.path.exists(pfo_to_be_cleaned), pfo_to_be_cleaned
     print 'Study subject {} cleaning. \n'.format(sj)
-    clean_a_study(pfo_to_be_cleaned, name_study_cleaned=sj)
+    # clean_a_study(pfo_to_be_cleaned, name_study_cleaned=sj)
 
     sj_exts = sj_parameters['merge_with']
     if sj_exts is not None:
@@ -155,7 +156,7 @@ def cleaner_converted_data_single_subject(sj):
             assert os.path.exists(pfo_to_be_cleaned_ext), pfo_to_be_cleaned_ext
             print 'Study subject{}, external related study {} cleaning. \n'.format(sj, sj_ext)
             # clean in its folder
-            clean_a_study(pfo_to_be_cleaned_ext, sj, suffix_acquisition_method='ext{}'.format(ext_id))
+            clean_a_study(pfo_to_be_cleaned_ext, sj, suffix_acquisition_method='ext{}'.format(ext_id + 1))
             # Merge with the main folder
             merge_two_study_folders(pfo_to_be_cleaned, pfo_to_be_cleaned_ext)
 
