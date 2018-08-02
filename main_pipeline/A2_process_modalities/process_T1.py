@@ -158,7 +158,6 @@ def process_T1_per_subject(sj, steps):
         print_and_run(cmd)
 
         if sj_parameters['in_atlas']:
-
             # if sj is in multi-atlas just copy the masks as they are in the destination, and then manipulate
             pfi_roi_mask = jph(pfo_mask, '{}_T1_roi_mask.nii.gz'.format(sj))
             # pfi_reg_mask = jph(pfo_mask, '{}_T1_reg_mask.nii.gz'.format(sj))
@@ -239,15 +238,11 @@ def process_T1_per_subject(sj, steps):
         del pfi_3d_cropped_roi, pfi_3d_bias_field_corrected, bfc_param, pfi_roi_mask
 
     if steps['create_lesion_maks']:
-
         print('Extract lesion mask: Subject {}'.format(sj))
-
         # output:
-
         pfi_lesion_mask = jph(pfo_mask, sj + '_T1_lesion_mask.nii.gz')
 
         if options_T1['lesion_mask_method'] == 0:
-
             percentile = sj_parameters['options_T1']['window_percentile']
             median_filter = sj_parameters['options_T1']['median_filter']
 

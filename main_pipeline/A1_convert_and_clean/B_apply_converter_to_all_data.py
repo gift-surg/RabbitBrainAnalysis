@@ -34,6 +34,35 @@ def convert_single_subject(sj):
     conv.verbose = 1
     conv.convert()
 
+    # check for external files - secondary study to be merged
+    if sj_parameters['merge_with'] is not None:
+
+        sj_ext = sj_parameters['merge_with']
+
+        # phase 0: unzip:
+        pfo_input_sj_ext_zipped = jph(root_study_rabbits, '00_raw_data_zipped', study, category, sj_ext)
+
+        if not os.path.exists(pfo_input_sj_ext_zipped):
+            raise IOError('Declared external study for subject {} in folder {} not found'.format(sj, pfo_input_sj_ext_zipped))
+
+        pfo_input_sj_ext = jph(root_study_rabbits, '01_raw_data_unzipped_TMP', study, category, sj_ext)
+        cmd = 'tar -xvf {} -C {}'.format(pfo_input_sj_ext_zipped, pfo_input_sj_ext)
+        print cmd
+        print_and_run(cmd)
+
+        # Phase 1: convert:
+        pfo_output_ext = jph(root_study_rabbits, '02_nifti', study, category)
+
+        conv = Bruker2Nifti(pfo_input_sj_ext, pfo_output_ext, study_name=sj_ext)
+        conv.correct_slope = True
+        conv.verbose = 1
+        conv.convert()
+
+        # Phase 2: merge the two folder structures with extra names:
+        pfo_output_sj_ext = jph(root_study_rabbits, '02_nifti', study, category, sj_ext)
+
+        # for each folder in the externally converted file, move them in the main study with additional name.
+
 
 def convert_subjects_from_list(subj_list):
 
@@ -53,7 +82,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['125930', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['4303', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

@@ -10,10 +10,14 @@ from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subj
 from tools.definitions import pfo_subjects_parameters, root_atlas
 
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
-from main_pipeline.A1_convert_and_clean.unzip_to_tmp_folder import unzip_single_sj
-from main_pipeline.A1_convert_and_clean.apply_converter_to_all_data import convert_single_subject
-from main_pipeline.A1_convert_and_clean.delete_in_tmp_folder import delete_unzipped_raw_data_single_subject
-from main_pipeline.A1_convert_and_clean.clean_converted_data import cleaner_converted_data_single_subject
+
+from main_pipeline.A1_convert_and_clean.A_unzip_to_tmp_folder import unzip_single_sj
+from main_pipeline.A1_convert_and_clean.B_apply_converter_to_all_data import convert_single_subject
+from main_pipeline.A1_convert_and_clean.C_delete_in_tmp_folder import delete_unzipped_raw_data_single_subject
+from main_pipeline.A1_convert_and_clean.D_clean_converted_data import cleaner_converted_data_single_subject
+
+
+
 from main_pipeline.A2_process_modalities.process_DWI import process_DWI_from_list
 from main_pipeline.A2_process_modalities.process_MSME import process_MSME_from_list
 from main_pipeline.A2_process_modalities.process_T1 import process_T1_from_list
@@ -31,15 +35,15 @@ def main_runner(subj_list):
 
     # Set steps
     steps = {'reset_parameters'  : False,
-             'step_A1'           : False,
-             'step_A2_T1'        : True,
+             'step_A1'           : True,
+             'step_A2_T1'        : False,
              'step_A2_DWI'       : False,
              'step_A2_MSME'      : False,
              'step_A2_T2maps'    : False,
              'step_A2_g_ratio'   : False,
-             'step_A3_move'      : True,
-             'step_A3_segment'   : True,
-             'step_A3_move_back' : True,
+             'step_A3_move'      : False,
+             'step_A3_segment'   : False,
+             'step_A3_move_back' : False,
              'step_A4'           : False}
 
     print('STEPS')
@@ -73,9 +77,9 @@ def main_runner(subj_list):
         print('\nStep A1\n')
 
         for sj in subj_list:
-            controller_unzip = {'create_tmp_folder_structure': False,
-                                'unzip': False,
-                                'rename': True}
+            controller_unzip = {'create_tmp_folder_structure': True,
+                                'unzip'                      : True,
+                                'rename'                     : True}
 
             unzip_single_sj(sj, controller_unzip)
             convert_single_subject(sj)
@@ -232,7 +236,7 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['5009', ]  # A all
 
     # lsm.input_subjects = ['13004', '13102', '13201', '13202', '13401', '13402', '13403']
-    lsm.input_subjects = ['13201']  # ['13003', '13006']
+    lsm.input_subjects = ['4303']  # ['13003', '13006']
 
     lsm.update_ls()
 

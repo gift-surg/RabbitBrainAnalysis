@@ -3,7 +3,7 @@ import os
 
 from bruker2nifti.converter import Bruker2Nifti
 
-from main_pipeline.A1_convert_and_clean.clean_converted_data import clean_a_study
+from main_pipeline.A1_convert_and_clean.D_clean_converted_data import clean_a_study
 
 
 if 0:
