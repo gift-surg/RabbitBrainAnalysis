@@ -4,7 +4,6 @@ A) re-orient the chart in stereotaxic coordinate.
 import os
 from os.path import join as jph
 import pickle
-import numpy as np
 
 from LABelsToolkit.main import LABelsToolkit
 
@@ -12,13 +11,6 @@ from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.auxiliary.utils import print_and_run
 from tools.auxiliary.multichannel import stack_a_list_of_images_from_list_pfi
-
-
-def resample_A_on_B_path_z(pfi_B_reference, pfi_A_floating, pfi_A_resampled_B, pfo_tmp, inter=1):
-    np.savetxt(jph(pfo_tmp, 'id.txt'), np.eye(4))
-    cmd = 'reg_resample -ref {} -flo {} -aff {} -res {} -inter {}'.format(
-        pfi_B_reference, pfi_A_floating, jph(pfo_tmp, 'id.txt'), pfi_A_resampled_B, inter)
-    print_and_run(cmd)
 
 
 def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
@@ -72,14 +64,12 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
 
     # Initialise folder structure in stereotaxic coordinates
     if controller['Initialise_sc_folder']:
-
         print_and_run('mkdir -p {}'.format(pfo_tmp))
         print_and_run('mkdir -p {}'.format(pfo_sc_sj))
         print_and_run('mkdir -p {}'.format(pfo_sc_sj_mod))
         print_and_run('mkdir -p {}'.format(pfo_sc_sj_masks))
 
     if controller['Register_T1']:
-
         print('Orient header histological T1 and reg-mask:')
         angles = sj_parameters['angles']
         if isinstance(angles[0], list):
@@ -183,8 +173,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
         print_and_run('cp {} {}'.format(pfi_original_reg_mask_S0, pfi_reg_mask_S0_reoriented))
         if pitch_theta != 0:
             lm = LABelsToolkit()
-            lm.header.apply_small_rotation(pfi_reg_mask_S0_reoriented,
-                                           pfi_reg_mask_S0_reoriented,
+            lm.header.apply_small_rotation(pfi_reg_mask_S0_reoriented, pfi_reg_mask_S0_reoriented,
                                            angle=pitch_theta, principal_axis='pitch')
             del lm
 
@@ -244,7 +233,6 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
 
     if controller['Adjustments']:
         # work only on the sc newly generated chart:
-
         pfi_sc_T1 = jph(pfo_sc_sj_mod, '{0}_T1.nii.gz'.format(sj))
         pfi_sc_S0 = jph(pfo_sc_sj_mod, '{0}_S0.nii.gz'.format(sj))
         pfi_sc_FA = jph(pfo_sc_sj_mod, '{0}_FA.nii.gz'.format(sj))
@@ -270,10 +258,10 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
         # create mask for V1:
         pfi_V1_mask = jph(pfo_tmp, 'roi_mask_V1_{}.nii.gz'.format(sj))
         stack_a_list_of_images_from_list_pfi(
-            [pfi_sc_roi_mask for _ in range(3)], pfi_V1_mask
-        )
+            [pfi_sc_roi_mask for _ in range(3)], pfi_V1_mask)
 
-        print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_T1, pfi_sc_roi_mask))
+        if sj_parameters['options_T1']['crop_roi']:
+            print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_T1, pfi_sc_roi_mask))
         print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_S0, pfi_sc_roi_mask))
         print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_FA, pfi_sc_roi_mask))
         print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_MD, pfi_sc_roi_mask))
@@ -283,7 +271,6 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
 def move_to_stereotaxic_coordinate_from_list(subj_list, controller, options):
     print '\n\n Move to stereotaxic coordinate from list {} \n'.format(subj_list)
     for sj in subj_list:
-
             move_to_stereotaxic_coordinate_per_subject(sj, controller, options)
 
 

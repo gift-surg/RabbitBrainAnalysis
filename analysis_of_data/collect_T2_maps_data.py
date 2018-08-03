@@ -5,24 +5,26 @@ import nibabel as nib
 import os
 import pickle
 
-from labels_manager.agents.measurer import LabelsManagerMeasure
+from LABelsToolkit.agents.measurer import LABelsToolkitMeasure
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
-from labels_manager.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as CDM
+from LABelsToolkit.tools.descriptions.label_descriptor_manager import LabelsDescriptorManager as LdM
 from tools.auxiliary.utils import set_new_data_path
+
 
 ''' INPUT structures '''
 
+
 # subjects selection
-subjects_ACS = [13103, 13108, 13301, 13401, 13403, 13404, 13405, 13501, 13505, 13507, 13602, 13606]  #, 3604, 3606]
-subjects_template = []  #[1201, 1203, 1305, 1404, 1505, 1507, 1510, 1702, 1805, 2002, 2502, 2503, 2608, 2702]
+subjects_ACS = [13103, 13108, 13301, 13401, 13403, 13404, 13405, 13501, 13505, 13507, 13602, 13606]  # 3604, 3606]
+subjects_template = []  # [1201, 1203, 1305, 1404, 1505, 1507, 1510, 1702, 1805, 2002, 2502, 2503, 2608, 2702]
 subjects_in_vivo = []
 
 # multi label description
 labels_per_group = {'WM'  : ['Midbrain', 'Globus Pallidus', 'Putamen', 'Thalamus'],  # In-prograss myelination
-          'GM'  : ['Frontal', 'Occipital', 'Parietal'],
-          'CSF' : ['Ventricular system', 'Periventricular area']}   # PBS for the ex - vivo rather than CSF
+                    'GM'  : ['Frontal', 'Occipital', 'Parietal'],
+                    'CSF' : ['Ventricular system', 'Periventricular area']}   # PBS for the ex - vivo rather than CSF
 
-cdm = CDM(jph('/Users/sebastiano/Dropbox/RabbitEOP-MRI/study/A_internal_template/LabelsDescriptors',
+cdm = LdM(jph('/Users/sebastiano/Dropbox/RabbitEOP-MRI/study/A_internal_template/LabelsDescriptors',
               'labels_descriptor_v8.txt'))
 ld_dict = cdm.get_multi_label_dict()
 
@@ -90,24 +92,20 @@ if __name__ == '__main__':
                           pfi_result=pfi_tmp, new_dtype=np.uint8, remove_nan=True)
         os.system('mv {0} {1}'.format(pfi_tmp, pfi_T2_maps_up_bfc))
 
-        lmm = LabelsManagerMeasure(return_mm3=True, verbose=1)
-        lmm_original_bfc = LabelsManagerMeasure(return_mm3=True, verbose=1)
+        lmm = LABelsToolkitMeasure(return_mm3=True, verbose=1)
+        lmm_original_bfc = LABelsToolkitMeasure(return_mm3=True, verbose=1)
 
         # original:
-        lmm.volume(pfi_T2_map_segm_original, labels='all', anatomy_filename=pfi_T2_maps_original,
-                   tot_volume_prior=None,
+        lmm.volume(pfi_T2_map_segm_original, labels='all', tot_volume_prior=None,
                    where_to_save=jph(pfo_input_data, sj, 'records', sj + '_T2_maps_original.pkl'))
         # original bias field corrected:
-        lmm.volume(pfi_T2_map_segm_original, labels='all', anatomy_filename=pfi_T2_maps_original_bfc,
-                   tot_volume_prior=None,
+        lmm.volume(pfi_T2_map_segm_original, labels='all',  tot_volume_prior=None,
                    where_to_save=jph(pfo_input_data, sj, 'records', sj + '_T2_maps_original_bfc.pkl'))
         # upsampled:
-        lmm.volume(pfi_T2_map_segm_up, labels='all', anatomy_filename=pfi_T2_map_segm_up,
-                   tot_volume_prior=None,
+        lmm.volume(pfi_T2_map_segm_up, labels='all', tot_volume_prior=None,
                    where_to_save=jph(pfo_input_data, sj, 'records', sj + '_T2_maps_upsampled.pkl'))
         # upsampled_bfc
-        lmm.volume(pfi_T2_map_segm_up, labels='all', anatomy_filename=pfi_T2_maps_up_bfc,
-                   tot_volume_prior=None,
+        lmm.volume(pfi_T2_map_segm_up, labels='all', tot_volume_prior=None,
                    where_to_save=jph(pfo_input_data, sj, 'records', sj + '_T2_maps_upsampled_bfc.pkl'))
 
         # above still need to be corrected...

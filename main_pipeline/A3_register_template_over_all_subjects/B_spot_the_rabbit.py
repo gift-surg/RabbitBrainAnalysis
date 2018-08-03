@@ -3,11 +3,11 @@ import pickle
 from collections import OrderedDict
 import time
 
-from spot.spotter import SpotDS
-
 from tools.definitions import root_study_rabbits, root_atlas, pfo_subjects_parameters, bfc_corrector_cmd, \
     num_cores_run, multi_atlas_subjects
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
+
+from spot.spotter import SpotDS
 
 
 def spot_a_list_of_rabbits(subjects_list):
@@ -21,7 +21,7 @@ def spot_a_list_of_rabbits(subjects_list):
             # SPOT only the rabbits not already in the atlas.
             return
 
-        study = sj_parameters['study']
+        study    = sj_parameters['study']
         category = sj_parameters['category']
 
         pfo_target = jph(root_study_rabbits, 'A_data', study, category, sj_target, 'stereotaxic')

@@ -22,7 +22,6 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
     the subject folder (under A_data), after the
     :param sj:
     :param controller:
-    :param options:
     :return:
     """
 
@@ -289,4 +288,3 @@ if __name__ == '__main__':
     lsm.update_ls()
 
     propagate_segmentation_in_original_space_from_list(lsm.ls, controller_)
-

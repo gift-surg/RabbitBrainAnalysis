@@ -24,10 +24,10 @@ class ListSubjectsManager(object):
     def __init__(self, execute_PTB_ex_skull=False, execute_PTB_ex_vivo=False, execute_PTB_in_vivo=False,
                  execute_PTB_op_skull=False, execute_ACS_ex_vivo01=False, execute_ACS_ex_vivo02=False, input_subjects=None):
 
-        self.execute_PTB_ex_skull = execute_PTB_ex_skull
-        self.execute_PTB_ex_vivo  = execute_PTB_ex_vivo
-        self.execute_PTB_in_vivo  = execute_PTB_in_vivo
-        self.execute_PTB_op_skull = execute_PTB_op_skull
+        self.execute_PTB_ex_skull   = execute_PTB_ex_skull
+        self.execute_PTB_ex_vivo    = execute_PTB_ex_vivo
+        self.execute_PTB_in_vivo    = execute_PTB_in_vivo
+        self.execute_PTB_op_skull   = execute_PTB_op_skull
         self.execute_ACS_ex_vivo01  = execute_ACS_ex_vivo01
         self.execute_ACS_ex_vivo02  = execute_ACS_ex_vivo02
 
