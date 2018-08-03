@@ -1,14 +1,13 @@
-import os
 from os.path import join as jph
 import pickle
 from collections import OrderedDict
 import time
 
+from spot.spotter import SpotDS
+
 from tools.definitions import root_study_rabbits, root_atlas, pfo_subjects_parameters, bfc_corrector_cmd, \
     num_cores_run, multi_atlas_subjects
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
-
-from spot.spotter import SpotDS
 
 
 def spot_a_list_of_rabbits(subjects_list):
@@ -145,7 +144,6 @@ if __name__ == '__main__':
 
     lsm.input_subjects = ['13201']
     # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
-
 
     lsm.update_ls()
 

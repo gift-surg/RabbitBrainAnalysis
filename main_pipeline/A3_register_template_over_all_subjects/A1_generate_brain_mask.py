@@ -8,7 +8,6 @@ This module works only with data in stereotaxic coordinates. The target is alrea
 """
 import os
 from os.path import join as jph
-import numpy as np
 import pickle
 
 from tools import definitions as defs
@@ -21,6 +20,7 @@ def get_brain_mask_per_subject(sj, sj_parameters):
     """
     From subject id, retrieves the subject parameters and creates its brain mask based upon them.
     :param sj: subject id.
+    :param sj_parameters: subject parameters filtered from caller function.
     :return: brain of subject sj.
     """
     print('\nGet brain mask per subject {} started.\n'.format(sj))
