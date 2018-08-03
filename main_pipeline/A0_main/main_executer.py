@@ -24,6 +24,7 @@ from main_pipeline.A2_process_modalities.process_T1 import process_T1_from_list
 from main_pipeline.A2_process_modalities.process_T2_map import process_t2_maps_from_list
 from main_pipeline.A2_process_modalities.process_g_ratio import process_g_ratio_from_list
 from main_pipeline.A3_register_template_over_all_subjects.A0_move_to_stereotaxic_coordinates import move_to_stereotaxic_coordinate_from_list
+from main_pipeline.A3_register_template_over_all_subjects.A1_generate_brain_mask import get_brain_mask_from_list
 from main_pipeline.A3_register_template_over_all_subjects.B_spot_the_rabbit import spot_a_list_of_rabbits
 from main_pipeline.A3_register_template_over_all_subjects.C_bring_segmentation_back_to_original_coordinates import propagate_segmentation_in_original_space_from_list
 from main_pipeline.A4_data_collection.A0_generate_reports import generate_reports_from_list
@@ -34,17 +35,18 @@ def main_runner(subj_list):
     check_libraries()
 
     # Set steps
-    steps = {'reset_parameters'  : False,
-             'step_A1'           : True,
-             'step_A2_T1'        : False,
-             'step_A2_DWI'       : False,
-             'step_A2_MSME'      : False,
-             'step_A2_T2maps'    : False,
-             'step_A2_g_ratio'   : False,
-             'step_A3_move'      : False,
-             'step_A3_segment'   : False,
-             'step_A3_move_back' : False,
-             'step_A4'           : False}
+    steps = {'reset_parameters'   : False,
+             'step_A1'            : True,
+             'step_A2_T1'         : False,
+             'step_A2_DWI'        : False,
+             'step_A2_MSME'       : False,
+             'step_A2_T2maps'     : False,
+             'step_A2_g_ratio'    : False,
+             'step_A3_move'       : False,
+             'step_A3_brain_mask' : False,
+             'step_A3_segment'    : False,
+             'step_A3_move_back'  : False,
+             'step_A4'            : False}
 
     print('STEPS')
     for k in sorted(steps.keys()):
@@ -166,8 +168,8 @@ def main_runner(subj_list):
     ''' Step A3 - Propagate template '''
     if steps['step_A3_move']:
         print('\nStep A3\n')
-
-        print('A3) PART A')
+        # Move to stereotaxc coordinates
+        print('A3) PART A0')
         controller = {
             'Initialise_sc_folder'               : True,
             'Register_T1'                        : True,
@@ -182,6 +184,11 @@ def main_runner(subj_list):
             'Template_name': '1305'}
 
         move_to_stereotaxic_coordinate_from_list(subj_list, controller, options)
+
+    if steps['step_A3_brain_mask']:
+        print('A3) PART A1')
+        # Get the brain mask (slimmer mask to get only the segmentation of the brain tissue.)
+        get_brain_mask_from_list(subj_list)
 
     if steps['step_A3_segment']:
         print('A3) PART B')

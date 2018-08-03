@@ -8,8 +8,7 @@ Date.
 Subject parameter.
 Segmentation parameter.
 ----
-NOTE: as praxis, no parameter should be modified without launching the code afterwards, as the update parameter
-may write new parameters in the tag with old
+NOTE: parameter files may be out of date if only parts of the pipeline are launched after changes.
 Anything more robust may determine a too rigid and unmodifiable structure of the whole code.
 """
 import os

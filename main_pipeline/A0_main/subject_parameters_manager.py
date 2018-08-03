@@ -51,7 +51,7 @@ class SubjectParameters(object):
         :param MSME_acquisition:
         :param in_atlas:
         """
-        self.subject_name = subject_name
+        self.subject_name          = subject_name
         self.study                 = study
         self.category              = category
         self.merge_with            = merge_with

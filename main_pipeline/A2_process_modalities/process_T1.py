@@ -372,7 +372,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['4302', ]  #  '2702', '3404', '4302'
+    lsm.input_subjects = ['2503', '2608', '2702', '4504', '4903', '4905', '5001', '5007']  #  '2702', '3404', '4302'
     # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
     # lsm.input_subjects = ['13004', ]

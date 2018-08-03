@@ -5,7 +5,6 @@ import os
 from os.path import join as jph
 import pickle
 import numpy as np
-import nibabel as nib
 
 from LABelsToolkit.main import LABelsToolkit
 
@@ -194,7 +193,8 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
             sj, options['Template_name'], 'S0'))
         pfi_resampled_S0 = jph(pfo_sc_sj_mod, '{0}_S0.nii.gz'.format(sj))  # RESULT
 
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -rigOnly'.format(  # Try the non rigid and full mask  -rigOnly
+        # Try the non rigid and full mask  -rigOnly
+        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -rigOnly'.format(
             pfi_mod_reference_atlas, pfi_reg_mask_reference_atlas, pfi_S0_reoriented, pfi_reg_mask_S0_reoriented,
             pfi_transformation_S0_over_T1, pfi_resampled_S0, num_cores_run)
 
@@ -230,7 +230,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
 
             print('Resampling {}:'.format(mod))
 
-            pfi_final_MOD= jph(pfo_sc_sj_mod, '{0}_{1}.nii.gz'.format(sj, mod))  # RESULT
+            pfi_final_MOD = jph(pfo_sc_sj_mod, '{0}_{1}.nii.gz'.format(sj, mod))  # RESULT
             cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 1'.format(
                 pfi_S0_in_sc, pfi_MOD_reoriented, pfi_transformation_S0_over_T1, pfi_final_MOD)
             print_and_run(cmd)
@@ -305,19 +305,13 @@ if __name__ == '__main__':
 
     lsm = ListSubjectsManager()
 
-    lsm.execute_PTB_ex_skull = False
-    lsm.execute_PTB_ex_vivo = False
-    lsm.execute_PTB_in_vivo = False
-    lsm.execute_PTB_op_skull = False
-    lsm.execute_ACS_ex_vivo = False
+    lsm.execute_PTB_ex_skull  = False
+    lsm.execute_PTB_ex_vivo   = False
+    lsm.execute_PTB_in_vivo   = False
+    lsm.execute_PTB_op_skull  = False
+    lsm.execute_ACS_ex_vivo   = False
 
-    # sj_atlas = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
-    # lsm.input_subjects = sj_atlas
-
-    # lsm.input_subjects = ['0802t1', ]
-    # lsm.input_subjects = ['0904t1']
-    # lsm.input_subjects = ['1501t1', ]
-    lsm.input_subjects = ['13102']
+    lsm.input_subjects = ['2503', '2608', '2702', '4504', '4903', '4905', '5001', '5007']
     lsm.update_ls()
 
     move_to_stereotaxic_coordinate_from_list(lsm.ls, controller_, options_)

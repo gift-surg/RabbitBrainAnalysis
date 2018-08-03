@@ -39,11 +39,11 @@ def spot_a_list_of_rabbits(subjects_list):
         """
         # Template parameters:
         spot_sj.atlas_name = 'MANRround3'  # Multi Atlas Newborn Rabbit
-        spot_sj.atlas_list_charts_names      = multi_atlas_subjects
-        spot_sj.atlas_list_suffix_modalities = ['T1', 'S0', 'V1', 'MD', 'FA']
-        spot_sj.atlas_list_suffix_masks      = ['roi_mask', 'roi_reg_mask']
-        spot_sj.atlas_reference_chart_name   = '1305'
-        spot_sj.atlas_segmentation_suffix    = 'segm'
+        spot_sj.atlas_list_charts_names       = multi_atlas_subjects
+        spot_sj.atlas_list_suffix_modalities  = ['T1', 'S0', 'V1', 'MD', 'FA']
+        spot_sj.atlas_list_suffix_masks       = ['roi_mask', 'roi_reg_mask']
+        spot_sj.atlas_reference_chart_name    = '1305'
+        spot_sj.atlas_segmentation_suffix     = 'segm'
 
         # --- target parameters
         spot_sj.target_list_suffix_modalities = ['T1', 'S0', 'V1', 'MD', 'FA']
@@ -52,6 +52,11 @@ def spot_a_list_of_rabbits(subjects_list):
         # --- Utils
         spot_sj.bfc_corrector_cmd = bfc_corrector_cmd
         spot_sj.num_cores_run     = num_cores_run
+
+        if sj_parameters['options_brain_mask']['method'] is None:
+            use_slim_mask = False
+        else:
+            use_slim_mask = True
 
         if sj_parameters['category'] == 'ex_vivo' or sj_parameters['category'] == 'ex_vivo01' or sj_parameters['category'] == 'ex_vivo02':
 
@@ -78,7 +83,7 @@ def spot_a_list_of_rabbits(subjects_list):
             spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
             spot_sj.propagation_options['N_rigid_modalities']       = ()  # if empty, no non-rigid step. - first attempt with only an affine step.
             spot_sj.propagation_options['N_rigid_reg_masks']        = ()  # if [], same mask for all modalities
-            spot_sj.propagation_options['N_rigid_slim_reg_mask']    = False
+            spot_sj.propagation_options['N_rigid_slim_reg_mask']    = use_slim_mask
             spot_sj.propagation_options['N_rigid_mod_diff_bfc']     = ()  # empty list no diff bfc. - PUT A COMMA IF ONLY ONE SUBJECT!!
             spot_sj.propagation_options['N_rigid_parameters']       = ' -be 0.5 -ln 6 -lp 1  -smooR 0.07 -smooF 0.07 '
             spot_sj.propagation_options['N_rigid_same_mask_moving'] = False
@@ -101,10 +106,10 @@ def spot_a_list_of_rabbits(subjects_list):
         spot_sj.propagation_controller['Stack_warps_and_segms']  = True
 
         # --- Fuser option
-        spot_sj.fuser_options['Fusion_methods'] = ['MV', 'STAPLE', 'STEPS']
-        spot_sj.fuser_options['STAPLE_params']  = OrderedDict([('pr1', None)])
-        spot_sj.fuser_options['STEPS_params']   = OrderedDict([('pr{0}.{1}'.format(k, n), [k, n, 4])
-                                                               for n in [9] for k in [5, 11]])
+        spot_sj.fuser_options['Fusion_methods']  = ['MV', 'STAPLE', 'STEPS']
+        spot_sj.fuser_options['STAPLE_params']   = OrderedDict([('pr1', None)])
+        spot_sj.fuser_options['STEPS_params']    = OrderedDict([('pr{0}.{1}'.format(k, n), [k, n, 4])
+                                                                for n in [9] for k in [5, 11]])
         # --- Fuser controller
         spot_sj.fuser_controller['Fuse']         = True
         spot_sj.fuser_controller['Save_results'] = True
