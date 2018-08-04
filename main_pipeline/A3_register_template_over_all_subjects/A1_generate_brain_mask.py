@@ -66,7 +66,9 @@ def get_brain_mask_per_subject(sj, sj_parameters):
         elif options_brain_mask['method'] == 'BTMA_MA' or options_brain_mask['method'] == 'MA_BTMA':
             mutli_atlas_subject_list = defs.multi_atlas_BT_subjects + defs.multi_atlas_subjects
         else:
-            raise IOError
+            raise IOError('option for brain mask not existent.')
+
+        print('\nMulti atlas for brain mask selected is {} .\n'.format(mutli_atlas_subject_list))
 
         # THEN: get the output brain mask from extenal function
         btm.extract_brain_tissue_from_multi_atlas_list_stereotaxic(sj,

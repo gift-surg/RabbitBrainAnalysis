@@ -103,6 +103,11 @@ def extract_brain_tissue_from_multi_atlas_list_stereotaxic(target_name,
     :param options:
     :return:
     """
+    # controller:
+    affine_only = True
+    nrig_options = ' -be 0.98 -jl 0.5 '  # -jl 0.5
+
+
     assert os.path.exists(pfo_tmp)
 
     # parameters target:
@@ -156,32 +161,36 @@ def extract_brain_tissue_from_multi_atlas_list_stereotaxic(target_name,
             defs.num_cores_run)
         print_and_run(cmd)
 
+        pfi_final_transformation = pfi_affine_transformation_ref_on_subject
+
         # intermediate output: NON-RIGID
         pfi_nrig_cpp_ref_on_subject    = jph(pfo_tmp, 'target{}_floating{}_nrigid_cpp.nii.gz'.format(target_name, atlas_sj))
         pfi_nrig_warped_ref_on_subject = jph(pfo_tmp, 'target{}_floating{}_nrigid_warped.nii.gz'.format(target_name, atlas_sj))
 
         # NON-RIGID step
-        nrig_options = ' -be 0.8 -le 0.5 '  # -jl 0.5
-        cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -cpp {5} -res {6} {7} -omp {8}'.format(
-            pfi_target_sj_T1, pfi_target_sj_reg_mask,
-            pfi_atlas_sj_T1, pfi_atlas_sj_reg_mask,
-            pfi_affine_transformation_ref_on_subject,
-            pfi_nrig_cpp_ref_on_subject,
-            pfi_nrig_warped_ref_on_subject,
-            nrig_options,
-            defs.num_cores_run)
-        print_and_run(cmd)
+        if not affine_only:
+            cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -cpp {5} -res {6} {7} -omp {8}'.format(
+                pfi_target_sj_T1, pfi_target_sj_reg_mask,
+                pfi_atlas_sj_T1, pfi_atlas_sj_reg_mask,
+                pfi_affine_transformation_ref_on_subject,
+                pfi_nrig_cpp_ref_on_subject,
+                pfi_nrig_warped_ref_on_subject,
+                nrig_options,
+                defs.num_cores_run)
+            print_and_run(cmd)
+
+            pfi_final_transformation = pfi_nrig_cpp_ref_on_subject
 
         print('- Propagate registration to brain tissue mask, subject {0} over the target {1}'.format(
             atlas_sj, target_name))
 
         # Output brain tissue after affine trasformation, must include the atlas_sj name in the naming.
-        pfi_brain_tissue_from_multi_atlas_sj = jph(pfo_tmp, 'target{0}_floating{1}_nrigid_warped_brain_mask.nii.gz'.format(
+        pfi_brain_tissue_from_multi_atlas_sj = jph(pfo_tmp, 'target{0}_floating{1}_final_warped_brain_mask.nii.gz'.format(
             target_name, atlas_sj))
         cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0'.format(
             pfi_target_sj_T1,
             pfi_atlas_sj_brain_mask,
-            pfi_nrig_cpp_ref_on_subject,
+            pfi_final_transformation,
             pfi_brain_tissue_from_multi_atlas_sj)
         print_and_run(cmd)
 
