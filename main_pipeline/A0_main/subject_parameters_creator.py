@@ -2353,7 +2353,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : -2,
-                                 'window_percentile'  : (75, 100),
+                                 'window_percentile'  : (78, 100),
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : False}
@@ -2379,10 +2379,11 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : -4,
-                                 'window_percentile'  : (15, 100),
+                                 'window_percentile'  : (70, 99),
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
+    sp.options_brain_mask     = {'method'             : 'BTMA_MA'}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -2403,11 +2404,12 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
-                                 'mask_dilation'      : 5,
-                                 'window_percentile'  : (2, 100),
+                                 'mask_dilation'      : -4,
+                                 'window_percentile'  : (70, 99.5),
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
+    sp.options_brain_mask     = {'method'             : 'BTMA_MA'}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -2428,11 +2430,12 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
-                                 'mask_dilation'      : 5,
-                                 'window_percentile'  : (3, 100),
+                                 'mask_dilation'      : -5,
+                                 'window_percentile'  : (80, 99),
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
+    sp.options_brain_mask     = {'method'             : 'BTMA_MA'}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -2453,11 +2456,12 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
-                                 'mask_dilation'      : 5,
-                                 'window_percentile'  : (3, 100),
+                                 'mask_dilation'      : -4,
+                                 'window_percentile'  : (80, 98),
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
+    sp.options_brain_mask     = {'method'             : 'BTMA_MA'}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -2478,11 +2482,12 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
-                                 'mask_dilation'      : 5,
-                                 'window_percentile'  : (3, 100),
+                                 'mask_dilation'      : -4,
+                                 'window_percentile'  : (75, 97),
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
+    sp.options_brain_mask     = {'method'             : 'BTMA_MA'}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -2503,8 +2508,8 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
-                                 'mask_dilation'      : 1,
-                                 'window_percentile'  : (0, 100),
+                                 'mask_dilation'      : -1,
+                                 'window_percentile'  : (70, 99.5),
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}

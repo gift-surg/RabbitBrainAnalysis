@@ -273,7 +273,7 @@ def process_T1_per_subject(sj, steps):
             pfi_mog_segm = jph(pfo_tmp, '{}_mog_segm.nii.gz'.format(sj))
             T1_bfc = nib.load(pfi_3d_bias_field_corrected)
             roi_mask = nib.load(pfi_roi_mask)
-            c, p = MoG(T1_bfc, K=5, pre_process_median_filter=True, mask_im=roi_mask,
+            c, p = MoG(T1_bfc, K=K, pre_process_median_filter=True, mask_im=roi_mask,
                        pre_process_only_interquartile=True)
             nib.save(c, '/Users/sebastiano/Desktop/zzz.nii.gz')
             old_labels = list(range(K))  # [0, 1, 2, 3, 4]
@@ -356,8 +356,8 @@ if __name__ == '__main__':
     print('Process T1, local run.')
 
     controller_steps = {'orient_to_standard'       : False,
-                        'create_roi_masks'         : False,
-                        'adjust_mask'              : False,
+                        'create_roi_masks'         : True,
+                        'adjust_mask'              : True,
                         'cut_masks'                : False,
                         'step_bfc'                 : False,
                         'create_lesion_maks'       : True,
@@ -372,7 +372,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['2503', '2608', '2702', '4504', '4903', '4905', '5001', '5007']  #  '2702', '3404', '4302'
+    lsm.input_subjects = ['13402', '13403']  # '13201', '13401', '13402', '13403']  #  '13102',
     # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
     # lsm.input_subjects = ['13004', ]

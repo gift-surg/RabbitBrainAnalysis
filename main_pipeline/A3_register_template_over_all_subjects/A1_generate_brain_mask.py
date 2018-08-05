@@ -71,9 +71,7 @@ def get_brain_mask_per_subject(sj, sj_parameters):
         print('\nMulti atlas for brain mask selected is {} .\n'.format(mutli_atlas_subject_list))
 
         # THEN: get the output brain mask from extenal function
-        btm.extract_brain_tissue_from_multi_atlas_list_stereotaxic(sj,
-                                                                   mutli_atlas_subject_list,
-                                                                   pfo_tmp,
+        btm.extract_brain_tissue_from_multi_atlas_list_stereotaxic(sj, mutli_atlas_subject_list, pfo_tmp,
                                                                    pfi_output_brain_mask=pfi_brain_mask_sj,
                                                                    options=options_brain_mask)
 
@@ -99,13 +97,13 @@ if __name__ == '__main__':
 
     lsm = ListSubjectsManager()
 
-    lsm.execute_PTB_ex_skull = False
-    lsm.execute_PTB_ex_vivo = False
-    lsm.execute_PTB_in_vivo = False
-    lsm.execute_PTB_op_skull = False
-    lsm.execute_ACS_ex_vivo = False
+    lsm.execute_PTB_ex_skull  = False
+    lsm.execute_PTB_ex_vivo   = False
+    lsm.execute_PTB_in_vivo   = False
+    lsm.execute_PTB_op_skull  = False
+    lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['13102', ]
+    lsm.input_subjects = ['13102', '13201', '13202', '13401', '13402', '13403']
     lsm.update_ls()
 
     print lsm.ls
