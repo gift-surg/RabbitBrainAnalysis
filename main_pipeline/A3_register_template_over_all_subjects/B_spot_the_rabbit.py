@@ -37,10 +37,10 @@ def spot_a_list_of_rabbits(subjects_list):
         'P2' -> Multi modal T1 affine only.
         """
         # Template parameters:
-        spot_sj.atlas_name = 'MANRround3'  # Multi Atlas Newborn Rabbit
+        spot_sj.atlas_name                    = 'MANRround3'  # Multi Atlas Newborn Rabbit
         spot_sj.atlas_list_charts_names       = multi_atlas_subjects
         spot_sj.atlas_list_suffix_modalities  = ['T1', 'S0', 'V1', 'MD', 'FA']
-        spot_sj.atlas_list_suffix_masks       = ['roi_mask', 'roi_reg_mask']
+        spot_sj.atlas_list_suffix_masks       = ['roi_mask', 'roi_reg_mask', 'brain_mask']
         spot_sj.atlas_reference_chart_name    = '1305'
         spot_sj.atlas_segmentation_suffix     = 'segm'
 
@@ -63,11 +63,10 @@ def spot_a_list_of_rabbits(subjects_list):
             spot_sj.propagation_options['Affine_modalities']        = ('T1', 'FA')
             spot_sj.propagation_options['Affine_reg_masks']         = ('T1', 'S0')  # if (), there is a single mask for all modalities
             spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
+            spot_sj.propagation_options['N_rigid_slim_reg_mask']    = use_slim_mask
             spot_sj.propagation_options['N_rigid_modalities']       = ()  # if empty, no non-rigid step.
             spot_sj.propagation_options['N_rigid_reg_masks']        = ('T1', 'S0')  # if [], same mask for all modalities
-
-            # set the parameter below to true if the mask provided is obtained with the brain mask.
-            spot_sj.propagation_options['N_rigid_slim_reg_mask']    = False
+            spot_sj.propagation_options['N_rigid_slim_reg_mask']    = use_slim_mask
             spot_sj.propagation_options['N_rigid_mod_diff_bfc']     = ('T1', )  # empty list no diff bfc. - PUT A COMMA IF ONLY ONE SUBJECT!!
             spot_sj.propagation_options['N_rigid_parameters']       = ' -be 0.5 -ln 6 -lp 1  -smooR 0.07 -smooF 0.07 '
             spot_sj.propagation_options['N_rigid_same_mask_moving'] = False
@@ -80,6 +79,7 @@ def spot_a_list_of_rabbits(subjects_list):
             spot_sj.propagation_options['Affine_modalities']        = ('T1',)
             spot_sj.propagation_options['Affine_reg_masks']         = ('T1',)  # if (), there is a single mask for all modalities
             spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
+            spot_sj.propagation_options['N_rigid_slim_reg_mask']    = use_slim_mask
             spot_sj.propagation_options['N_rigid_modalities']       = ()  # if empty, no non-rigid step. - first attempt with only an affine step.
             spot_sj.propagation_options['N_rigid_reg_masks']        = ()  # if [], same mask for all modalities
             spot_sj.propagation_options['N_rigid_slim_reg_mask']    = use_slim_mask
@@ -142,7 +142,7 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['11806']
     # lsm.input_subjects = ['F1Test']
 
-    lsm.input_subjects = ['13201']
+    lsm.input_subjects = ['13102']  # ['13102', '13201', '13202', '13401', '13402', '13403']
     # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
 
     lsm.update_ls()

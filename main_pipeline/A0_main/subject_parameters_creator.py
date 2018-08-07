@@ -2405,7 +2405,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
                                  'mask_dilation'      : -4,
-                                 'window_percentile'  : (70, 99.5),
+                                 'window_percentile'  : (75, 97),
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}

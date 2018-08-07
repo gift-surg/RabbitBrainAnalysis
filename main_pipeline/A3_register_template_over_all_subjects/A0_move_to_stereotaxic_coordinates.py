@@ -262,10 +262,10 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller, options):
 
         if sj_parameters['options_T1']['crop_roi']:
             print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_T1, pfi_sc_roi_mask))
-        print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_S0, pfi_sc_roi_mask))
-        print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_FA, pfi_sc_roi_mask))
-        print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_MD, pfi_sc_roi_mask))
-        print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_V1, pfi_V1_mask))
+            print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_S0, pfi_sc_roi_mask))
+            print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_FA, pfi_sc_roi_mask))
+            print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_MD, pfi_sc_roi_mask))
+            print_and_run('seg_maths {0} -mul {1} {0} '.format(pfi_sc_V1, pfi_V1_mask))
 
 
 def move_to_stereotaxic_coordinate_from_list(subj_list, controller, options):
@@ -278,7 +278,7 @@ if __name__ == '__main__':
     print('process Stereotaxic orientation, local run. ')
 
     controller_ = {
-        'Initialise_sc_folder'               : True,
+        'Initialise_sc_folder'               : False,
         'Register_T1'                        : True,
         'Propagate_T1_masks'                 : True,
         'Register_S0'                        : True,
@@ -298,7 +298,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['2503', '2608', '2702', '4504', '4903', '4905', '5001', '5007']
+    lsm.input_subjects = ['13202']  # ['13102', '13201', '13202', '13401', '13402', '13403']
     lsm.update_ls()
 
     move_to_stereotaxic_coordinate_from_list(lsm.ls, controller_, options_)
