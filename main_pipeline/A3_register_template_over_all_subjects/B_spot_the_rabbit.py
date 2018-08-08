@@ -63,7 +63,7 @@ def spot_a_list_of_rabbits(subjects_list):
             spot_sj.propagation_options['Affine_modalities']        = ('T1', 'FA')
             spot_sj.propagation_options['Affine_reg_masks']         = ('T1', 'S0')  # if (), there is a single mask for all modalities
             spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
-            spot_sj.propagation_options['N_rigid_slim_reg_mask']    = use_slim_mask
+            spot_sj.propagation_options['Affine_slim_reg_mask']    = use_slim_mask
             spot_sj.propagation_options['N_rigid_modalities']       = ()  # if empty, no non-rigid step.
             spot_sj.propagation_options['N_rigid_reg_masks']        = ('T1', 'S0')  # if [], same mask for all modalities
             spot_sj.propagation_options['N_rigid_slim_reg_mask']    = use_slim_mask
@@ -79,7 +79,7 @@ def spot_a_list_of_rabbits(subjects_list):
             spot_sj.propagation_options['Affine_modalities']        = ('T1',)
             spot_sj.propagation_options['Affine_reg_masks']         = ('T1',)  # if (), there is a single mask for all modalities
             spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
-            spot_sj.propagation_options['N_rigid_slim_reg_mask']    = use_slim_mask
+            spot_sj.propagation_options['Affine_slim_reg_mask']     = use_slim_mask
             spot_sj.propagation_options['N_rigid_modalities']       = ()  # if empty, no non-rigid step. - first attempt with only an affine step.
             spot_sj.propagation_options['N_rigid_reg_masks']        = ()  # if [], same mask for all modalities
             spot_sj.propagation_options['N_rigid_slim_reg_mask']    = use_slim_mask
@@ -142,7 +142,7 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['11806']
     # lsm.input_subjects = ['F1Test']
 
-    lsm.input_subjects = ['13102']  # ['13102', '13201', '13202', '13401', '13402', '13403']
+    lsm.input_subjects = ['13102', '13201', '13202', '13401', '13402', '13403']
     # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
 
     lsm.update_ls()

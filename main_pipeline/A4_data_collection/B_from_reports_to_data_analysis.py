@@ -7,12 +7,12 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 
-from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
+from LABelsToolkit.tools.descriptions.label_descriptor_manager import LabelsDescriptorManager as LdM
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
 
 
-root_output = jph(root_study_rabbits, 'B_stats', 'ACS_01_New')
+root_output = jph(root_study_rabbits, 'B_stats', 'ACS_01_NewNEW')
 
 
 def subject_comparison_total_volume(sj_list, controller, subjects_grouping=None, coord_system='original'):
@@ -95,7 +95,7 @@ def subject_comparison_volume_per_region(sj_list, ldm, labels_num, controller, s
     :return:
     """
     print('subject_comparison_volume_per_region {} for subjects {}'.format(labels_num, sj_list))
-    dict_labels = ldm.get_dict()
+    dict_labels = ldm.get_dict_itk_snap()
     labels_names = [dict_labels[k][2].replace(' ', '') for k in labels_num]
 
     if macro_label_name is None:
@@ -193,7 +193,7 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
     print('\n\n-------------------')
     print('subject_comparison_values_below_labels_per_region {} for subjects {}, mod {}'.format(labels_num, sj_list, mod))
 
-    dict_labels = ldm.get_dict()
+    dict_labels = ldm.get_dict_itk_snap()
     labels_names = [dict_labels[k][2].replace(' ', '') for k in labels_num]
 
     if macro_label_name is None:
@@ -364,7 +364,7 @@ if __name__ == '__main__':
 
     subjects_not_present = []
 
-    subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610', '13102', '13201', '13202', '13401', '13402', '13403', '13403retest']
+    subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610', '13102', '13201', '13202', '13401', '13402', '13403']  # , '13403retest'
 
     subjects_grouping_ = None
 

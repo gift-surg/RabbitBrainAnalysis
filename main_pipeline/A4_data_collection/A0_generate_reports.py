@@ -15,7 +15,7 @@ import pickle
 
 from LABelsToolkit.main import LABelsToolkit as LaB
 from LABelsToolkit.tools.caliber.volumes_and_values import get_volumes_per_label
-from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
+from LABelsToolkit.tools.descriptions.label_descriptor_manager import LabelsDescriptorManager as LdM
 
 from main_pipeline.A0_main.tag_collector import TagCollector
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
@@ -49,7 +49,7 @@ def generate_reports_for_subject(sj, controller, options, ldm):
     :return:
     """
     # labels
-    label_descriptor_dict = ldm.get_dict()
+    label_descriptor_dict = ldm.get_dict_itk_snap()
 
     labels_list = label_descriptor_dict.keys()
     labels_names = [label_descriptor_dict[k][2].replace(' ', '') for k in label_descriptor_dict.keys()]
@@ -175,7 +175,7 @@ def generate_reports_for_subject(sj, controller, options, ldm):
     # if not os.path.exists(pfi_segm_stx):
     #     pfi_segm_stx = jph(pfo_sj_segm_stx, 'automatic', '{}_{}.nii.gz'.format(sj, 'MV_P2'))
 
-    assert os.path.exists(pfi_segm_stx)
+    assert os.path.exists(pfi_segm_stx), pfi_segm_stx
 
     pfi_anat_FA_stx = jph(pfo_sj_mod_stx, '{}_FA.nii.gz'.format(sj))
     pfi_anat_MD_stx = jph(pfo_sj_mod_stx, '{}_MD.nii.gz'.format(sj))
@@ -271,7 +271,7 @@ def generate_reports_from_list(sj_list, controller, options):
     # Load regions with labels_descriptor_manager:
 
     ldm = LdM(pfi_labels_descriptor)
-    label_descriptor_dict = ldm.get_dict()
+    label_descriptor_dict = ldm.get_dict_itk_snap()
 
     print label_descriptor_dict.keys()
 
@@ -286,11 +286,11 @@ if __name__ == '__main__':
 
     lsm = ListSubjectsManager()
 
-    lsm.execute_PTB_ex_skull = False
-    lsm.execute_PTB_ex_vivo = False
-    lsm.execute_PTB_in_vivo = False
-    lsm.execute_PTB_op_skull = False
-    lsm.execute_ACS_ex_vivo = False
+    lsm.execute_PTB_ex_skull  = False
+    lsm.execute_PTB_ex_vivo   = False
+    lsm.execute_PTB_in_vivo   = False
+    lsm.execute_PTB_op_skull  = False
+    lsm.execute_ACS_ex_vivo   = False
 
     # lsm.input_subjects = ['12307', '12308', '12402']
     # lsm.input_subjects = ['12504', '12505', '12607']
@@ -299,17 +299,20 @@ if __name__ == '__main__':
     # lsm.input_subjects   = ['4601', '4603']  # ['5009']  # '12308', '12402', '12504', '12505', '12607', '12608', '12609', '12610']  # ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
     # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
 
-    preterm = ['1305', '1404', '1505', '1507', '1510', '2002', '3301', '3303', '3404', '4302', '4304',
-               '4305', '4901', '4903', '5001']  # '1201', '1203',
 
     # '1501', '1504' '1508', '1509', '1511', '2013', '2202', '2205', '2206' : in vivo and not in subjects parameters.
     # '4303','4406', :  rejected.
 
-    term = ['1702', '1805', '2502', '2503', '2608', '4501', '4504', '4507', '4601', '4603', '13003', '13004', '13005',
-            '13006']
-    # '2605', '2702', '4602',  Rejected.
+    # term = ['1702', '1805', '2502', '2503', '2608', '4501', '4504', '4507', '4601', '4603', '13003', '13004', '13005',
+    #         '13006']
 
-    lsm.input_subjects = preterm + term
+    # preterm = ['1305', '1404', '1505', '1507', '1510', '2002', '3301', '3303', '3404', '4302', '4304',
+    #            '4305', '4901', '4903', '5001']  # '1201', '1203',
+
+
+    # lsm.input_subjects = preterm + term
+
+    lsm.input_subjects = ['13102', ] #  '13201', '13202', '13401', '13402', '13403']
 
 
     lsm.update_ls()
@@ -317,15 +320,15 @@ if __name__ == '__main__':
     print(lsm.ls)
 
     controller_ = {'Force_reset'              : False,
-                   'Volumes_per_region'       : False,
-                   'FA_per_region'            : False,
-                   'MD_per_region'            : False,
-                   'Volumes_per_region_stx'   : False,
+                   'Volumes_per_region'       : True,
+                   'FA_per_region'            : True,
+                   'MD_per_region'            : True,
+                   'Volumes_per_region_stx'   : True,
                    'FA_per_region_stx'        : True,
                    'MD_per_region_stx'        : True,
-                   'Generate_tag'             : False
+                   'Generate_tag'             : True
                    }
 
-    options_ = {'erosion': True}
+    options_ = {'erosion': False}
 
     generate_reports_from_list(lsm.ls, controller_, options_)

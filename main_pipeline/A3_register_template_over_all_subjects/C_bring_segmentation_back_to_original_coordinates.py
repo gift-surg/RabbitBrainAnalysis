@@ -271,7 +271,7 @@ if __name__ == '__main__':
         'Rigid_T1strx_to_T1orig'            : True,
         'Propagate_T1_segm'                 : True,
         'Inter_modal_reg_S0'                : True,
-        'Inter_modal_reg_MSME'              : True,
+        'Inter_modal_reg_MSME'              : False,
         'Selected_segmentation'             : 'automatic',  # can be automatic or manual
         'Suffix_selected_segmentation'      : 'MV_P2'
     }
@@ -284,7 +284,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['1505']
+    lsm.input_subjects = ['13102', '13201', '13202', '13401', '13402', '13403']
     lsm.update_ls()
 
     propagate_segmentation_in_original_space_from_list(lsm.ls, controller_)
