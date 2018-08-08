@@ -146,7 +146,7 @@ def cleaner_converted_data_single_subject(sj):
     pfo_to_be_cleaned = jph(root_study_rabbits, '02_nifti', study, category, sj)
     assert os.path.exists(pfo_to_be_cleaned), pfo_to_be_cleaned
     print 'Study subject {} cleaning. \n'.format(sj)
-    # clean_a_study(pfo_to_be_cleaned, name_study_cleaned=sj)
+    clean_a_study(pfo_to_be_cleaned, name_study_cleaned=sj)
 
     sj_exts = sj_parameters['merge_with']
     if sj_exts is not None:

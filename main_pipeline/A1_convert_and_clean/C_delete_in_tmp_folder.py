@@ -21,7 +21,7 @@ def delete_from_path(pfi_file_1, pfi_file_2):
 
 
 def delete_unzipped_raw_data_single_subject(sj):
-    print('- Unzip subject {} '.format(sj))
+    print('- Delete unzipped subject {} '.format(sj))
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 

@@ -37,15 +37,15 @@ def main_runner(subj_list):
     # Set steps
     steps = {'reset_parameters'   : False,
              'step_A1'            : True,
-             'step_A2_T1'         : False,
-             'step_A2_DWI'        : False,
-             'step_A2_MSME'       : False,
-             'step_A2_T2maps'     : False,
-             'step_A2_g_ratio'    : False,
-             'step_A3_move'       : False,
-             'step_A3_brain_mask' : False,
-             'step_A3_segment'    : False,
-             'step_A3_move_back'  : False,
+             'step_A2_T1'         : True,
+             'step_A2_DWI'        : True,
+             'step_A2_MSME'       : True,
+             'step_A2_T2maps'     : True,
+             'step_A2_g_ratio'    : True,
+             'step_A3_move'       : True,
+             'step_A3_brain_mask' : True,
+             'step_A3_segment'    : True,
+             'step_A3_move_back'  : True,
              'step_A4'            : False}
 
     print('STEPS')
@@ -176,8 +176,7 @@ def main_runner(subj_list):
             'Propagate_T1_masks'                 : True,
             'Register_S0'                        : True,
             'Propagate_S0_related_mods_and_mask' : True,
-            'Adjustments'                        : True
-        }
+            'Adjustments'                        : True}
 
         options = {
             'Template_chart_path': jph(root_atlas, '1305'),
@@ -240,10 +239,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    # lsm.input_subjects = ['5009', ]  # A all
-
-    # lsm.input_subjects = ['13004', '13102', '13201', '13202', '13401', '13402', '13403']
-    lsm.input_subjects = ['4303']  # ['13003', '13006']
+    lsm.input_subjects = ['12610']
 
     lsm.update_ls()
 
