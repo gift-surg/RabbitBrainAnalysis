@@ -36,8 +36,8 @@ def main_runner(subj_list):
 
     # Set steps
     steps = {'reset_parameters'   : False,
-             'step_A1'            : True,
-             'step_A2_T1'         : True,
+             'step_A1'            : False,
+             'step_A2_T1'         : False,
              'step_A2_DWI'        : True,
              'step_A2_MSME'       : True,
              'step_A2_T2maps'     : True,

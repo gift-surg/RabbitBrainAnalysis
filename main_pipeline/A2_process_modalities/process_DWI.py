@@ -202,7 +202,7 @@ def process_DWI_per_subject(sj, controller):
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         assert check_path_validity(pfi_roi_mask)
         pfi_roi_mask_dil = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
-        dil_factor = sj_parameters['S0_mask_dilation']
+        dil_factor = sj_parameters['options_S0']['mask_dilation']
         cmd = 'seg_maths {0} -dil {1} {2}'.format(pfi_roi_mask,
                                                   dil_factor,
                                                   pfi_roi_mask_dil)
@@ -413,7 +413,7 @@ def process_DWI_per_subject(sj, controller):
         assert check_path_validity(pfi_s0_bfc)
         assert os.path.exists(pfi_roi_mask)
         pfi_lesion_mask = jph(pfo_mask, sj + '_S0_lesion_mask.nii.gz')
-        percentile = sj_parameters['S0_window_percentile']
+        percentile = sj_parameters['options_S0']['window_percentile']
         percentile_lesion_mask_extractor(im_input_path=pfi_s0_bfc,
                                          im_output_path=pfi_lesion_mask,
                                          im_mask_foreground_path=pfi_roi_mask,
