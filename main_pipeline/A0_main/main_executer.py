@@ -37,14 +37,14 @@ def main_runner(subj_list):
     # Set steps
     steps = {'reset_parameters'   : False,
              'step_A1'            : False,
-             'step_A2_T1'         : False,
+             'step_A2_T1'         : True,
              'step_A2_DWI'        : True,
-             'step_A2_MSME'       : True,
-             'step_A2_T2maps'     : True,
-             'step_A2_g_ratio'    : True,
+             'step_A2_MSME'       : False,
+             'step_A2_T2maps'     : False,
+             'step_A2_g_ratio'    : False,
              'step_A3_move'       : True,
-             'step_A3_brain_mask' : True,
-             'step_A3_segment'    : True,
+             'step_A3_brain_mask' : False,
+             'step_A3_segment'    : False,
              'step_A3_move_back'  : True,
              'step_A4'            : False}
 
@@ -83,7 +83,7 @@ def main_runner(subj_list):
                                 'unzip'                       : True,
                                 'rename'                      : True}
 
-            unzip_single_sj(sj, controller_unzip)
+            # unzip_single_sj(sj, controller_unzip)
             convert_single_subject(sj)
             delete_unzipped_raw_data_single_subject(sj)
             cleaner_converted_data_single_subject(sj)
@@ -106,17 +106,17 @@ def main_runner(subj_list):
     ''' Step A2 - DWI '''
     if steps['step_A2_DWI']:
         print('\nStep A2 DWI\n')
-        controller_DWI = {'squeeze'              : True,
-                          'orient to standard'   : True,
-                          'create roi masks'     : True,
-                          'adjust mask'          : True,
-                          'cut mask dwi'         : True,
-                          'cut mask S0'          : True,
-                          'correct slope'        : True,
-                          'eddy current'         : True,
-                          'fsl tensor fitting'   : True,
-                          'adjust dti-based mod' : True,
-                          'bfc S0'               : True,
+        controller_DWI = {'squeeze'              : False,
+                          'orient to standard'   : False,
+                          'create roi masks'     : False,
+                          'adjust mask'          : False,
+                          'cut mask dwi'         : False,
+                          'cut mask S0'          : False,
+                          'correct slope'        : False,
+                          'eddy current'         : False,
+                          'fsl tensor fitting'   : False,
+                          'adjust dti-based mod' : False,
+                          'bfc S0'               : False,
                           'create lesion mask'   : True,
                           'create reg masks'     : True,
                           'align over T1'        : True,
@@ -239,7 +239,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['12610']
+    lsm.input_subjects = ['125930']  # ['12610']
 
     lsm.update_ls()
 

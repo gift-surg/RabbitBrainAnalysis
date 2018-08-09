@@ -2624,6 +2624,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp = SubjectParameters('125930')
     sp.study                  = 'W8'
     sp.category               = 'first_trial'
+    sp.merge_with             = ['125930DWI', ]
     sp.angles                 = [0, np.pi / 8, 0]
     sp.translation            = [0, 0, 0]
     sp.threshold              = 18
@@ -2636,12 +2637,41 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 99),
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
-                                 'pivot'              : '1305',
+                                 'pivot'              : '125930',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (5, 98),
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+
+    sp                        = SubjectParameters('55BW')
+    sp.study                  = 'W8'
+    sp.category               = 'first_trial'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
+                                 'pivot'              : '125930',
+                                 'mask_dilation'      : 5,
+                                 'window_percentile'  : (5, 98),
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : True}
+    sp.names_architecture     = {'T1'   : 'T1',
+                                 'MSME' : 'MSME',
+                                 'DWI'  : 'DWI'}  # DWI or DWIext1 as alternative.
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp

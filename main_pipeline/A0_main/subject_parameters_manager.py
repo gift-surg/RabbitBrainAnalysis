@@ -80,6 +80,11 @@ class SubjectParameters(object):
                                       'median_filter'      : True  # if 'reg_mask' > 1 as pre-processing before the gaussians.
                                       }
         self.options_brain_mask    = {'method'             :  None}  # can be None, 'BTMA' or 'MA' or 'BTMA_MA' according to the model.
+        # methods to be taken after conversion - in case more than one experiment had been perfomed for the same
+        # subject and the same modality..
+        self.names_architecture    = {'T1'   : '3D',
+                                      'MSME' : 'MSME',
+                                      'DWI'  : 'DWI'}
 
     def get_as_dict(self):
         d = OrderedDict()
@@ -101,6 +106,7 @@ class SubjectParameters(object):
         d.update({'options_S0'            : self.options_S0})
         d.update({'options_brain_mask'    : self.options_brain_mask})
         d.update({'spotter_tag'           : self.spotter_tag})
+        d.update({'names_architecture'    : self.names_architecture})
         return d
 
     def save_as_txt(self, pfo_where_to_save):

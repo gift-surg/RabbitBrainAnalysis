@@ -42,7 +42,9 @@ def process_T1_per_subject(sj, steps):
 
     options_T1 = sj_parameters['options_T1']
 
-    pfo_input_sj_3D = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_3D')
+    suffix_T1_architecture = sj_parameters['names_architecture']['T1']  # deafult is 3D
+
+    pfo_input_sj_3D = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_' + suffix_T1_architecture)
     pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
 
     # input sanity check:
@@ -74,6 +76,10 @@ def process_T1_per_subject(sj, steps):
 
     if steps['orient_to_standard']:
         print('- orient to standard {}'.format(sj))
+
+
+
+
         pfi_input_original = jph(pfo_input_sj_3D, sj + '_3D.nii.gz')
         assert check_path_validity(pfi_input_original)
         pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
@@ -372,10 +378,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['13202' ]  # '13102', '13201', '13401', '13402', '13403']  #  '13102',
-    # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
-    # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
-    # lsm.input_subjects = ['13004', ]
+    lsm.input_subjects = ['125930' ]
     lsm.update_ls()
 
     print lsm.ls

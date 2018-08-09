@@ -2,8 +2,6 @@ import os
 from os.path import join as jph
 import pickle
 
-from LABelsToolkit.tools.aux_methods.utils import print_and_run
-
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 

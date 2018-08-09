@@ -64,7 +64,7 @@ def process_T2_map_per_subject(sj, controller):
 
     print_and_run('mkdir -p {}'.format(pfo_tmp))
 
-    suffix = ['', '_up']
+    suffix = ['', 'inS0']
 
     if controller['get acquisition echo time']:
         pfi_visu_pars = jph(pfo_input_sj_MSME, sj + '_MSME_visu_pars.npy')
@@ -121,8 +121,8 @@ if __name__ == '__main__':
 
     print('process T2Maps, local run. ')
 
-    controller_steps = {'get acquisition echo time'  : False,
-                        'process each MSME input'    : False,
+    controller_steps = {'get acquisition echo time'  : True,
+                        'process each MSME input'    : True,
                         'correct origin'             : True,
                         'save results'               : True}
 
@@ -134,7 +134,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo = False
 
-    lsm.input_subjects = ['3103', ]
+    lsm.input_subjects = ['12610', ]
 
     lsm.update_ls()
 
