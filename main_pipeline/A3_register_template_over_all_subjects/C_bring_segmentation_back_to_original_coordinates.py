@@ -272,17 +272,17 @@ if __name__ == '__main__':
         'Propagate_T1_segm'                 : True,
         'Inter_modal_reg_S0'                : True,
         'Inter_modal_reg_MSME'              : False,
-        'Selected_segmentation'             : 'automatic',  # can be automatic or manual
+        'Selected_segmentation'             : 'automatic',  # to select the outcome segmentation.
         'Suffix_selected_segmentation'      : 'MV_P2'
     }
 
     lsm = ListSubjectsManager()
 
     lsm.execute_PTB_ex_skull = False
-    lsm.execute_PTB_ex_vivo = False
-    lsm.execute_PTB_in_vivo = False
+    lsm.execute_PTB_ex_vivo  = False
+    lsm.execute_PTB_in_vivo  = False
     lsm.execute_PTB_op_skull = False
-    lsm.execute_ACS_ex_vivo = False
+    lsm.execute_ACS_ex_vivo  = False
 
     lsm.input_subjects = ['13102', '13201', '13202', '13401', '13402', '13403']
     lsm.update_ls()

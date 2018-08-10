@@ -84,6 +84,7 @@ def orient2std(pfi_in, pfi_out, keep_translation=True):
     3) use nibabel to set the s-form as the q-form
     :param pfi_in:
     :param pfi_out:
+    :param keep_translation: if False translation is set to zero.
     :return:
     """
     # assert os.path.exists(pfi_in)

@@ -2327,11 +2327,16 @@ def reset_parameters_files(pfo_where_to_save):
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '1305',
-                                 'mask_dilation'      : 5,
-                                 'window_percentile'  : (5, 98),
+                                 'mask_dilation'      : 0,
+                                 'window_percentile'  : (75, 99.5),
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
+    sp.names_architecture     = {'T1'               : '3D',
+                                 'MSME'             : 'MSME',
+                                 'DWI'              : 'DWI',
+                                 'final_segm_strx'  : 'automatic2',  # change here to provide alternative folders output.
+                                 'suffix_segm'      : 'MV_P2'}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -2632,21 +2637,20 @@ def reset_parameters_files(pfo_where_to_save):
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
     sp.comment                = ''
-    sp.in_atlas               = False
+    sp.in_atlas               = True
     sp.b0_level               = 7
     sp.options_S0             = {'window_percentile'  : (1, 99),
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
                                  'pivot'              : '125930',
                                  'mask_dilation'      : 5,
-                                 'window_percentile'  : (5, 98),
+                                 'window_percentile'  : (5, 99.5),
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
-
 
     sp                        = SubjectParameters('55BW')
     sp.study                  = 'W8'

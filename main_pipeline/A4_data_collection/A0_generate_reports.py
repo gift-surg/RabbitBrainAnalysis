@@ -168,12 +168,12 @@ def generate_reports_for_subject(sj, controller, options, ldm):
         pfi_segm_stx_eroded = jph(pfo_sj_segm_stx, '{}_segm_eroded.nii.gz'.format(sj))
         create_eroded_segmentations_if_not_already_created(pfi_segm_stx, pfi_segm_stx_contour, pfi_segm_stx_eroded)
 
-    #
-    # if not os.path.exists(pfi_segm_stx):
-    #     pfi_segm_stx = jph(pfo_sj_segm_stx, '{}_segm_man.nii.gz'.format(sj))
-    #
-    # if not os.path.exists(pfi_segm_stx):
-    #     pfi_segm_stx = jph(pfo_sj_segm_stx, 'automatic', '{}_{}.nii.gz'.format(sj, 'MV_P2'))
+    if controller['Selected_segmentation'] == 'automatic':
+        pfo_segmentation_strx = jph(pfo_sj_segm_stx, 'automatic')
+    else:
+        pfo_segmentation_strx = pfo_sj_segm_stx
+
+    pfi_segm_stx = jph(pfo_segmentation_strx, '{}_{}.nii.gz'.format(sj, controller['Suffix_selected_segmentation']))
 
     assert os.path.exists(pfi_segm_stx), pfi_segm_stx
 
@@ -319,14 +319,16 @@ if __name__ == '__main__':
 
     print(lsm.ls)
 
-    controller_ = {'Force_reset'              : False,
-                   'Volumes_per_region'       : True,
-                   'FA_per_region'            : True,
-                   'MD_per_region'            : True,
-                   'Volumes_per_region_stx'   : True,
-                   'FA_per_region_stx'        : True,
-                   'MD_per_region_stx'        : True,
-                   'Generate_tag'             : True
+    controller_ = {'Force_reset'                  : False,
+                   'Volumes_per_region'           : True,
+                   'FA_per_region'                : True,
+                   'MD_per_region'                : True,
+                   'Volumes_per_region_stx'       : True,
+                   'FA_per_region_stx'            : True,
+                   'MD_per_region_stx'            : True,
+                   'Generate_tag'                 : True,
+                   'Selected_segmentation'        : 'automatic',  # can be automatic or manual
+                   'Suffix_selected_segmentation' : 'MV_P2'
                    }
 
     options_ = {'erosion': False}

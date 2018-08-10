@@ -9,7 +9,7 @@ import time
 import subprocess
 
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
-from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor, root_atlas
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor, pfo_atlas
 
 
 from LABelsToolkit.main import LABelsToolkit as LaB
@@ -84,7 +84,7 @@ def open_subject(sj, coordinates, check_dice_if_in_atlas=True):
         if in_atlas and check_dice_if_in_atlas:
 
             pfi_segm_strx = jph(root_subject, 'stereotaxic', 'segm', '{}_segm.nii.gz'.format(sj))
-            pfi_segm_from_atlas = jph(root_atlas, sj, 'segm', '{}_segm.nii.gz'.format(sj))
+            pfi_segm_from_atlas = jph(pfo_atlas, sj, 'segm', '{}_segm.nii.gz'.format(sj))
 
             if not os.path.exists(pfi_segm_strx):
                 print('\n\n Not existing {}!!'.format(pfi_segm_strx))

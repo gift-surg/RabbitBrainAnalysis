@@ -105,17 +105,17 @@ def process_g_ratio_per_subject(sj, controller):
         np.savetxt(fname=pfi_T2_times, X=np.array(t2_times), fmt='%10.10f', newline=' ')
 
     if controller['fit msme']:
-        pfi_msme_up = jph(pfo_mod, sj + '_MSME_up.nii.gz')
+        pfi_msme_inS0 = jph(pfo_mod, sj + '_MSMEinS0.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
         pfi_T2_times = jph(pfo_tmp, sj + '_t2_times.txt')
-        assert check_path_validity(pfi_msme_up), 'Need to run process_MSME first?'
+        assert check_path_validity(pfi_msme_inS0), 'Need to run process_MSME first?'
         assert check_path_validity(pfi_roi_mask)
         assert check_path_validity(pfi_echo_times)
         assert check_path_validity(pfi_T2_times)
         pfi_mwf = jph(pfo_tmp, sj + '_vmvf.nii.gz')
         cmd = root_fit_apps + 'fit_qt2 -source {0} -mask {1} -nc 3 -TElist {2} -T2list {3} -mwf {4}'.format(
-            pfi_msme_up, pfi_roi_mask, pfi_echo_times, pfi_T2_times, pfi_mwf)
+            pfi_msme_inS0, pfi_roi_mask, pfi_echo_times, pfi_T2_times, pfi_mwf)
         print cmd
         print_and_run(cmd)
         assert check_path_validity(pfi_mwf)

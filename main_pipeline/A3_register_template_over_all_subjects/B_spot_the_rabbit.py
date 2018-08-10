@@ -44,6 +44,10 @@ def spot_a_list_of_rabbits(subjects_list):
         spot_sj.atlas_reference_chart_name    = '1305'
         spot_sj.atlas_segmentation_suffix     = 'segm'
 
+        # Architecture names - default 'automatic'.
+        spot_sj.arch_automatic_segmentations_name_folder = sj_parameters['names_architecture']['final_segm_strx']
+
+
         # --- target parameters
         spot_sj.target_list_suffix_modalities = ['T1', 'S0', 'V1', 'MD', 'FA']
         spot_sj.target_name                   = sj_target

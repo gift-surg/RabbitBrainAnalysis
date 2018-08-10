@@ -5,7 +5,7 @@ import pickle
 from os.path import join as jph
 
 
-from tools.definitions import pfo_subjects_parameters, root_atlas, root_study_rabbits
+from tools.definitions import pfo_subjects_parameters, pfo_atlas, root_study_rabbits
 from apparent_fibre_density_experiments.main import root_DWIs_original, root_MASKs, root_SEGMs, \
     root_DWIs_corrected, root_intermediate, root_tmp
 

@@ -82,9 +82,11 @@ class SubjectParameters(object):
         self.options_brain_mask    = {'method'             :  None}  # can be None, 'BTMA' or 'MA' or 'BTMA_MA' according to the model.
         # methods to be taken after conversion - in case more than one experiment had been perfomed for the same
         # subject and the same modality..
-        self.names_architecture    = {'T1'   : '3D',
-                                      'MSME' : 'MSME',
-                                      'DWI'  : 'DWI'}
+        self.names_architecture    = {'T1'              : '3D',
+                                      'MSME'            : 'MSME',
+                                      'DWI'             : 'DWI',
+                                      'final_segm_strx' : 'automatic', # change here to provide alternative folders output.
+                                      'suffix_segm'     : 'MV_P2'}
 
     def get_as_dict(self):
         d = OrderedDict()
