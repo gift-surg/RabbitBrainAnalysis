@@ -50,9 +50,11 @@ def process_DWI_per_subject(sj, controller):
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
+    DWI_suffix = sj_parameters['names_architecture']['DWI']  # default is DWI
+
     study = sj_parameters['study']
     category = sj_parameters['category']
-    pfo_input_sj_DWI = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_DWI')
+    pfo_input_sj_DWI = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_' + DWI_suffix)
     pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
 
     if sj not in list_all_subjects(pfo_subjects_parameters):
@@ -67,7 +69,7 @@ def process_DWI_per_subject(sj, controller):
     pfo_mod = jph(pfo_output_sj, 'mod')
     pfo_segm = jph(pfo_output_sj, 'segm')
     pfo_mask = jph(pfo_output_sj, 'masks')
-    pfo_tmp = jph(pfo_output_sj, 'z_tmp', 'z_DWI')
+    pfo_tmp = jph(pfo_output_sj, 'z_tmp', 'z_' + DWI_suffix)
 
     print_and_run('mkdir -p {}'.format(pfo_output_sj))
     print_and_run('mkdir -p {}'.format(pfo_mod))
@@ -77,25 +79,25 @@ def process_DWI_per_subject(sj, controller):
 
     if controller['squeeze']:
         print('- squeeze {}'.format(sj))
-        pfi_dwi = jph(pfo_input_sj_DWI, sj + '_DWI.nii.gz')
-        assert check_path_validity(pfi_dwi)
+        pfi_dwi = jph(pfo_input_sj_DWI, '{}_{}.nii.gz'.format(sj, DWI_suffix))
+        assert os.path.exists(pfi_dwi)
         squeeze_image_from_path(pfi_dwi, pfi_dwi)
         del pfi_dwi
 
     if controller['orient to standard']:
         print('- orient to standard {}'.format(sj))
         # DWI
-        pfi_dwi_original = jph(pfo_input_sj_DWI, sj + '_DWI.nii.gz')
+        pfi_dwi_original = jph(pfo_input_sj_DWI, '{}_{}.nii.gz'.format(sj, DWI_suffix))
         assert check_path_validity(pfi_dwi_original)
         pfi_dwi_std = jph(pfo_tmp, sj + '_DWI_to_std.nii.gz')
         orient2std(pfi_dwi_original, pfi_dwi_std)
         # S0
         if sj_parameters['b0_level'] == 0:
-            pfi_S0_original = jph(pfo_input_sj_DWI, sj + '_DWI_S0.nii.gz')
+            pfi_S0_original = jph(pfo_input_sj_DWI, '{}_{}_S0.nii.gz'.format(sj, DWI_suffix))
         else:
             # create the time-point t and save its path under pfi_S0_original
             tp = sj_parameters['b0_level']
-            pfi_DWI_original = jph(pfo_input_sj_DWI, sj + '_DWI.nii.gz')
+            pfi_DWI_original = jph(pfo_input_sj_DWI, '{}_{}.nii.gz'.format(sj, DWI_suffix))
             assert check_path_validity(pfi_DWI_original)
             pfi_S0_original = jph(pfo_tmp, '{0}_DWI_S0_tp{1}.nii.gz'.format(sj, tp))
             grab_a_timepoint_path(pfi_DWI_original, pfi_S0_original, tp)
@@ -236,7 +238,7 @@ def process_DWI_per_subject(sj, controller):
         print('- correct slope {}'.format(sj))
         # --
         pfi_dwi_cropped = jph(pfo_tmp, sj + '_DWI_cropped.nii.gz')
-        pfi_slope_txt = jph(pfo_input_sj_DWI, sj + '_DWI_slope.txt')
+        pfi_slope_txt = jph(pfo_input_sj_DWI, '{}_{}_slope.nii.gz'.format(sj, DWI_suffix))
         assert check_path_validity(pfi_dwi_cropped)
         assert check_path_validity(pfi_slope_txt)
         pfi_dwi_slope_corrected = jph(pfo_tmp, sj + '_DWI_slope_corrected.nii.gz')
@@ -272,15 +274,15 @@ def process_DWI_per_subject(sj, controller):
         pfi_dwi_eddy_corrected = jph(pfo_tmp, sj + '_DWI_eddy.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
 
+        pfi_bvals = jph(pfo_input_sj_DWI, '{}_{}_DWI_DwEffBval.txt'.format(sj, DWI_suffix))
+        pfi_bvects = jph(pfo_input_sj_DWI, '{}_{}_DWI_DwGradVec.txt'.format(sj, DWI_suffix))
+
         if isinstance(sj_parameters['b0_to_use_in_fsldti'], list):
 
             b0_tps_to_keep = sj_parameters['b0_to_use_in_fsldti']
             tag = str(b0_tps_to_keep).replace('[', '').replace(']', '').replace(',', '').replace(' ', '_')
 
             # out of the initial n uses only the one at the selected timepoint.
-            pfi_bvals = jph(pfo_input_sj_DWI, sj + '_DWI_DwEffBval.txt')
-            pfi_bvects = jph(pfo_input_sj_DWI, sj + '_DWI_DwGradVec.txt')
-
             bvals  = np.loadtxt(pfi_bvals)
             bvects = np.loadtxt(pfi_bvects)
 
@@ -330,9 +332,6 @@ def process_DWI_per_subject(sj, controller):
             print_and_run(cmd2)
 
         else:
-            pfi_bvals = jph(pfo_input_sj_DWI, sj + '_DWI_DwEffBval.txt')
-            pfi_bvects = jph(pfo_input_sj_DWI, sj + '_DWI_DwGradVec.txt')
-
             assert check_path_validity(pfi_dwi_eddy_corrected)
             assert os.path.exists(pfi_bvals)
             assert os.path.exists(pfi_bvects)
@@ -462,14 +461,14 @@ def process_DWI_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process DWI, local run. ')
 
-    controller_DWI = {'squeeze'               : False,
-                      'orient to standard'    : False,
-                      'create roi masks'      : False,
-                      'adjust mask'           : False,
-                      'cut mask dwi'          : False,
-                      'cut mask S0'           : False,
-                      'correct slope'         : False,
-                      'eddy current'          : False,
+    controller_DWI = {'squeeze'               : True,
+                      'orient to standard'    : True,
+                      'create roi masks'      : True,
+                      'adjust mask'           : True,
+                      'cut mask dwi'          : True,
+                      'cut mask S0'           : True,
+                      'correct slope'         : True,
+                      'eddy current'          : True,
                       'fsl tensor fitting'    : True,
                       'adjust dti-based mod'  : True,
                       'bfc S0'                : True,
@@ -489,7 +488,7 @@ if __name__ == '__main__':
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
 
-    lsm.input_subjects = ['12402']
+    lsm.input_subjects = ['125930']
 
     lsm.update_ls()
 

@@ -50,7 +50,13 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
 
     # recover the source in stereotaxic coordinates (strx):
     if sj_parameters['in_atlas']:
-        pfo_sj_atlas         = jph(root_study_rabbits, 'A_MultiAtlas', sj)
+        if study == 'W8':
+            pfo_sj_atlas = jph(root_study_rabbits, 'A_MultiAtlas_W8', sj)
+        elif study == 'ACS' or study == 'PTB' or study == 'TestStudy':
+            pfo_sj_atlas = jph(root_study_rabbits, 'A_MultiAtlas', sj)
+        else:
+            raise IOError('Study for subject {} not feasible.'.format(sj))
+
         pfi_T1_strx          = jph(pfo_sj_atlas, 'mod', '{}_T1.nii.gz'.format(sj))
         pfi_T1_reg_mask_strx = jph(pfo_sj_atlas, 'masks', '{}_reg_mask.nii.gz'.format(sj))
         pfi_T1_segm_strx     = jph(pfo_sj_atlas, 'segm', '{}_segm.nii.gz'.format(sj))
@@ -284,7 +290,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['13102', '13201', '13202', '13401', '13402', '13403']
+    lsm.input_subjects = ['125930']  # ['13102', '13201', '13202', '13401', '13402', '13403']
     lsm.update_ls()
 
     propagate_segmentation_in_original_space_from_list(lsm.ls, controller_)

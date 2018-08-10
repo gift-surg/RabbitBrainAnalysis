@@ -19,6 +19,7 @@ def spot_a_list_of_rabbits(subjects_list):
 
         if sj_parameters['in_atlas']:
             # SPOT only the rabbits not already in the atlas.
+            print('Subject {} already in atlas. No automatic segmentation needed'.format(sj_target))
             return
 
         study    = sj_parameters['study']

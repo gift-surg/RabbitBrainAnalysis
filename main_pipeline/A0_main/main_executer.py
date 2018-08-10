@@ -38,12 +38,12 @@ def main_runner(subj_list):
     steps = {'reset_parameters'   : False,
              'step_A1'            : False,
              'step_A2_T1'         : False,
-             'step_A2_DWI'        : True,
+             'step_A2_DWI'        : False,
              'step_A2_MSME'       : False,
              'step_A2_T2maps'     : False,
              'step_A2_g_ratio'    : False,
-             'step_A3_move'       : True,
-             'step_A3_brain_mask' : True,
+             'step_A3_move'       : False,
+             'step_A3_brain_mask' : False,
              'step_A3_segment'    : True,
              'step_A3_move_back'  : True,
              'step_A4'            : True}
@@ -178,11 +178,7 @@ def main_runner(subj_list):
             'Propagate_S0_related_mods_and_mask' : True,
             'Adjustments'                        : True}
 
-        options = {
-            'Template_chart_path': jph(root_atlas, '1305'),
-            'Template_name': '1305'}
-
-        move_to_stereotaxic_coordinate_from_list(subj_list, controller, options)
+        move_to_stereotaxic_coordinate_from_list(subj_list, controller)
 
     if steps['step_A3_brain_mask']:
         print('A3) PART A1')
@@ -203,8 +199,7 @@ def main_runner(subj_list):
             'Inter_modal_reg_S0'                : True,
             'Inter_modal_reg_MSME'              : False,
             'Selected_segmentation'             : 'automatic',  # can be automatic or manual
-            'Suffix_selected_segmentation'      : 'MV_P2'
-                    }
+            'Suffix_selected_segmentation'      : 'MV_P2'}
 
         propagate_segmentation_in_original_space_from_list(subj_list, controller)
 
@@ -222,8 +217,7 @@ def main_runner(subj_list):
                          'MD_per_region_stx'            : True,
                          'Generate_tag'                 : True,
                          'Selected_segmentation'        : 'automatic',  # can be automatic or manual
-                         'Suffix_selected_segmentation' : 'MV_P2'
-                         }
+                         'Suffix_selected_segmentation' : 'MV_P2'}
         options = {'erosion': False}
 
         generate_reports_from_list(subj_list, controller_A4, options)
