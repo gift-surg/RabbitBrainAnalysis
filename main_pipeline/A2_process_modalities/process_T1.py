@@ -93,7 +93,7 @@ def process_T1_per_subject(sj, steps):
 
     if steps['create_roi_masks']:
 
-        pfi_std = jph(pfo_tmp, sj + '_to_std.nii.gz')
+        pfi_std = jph(pfo_tmp, '{}_to_std.nii.gz'.format(sj))
         assert check_path_validity(pfi_std)
 
         # --- Get the reference masks from the stereotaxic orientation ---
@@ -342,13 +342,13 @@ def process_T1_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('Process T1, local run.')
     controller_steps = {'orient_to_standard'       : False,
-                        'create_roi_masks'         : False,
+                        'create_roi_masks'         : True,
                         'adjust_mask'              : False,
                         'cut_masks'                : False,
                         'step_bfc'                 : False,
-                        'create_lesion_maks'       : True,
-                        'create_reg_mask'          : True,
-                        'save_results'             : True}
+                        'create_lesion_maks'       : False,
+                        'create_reg_mask'          : False,
+                        'save_results'             : False}
 
     lsm = ListSubjectsManager()
 
@@ -358,7 +358,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['125930']
+    lsm.input_subjects = ['5302', '5303', '5508', '55BW']
     lsm.update_ls()
 
     print lsm.ls

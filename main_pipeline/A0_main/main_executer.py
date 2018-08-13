@@ -37,13 +37,13 @@ def main_runner(subj_list):
     # Set steps
     steps = {'reset_parameters'   : False,
              'step_A1'            : False,
-             'step_A2_T1'         : False,
-             'step_A2_DWI'        : False,
+             'step_A2_T1'         : True,
+             'step_A2_DWI'        : True,
              'step_A2_MSME'       : False,
              'step_A2_T2maps'     : False,
              'step_A2_g_ratio'    : False,
-             'step_A3_move'       : False,
-             'step_A3_brain_mask' : False,
+             'step_A3_move'       : True,
+             'step_A3_brain_mask' : True,
              'step_A3_segment'    : True,
              'step_A3_move_back'  : True,
              'step_A4'            : True}
@@ -83,7 +83,7 @@ def main_runner(subj_list):
                                 'unzip'                       : True,
                                 'rename'                      : True}
 
-            # unzip_single_sj(sj, controller_unzip)
+            unzip_single_sj(sj, controller_unzip)
             convert_single_subject(sj)
             delete_unzipped_raw_data_single_subject(sj)
             cleaner_converted_data_single_subject(sj)
@@ -136,8 +136,7 @@ def main_runner(subj_list):
                            'bfc'                           : True,
                            'bfc up'                        : True,
                            'save results'                  : True,
-                           'save results tp0'              : True
-                           }
+                           'save results tp0'              : True}
 
         process_MSME_from_list(subj_list, controller_MSME)
 
@@ -236,7 +235,8 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['125930']  # ['125930']  # ['12610']
+    lsm.input_subjects = ['5302', '5303']
+    # lsm.input_subjects = ['5508', '55BW']
 
     lsm.update_ls()
 

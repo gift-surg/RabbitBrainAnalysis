@@ -52,7 +52,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
     pfo_sc_sj_mod   = jph(pfo_sc_sj, 'mod')
     pfo_sc_sj_masks = jph(pfo_sc_sj, 'masks')
 
-    subject_is_in_atlas = False # sj_parameters['in_atlas']  # TODO momentary bypass. - correct this part!
+    subject_is_in_atlas = False # sj_parameters['in_atlas']  # TODO momentary bypass - correct this part!
 
     if subject_is_in_atlas:
         pfo_sj_mod_in_atlas   = jph(pfo_atlas, sj, 'mod')
@@ -123,7 +123,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
             sj, options['Template_name'], 'T1'))
         pfi_resampled_T1 = jph(pfo_sc_sj_mod, '{0}_T1.nii.gz'.format(sj))  # RESULT
 
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -rigOnly'.format(
+        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} '.format(  #-rigOnly
             pfi_mod_reference_atlas, pfi_reg_mask_reference_atlas, pfi_T1_reoriented, pfi_reg_mask_T1_reoriented,
             pfi_transformation_T1_over_T1, pfi_resampled_T1, num_cores_run)
         print_and_run(cmd)

@@ -89,7 +89,7 @@ def process_DWI_per_subject(sj, controller):
         # DWI
         pfi_dwi_original = jph(pfo_input_sj_DWI, '{}_{}.nii.gz'.format(sj, DWI_suffix))
         assert check_path_validity(pfi_dwi_original)
-        pfi_dwi_std = jph(pfo_tmp, sj + '_DWI_to_std.nii.gz')
+        pfi_dwi_std = jph(pfo_tmp, '{}_DWI_to_std.nii.gz'.format(sj))
         orient2std(pfi_dwi_original, pfi_dwi_std)
         # S0
         if sj_parameters['b0_level'] == 0:
@@ -103,7 +103,7 @@ def process_DWI_per_subject(sj, controller):
             grab_a_timepoint_path(pfi_DWI_original, pfi_S0_original, tp)
 
         assert check_path_validity(pfi_S0_original)
-        pfi_S0_std = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
+        pfi_S0_std = jph(pfo_tmp, '{}_DWI_S0_to_std.nii.gz'.format(sj))
         orient2std(pfi_S0_original, pfi_S0_std)
 
         if sj_parameters['DWI_squashed']:
@@ -238,7 +238,7 @@ def process_DWI_per_subject(sj, controller):
         print('- correct slope {}'.format(sj))
         # --
         pfi_dwi_cropped = jph(pfo_tmp, sj + '_DWI_cropped.nii.gz')
-        pfi_slope_txt = jph(pfo_input_sj_DWI, '{}_{}_slope.nii.gz'.format(sj, DWI_suffix))
+        pfi_slope_txt = jph(pfo_input_sj_DWI, '{}_{}_slope.txt'.format(sj, DWI_suffix))
         assert check_path_validity(pfi_dwi_cropped)
         assert check_path_validity(pfi_slope_txt)
         pfi_dwi_slope_corrected = jph(pfo_tmp, sj + '_DWI_slope_corrected.nii.gz')
