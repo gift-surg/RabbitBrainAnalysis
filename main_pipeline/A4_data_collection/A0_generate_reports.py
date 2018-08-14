@@ -60,14 +60,15 @@ def generate_reports_for_subject(sj, controller, options, ldm):
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-    study = sj_parameters['study']
+    study    = sj_parameters['study']
     category = sj_parameters['category']
 
-    root_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
+    folder_selected_segmentation = sj_parameters['names_architecture']['final_segm_strx']  # default 'automatic'
+    suffix_selected_segmentation = sj_parameters['names_architecture']['suffix_segm']  # default 'MV_P2'
 
-    pfo_sj_mod = jph(root_subject, 'mod')
-    pfo_sj_segm = jph(root_subject, 'segm')
-
+    root_subject  = jph(root_study_rabbits, 'A_data', study, category, sj)
+    pfo_sj_mod    = jph(root_subject, 'mod')
+    pfo_sj_segm   = jph(root_subject, 'segm')
     pfo_sj_report = jph(root_subject, 'report')
 
     if controller['Force_reset']:
@@ -168,12 +169,12 @@ def generate_reports_for_subject(sj, controller, options, ldm):
         pfi_segm_stx_eroded = jph(pfo_sj_segm_stx, '{}_segm_eroded.nii.gz'.format(sj))
         create_eroded_segmentations_if_not_already_created(pfi_segm_stx, pfi_segm_stx_contour, pfi_segm_stx_eroded)
 
-    if controller['Selected_segmentation'] == 'automatic':
+    if folder_selected_segmentation == 'automatic':
         pfo_segmentation_strx = jph(pfo_sj_segm_stx, 'automatic')
     else:
         pfo_segmentation_strx = pfo_sj_segm_stx
 
-    pfi_segm_stx = jph(pfo_segmentation_strx, '{}_{}.nii.gz'.format(sj, controller['Suffix_selected_segmentation']))
+    pfi_segm_stx = jph(pfo_segmentation_strx, '{}_{}.nii.gz'.format(sj, suffix_selected_segmentation))
 
     assert os.path.exists(pfi_segm_stx), pfi_segm_stx
 
@@ -326,10 +327,7 @@ if __name__ == '__main__':
                    'Volumes_per_region_stx'       : True,
                    'FA_per_region_stx'            : True,
                    'MD_per_region_stx'            : True,
-                   'Generate_tag'                 : True,
-                   'Selected_segmentation'        : 'automatic',  # can be automatic or manual
-                   'Suffix_selected_segmentation' : 'MV_P2'
-                   }
+                   'Generate_tag'                 : True}
 
     options_ = {'erosion': False}
 

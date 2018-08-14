@@ -1,5 +1,6 @@
 import os
 from os.path import join as jph
+import collections
 
 from tools.auxiliary.sanity_checks import check_libraries
 
@@ -15,7 +16,6 @@ from main_pipeline.A1_convert_and_clean.A_unzip_to_tmp_folder import unzip_singl
 from main_pipeline.A1_convert_and_clean.B_apply_converter_to_all_data import convert_single_subject
 from main_pipeline.A1_convert_and_clean.C_delete_in_tmp_folder import delete_unzipped_raw_data_single_subject
 from main_pipeline.A1_convert_and_clean.D_clean_converted_data import cleaner_converted_data_single_subject
-
 
 
 from main_pipeline.A2_process_modalities.process_DWI import process_DWI_from_list
@@ -35,18 +35,20 @@ def main_runner(subj_list):
     check_libraries()
 
     # Set steps
-    steps = {'reset_parameters'   : False,
-             'step_A1'            : False,
-             'step_A2_T1'         : False,
-             'step_A2_DWI'        : False,
-             'step_A2_MSME'       : False,
-             'step_A2_T2maps'     : False,
-             'step_A2_g_ratio'    : False,
-             'step_A3_move'       : False,
-             'step_A3_brain_mask' : False,
-             'step_A3_segment'    : True,
-             'step_A3_move_back'  : True,
-             'step_A4'            : False}
+    steps = collections.OrderedDict()
+
+    steps.update({'reset_parameters'   : False  })
+    steps.update({'step_A1'            : False  })
+    steps.update({'step_A2_T1'         : False  })
+    steps.update({'step_A2_DWI'        : False  })
+    steps.update({'step_A2_MSME'       : False  })
+    steps.update({'step_A2_T2maps'     : False  })
+    steps.update({'step_A2_g_ratio'    : False  })
+    steps.update({'step_A3_move'       : False  })
+    steps.update({'step_A3_brain_mask' : False  })
+    steps.update({'step_A3_segment'    : True  })
+    steps.update({'step_A3_move_back'  : True  })
+    steps.update({'step_A4'            : False  })
 
     print('STEPS')
     for k in sorted(steps.keys()):
@@ -168,7 +170,7 @@ def main_runner(subj_list):
     if steps['step_A3_move']:
         print('\nStep A3\n')
         # Move to stereotaxc coordinates
-        print('A3) PART A0')
+        print('\nA3) PART A0')
         controller = {
             'Initialise_sc_folder'               : True,
             'Register_T1'                        : True,
@@ -180,23 +182,23 @@ def main_runner(subj_list):
         move_to_stereotaxic_coordinate_from_list(subj_list, controller)
 
     if steps['step_A3_brain_mask']:
-        print('A3) PART A1')
+        print('\nA3) PART A1')
         # Get the brain mask (slimmer mask to get only the segmentation of the brain tissue.)
         get_brain_mask_from_list(subj_list)
 
     if steps['step_A3_segment']:
-        print('A3) PART B')
+        print('\nA3) PART B')
         spot_a_list_of_rabbits(subj_list)
 
     if steps['step_A3_move_back']:
-        print('A3) PART C')
+        print('\nA3) PART C')
 
         controller = {
             'Header_alignment_T1strx_to_T1orig' : True,
             'Rigid_T1strx_to_T1orig'            : True,
             'Propagate_T1_segm'                 : True,
             'Inter_modal_reg_S0'                : True,
-            'Inter_modal_reg_MSME'              : False}
+            'Inter_modal_reg_MSME'              : True}
 
         propagate_segmentation_in_original_space_from_list(subj_list, controller)
 
@@ -212,9 +214,7 @@ def main_runner(subj_list):
                          'Volumes_per_region_stx'       : True,
                          'FA_per_region_stx'            : True,
                          'MD_per_region_stx'            : True,
-                         'Generate_tag'                 : True,
-                         'Selected_segmentation'        : 'automatic',  # can be automatic or manual
-                         'Suffix_selected_segmentation' : 'MV_P2'}
+                         'Generate_tag'                 : True}
         options = {'erosion': False}
 
         generate_reports_from_list(subj_list, controller_A4, options)
