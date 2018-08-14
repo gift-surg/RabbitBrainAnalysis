@@ -87,7 +87,7 @@ def get_brain_mask_from_list(subj_list):
 
         sj_parameters = pickle.load(open(jph(defs.pfo_subjects_parameters, sj), 'r'))
         if sj_parameters['options_brain_mask']['method'] is None:
-            print('No brain_mask required for subject {}'.format(sj))
+            print('=> No brain_mask required for subject {}. \n\n'.format(sj))
         else:
             get_brain_mask_per_subject(sj, sj_parameters)
 

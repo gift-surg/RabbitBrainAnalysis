@@ -192,7 +192,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
         pfi_resampled_S0 = jph(pfo_sc_sj_mod, '{0}_S0.nii.gz'.format(sj))  # RESULT
 
         # Try the non rigid and full mask  -rigOnly
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -rigOnly'.format(
+        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} '.format(  #-rigOnly
             pfi_mod_reference_atlas, pfi_reg_mask_reference_atlas, pfi_S0_reoriented, pfi_reg_mask_S0_reoriented,
             pfi_transformation_S0_over_T1, pfi_resampled_S0, num_cores_run)
 
@@ -303,7 +303,8 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['125930']  # ['13102', '13201', '13202', '13401', '13402', '13403']
+    # lsm.input_subjects = ['125930']  # ['13102', '13201', '13202', '13401', '13402', '13403']
+    lsm.input_subjects = ['5302', '5508']
     lsm.update_ls()
 
     move_to_stereotaxic_coordinate_from_list(lsm.ls, controller_)

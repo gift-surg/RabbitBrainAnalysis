@@ -42,11 +42,11 @@ def main_runner(subj_list):
              'step_A2_MSME'       : False,
              'step_A2_T2maps'     : False,
              'step_A2_g_ratio'    : False,
-             'step_A3_move'       : True,
-             'step_A3_brain_mask' : True,
+             'step_A3_move'       : False,
+             'step_A3_brain_mask' : False,
              'step_A3_segment'    : True,
              'step_A3_move_back'  : True,
-             'step_A4'            : True}
+             'step_A4'            : False}
 
     print('STEPS')
     for k in sorted(steps.keys()):
@@ -196,9 +196,7 @@ def main_runner(subj_list):
             'Rigid_T1strx_to_T1orig'            : True,
             'Propagate_T1_segm'                 : True,
             'Inter_modal_reg_S0'                : True,
-            'Inter_modal_reg_MSME'              : False,
-            'Selected_segmentation'             : 'automatic',  # can be automatic or manual
-            'Suffix_selected_segmentation'      : 'MV_P2'}
+            'Inter_modal_reg_MSME'              : False}
 
         propagate_segmentation_in_original_space_from_list(subj_list, controller)
 
@@ -235,9 +233,10 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    # lsm.input_subjects = ['5302', '5303']
-    # lsm.input_subjects = ['5508', '55BW']
-    lsm.input_subjects = ['125930']
+    # lsm.input_subjects = ['125930']
+    lsm.input_subjects = ['125930', '5302', '5508', '55BW', '5303']
+    # lsm.input_subjects = ['55BW', '5303']
+    # lsm.input_subjects = ['5303']
 
     lsm.update_ls()
 

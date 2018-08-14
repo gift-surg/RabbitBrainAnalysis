@@ -2652,7 +2652,7 @@ def reset_parameters_files(pfo_where_to_save):
                                   'MSME'            : 'MSME',
                                   'DWI'             : 'DWIext1',  # to use the merged segmentation
                                   'final_segm_strx' : 'automatic',  # change here to provide alternative folders output.
-                                  'suffix_segm'     : 'MV_P2'}
+                                  'suffix_segm'     : 'MV_P1'}
 
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
@@ -2679,6 +2679,11 @@ def reset_parameters_files(pfo_where_to_save):
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
+    sp.names_architecture      = {'T1'              : '3D',
+                                  'MSME'            : 'MSME',
+                                  'DWI'             : 'DWI',
+                                  'final_segm_strx' : 'automatic',
+                                  'suffix_segm'     : 'MV_P1'}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -2704,6 +2709,11 @@ def reset_parameters_files(pfo_where_to_save):
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
+    sp.names_architecture      = {'T1'              : '3D',
+                                  'MSME'            : 'MSME',
+                                  'DWI'             : 'DWI',
+                                  'final_segm_strx' : 'automatic',
+                                  'suffix_segm'     : 'MV_P1'}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -2729,6 +2739,11 @@ def reset_parameters_files(pfo_where_to_save):
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
+    sp.names_architecture      = {'T1'              : '3D',
+                                  'MSME'            : 'MSME',
+                                  'DWI'             : 'DWI',
+                                  'final_segm_strx' : 'automatic',
+                                  'suffix_segm'     : 'MV_P1'}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
@@ -2754,6 +2769,11 @@ def reset_parameters_files(pfo_where_to_save):
                                  'crop_roi'           : False,
                                  'lesion_mask_method' : 0,
                                  'median_filter'      : True}
+    sp.names_architecture      = {'T1'              : '3D',
+                                  'MSME'            : 'MSME',
+                                  'DWI'             : 'DWI',
+                                  'final_segm_strx' : 'automatic',
+                                  'suffix_segm'     : 'MV_P1'}
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp

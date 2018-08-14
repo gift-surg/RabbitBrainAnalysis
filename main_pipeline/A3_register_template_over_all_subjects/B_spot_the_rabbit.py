@@ -2,9 +2,12 @@ from os.path import join as jph
 import pickle
 from collections import OrderedDict
 import time
+import os
+
+from LABelsToolkit.tools.aux_methods.utils import print_and_run
 
 from tools.definitions import root_study_rabbits, root_atlas, pfo_subjects_parameters, bfc_corrector_cmd, \
-    num_cores_run, multi_atlas_subjects
+    num_cores_run, multi_atlas_subjects, multi_atlas_W8_subjects, root_atlas_W8
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 
 from spot.spotter import SpotDS
@@ -17,21 +20,41 @@ def spot_a_list_of_rabbits(subjects_list):
 
         sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj_target), 'r'))
 
-        if sj_parameters['in_atlas']:
-            # SPOT only the rabbits not already in the atlas.
-            print('Subject {} already in atlas. No automatic segmentation needed'.format(sj_target))
-            return
-
-        study    = sj_parameters['study']
+        study = sj_parameters['study']
         category = sj_parameters['category']
 
         pfo_target = jph(root_study_rabbits, 'A_data', study, category, sj_target, 'stereotaxic')
 
+        if study == 'W8':
+            parameters_tag = 'P1'
+            multi_atlas_subjects_list = multi_atlas_W8_subjects
+            pfo_sj_atlas = jph(root_study_rabbits, 'A_MultiAtlas_W8', sj_target)
+            root_multi_atlas = root_atlas_W8
+        elif study == 'ACS' or study == 'PTB' or study == 'TestStudy':
+            parameters_tag = 'P2'
+            multi_atlas_subjects_list = multi_atlas_subjects
+            pfo_sj_atlas = jph(root_study_rabbits, 'A_MultiAtlas', sj_target)
+            root_multi_atlas = root_atlas
+        else:
+            raise IOError('Study for subject {} not feasible.'.format(sj_target))
+
+        if sj_parameters['in_atlas']:
+            # SPOT only the rabbits not already in the atlas.
+            print('Subject {} already in atlas. No automatic segmentation needed'.format(sj_target))
+            pfi_T1_segm_from_atlas = jph(pfo_sj_atlas, 'segm', '{}_segm.nii.gz'.format(sj_target))
+            assert os.path.exists(pfi_T1_segm_from_atlas)
+            cmd0 = 'mkdir -p {}'.format(jph(pfo_target, 'segm'))
+            cmd1 = 'cp {} {}'.format(pfi_T1_segm_from_atlas, jph(pfo_target, 'segm', '{}_segm.nii.gz'.format(sj_target)))
+            print_and_run(cmd0)
+            print_and_run(cmd1)
+
+            return
+
         # --- initialise the class spot:
-        spot_sj = SpotDS(atlas_pfo=root_atlas,
+        spot_sj = SpotDS(atlas_pfo=root_multi_atlas,
                          target_pfo=pfo_target,
                          target_name=sj_target,
-                         parameters_tag='P2')
+                         parameters_tag=parameters_tag)
         """
         Parameters tag -> correspondence:
         'P1' -> Mono modal T1 + BFC on T1.
@@ -39,7 +62,7 @@ def spot_a_list_of_rabbits(subjects_list):
         """
         # Template parameters:
         spot_sj.atlas_name                    = 'MANRround3'  # Multi Atlas Newborn Rabbit
-        spot_sj.atlas_list_charts_names       = multi_atlas_subjects
+        spot_sj.atlas_list_charts_names       = multi_atlas_subjects_list
         spot_sj.atlas_list_suffix_modalities  = ['T1', 'S0', 'V1', 'MD', 'FA']
         spot_sj.atlas_list_suffix_masks       = ['roi_mask', 'roi_reg_mask', 'brain_mask']
         spot_sj.atlas_reference_chart_name    = '1305'
@@ -63,13 +86,12 @@ def spot_a_list_of_rabbits(subjects_list):
             use_slim_mask = True
 
         if sj_parameters['category'] == 'ex_vivo' or sj_parameters['category'] == 'ex_vivo01' or sj_parameters['category'] == 'ex_vivo02':
-
             # --- Propagator option
             spot_sj.propagation_options['Affine_modalities']        = ('T1', 'FA')
             spot_sj.propagation_options['Affine_reg_masks']         = ('T1', 'S0')  # if (), there is a single mask for all modalities
             spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
             spot_sj.propagation_options['Affine_slim_reg_mask']    = use_slim_mask
-            spot_sj.propagation_options['N_rigid_modalities']       = ()  # if empty, no non-rigid step.
+            spot_sj.propagation_options['N_rigid_modalities']       = ('T1', 'S0')  # if empty, no non-rigid step.
             spot_sj.propagation_options['N_rigid_reg_masks']        = ('T1', 'S0')  # if [], same mask for all modalities
             spot_sj.propagation_options['N_rigid_slim_reg_mask']    = use_slim_mask
             spot_sj.propagation_options['N_rigid_mod_diff_bfc']     = ('T1', )  # empty list no diff bfc. - PUT A COMMA IF ONLY ONE SUBJECT!!
@@ -94,6 +116,22 @@ def spot_a_list_of_rabbits(subjects_list):
             spot_sj.propagation_options['N_reg_mask_target']        = 0  # 0 roi_mask, 1 reg_mask
             spot_sj.propagation_options['N_reg_mask_moving']        = 1  # 0 roi_mask, 1 reg_mask
             spot_sj.propagation_options['Final_smoothing_factor']   = 1
+
+        elif sj_parameters['category'] == 'first_trial' :
+            # --- Propagator option
+            spot_sj.propagation_options['Affine_modalities']        = ('T1', )
+            spot_sj.propagation_options['Affine_reg_masks']         = ('T1', )  # if (), there is a single mask for all modalities
+            spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
+            spot_sj.propagation_options['Affine_slim_reg_mask']     = use_slim_mask
+            spot_sj.propagation_options['N_rigid_modalities']       = ('T1', )  # if empty, no non-rigid step.
+            spot_sj.propagation_options['N_rigid_reg_masks']        = ('T1')  # if [], same mask for all modalities
+            spot_sj.propagation_options['N_rigid_slim_reg_mask']    = use_slim_mask
+            spot_sj.propagation_options['N_rigid_mod_diff_bfc']     = ( )  # empty list no diff bfc. - PUT A COMMA IF ONLY ONE SUBJECT!!
+            spot_sj.propagation_options['N_rigid_parameters']       = ' -be 0.5 -ln 6 -lp 1  -smooR 0.07 -smooF 0.07 '
+            spot_sj.propagation_options['N_rigid_same_mask_moving'] = False
+            spot_sj.propagation_options['N_reg_mask_target']        = 0  # 0 roi_mask, 1 reg_mask
+            spot_sj.propagation_options['N_reg_mask_moving']        = 1  # 0 roi_mask, 1 reg_mask
+            spot_sj.propagation_options['Final_smoothing_factor']   = 0
 
         else:
             raise IOError
@@ -147,8 +185,10 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['11806']
     # lsm.input_subjects = ['F1Test']
 
-    lsm.input_subjects = ['13102', '13201', '13202', '13401', '13402', '13403']
+    # lsm.input_subjects = ['13102', '13201', '13202', '13401', '13402', '13403']
     # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
+
+    lsm.input_subjects = ['125930', '5302', '5508', '55BW', '5303']
 
     lsm.update_ls()
 

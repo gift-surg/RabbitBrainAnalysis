@@ -32,6 +32,10 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
     study = sj_parameters['study']
     category = sj_parameters['category']
 
+    folder_selected_segmentation = sj_parameters['names_architecture']['final_segm_strx']  # default 'automatic'
+    suffix_selected_segmentation = sj_parameters['names_architecture']['suffix_segm']  # default 'MV_P2'
+
+
     pfo_root_sj_orig = jph(root_study_rabbits, 'A_data', study, category, sj)
     pfo_root_sj_strx = jph(root_study_rabbits, 'A_data', study, category, sj, 'stereotaxic')
 
@@ -64,12 +68,12 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
         pfi_T1_strx          = jph(pfo_mod_strx, '{}_T1.nii.gz'.format(sj))
         pfi_T1_reg_mask_strx = jph(pfo_mask_strx, '{}_T1_reg_mask.nii.gz'.format(sj))
 
-        if controller['Selected_segmentation'] == 'automatic':
+        if folder_selected_segmentation == 'automatic':
             pfo_segmentation_strx = jph(pfo_segm_strx, 'automatic')
         else:
             pfo_segmentation_strx = pfo_segm_strx
 
-        pfi_T1_segm_strx = jph(pfo_segmentation_strx, '{}_{}.nii.gz'.format(sj, controller['Suffix_selected_segmentation']))
+        pfi_T1_segm_strx = jph(pfo_segmentation_strx, '{}_{}.nii.gz'.format(sj, suffix_selected_segmentation))
 
     for p in [pfi_T1_strx, pfi_T1_reg_mask_strx, pfi_T1_segm_strx]:
         assert os.path.exists(p), p
@@ -113,7 +117,7 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
         pfi_transformation = jph(pfo_tmp, 'T1_strx_to_origin.txt')
         pfi_warped_T1_rigid = jph(pfo_tmp, 'T1_strx_to_origin_warped.nii.gz')
 
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly'.format(
+        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} '.format(  # -rigOnly
             pfi_T1_origin, pfi_T1_reg_mask_origin, pfi_T1_strx_hdo, pfi_T1_reg_mask_strx_hdo,
             pfi_transformation, pfi_warped_T1_rigid)
 
@@ -277,10 +281,7 @@ if __name__ == '__main__':
         'Rigid_T1strx_to_T1orig'            : True,
         'Propagate_T1_segm'                 : True,
         'Inter_modal_reg_S0'                : True,
-        'Inter_modal_reg_MSME'              : False,
-        'Selected_segmentation'             : 'automatic',  # to select the outcome segmentation.
-        'Suffix_selected_segmentation'      : 'MV_P2'
-    }
+        'Inter_modal_reg_MSME'              : False}
 
     lsm = ListSubjectsManager()
 
@@ -290,7 +291,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['125930']  # ['13102', '13201', '13202', '13401', '13402', '13403']
+    lsm.input_subjects = ['125930', '5302', '5508', '55BW', '5303']  # ['13102', '13201', '13202', '13401', '13402', '13403']
     lsm.update_ls()
 
     propagate_segmentation_in_original_space_from_list(lsm.ls, controller_)

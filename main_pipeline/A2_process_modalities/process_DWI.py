@@ -461,18 +461,18 @@ def process_DWI_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process DWI, local run. ')
 
-    controller_DWI = {'squeeze'               : True,
-                      'orient_to_standard'    : True,
-                      'create_roi_masks'      : True,
-                      'adjust_mask'           : True,
-                      'cut_mask_dwi'          : True,
-                      'cut_mask_S0'           : True,
-                      'correct_slope'         : True,
+    controller_DWI = {'squeeze'               : False,
+                      'orient_to_standard'    : False,
+                      'create_roi_masks'      : False,
+                      'adjust_mask'           : False,
+                      'cut_mask_dwi'          : False,
+                      'cut_mask_S0'           : False,
+                      'correct_slope'         : False,
                       'eddy_current'          : True,
                       'fsl_tensor_fitting'    : True,
                       'adjust_dtibased_mod'   : True,
                       'bfc_S0'                : True,
-                      'create_lesion mask'    : True,
+                      'create_lesion_mask'    : True,
                       'create_reg_masks'      : True,
                       'save_results'          : True}
 
@@ -488,10 +488,10 @@ if __name__ == '__main__':
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
 
-    # lsm.input_subjects = ['125930']
-    lsm.input_subjects = ['55BW', '5303']
-    # lsm.input_subjects = ['5302', '5303']
-    # lsm.input_subjects = ['5508', '55BW']
+    lsm.input_subjects = ['125930']
+    # lsm.input_subjects = ['55BW' ]
+    # lsm.input_subjects = ['5508', '5302']
+
 
     lsm.update_ls()
 
