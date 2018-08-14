@@ -46,8 +46,8 @@ def process_T2_map_per_subject(sj, controller):
     category = sj_parameters['category']
 
     pfo_input_sj_MSME = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_MSME')
-    pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
-    pfo_mod = jph(pfo_output_sj, 'mod')
+    pfo_output_sj     = jph(root_study_rabbits, 'A_data', study, category, sj)
+    pfo_mod           = jph(pfo_output_sj, 'mod')
 
     # input sanity check:
     if sj not in list_all_subjects(pfo_subjects_parameters):
@@ -66,29 +66,29 @@ def process_T2_map_per_subject(sj, controller):
 
     suffix = ['', 'inS0']
 
-    if controller['get acquisition echo time']:
+    if controller['get_acquisition_echo_time']:
         pfi_visu_pars = jph(pfo_input_sj_MSME, sj + '_MSME_visu_pars.npy')
         assert check_path_validity(pfi_visu_pars)
         pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
         visu_pars_dict = np.load(pfi_visu_pars)
         np.savetxt(fname=pfi_echo_times, X=visu_pars_dict.item().get('VisuAcqEchoTime'), fmt='%10.2f', newline=' ')
 
-    if controller['process each MSME input']:
-        pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
+    if controller['process_each_MSME_input']:
+        pfi_echo_times = jph(pfo_tmp, '{}_echo_times.txt'.format(sj))
         assert os.path.exists(pfi_echo_times)
         TE = np.loadtxt(pfi_echo_times)
         echo_delta = TE[2] - TE[1]
         # original
         for s in suffix:
-            pfi_original_MSME = jph(pfo_mod, sj + '_MSME{}.nii.gz'.format(s))
+            pfi_original_MSME = jph(pfo_mod, '{}_MSME{}.nii.gz'.format(sj, s))
             check_path_validity(pfi_original_MSME)
-            pfi_T2map = jph(pfo_tmp, sj + '_T2map{}.nii.gz'.format(s))
+            pfi_T2map = jph(pfo_tmp, '{}_T2map{}.nii.gz'.format(sj, s))
             cmd1 = root_fit_apps + 'fit_qt2 -source {0} -TE {1} -t2map {2}'.format(pfi_original_MSME,
                                                                                    echo_delta, pfi_T2map)
             print cmd1
             print_and_run(cmd1)
 
-    if controller['correct origin']:  # some versions of niftyfit for fit_qt2 are dividing by 0 in the origin.
+    if controller['correct_origin']:  # some versions of niftyfit for fit_qt2 are dividing by 0 in the origin.
         for s in suffix:
             pfi_T2map = jph(pfo_tmp, sj + '_T2map{}.nii.gz'.format(s))
             check_path_validity(pfi_T2map)
@@ -100,7 +100,7 @@ def process_T2_map_per_subject(sj, controller):
             im_corrected = set_new_data(im_s, places_not_outliers * im_s.get_data())
             nib.save(im_corrected, pfi_T2map_corrected)
 
-    if controller['save results']:
+    if controller['save_results']:
         # Save the bias field corrected '', and '_up' in the name _T2map and _T2map_up
         for s in suffix:
             pfi_source    = jph(pfo_tmp, sj + '_corrected_T2map{}.nii.gz'.format(s))
@@ -121,10 +121,10 @@ if __name__ == '__main__':
 
     print('process T2Maps, local run. ')
 
-    controller_steps = {'get acquisition echo time'  : True,
-                        'process each MSME input'    : True,
-                        'correct origin'             : True,
-                        'save results'               : True}
+    controller_steps = {'get_acquisition_echo_time'  : True,
+                        'process_each_MSME_input'    : True,
+                        'correct_origin'             : True,
+                        'save_results'               : True}
 
     lsm = ListSubjectsManager()
 

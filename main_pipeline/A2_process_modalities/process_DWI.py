@@ -84,7 +84,7 @@ def process_DWI_per_subject(sj, controller):
         squeeze_image_from_path(pfi_dwi, pfi_dwi)
         del pfi_dwi
 
-    if controller['orient to standard']:
+    if controller['orient_to_standard']:
         print('- orient to standard {}'.format(sj))
         # DWI
         pfi_dwi_original = jph(pfo_input_sj_DWI, '{}_{}.nii.gz'.format(sj, DWI_suffix))
@@ -111,7 +111,7 @@ def process_DWI_per_subject(sj, controller):
             scale_y_value_and_trim(pfi_S0_std, pfi_S0_std, squeeze_factor=2.218074656188605)
         del pfi_dwi_original, pfi_dwi_std, pfi_S0_original, pfi_S0_std
 
-    if controller['create roi masks']:
+    if controller['create_roi_masks']:
         # Ideal pipeline uses the T1_roi_mask, that has been created before.
         # Not ideally some data have different orientation for each modality.
         # not ideally T1 has not been computed yet - not working in this case.
@@ -199,7 +199,7 @@ def process_DWI_per_subject(sj, controller):
         del pfi_S0, pfi_3d_warped_ref_on_subject, pfi_T1, pfi_T1_hd_oriented, pfi_T1_roi_mask, \
             pfi_T1_roi_mask_hd_oriented, pfi_affine_transformation_ref_on_subject, pfi_roi_mask, cmd0, cmd1
 
-    if controller['adjust mask']:
+    if controller['adjust_mask']:
         print('- adjust mask {}'.format(sj))
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         assert check_path_validity(pfi_roi_mask)
@@ -211,7 +211,7 @@ def process_DWI_per_subject(sj, controller):
         print_and_run(cmd)
         del pfi_roi_mask, pfi_roi_mask_dil, dil_factor, cmd
 
-    if controller['cut mask dwi']:
+    if controller['cut_mask_dwi']:
         print('- cut mask dwi {}'.format(sj))
         pfi_dwi = jph(pfo_tmp, sj + '_DWI_to_std.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
@@ -223,7 +223,7 @@ def process_DWI_per_subject(sj, controller):
                                                  pfi_dwi_cropped)
         del pfi_dwi, pfi_roi_mask, pfi_dwi_cropped
 
-    if controller['cut mask S0']:
+    if controller['cut_mask_S0']:
         print('- cut mask S0 {}'.format(sj))
         pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
@@ -234,7 +234,7 @@ def process_DWI_per_subject(sj, controller):
         print_and_run(cmd)
         del pfi_S0, pfi_roi_mask, pfi_S0_cropped, cmd
 
-    if controller['correct slope']:
+    if controller['correct_slope']:
         print('- correct slope {}'.format(sj))
         # --
         pfi_dwi_cropped = jph(pfo_tmp, sj + '_DWI_cropped.nii.gz')
@@ -251,7 +251,7 @@ def process_DWI_per_subject(sj, controller):
         slope_corrector_path(slopes[0], pfi_S0_cropped, pfi_S0_slope_corrected)
         del pfi_dwi_cropped, pfi_slope_txt, pfi_dwi_slope_corrected, slopes, pfi_S0_cropped, pfi_S0_slope_corrected
 
-    if controller['eddy current']:
+    if controller['eddy_current']:
         print('- eddy current {}'.format(sj))
         pfi_dwi_slope_corrected = jph(pfo_tmp, sj + '_DWI_slope_corrected.nii.gz')
         assert check_path_validity(pfi_dwi_slope_corrected)
@@ -260,7 +260,7 @@ def process_DWI_per_subject(sj, controller):
         print_and_run(cmd)
         del pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected, cmd
 
-    elif controller['fsl tensor fitting']:
+    elif controller['fsl_tensor_fitting']:
         pfi_dwi_slope_corrected = jph(pfo_tmp, sj + '_DWI_slope_corrected.nii.gz')
         pfi_dwi_eddy_corrected = jph(pfo_tmp, sj + '_DWI_eddy.nii.gz')
         cmd = 'cp {0} {1} '.format(pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected)
@@ -269,13 +269,13 @@ def process_DWI_per_subject(sj, controller):
     else:
         pass
 
-    if controller['fsl tensor fitting']:
+    if controller['fsl_tensor_fitting']:
         print('- fsl tensor fitting {}'.format(sj))
         pfi_dwi_eddy_corrected = jph(pfo_tmp, sj + '_DWI_eddy.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
 
-        pfi_bvals = jph(pfo_input_sj_DWI, '{}_{}_DWI_DwEffBval.txt'.format(sj, DWI_suffix))
-        pfi_bvects = jph(pfo_input_sj_DWI, '{}_{}_DWI_DwGradVec.txt'.format(sj, DWI_suffix))
+        pfi_bvals = jph(pfo_input_sj_DWI, '{}_{}_DwEffBval.txt'.format(sj, DWI_suffix))
+        pfi_bvects = jph(pfo_input_sj_DWI, '{}_{}_DwGradVec.txt'.format(sj, DWI_suffix))
 
         if isinstance(sj_parameters['b0_to_use_in_fsldti'], list):
 
@@ -351,7 +351,7 @@ def process_DWI_per_subject(sj, controller):
             print_and_run(cmd2)
         del pfi_dwi_eddy_corrected, pfi_bvals, pfi_bvects, pfi_roi_mask, pfi_analysis_fsl, cmd0, cmd1, cmd2
 
-    if controller['adjust dti-based mod']:
+    if controller['adjust_dtibased_mod']:
         print('- adjust dti-based modalities {}'.format(sj))
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         pfi_roi_mask_4d = jph(pfo_mask, sj + '_S0_roi_mask_4d.nii.gz')
@@ -381,7 +381,7 @@ def process_DWI_per_subject(sj, controller):
             print_and_run(cmd0)
         del pfi_roi_mask, pfi_roi_mask_4d, pfi_v1, pfi_s0, pfi_FA, pfi_MD, cmd0, cmd1, cmd2
 
-    if controller['bfc S0']:
+    if controller['bfc_S0']:
         print('- bfc S0 {}'.format(sj))
         pfi_s0 = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
@@ -405,7 +405,7 @@ def process_DWI_per_subject(sj, controller):
                               print_only=False)
         del pfi_s0, pfi_roi_mask, bfc_param, pfi_s0_bfc
 
-    if controller['create lesion mask']:
+    if controller['create_lesion_mask']:
         print('- create lesion mask {}'.format(sj))
         pfi_s0_bfc = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0_bfc.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
@@ -420,7 +420,7 @@ def process_DWI_per_subject(sj, controller):
                                          safety_on=False)
         del pfi_s0_bfc, pfi_roi_mask, pfi_lesion_mask
 
-    if controller['create reg masks']:
+    if controller['create_reg_masks']:
         print('- create reg masks {}'.format(sj))
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         pfi_lesion_mask = jph(pfo_mask, sj + '_S0_lesion_mask.nii.gz')
@@ -432,7 +432,7 @@ def process_DWI_per_subject(sj, controller):
         print_and_run(cmd)
         del pfi_roi_mask, pfi_lesion_mask, pfi_registration_mask, cmd
 
-    if controller['save results']:
+    if controller['save_results']:
         print('- save results {}'.format(sj))
         pfi_v1 = jph(pfo_tmp, 'fsl_fit_' + sj + '_V1.nii.gz')
         pfi_s0 = jph(pfo_tmp, 'fsl_fit_' + sj + '_S0.nii.gz')
@@ -462,19 +462,19 @@ if __name__ == '__main__':
     print('process DWI, local run. ')
 
     controller_DWI = {'squeeze'               : True,
-                      'orient to standard'    : True,
-                      'create roi masks'      : True,
-                      'adjust mask'           : True,
-                      'cut mask dwi'          : True,
-                      'cut mask S0'           : True,
-                      'correct slope'         : True,
-                      'eddy current'          : True,
-                      'fsl tensor fitting'    : True,
-                      'adjust dti-based mod'  : True,
-                      'bfc S0'                : True,
-                      'create lesion mask'    : True,
-                      'create reg masks'      : True,
-                      'save results'          : True}
+                      'orient_to_standard'    : True,
+                      'create_roi_masks'      : True,
+                      'adjust_mask'           : True,
+                      'cut_mask_dwi'          : True,
+                      'cut_mask_S0'           : True,
+                      'correct_slope'         : True,
+                      'eddy_current'          : True,
+                      'fsl_tensor_fitting'    : True,
+                      'adjust_dtibased_mod'   : True,
+                      'bfc_S0'                : True,
+                      'create_lesion mask'    : True,
+                      'create_reg_masks'      : True,
+                      'save_results'          : True}
 
     lsm = ListSubjectsManager()
 
@@ -488,7 +488,10 @@ if __name__ == '__main__':
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
 
-    lsm.input_subjects = ['125930']
+    # lsm.input_subjects = ['125930']
+    lsm.input_subjects = ['55BW', '5303']
+    # lsm.input_subjects = ['5302', '5303']
+    # lsm.input_subjects = ['5508', '55BW']
 
     lsm.update_ls()
 

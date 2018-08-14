@@ -21,12 +21,14 @@ def process_g_ratio_per_subject(sj, controller):
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-    study = sj_parameters['study']
+    study    = sj_parameters['study']
     category = sj_parameters['category']
 
-    pfo_input_sj_DWI = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_DWI')
+    DWI_suffix = sj_parameters['names_architecture']['DWI']  # default is DWI
+
+    pfo_input_sj_DWI  = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_DWI')
     pfo_input_sj_MSME = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_MSME')
-    pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
+    pfo_output_sj     = jph(root_study_rabbits, 'A_data', study, category, sj)
 
     # input sanity check:
     if sj not in list_all_subjects(pfo_subjects_parameters):
@@ -40,10 +42,10 @@ def process_g_ratio_per_subject(sj, controller):
 
     # --  Generate intermediate and output folder
 
-    pfo_mod = jph(pfo_output_sj, 'mod')
+    pfo_mod  = jph(pfo_output_sj, 'mod')
     pfo_segm = jph(pfo_output_sj, 'segm')
     pfo_mask = jph(pfo_output_sj, 'masks')
-    pfo_tmp = jph(pfo_output_sj, 'z_tmp', 'z_gr')
+    pfo_tmp  = jph(pfo_output_sj, 'z_tmp', 'z_gr{}'.format(DWI_suffix))
 
     print_and_run('mkdir -p {}'.format(pfo_output_sj))
     print_and_run('mkdir -p {}'.format(pfo_mod))
@@ -53,20 +55,20 @@ def process_g_ratio_per_subject(sj, controller):
 
     # --
 
-    if controller['transpose b-vals b-vects']:
+    if controller['transpose_bvals_bvects']:
         print('- Transpose b-vals and b-vects')
-        pfi_bvals = jph(pfo_input_sj_DWI, sj + '_DWI_DwEffBval.txt')
-        pfi_bvects = jph(pfo_input_sj_DWI, sj + '_DWI_DwGradVec.txt')
+        pfi_bvals  = jph(pfo_input_sj_DWI, '{}_{}_DwEffBval.txt'.format(sj, DWI_suffix))
+        pfi_bvects = jph(pfo_input_sj_DWI, '{}_{}_DwGradVec.txt'.format(sj, DWI_suffix))
         assert check_path_validity(pfi_bvals)
         assert check_path_validity(pfi_bvects)
-        pfi_transposed_bvals = jph(pfo_tmp, sj + '_DWI_DwEffBval_T.txt')
-        pfi_transposed_vects = jph(pfo_tmp, sj + '_DWI_DwGradVec_T.txt')
+        pfi_transposed_bvals = jph(pfo_tmp, '{}_{}_DwEffBval_T.txt'.format(sj, DWI_suffix))
+        pfi_transposed_vects = jph(pfo_tmp, '{}_{}_DwGradVec_T.txt'.format(sj, DWI_suffix))
         m = np.loadtxt(pfi_bvals)
         np.savetxt(fname=pfi_transposed_bvals, X=m.T, delimiter=' ', newline=' ', fmt='%10.8f')
         m = np.loadtxt(pfi_bvects)
         np.savetxt(fname=pfi_transposed_vects, X=m.T, fmt='%10.8f')
 
-    if controller['get acquisition echo time']:
+    if controller['get_acquisition_echo_time']:
         pfi_visu_pars = jph(pfo_input_sj_MSME, sj + '_MSME_visu_pars.npy')
         assert check_path_validity(pfi_visu_pars), pfi_visu_pars
         pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
@@ -76,25 +78,25 @@ def process_g_ratio_per_subject(sj, controller):
     if controller['noddi']:
         print('- Noddi execution')
         # check if there is a DWI already processed in the TMP folder of the same subject:
-        pfo_tmp_dwi = jph(pfo_output_sj, 'z_tmp', 'z_DWI')
-        pfi_dwi_eddy_corrected = jph(pfo_tmp_dwi, sj + '_DWI_eddy.nii.gz')
-        pfi_transposed_bvals = jph(pfo_tmp, sj + '_DWI_DwEffBval_T.txt')
-        pfi_transposed_vects = jph(pfo_tmp, sj + '_DWI_DwGradVec_T.txt')
-        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
-        pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
+        pfo_tmp_dwi = jph(pfo_output_sj, 'z_tmp', 'z_' + DWI_suffix)
+        pfi_dwi_eddy_corrected = jph(pfo_tmp_dwi, '{}_{}_eddy.nii.gz'.format(sj, DWI_suffix))
+        pfi_transposed_bvals = jph(pfo_tmp, '{}_{}_DwEffBval_T.txt'.format(sj, DWI_suffix))
+        pfi_transposed_vects = jph(pfo_tmp, '{}_{}_DwGradVec_T.txt'.format(sj, DWI_suffix))
+        pfi_roi_mask = jph(pfo_mask, '{}_S0_roi_mask.nii.gz'.format(sj))
+        pfi_echo_times = jph(pfo_tmp, '{}_echo_times.txt'.format(sj))
 
         assert check_path_validity(pfi_dwi_eddy_corrected), 'Need to run process_DWI first?'
         assert check_path_validity(pfi_transposed_bvals)
         assert check_path_validity(pfi_transposed_vects)
         assert check_path_validity(pfi_roi_mask)
         assert check_path_validity(pfi_echo_times)
-        pfi_output_noddi = jph(pfo_tmp, sj + '_nod.nii.gz')
+        pfi_output_noddi = jph(pfo_tmp, '{}_nod.nii.gz'.format())
         cmd = root_fit_apps + 'fit_dwi -source {0} -mask {1} -bval {2} -bvec {3} -TE {4} -mcmap {5} -nod'.format(
             pfi_dwi_eddy_corrected, pfi_roi_mask, pfi_transposed_bvals, pfi_transposed_vects, pfi_echo_times,
             pfi_output_noddi)
         print_and_run(cmd)
 
-    if controller['save T2_times']:
+    if controller['save_T2times']:
         if sj_parameters['category'] == 'ex_vivo':
             t2_times = (8, 50, 60)  # (15, 80, 110) 30, 160, 200 - 14, 70, 100
         elif sj_parameters['category'] == 'in_vivo':
@@ -104,7 +106,7 @@ def process_g_ratio_per_subject(sj, controller):
         pfi_T2_times = jph(pfo_tmp, sj + '_t2_times.txt')
         np.savetxt(fname=pfi_T2_times, X=np.array(t2_times), fmt='%10.10f', newline=' ')
 
-    if controller['fit msme']:
+    if controller['fit_msme']:
         pfi_msme_inS0 = jph(pfo_mod, sj + '_MSMEinS0.nii.gz')
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         pfi_echo_times = jph(pfo_tmp, sj + '_echo_times.txt')
@@ -122,14 +124,14 @@ def process_g_ratio_per_subject(sj, controller):
         if not os.path.exists(pfi_mwf):
             raise IOError('Something went wrong in using fit_qt2...')
 
-    if controller['extract first tp noddi']:
+    if controller['extract_first_tp_noddi']:
         pfi_noddi = jph(pfo_tmp, sj + '_nod.nii.gz')
         assert check_path_validity(pfi_noddi)
         pfi_vin = jph(pfo_tmp, sj + '_vin.nii.gz')
         cmd = 'seg_maths {0} -tp 0 {1}'.format(pfi_noddi, pfi_vin)
         print_and_run(cmd)
 
-    if controller['compute g-ratio']:
+    if controller['compute_gratio']:
         pfi_mwf = jph(pfo_tmp, sj + '_vmvf.nii.gz')
         pfi_vin = jph(pfo_tmp, sj + '_vin.nii.gz')
         assert check_path_validity(pfi_mwf)
@@ -153,7 +155,7 @@ def process_g_ratio_per_subject(sj, controller):
         print_and_run(cmd7)
         print_and_run(cmd8)
 
-    if controller['save results']:
+    if controller['save_results']:
         pfi_g_ratio = jph(pfo_tmp, sj + '_g_ratio.nii.gz')
         assert check_path_validity(pfi_g_ratio)
         pfi_g_ratio_final = jph(pfo_mod, sj + '_g_ratio.nii.gz')
@@ -172,22 +174,22 @@ def process_g_ratio_from_list(subj_list, controller):
 if __name__ == '__main__':
     print('process g-ratio, local run. ')
 
-    controller_steps = {'transpose b-vals b-vects'  : False,
-                        'get acquisition echo time' : True,
+    controller_steps = {'transpose_bvals_bvects'    : False,
+                        'get_acquisition_echo_time' : True,
                         'noddi'                     : True,
-                        'save T2_times'             : False,
-                        'fit msme'                  : False,
-                        'extract first tp noddi'    : False,
-                        'compute g-ratio'           : False,
-                        'save results'              : False}
+                        'save_T2times'              : False,
+                        'fit_msme'                  : False,
+                        'extract_first_tp_noddi'    : False,
+                        'compute_gratio'            : False,
+                        'save_results'              : False}
 
     lsm = ListSubjectsManager()
 
     lsm.execute_PTB_ex_skull = False
-    lsm.execute_PTB_ex_vivo = False
-    lsm.execute_PTB_in_vivo = False
+    lsm.execute_PTB_ex_vivo  = False
+    lsm.execute_PTB_in_vivo  = False
     lsm.execute_PTB_op_skull = False
-    lsm.execute_ACS_ex_vivo = False
+    lsm.execute_ACS_ex_vivo  = False
 
     lsm.input_subjects = ['1201', ]
 

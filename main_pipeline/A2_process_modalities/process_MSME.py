@@ -54,16 +54,18 @@ def process_MSME_per_subject(sj, controller):
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-    study = sj_parameters['study']
-    category = sj_parameters['category']
-
-    pfo_input_sj = jph(root_study_rabbits, '02_nifti', study, category, sj)
-    pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
-
     if sj not in list_all_subjects(pfo_subjects_parameters):
         raise IOError('Subject parameters not known')
+
+    study    = sj_parameters['study']
+    category = sj_parameters['category']
+
+    pfo_input_sj  = jph(root_study_rabbits, '02_nifti', study, category, sj)
+    pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
+
+
     if not os.path.exists(pfo_input_sj):
-        raise IOError('Input folder DWI does not exist.')
+        raise IOError('Input folder Subject does not exist.')
 
     # -- Generate intermediate and output folders:
 
@@ -85,7 +87,7 @@ def process_MSME_per_subject(sj, controller):
         pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
         squeeze_image_from_path(pfi_msme_nifti, pfi_msme, copy_anyway=True)
 
-    if controller['orient to standard']:
+    if controller['orient_to_standard']:
         print('- Processing MSME: orient to standard {}'.format(sj))
         pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
         assert check_path_validity(pfi_msme)
@@ -93,7 +95,7 @@ def process_MSME_per_subject(sj, controller):
         print_and_run(cmd)
         set_translational_part_to_zero(pfi_msme, pfi_msme)
 
-    if controller['extract first timepoint']:
+    if controller['extract_first_timepoint']:
         print('- Processing MSME: extract first layers {}'.format(sj))
         pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
         assert os.path.exists(pfi_msme)
@@ -101,7 +103,7 @@ def process_MSME_per_subject(sj, controller):
         cmd0 = 'seg_maths {0} -tp 0 {1}'.format(pfi_msme, pfi_msme_original_first_layer)
         print_and_run(cmd0)
 
-    if controller['register tp0 to S0']:
+    if controller['register_tp0_to_S0']:
 
         print('- Processing MSME: create ficticious original MSME mask {}'.format(sj))
         pfi_msme_original_first_layer = jph(pfo_tmp, sj + '_MSME_tp0.nii.gz')
@@ -120,7 +122,7 @@ def process_MSME_per_subject(sj, controller):
         )
         print_and_run(cmd)
 
-    if controller['register msme to S0']:
+    if controller['register_msme_to_S0']:
         pfi_s0 = jph(pfo_mod, sj + '_S0.nii.gz')
         pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
         pfi_transf_msme_on_s0 = jph(pfo_tmp, sj + '_msme_on_S0_rigid.txt')
@@ -133,7 +135,7 @@ def process_MSME_per_subject(sj, controller):
         )
         print_and_run(cmd)
 
-    if controller['get mask for original msme']:
+    if controller['get_mask_for_original_msme']:
         print('- Processing MSME: get mask for original msme:')
         # Start from the S0 mask (this will be saved as an extra mask as MSMEinS0 mask).
         pfi_s0_mask = jph(pfo_mask, '{}_S0_roi_mask.nii.gz'.format(sj))
@@ -249,7 +251,7 @@ def process_MSME_per_subject(sj, controller):
 
         print_and_run(cmd)
 
-    if controller['bfc up']:
+    if controller['bfc_up']:
         print('- get bfc correction each slice:')
         pfi_msme_upsampled = jph(pfo_tmp, sj + '_MSMEinS0.nii.gz')
         assert check_path_validity(pfi_msme_upsampled)
@@ -301,7 +303,7 @@ def process_MSME_per_subject(sj, controller):
 
         print_and_run(cmd_merge)
 
-    if controller['save results']:
+    if controller['save_results']:
         print('save results -  save only the bias field corrected as they proved to have the same results.')
         pfi_msme_nifti  = jph(pfo_tmp, sj + '_MSME.nii.gz')  # original
         pfi_msme_bfc    = jph(pfo_tmp, sj + '_MSME_BFC.nii.gz')  # original bfc
@@ -324,7 +326,7 @@ def process_MSME_per_subject(sj, controller):
         print_and_run(cmd1)
         print_and_run(cmd3)
 
-    if controller['save results tp0']:
+    if controller['save_results_tp0']:
         print('save results - timepoint zero, only the bfc')
         # pfi_msme_nifti  = jph(pfo_tmp, sj + '_MSME.nii.gz')  # original
         # pfi_msme_up     = jph(pfo_tmp, sj + '_MSMEinS0.nii.gz')  # up
@@ -364,24 +366,24 @@ if __name__ == '__main__':
     print('process MSME, local run. ')
 
     controller_MSME = {'squeeze'                       : True,
-                       'orient to standard'            : True,
-                       'extract first timepoint'       : True,
-                       'register tp0 to S0'            : True,
-                       'register msme to S0'           : True,
-                       'get mask for original msme'    : True,
+                       'orient_to_standard'            : True,
+                       'extract_first_timepoint'       : True,
+                       'register_tp0_to_S0'            : True,
+                       'register_msme_to_S0'           : True,
+                       'get_mask_for_original_msme'    : True,
                        'bfc'                           : False,
-                       'bfc up'                        : False,
-                       'save results'                  : False,
-                       'save results tp0'              : False
+                       'bfc_up'                        : False,
+                       'save_results'                  : False,
+                       'save_results_tp0'              : False
                        }
     #
     lsm = ListSubjectsManager()
 
     lsm.execute_PTB_ex_skull = False
-    lsm.execute_PTB_ex_vivo = False
-    lsm.execute_PTB_in_vivo = False
+    lsm.execute_PTB_ex_vivo  = False
+    lsm.execute_PTB_in_vivo  = False
     lsm.execute_PTB_op_skull = False
-    lsm.execute_ACS_ex_vivo = False
+    lsm.execute_ACS_ex_vivo  = False
 
     lsm.input_subjects = ['1201']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']

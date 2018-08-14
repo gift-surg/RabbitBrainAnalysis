@@ -37,8 +37,8 @@ def main_runner(subj_list):
     # Set steps
     steps = {'reset_parameters'   : False,
              'step_A1'            : False,
-             'step_A2_T1'         : True,
-             'step_A2_DWI'        : True,
+             'step_A2_T1'         : False,
+             'step_A2_DWI'        : False,
              'step_A2_MSME'       : False,
              'step_A2_T2maps'     : False,
              'step_A2_g_ratio'    : False,
@@ -107,20 +107,20 @@ def main_runner(subj_list):
     if steps['step_A2_DWI']:
         print('\nStep A2 DWI\n')
         controller_DWI = {'squeeze'              : True,
-                          'orient to standard'   : True,
-                          'create roi masks'     : True,
-                          'adjust mask'          : True,
-                          'cut mask dwi'         : True,
-                          'cut mask S0'          : True,
-                          'correct slope'        : True,
-                          'eddy current'         : True,
-                          'fsl tensor fitting'   : True,
-                          'adjust dti-based mod' : True,
-                          'bfc S0'               : True,
-                          'create lesion mask'   : True,
-                          'create reg masks'     : True,
-                          'align over T1'        : True,
-                          'save results'         : True}
+                          'orient_to_standard'   : True,
+                          'create_roi_masks'     : True,
+                          'adjust_mask'          : True,
+                          'cut_mask_dwi'         : True,
+                          'cut_mask_S0'          : True,
+                          'correct_slope'        : True,
+                          'eddy_current'         : True,
+                          'fsl_tensor_fitting'   : True,
+                          'adjust_dtibased_mod'  : True,
+                          'bfc_S0'               : True,
+                          'create_lesion_mask'   : True,
+                          'create_reg_masks'     : True,
+                          'align_over_T1'        : True,
+                          'save_results'         : True}
 
         process_DWI_from_list(subj_list, controller_DWI)
 
@@ -128,39 +128,39 @@ def main_runner(subj_list):
     if steps['step_A2_MSME']:
         print('\nStep A2 MSME\n')
         controller_MSME = {'squeeze'                       : True,
-                           'orient to standard'            : True,
-                           'extract first timepoint'       : True,
-                           'register tp0 to S0'            : True,
-                           'register msme to S0'           : True,
-                           'get mask for original msme'    : True,
+                           'orient_to_standard'            : True,
+                           'extract_first_timepoint'       : True,
+                           'register_tp0_to_S0'            : True,
+                           'register_msme_to_S0'           : True,
+                           'get_mask_for_original_msme'    : True,
                            'bfc'                           : True,
-                           'bfc up'                        : True,
-                           'save results'                  : True,
-                           'save results tp0'              : True}
+                           'bfc_up'                        : True,
+                           'save_results'                  : True,
+                           'save_results_tp0'              : True}
 
         process_MSME_from_list(subj_list, controller_MSME)
 
     ''' Step A2 - T2Maps '''
     if steps['step_A2_T2maps']:
         print('\nStep T2 maps\n')
-        controller_T2maps = {'get acquisition echo time'  : True,
-                             'process each MSME input'    : True,
-                             'correct origin'             : True,
-                             'save results'               : True}
+        controller_T2maps = {'get_acquisition_echo_time'  : True,
+                             'process_each_MSME_input'    : True,
+                             'correct_origin'             : True,
+                             'save_results'               : True}
 
         process_t2_maps_from_list(subj_list, controller_T2maps)
 
     ''' Step A2 - g-ratio '''
     if steps['step_A2_g_ratio']:
         print('\nStep A2 g-ratio\n')
-        controller_g_ratio = {'transpose b-vals b-vects'  : True,
+        controller_g_ratio = {'transpose_bvals_bvects'    : True,
                               'noddi'                     : True,
-                              'save T2_times'             : True,
-                              'get acquisition echo time' : True,
+                              'save_T2times'              : True,
+                              'get_acquisition_echo_time' : True,
                               'fit msme'                  : True,
-                              'extract first tp noddi'    : True,
-                              'compute g-ratio'           : True,
-                              'save results'              : True}
+                              'extract_first_tp_noddi'    : True,
+                              'compute_gratio'            : True,
+                              'save_results'              : True}
 
         process_g_ratio_from_list(subj_list, controller_g_ratio)
 
@@ -235,8 +235,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['5302', '5303']
+    # lsm.input_subjects = ['5302', '5303']
     # lsm.input_subjects = ['5508', '55BW']
+    lsm.input_subjects = ['125930']
 
     lsm.update_ls()
 
