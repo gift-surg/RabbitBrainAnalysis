@@ -35,7 +35,6 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
     folder_selected_segmentation = sj_parameters['names_architecture']['final_segm_strx']  # default 'automatic'
     suffix_selected_segmentation = sj_parameters['names_architecture']['suffix_segm']  # default 'MV_P2'
 
-
     pfo_root_sj_orig = jph(root_study_rabbits, 'A_data', study, category, sj)
     pfo_root_sj_strx = jph(root_study_rabbits, 'A_data', study, category, sj, 'stereotaxic')
 
@@ -291,7 +290,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['125930', '5302', '5508', '55BW', '5303']  # ['13102', '13201', '13202', '13401', '13402', '13403']
+    lsm.input_subjects = ['5302', '5508', '55BW', '5303']  # ['13102', '13201', '13202', '13401', '13402', '13403']
     lsm.update_ls()
 
     propagate_segmentation_in_original_space_from_list(lsm.ls, controller_)

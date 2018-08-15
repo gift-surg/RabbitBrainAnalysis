@@ -12,7 +12,7 @@ def zip_a_subject_and_send(sj, pfo_sharing):
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
-    study = sj_parameters['study']
+    study    = sj_parameters['study']
     category = sj_parameters['category']
 
     # zip the subject with no intermediate files:
@@ -58,7 +58,7 @@ if __name__ == '__main__':
     #
     # lsm.input_subjects = preterm + term
 
-    lsm.input_subjects = ['13102', '13201', '13202', '13401', '13402', '13403']
+    lsm.input_subjects = ['5302', '5508', '55BW', '5303']
 
     lsm.update_ls()
 

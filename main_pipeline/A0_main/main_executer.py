@@ -46,9 +46,9 @@ def main_runner(subj_list):
     steps.update({'step_A2_g_ratio'    : False  })
     steps.update({'step_A3_move'       : False  })
     steps.update({'step_A3_brain_mask' : False  })
-    steps.update({'step_A3_segment'    : True  })
+    steps.update({'step_A3_segment'    : False  })
     steps.update({'step_A3_move_back'  : True  })
-    steps.update({'step_A4'            : False  })
+    steps.update({'step_A4'            : True  })
 
     print('STEPS')
     for k in sorted(steps.keys()):
@@ -198,7 +198,7 @@ def main_runner(subj_list):
             'Rigid_T1strx_to_T1orig'            : True,
             'Propagate_T1_segm'                 : True,
             'Inter_modal_reg_S0'                : True,
-            'Inter_modal_reg_MSME'              : True}
+            'Inter_modal_reg_MSME'              : False}  # keep false!
 
         propagate_segmentation_in_original_space_from_list(subj_list, controller)
 
@@ -234,8 +234,8 @@ if __name__ == '__main__':
     lsm.execute_ACS_ex_vivo   = False
 
     # lsm.input_subjects = ['125930']
-    lsm.input_subjects = ['125930', '5302', '5508', '55BW', '5303']
-    # lsm.input_subjects = ['55BW', '5303']
+    lsm.input_subjects = ['55BW', '5508', ]  # '5302', '5303'] '5302', '5303'
+    # lsm.input_subjects = ['5302', '5303']
     # lsm.input_subjects = ['5303']
 
     lsm.update_ls()
