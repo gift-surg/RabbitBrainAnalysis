@@ -92,7 +92,7 @@ def process_g_ratio_per_subject(sj, controller):
         assert check_path_validity(pfi_transposed_vects)
         assert check_path_validity(pfi_roi_mask)
         assert check_path_validity(pfi_echo_times)
-        pfi_output_noddi = jph(pfo_tmp, '{}_nod.nii.gz'.format())
+        pfi_output_noddi = jph(pfo_tmp, '{}_nod.nii.gz'.format(sj))
         cmd = root_fit_apps + 'fit_dwi -source {0} -mask {1} -bval {2} -bvec {3} -TE {4} -mcmap {5} -nod'.format(
             pfi_dwi_eddy_corrected, pfi_roi_mask, pfi_transposed_bvals, pfi_transposed_vects, pfi_echo_times,
             pfi_output_noddi)
