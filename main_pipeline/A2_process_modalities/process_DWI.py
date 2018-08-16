@@ -54,7 +54,7 @@ def process_DWI_per_subject(sj, controller):
 
     study = sj_parameters['study']
     category = sj_parameters['category']
-    pfo_input_sj_DWI = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_' + DWI_suffix)
+    pfo_input_sj_DWI = jph(root_study_rabbits, '02_nifti', study, category, sj, '{}_{}'.format(sj, DWI_suffix))
     pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
 
     if sj not in list_all_subjects(pfo_subjects_parameters):
@@ -89,7 +89,7 @@ def process_DWI_per_subject(sj, controller):
         # DWI
         pfi_dwi_original = jph(pfo_input_sj_DWI, '{}_{}.nii.gz'.format(sj, DWI_suffix))
         assert check_path_validity(pfi_dwi_original)
-        pfi_dwi_std = jph(pfo_tmp, '{}_DWI_to_std.nii.gz'.format(sj))
+        pfi_dwi_std = jph(pfo_tmp, '{}_{}_to_std.nii.gz'.format(sj, DWI_suffix))
         orient2std(pfi_dwi_original, pfi_dwi_std)
         # S0
         if sj_parameters['b0_level'] == 0:
@@ -99,11 +99,11 @@ def process_DWI_per_subject(sj, controller):
             tp = sj_parameters['b0_level']
             pfi_DWI_original = jph(pfo_input_sj_DWI, '{}_{}.nii.gz'.format(sj, DWI_suffix))
             assert check_path_validity(pfi_DWI_original)
-            pfi_S0_original = jph(pfo_tmp, '{0}_DWI_S0_tp{1}.nii.gz'.format(sj, tp))
+            pfi_S0_original = jph(pfo_tmp, '{0}_{1}_S0_tp{2}.nii.gz'.format(sj, DWI_suffix, tp))
             grab_a_timepoint_path(pfi_DWI_original, pfi_S0_original, tp)
 
         assert check_path_validity(pfi_S0_original)
-        pfi_S0_std = jph(pfo_tmp, '{}_DWI_S0_to_std.nii.gz'.format(sj))
+        pfi_S0_std = jph(pfo_tmp, '{}_{}_S0_to_std.nii.gz'.format(sj, DWI_suffix))
         orient2std(pfi_S0_original, pfi_S0_std)
 
         if sj_parameters['DWI_squashed']:
@@ -132,7 +132,7 @@ def process_DWI_per_subject(sj, controller):
         # # process:
         # if can_resample_T1:
         #     print('- Create roi masks {}'.format(sj))
-        #     pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
+        #     pfi_S0 = jph(pfo_tmp, '{}_{}_S0_to_std.nii.gz'.format(sj, DWI_suffix))
         #     pfi_affine_identity = jph(pfo_tmp, 'id.txt')
         #     np.savetxt(pfi_affine_identity, np.eye(4), fmt='%d')
         #     pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
@@ -147,7 +147,7 @@ def process_DWI_per_subject(sj, controller):
         # elif need_to_register_mask:
 
         print('- Register roi masks {}'.format(sj))
-        pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
+        pfi_S0 = jph(pfo_tmp, '_{}_S0_to_std.nii.gz'.format(sj, DWI_suffix))
         assert os.path.exists(pfi_S0)
 
         pfi_T1          = jph(pfo_mod, '{}_T1.nii.gz'.format(sj))
@@ -213,11 +213,11 @@ def process_DWI_per_subject(sj, controller):
 
     if controller['cut_mask_dwi']:
         print('- cut mask dwi {}'.format(sj))
-        pfi_dwi = jph(pfo_tmp, sj + '_DWI_to_std.nii.gz')
+        pfi_dwi = jph(pfo_tmp, '{}_{}_to_std.nii.gz'.format(sj, DWI_suffix))
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         assert check_path_validity(pfi_dwi)
         assert check_path_validity(pfi_roi_mask)
-        pfi_dwi_cropped = jph(pfo_tmp, sj + '_DWI_cropped.nii.gz')
+        pfi_dwi_cropped = jph(pfo_tmp, sj + '{}_{}_cropped.nii.gz'.format(sj, DWI_suffix))
         cut_dwi_image_from_first_slice_mask_path(pfi_dwi,
                                                  pfi_roi_mask,
                                                  pfi_dwi_cropped)
@@ -225,7 +225,7 @@ def process_DWI_per_subject(sj, controller):
 
     if controller['cut_mask_S0']:
         print('- cut mask S0 {}'.format(sj))
-        pfi_S0 = jph(pfo_tmp, sj + '_DWI_S0_to_std.nii.gz')
+        pfi_S0 = jph(pfo_tmp, '{}_{}_S0_to_std.nii.gz'.format(sj, DWI_suffix))
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
         assert check_path_validity(pfi_S0)
         assert check_path_validity(pfi_roi_mask)
@@ -237,11 +237,11 @@ def process_DWI_per_subject(sj, controller):
     if controller['correct_slope']:
         print('- correct slope {}'.format(sj))
         # --
-        pfi_dwi_cropped = jph(pfo_tmp, sj + '_DWI_cropped.nii.gz')
+        pfi_dwi_cropped = jph(pfo_tmp, '{}_{}_cropped.nii.gz'.format(sj, DWI_suffix))
         pfi_slope_txt = jph(pfo_input_sj_DWI, '{}_{}_slope.txt'.format(sj, DWI_suffix))
         assert check_path_validity(pfi_dwi_cropped)
         assert check_path_validity(pfi_slope_txt)
-        pfi_dwi_slope_corrected = jph(pfo_tmp, sj + '_DWI_slope_corrected.nii.gz')
+        pfi_dwi_slope_corrected = jph(pfo_tmp, '{}_{}_slope_corrected.nii.gz'.format(sj, DWI_suffix))
         slopes = np.loadtxt(pfi_slope_txt)
         slope_corrector_path(slopes, pfi_dwi_cropped, pfi_dwi_slope_corrected)
         # --
@@ -253,16 +253,16 @@ def process_DWI_per_subject(sj, controller):
 
     if controller['eddy_current']:
         print('- eddy current {}'.format(sj))
-        pfi_dwi_slope_corrected = jph(pfo_tmp, sj + '_DWI_slope_corrected.nii.gz')
+        pfi_dwi_slope_corrected = jph(pfo_tmp, '{}_{}_slope_corrected.nii.gz'.format(sj, DWI_suffix))
         assert check_path_validity(pfi_dwi_slope_corrected)
-        pfi_dwi_eddy_corrected = jph(pfo_tmp, sj + '_DWI_eddy.nii.gz')
+        pfi_dwi_eddy_corrected = jph(pfo_tmp, '{}_{}_eddy.nii.gz'.format(sj, DWI_suffix))
         cmd = 'eddy_correct {0} {1} 0 '.format(pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected)
         print_and_run(cmd)
         del pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected, cmd
 
     elif controller['fsl_tensor_fitting']:
-        pfi_dwi_slope_corrected = jph(pfo_tmp, sj + '_DWI_slope_corrected.nii.gz')
-        pfi_dwi_eddy_corrected = jph(pfo_tmp, sj + '_DWI_eddy.nii.gz')
+        pfi_dwi_slope_corrected = jph(pfo_tmp, '{}_{}_slope_corrected.nii.gz'.format(sj, DWI_suffix))
+        pfi_dwi_eddy_corrected = jph(pfo_tmp, '{}_{}_eddy.nii.gz'.format(sj, DWI_suffix))
         cmd = 'cp {0} {1} '.format(pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected)
         print_and_run(cmd)
         del pfi_dwi_slope_corrected, pfi_dwi_eddy_corrected, cmd
@@ -271,7 +271,7 @@ def process_DWI_per_subject(sj, controller):
 
     if controller['fsl_tensor_fitting']:
         print('- fsl tensor fitting {}'.format(sj))
-        pfi_dwi_eddy_corrected = jph(pfo_tmp, sj + '_DWI_eddy.nii.gz')
+        pfi_dwi_eddy_corrected = jph(pfo_tmp, '{}_{}_eddy.nii.gz'.format(sj, DWI_suffix))
         pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
 
         pfi_bvals = jph(pfo_input_sj_DWI, '{}_{}_DwEffBval.txt'.format(sj, DWI_suffix))
@@ -293,8 +293,8 @@ def process_DWI_per_subject(sj, controller):
             bvals_new = np.concatenate([[bvals[0], ] * len(b0_tps_to_keep) , bvals[num_bzeros:]])
             bvect_new = np.vstack([bvects[0, :].reshape(1, -1), ] * len(b0_tps_to_keep) + [bvects[num_bzeros:, :]])
 
-            pfi_bvals_new = jph(pfo_tmp, '{}_DWI_DwEffBval_s0tp{}.txt'.format(sj, tag))
-            pfi_bvects_new = jph(pfo_tmp, '{}_DWI_DwGradVec_s0tp{}.txt'.format(sj, tag))
+            pfi_bvals_new = jph(pfo_tmp, '{}_{}_DwEffBval_s0tp{}.txt'.format(sj, DWI_suffix, tag))
+            pfi_bvects_new = jph(pfo_tmp, '{}_{}_DwGradVec_s0tp{}.txt'.format(sj, DWI_suffix. tag))
 
             np.savetxt(pfi_bvals_new, bvals_new)
             np.savetxt(pfi_bvects_new, bvect_new)
@@ -310,7 +310,7 @@ def process_DWI_per_subject(sj, controller):
 
             im_eddy_corrected_only_one_b0_tp = set_new_data(im_eddy_corrected, data_only_one_tp)
 
-            pfi_dwi_eddy_corrected_new = jph(pfo_tmp, '{}_DWI_eddy_s0tp{}.nii.gz'.format(sj, tag))
+            pfi_dwi_eddy_corrected_new = jph(pfo_tmp, '{}_{}_eddy_s0tp{}.nii.gz'.format(sj, DWI_suffix, tag))
             nib.save(im_eddy_corrected_only_one_b0_tp, pfi_dwi_eddy_corrected_new)
 
             assert check_path_validity(pfi_dwi_eddy_corrected)

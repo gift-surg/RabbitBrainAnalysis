@@ -26,7 +26,7 @@ def process_g_ratio_per_subject(sj, controller):
 
     DWI_suffix = sj_parameters['names_architecture']['DWI']  # default is DWI
 
-    pfo_input_sj_DWI  = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_DWI')
+    pfo_input_sj_DWI  = jph(root_study_rabbits, '02_nifti', study, category, sj, '{}_{}'.format(sj, DWI_suffix))
     pfo_input_sj_MSME = jph(root_study_rabbits, '02_nifti', study, category, sj, sj + '_MSME')
     pfo_output_sj     = jph(root_study_rabbits, 'A_data', study, category, sj)
 
@@ -80,10 +80,12 @@ def process_g_ratio_per_subject(sj, controller):
         # check if there is a DWI already processed in the TMP folder of the same subject:
         pfo_tmp_dwi = jph(pfo_output_sj, 'z_tmp', 'z_' + DWI_suffix)
         pfi_dwi_eddy_corrected = jph(pfo_tmp_dwi, '{}_{}_eddy.nii.gz'.format(sj, DWI_suffix))
-        pfi_transposed_bvals = jph(pfo_tmp, '{}_{}_DwEffBval_T.txt'.format(sj, DWI_suffix))
-        pfi_transposed_vects = jph(pfo_tmp, '{}_{}_DwGradVec_T.txt'.format(sj, DWI_suffix))
-        pfi_roi_mask = jph(pfo_mask, '{}_S0_roi_mask.nii.gz'.format(sj))
-        pfi_echo_times = jph(pfo_tmp, '{}_echo_times.txt'.format(sj))
+
+        pfi_roi_mask           = jph(pfo_mask, '{}_S0_roi_mask.nii.gz'.format(sj))
+
+        pfi_transposed_bvals   = jph(pfo_tmp, '{}_{}_DwEffBval_T.txt'.format(sj, DWI_suffix))
+        pfi_transposed_vects   = jph(pfo_tmp, '{}_{}_DwGradVec_T.txt'.format(sj, DWI_suffix))
+        pfi_echo_times         = jph(pfo_tmp, '{}_echo_times.txt'.format(sj))
 
         assert check_path_validity(pfi_dwi_eddy_corrected), 'Need to run process_DWI first?'
         assert check_path_validity(pfi_transposed_bvals)
@@ -191,7 +193,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['1201', ]
+    lsm.input_subjects = ['12503', ]
 
     lsm.update_ls()
 
