@@ -22,13 +22,11 @@ import matplotlib
 
 from collections import OrderedDict
 
-from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
-from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_atlas
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor, multi_atlas_subjects
 
 from LABelsToolkit.tools.aux_methods.utils_nib import one_voxel_volume
 from LABelsToolkit.tools.caliber.volumes_and_values import get_total_num_nonzero_voxels
 from LABelsToolkit.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
-from LABelsToolkit.main import LABelsToolkit as LabT
 
 
 data_set_info = OrderedDict(
@@ -60,8 +58,7 @@ ptb_related_regions['CaudateNucleus']              = [69, 70]
 ptb_related_regions['CorpusCallosum']              = [218]
 ptb_related_regions['MedialPrefrontalAndFrontal']  = [5, 6, 7, 8]
 
-
-atlas_subjects = get_list_names_subjects_in_atlas(pfo_subjects_parameters)
+atlas_subjects = multi_atlas_subjects
 
 
 def historgram_of_data_st(ax, df, xlabel='', ylabel='Values', factor=1., legend=False):

@@ -139,18 +139,19 @@ def list_all_subjects(pfo_where_parameter_files_are_stored):
             if not file_name.endswith(".txt")]
 
 
-def get_list_names_subjects_in_atlas(pfo_where_parameter_files_are_stored):
-
-    list_subjects = [file_name for file_name in os.listdir(pfo_where_parameter_files_are_stored)
-                     if not file_name.endswith(".txt")]
-
-    list_subjects_in_template = []
-    for k in list_subjects:
-        subj_k_parameters = pickle.load(open(jph(pfo_where_parameter_files_are_stored, k), 'r'))
-        if subj_k_parameters['in_atlas']:
-            list_subjects_in_template.append(k)
-    # list_subjects_in_template.sort(key=float)
-    return list_subjects_in_template
+# Deprecated: there is more than one multi atlas now. must be detailed in the definitions.
+# def get_list_names_subjects_in_atlas(pfo_where_parameter_files_are_stored):
+#
+#     list_subjects = [file_name for file_name in os.listdir(pfo_where_parameter_files_are_stored)
+#                      if not file_name.endswith(".txt")]
+#
+#     list_subjects_in_template = []
+#     for k in list_subjects:
+#         subj_k_parameters = pickle.load(open(jph(pfo_where_parameter_files_are_stored, k), 'r'))
+#         if subj_k_parameters['in_atlas']:
+#             list_subjects_in_template.append(k)
+#     # list_subjects_in_template.sort(key=float)
+#     return list_subjects_in_template
 
 
 def check_subjects_situation(pfo_where_parameter_files_are_stored):

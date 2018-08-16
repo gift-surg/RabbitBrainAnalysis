@@ -5,10 +5,9 @@ import collections
 from tools.auxiliary.sanity_checks import check_libraries
 
 from main_pipeline.A0_main.subject_parameters_creator import reset_parameters_files
-from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_atlas, \
-    check_subjects_situation
+from main_pipeline.A0_main.subject_parameters_manager import check_subjects_situation
 
-from tools.definitions import pfo_subjects_parameters, root_atlas
+from tools.definitions import pfo_subjects_parameters, multi_atlas_subjects
 
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 
@@ -61,7 +60,7 @@ def main_runner(subj_list):
         print('Subjects summary: ')
         check_subjects_situation(pfo_subjects_parameters)
         print('\nTemplate:')
-        sjs = get_list_names_subjects_in_atlas(pfo_subjects_parameters)
+        sjs = multi_atlas_subjects
         print(sjs)
         print('Parameter re-computed. The pipeline ends here')
         return

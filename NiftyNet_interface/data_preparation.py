@@ -3,8 +3,7 @@ from os.path import join as jph
 import numpy as np
 from collections import OrderedDict
 
-from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subjects_in_atlas
-from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_internal_template
+from tools.definitions import root_study_rabbits, multi_atlas_subjects, root_atlas
 from tools.auxiliary.sanity_checks import check_libraries
 
 
@@ -40,7 +39,7 @@ def prepare_data_subject_list(sj_list, sj_left_out_list, controller):
 
             # create template folder
             for sj in sj_list:
-                pfo_sj_original = jph(root_internal_template, sj)
+                pfo_sj_original = jph(root_atlas, sj)
 
                 # cp T1
                 pfi_original_T1 = jph(pfo_sj_original, 'mod', sj + '_T1.nii.gz')
@@ -62,7 +61,7 @@ def prepare_data_subject_list(sj_list, sj_left_out_list, controller):
 
             # create template folder
             for sj in sj_left_out_list:
-                pfo_sj_original = jph(root_internal_template, sj)
+                pfo_sj_original = jph(root_atlas, sj)
 
                 # cp T1
                 pfi_original_T1 = jph(pfo_sj_original, 'mod', sj + '_T1.nii.gz')
@@ -83,7 +82,7 @@ if __name__ == '__main__':
     controller_ = OrderedDict({'Modality'                    : 'Mono',
                                'Update_data_folders'          : False})
 
-    list_subjects_in_template = get_list_names_subjects_in_atlas(pfo_subjects_parameters)
+    list_subjects_in_template = multi_atlas_subjects
     print list_subjects_in_template
 
     # cross validation

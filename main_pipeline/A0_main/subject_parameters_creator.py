@@ -1,9 +1,8 @@
 import os
 import numpy as np
 
-from tools.definitions import pfo_subjects_parameters
-from main_pipeline.A0_main.subject_parameters_manager import SubjectParameters, get_list_names_subjects_in_atlas, \
-    check_subjects_situation
+from tools.definitions import pfo_subjects_parameters, multi_atlas_subjects
+from main_pipeline.A0_main.subject_parameters_manager import SubjectParameters, check_subjects_situation
 
 
 def reset_parameters_files(pfo_where_to_save):
@@ -2782,9 +2781,8 @@ def reset_parameters_files(pfo_where_to_save):
 if __name__ == '__main__':
 
     reset_parameters_files(pfo_subjects_parameters)
-    sjs = get_list_names_subjects_in_atlas(pfo_subjects_parameters)
+    sjs = multi_atlas_subjects
 
     print('Subjects summary: ')
     check_subjects_situation(pfo_subjects_parameters)
     print('\nTemplate:')
-    # print sjs
