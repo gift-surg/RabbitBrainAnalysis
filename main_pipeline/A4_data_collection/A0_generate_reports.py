@@ -15,7 +15,7 @@ import pickle
 
 from LABelsToolkit.main import LABelsToolkit as LaB
 from LABelsToolkit.tools.caliber.volumes_and_values import get_volumes_per_label
-from LABelsToolkit.tools.descriptions.label_descriptor_manager import LabelsDescriptorManager as LdM
+from LABelsToolkit.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
 
 from main_pipeline.A0_main.tag_collector import TagCollector
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor

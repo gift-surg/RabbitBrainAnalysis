@@ -488,7 +488,7 @@ if __name__ == '__main__':
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
 
-    lsm.input_subjects = ['125930']
+    lsm.input_subjects = ['4303']
     # lsm.input_subjects = ['55BW' ]
     # lsm.input_subjects = ['5508', '5302']
 

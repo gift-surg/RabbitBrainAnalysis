@@ -27,7 +27,7 @@ from main_pipeline.A0_main.subject_parameters_manager import get_list_names_subj
 
 from LABelsToolkit.tools.aux_methods.utils_nib import one_voxel_volume
 from LABelsToolkit.tools.caliber.volumes_and_values import get_total_num_nonzero_voxels
-from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
+from LABelsToolkit.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
 from LABelsToolkit.main import LABelsToolkit as LabT
 
 

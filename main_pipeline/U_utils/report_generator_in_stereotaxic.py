@@ -9,8 +9,7 @@ import pickle
 from os.path import join as jph
 import cPickle as Pickle
 
-from LABelsToolkit.tools.descriptions.manipulate_descriptors import LabelsDescriptorManager as LdM
-from LABelsToolkit.tools.aux_methods.utils import custom_dataframe_to_csv
+from LABelsToolkit.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
 from LABelsToolkit.tools.caliber.volumes_and_values import get_total_num_nonzero_voxels, \
     get_num_voxels_from_labels_list, get_values_below_labels_list
 from LABelsToolkit.tools.aux_methods.utils_nib import one_voxel_volume

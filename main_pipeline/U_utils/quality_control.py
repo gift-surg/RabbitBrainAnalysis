@@ -34,8 +34,8 @@ def open_subject(sj, coordinates, check_dice_if_in_atlas=True):
 
     if study == 'W8':
         pfo_atlas = root_atlas_W8
-        options   = {'Template_chart_path' : jph(root_atlas_W8, '125930'),
-                     'Template_name'       : '125930'}
+        options   = {'Template_chart_path' : jph(root_atlas_W8, '12503'),
+                     'Template_name'       : '12503'}
     elif study == 'ACS' or study == 'PTB' or study == 'TestStudy':
         pfo_atlas = root_atlas
         options   = {'Template_chart_path' : jph(root_atlas, '1305'),

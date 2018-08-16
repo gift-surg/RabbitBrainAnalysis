@@ -2626,10 +2626,10 @@ def reset_parameters_files(pfo_where_to_save):
 
     ''' --------- 8 Weeks old ------'''
 
-    sp = SubjectParameters('125930')
+    sp = SubjectParameters('12503')  # Ex 125930 renamed to 12503.
     sp.study                  = 'W8'
     sp.category               = 'first_trial'
-    sp.merge_with             = ['125930DWI', ]
+    sp.merge_with             = ['12503DWI', ]
     sp.angles                 = [0, np.pi / 12, 0]
     sp.translation            = [0, 0, 0]
     sp.threshold              = 18
@@ -2642,7 +2642,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 99),
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
-                                 'pivot'              : '125930',
+                                 'pivot'              : '12503',
                                  'mask_dilation'      : 0,
                                  'window_percentile'  : (0, 100),
                                  'crop_roi'           : False,
@@ -2673,7 +2673,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 99),
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
-                                 'pivot'              : '125930',
+                                 'pivot'              : '12503',
                                  'mask_dilation'      : 0,
                                  'window_percentile'  : (0, 100),
                                  'crop_roi'           : False,
@@ -2703,7 +2703,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 99),
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
-                                 'pivot'              : '125930',
+                                 'pivot'              : '12503',
                                  'mask_dilation'      : 0,
                                  'window_percentile'  : (0, 100),
                                  'crop_roi'           : False,
@@ -2733,7 +2733,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 99),
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
-                                 'pivot'              : '125930',
+                                 'pivot'              : '12503',
                                  'mask_dilation'      : 5,
                                  'window_percentile'  : (0, 100),
                                  'crop_roi'           : False,
@@ -2763,7 +2763,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.options_S0             = {'window_percentile'  : (1, 99),
                                  'mask_dilation'      : 1}
     sp.options_T1             = {'roi_mask'           : 'Pivotal',
-                                 'pivot'              : '125930',
+                                 'pivot'              : '12503',
                                  'mask_dilation'      : 0,
                                  'window_percentile'  : (0, 100),
                                  'crop_roi'           : False,

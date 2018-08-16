@@ -26,8 +26,8 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
     if study == 'W8':
         pfo_atlas = root_atlas_W8
-        options   = {'Template_chart_path' : jph(root_atlas_W8, '125930'),
-                     'Template_name'       : '125930'}
+        options   = {'Template_chart_path' : jph(root_atlas_W8, '12503'),
+                     'Template_name'       : '12503'}
     elif study == 'ACS' or study == 'PTB' or study == 'TestStudy':
         pfo_atlas = root_atlas
         options   = {'Template_chart_path' : jph(root_atlas, '1305'),
@@ -303,7 +303,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    # lsm.input_subjects = ['125930']  # ['13102', '13201', '13202', '13401', '13402', '13403']
+    # lsm.input_subjects = ['4303']  # ['13102', '13201', '13202', '13401', '13402', '13403']
     lsm.input_subjects = ['5302', '5508']
     lsm.update_ls()
 
