@@ -214,13 +214,15 @@ def process_DWI_per_subject(sj, controller):
     if controller['cut_mask_dwi']:
         print('- cut mask dwi {}'.format(sj))
         pfi_dwi = jph(pfo_tmp, '{}_{}_to_std.nii.gz'.format(sj, DWI_suffix))
-        pfi_roi_mask = jph(pfo_mask, sj + '_S0_roi_mask.nii.gz')
+        pfi_roi_mask = jph(pfo_mask, '_S0_roi_mask.nii.gz'.format(sj))
         assert check_path_validity(pfi_dwi)
         assert check_path_validity(pfi_roi_mask)
-        pfi_dwi_cropped = jph(pfo_tmp, sj + '{}_{}_cropped.nii.gz'.format(sj, DWI_suffix))
+        pfi_dwi_cropped = jph(pfo_tmp, '{}_{}_cropped.nii.gz'.format(sj, DWI_suffix))
         cut_dwi_image_from_first_slice_mask_path(pfi_dwi,
                                                  pfi_roi_mask,
                                                  pfi_dwi_cropped)
+        print('cutting done. Input DWI {0}. Output cropped {1}.\n\n'.format(pfi_dwi, pfi_dwi_cropped))
+
         del pfi_dwi, pfi_roi_mask, pfi_dwi_cropped
 
     if controller['cut_mask_S0']:
@@ -239,8 +241,8 @@ def process_DWI_per_subject(sj, controller):
         # --
         pfi_dwi_cropped = jph(pfo_tmp, '{}_{}_cropped.nii.gz'.format(sj, DWI_suffix))
         pfi_slope_txt = jph(pfo_input_sj_DWI, '{}_{}_slope.txt'.format(sj, DWI_suffix))
-        assert check_path_validity(pfi_dwi_cropped)
-        assert check_path_validity(pfi_slope_txt)
+        assert check_path_validity(pfi_dwi_cropped), pfi_dwi_cropped
+        assert check_path_validity(pfi_slope_txt), pfi_slope_txt
         pfi_dwi_slope_corrected = jph(pfo_tmp, '{}_{}_slope_corrected.nii.gz'.format(sj, DWI_suffix))
         slopes = np.loadtxt(pfi_slope_txt)
         slope_corrector_path(slopes, pfi_dwi_cropped, pfi_dwi_slope_corrected)
@@ -463,8 +465,8 @@ if __name__ == '__main__':
 
     controller_DWI = {'squeeze'               : False,
                       'orient_to_standard'    : False,
-                      'create_roi_masks'      : True,
-                      'adjust_mask'           : True,
+                      'create_roi_masks'      : False,
+                      'adjust_mask'           : False,
                       'cut_mask_dwi'          : True,
                       'cut_mask_S0'           : True,
                       'correct_slope'         : True,
