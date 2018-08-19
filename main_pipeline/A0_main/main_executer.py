@@ -39,15 +39,15 @@ def main_runner(subj_list):
     steps.update({'reset_parameters'   : False  })
     steps.update({'step_A1'            : False  })
     steps.update({'step_A2_T1'         : False  })
-    steps.update({'step_A2_DWI'        : False  })
+    steps.update({'step_A2_DWI'        : True  })
     steps.update({'step_A2_MSME'       : False  })
     steps.update({'step_A2_T2maps'     : False  })
-    steps.update({'step_A2_g_ratio'    : True  })
+    steps.update({'step_A2_g_ratio'    : False  })
     steps.update({'step_A3_move'       : True  })
     steps.update({'step_A3_brain_mask' : True  })
     steps.update({'step_A3_segment'    : True  })
     steps.update({'step_A3_move_back'  : True  })
-    steps.update({'step_A4'            : True  })
+    steps.update({'step_A4'            : False  })
 
     print('STEPS')
     for k in sorted(steps.keys()):
@@ -107,8 +107,8 @@ def main_runner(subj_list):
     ''' Step A2 - DWI '''
     if steps['step_A2_DWI']:
         print('\nStep A2 DWI\n')
-        controller_DWI = {'squeeze'              : True,
-                          'orient_to_standard'   : True,
+        controller_DWI = {'squeeze'              : False,
+                          'orient_to_standard'   : False,
                           'create_roi_masks'     : True,
                           'adjust_mask'          : True,
                           'cut_mask_dwi'         : True,
@@ -158,7 +158,7 @@ def main_runner(subj_list):
                               'noddi'                     : True,
                               'save_T2times'              : True,
                               'get_acquisition_echo_time' : True,
-                              'fit msme'                  : True,
+                              'fit_msme'                  : True,
                               'extract_first_tp_noddi'    : True,
                               'compute_gratio'            : True,
                               'save_results'              : True}
@@ -233,7 +233,7 @@ if __name__ == '__main__':
     lsm.execute_ACS_ex_vivo   = False
 
     # lsm.input_subjects = ['12503']
-    lsm.input_subjects = ['12503', ]  # '5302', '5303'] '5302', '5303'
+    lsm.input_subjects = ['5510', ]  # '5302', '5303'] '5302', '5303'
     # lsm.input_subjects = ['5302', '5303']
     # lsm.input_subjects = ['5303']
 

@@ -147,15 +147,15 @@ def process_DWI_per_subject(sj, controller):
         # elif need_to_register_mask:
 
         print('- Register roi masks {}'.format(sj))
-        pfi_S0 = jph(pfo_tmp, '_{}_S0_to_std.nii.gz'.format(sj, DWI_suffix))
-        assert os.path.exists(pfi_S0)
+        pfi_S0 = jph(pfo_tmp, '{}_{}_S0_to_std.nii.gz'.format(sj, DWI_suffix))
+        assert os.path.exists(pfi_S0), pfi_S0
 
         pfi_T1          = jph(pfo_mod, '{}_T1.nii.gz'.format(sj))
         pfi_T1_roi_mask = jph(pfo_mask, '{}_T1_roi_mask.nii.gz'.format(sj))
         assert os.path.exists(pfi_T1), pfi_T1
         assert os.path.exists(pfi_T1_roi_mask), pfi_T1_roi_mask
-        pfi_T1_hd_oriented = jph(pfo_tmp, sj + '_T1_hd_oriented_to_S0.nii.gz')
-        pfi_T1_roi_mask_hd_oriented = jph(pfo_tmp, sj + '_T1_roi_mask_hd_oriented_to_S0.nii.gz')
+        pfi_T1_hd_oriented = jph(pfo_tmp, '{}_T1_hd_oriented_to_S0.nii.gz'.format(sj))
+        pfi_T1_roi_mask_hd_oriented = jph(pfo_tmp, '{}_T1_roi_mask_hd_oriented_to_S0.nii.gz'.format(sj))
 
         # check if the orientation angles are different for each modality:
         if isinstance(sj_parameters['angles'][0], list):
@@ -463,11 +463,11 @@ if __name__ == '__main__':
 
     controller_DWI = {'squeeze'               : False,
                       'orient_to_standard'    : False,
-                      'create_roi_masks'      : False,
-                      'adjust_mask'           : False,
-                      'cut_mask_dwi'          : False,
-                      'cut_mask_S0'           : False,
-                      'correct_slope'         : False,
+                      'create_roi_masks'      : True,
+                      'adjust_mask'           : True,
+                      'cut_mask_dwi'          : True,
+                      'cut_mask_S0'           : True,
+                      'correct_slope'         : True,
                       'eddy_current'          : True,
                       'fsl_tensor_fitting'    : True,
                       'adjust_dtibased_mod'   : True,
@@ -488,7 +488,7 @@ if __name__ == '__main__':
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
 
-    lsm.input_subjects = ['4303']
+    lsm.input_subjects = ['5510']
     # lsm.input_subjects = ['55BW' ]
     # lsm.input_subjects = ['5508', '5302']
 

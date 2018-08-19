@@ -21,7 +21,7 @@ from LABelsToolkit.main import LABelsToolkit
 from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
 from LABelsToolkit.tools.image_colors_manipulations.relabeller import relabeller
 from LABelsToolkit.tools.aux_methods.sanity_checks import check_path_validity
-from LABelsToolkit.tools.detections.get_segmentation import MoG
+from LABelsToolkit.tools.detections.get_segmentation import MoG_array
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_atlas, root_atlas_W8, num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
@@ -271,10 +271,16 @@ def process_T1_per_subject(sj, steps):
             assert os.path.exists(pfi_3d_bias_field_corrected)
             assert check_path_validity(pfi_roi_mask)
             pfi_mog_segm = jph(pfo_tmp, '{}_mog_segm.nii.gz'.format(sj))
-            T1_bfc = nib.load(pfi_3d_bias_field_corrected)
-            roi_mask = nib.load(pfi_roi_mask)
-            c, p = MoG(T1_bfc, K=K, pre_process_median_filter=True, mask_im=roi_mask,
-                       pre_process_only_interquartile=True)
+            pfi_T1_bfc = nib.load(pfi_3d_bias_field_corrected)
+            pfi_roi_mask = nib.load(pfi_roi_mask)
+
+
+            im_T1_bfc = nib.load(pfi_T1_bfc)
+            im_roi_mask = nib.load(pfi_T1_bfc)
+            c_array, p_array = MoG_array(im_T1_bfc.get_data(), K=K, pre_process_median_filter=True,
+                             mask_array=im_roi_mask.get_data(), pre_process_only_interquartile=True)
+            c = set_new_data(im_T1_bfc, c_array)
+            p = set_new_data(im_T1_bfc, p_array)
             nib.save(c, '/Users/sebastiano/Desktop/zzz.nii.gz')
             old_labels = list(range(K))  # [0, 1, 2, 3, 4]
             new_labels = [1, ] * len(old_labels)
