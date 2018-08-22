@@ -5,7 +5,7 @@ import os
 from os.path import join as jph
 import pickle
 
-from LABelsToolkit.main import LABelsToolkit
+from nilabel.main import Nilabel as NiL
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_atlas, num_cores_run, root_atlas_W8
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
@@ -92,7 +92,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
         print_and_run('cp {} {}'.format(pfi_original_T1, pfi_T1_reoriented))
         if pitch_theta != 0:
-            lm = LABelsToolkit()
+            lm = NiL()
             lm.header.apply_small_rotation(pfi_T1_reoriented, pfi_T1_reoriented, angle=pitch_theta,
                                            principal_axis='pitch')
 
@@ -102,7 +102,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
         print_and_run('cp {} {}'.format(pfi_original_roi_mask_T1, pfi_roi_mask_T1_reoriented))
         if pitch_theta != 0:
-            lm = LABelsToolkit()
+            lm = NiL()
             lm.header.apply_small_rotation(pfi_roi_mask_T1_reoriented, pfi_roi_mask_T1_reoriented,
                                            angle=pitch_theta, principal_axis='pitch')
 
@@ -112,7 +112,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
         print_and_run('cp {} {}'.format(pfi_original_reg_mask_T1, pfi_reg_mask_T1_reoriented))
         if pitch_theta != 0:
-            lm = LABelsToolkit()
+            lm = NiL()
             lm.header.apply_small_rotation(pfi_reg_mask_T1_reoriented,
                                            pfi_reg_mask_T1_reoriented,
                                            angle=pitch_theta, principal_axis='pitch')
@@ -170,7 +170,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
         print_and_run('cp {} {}'.format(pfi_original_S0, pfi_S0_reoriented))
         if pitch_theta != 0:
-            lm = LABelsToolkit()
+            lm = NiL()
             lm.header.apply_small_rotation(pfi_S0_reoriented,
                                            pfi_S0_reoriented,
                                            angle=pitch_theta, principal_axis='pitch')
@@ -181,7 +181,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
         print_and_run('cp {} {}'.format(pfi_original_reg_mask_S0, pfi_reg_mask_S0_reoriented))
         if pitch_theta != 0:
-            lm = LABelsToolkit()
+            lm = NiL()
             lm.header.apply_small_rotation(pfi_reg_mask_S0_reoriented, pfi_reg_mask_S0_reoriented,
                                            angle=pitch_theta, principal_axis='pitch')
             del lm
@@ -221,7 +221,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
             print_and_run('cp {} {}'.format(pfi_original_MOD, pfi_MOD_reoriented))
             if pitch_theta != 0:
-                lt = LABelsToolkit()
+                lt = NiL()
                 lt.header.apply_small_rotation(pfi_MOD_reoriented, pfi_MOD_reoriented,
                                                angle=pitch_theta, principal_axis='pitch')
                 del lt

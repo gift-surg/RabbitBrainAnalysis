@@ -17,11 +17,11 @@ import pickle
 import numpy as np
 import nibabel as nib
 
-from LABelsToolkit.main import LABelsToolkit
-from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
-from LABelsToolkit.tools.image_colors_manipulations.relabeller import relabeller
-from LABelsToolkit.tools.aux_methods.sanity_checks import check_path_validity
-from LABelsToolkit.tools.detections.get_segmentation import MoG_array
+from nilabel.main import Nilabel
+from nilabel.tools.aux_methods.utils_nib import set_new_data
+from nilabel.tools.image_colors_manipulations.relabeller import relabeller
+from nilabel.tools.aux_methods.sanity_checks import check_path_validity
+from nilabel.tools.detections.get_segmentation import MoG_array
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_atlas, root_atlas_W8, num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
@@ -121,7 +121,7 @@ def process_T1_per_subject(sj, steps):
         pfi_reference_roi_mask_hd_oriented  = jph(pfo_tmp, 'reference_for_mask_roi_mask.nii.gz')
         pfi_reference_reg_mask_hd_oriented  = jph(pfo_tmp, 'reference_for_mask_reg_mask.nii.gz')
 
-        lm = LABelsToolkit()
+        lm = Nilabel()
         lm.header.apply_small_rotation(pfi_sj_ref_coord_system, pfi_sj_ref_coord_system_hd_oriented,
                                        angle=angle_parameter, principal_axis='pitch')
         lm.header.apply_small_rotation(pfi_reference_roi_mask, pfi_reference_roi_mask_hd_oriented,

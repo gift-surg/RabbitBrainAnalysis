@@ -10,7 +10,7 @@ from collections import OrderedDict
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 
-from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
+from nilabel.tools.aux_methods.utils_nib import set_new_data
 
 root_output = jph(root_study_rabbits, 'B_stats', 'S0Comparison_denoised')
 S0_timepoints = 7

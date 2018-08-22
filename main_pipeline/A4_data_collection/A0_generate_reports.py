@@ -13,9 +13,9 @@ import nibabel as nib
 from os.path import join as jph
 import pickle
 
-from LABelsToolkit.main import LABelsToolkit as LaB
-from LABelsToolkit.tools.caliber.volumes_and_values import get_volumes_per_label
-from LABelsToolkit.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
+from nilabel.main import Nilabel as NiB
+from nilabel.tools.caliber.volumes_and_values import get_volumes_per_label
+from nilabel.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
 
 from main_pipeline.A0_main.tag_collector import TagCollector
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
@@ -30,8 +30,8 @@ def create_eroded_segmentations_if_not_already_created(pfi_segm_non_eroded, pfi_
 
         print('Getting contour segmentation {}'.format(pfi_segm_non_eroded))
 
-        lab = LaB()
-        lab.manipulate_intensities.get_contour_from_segmentation(pfi_segm_non_eroded, pfi_contour, verbose=1)
+        nib = NiB()
+        nib.manipulate_intensities.get_contour_from_segmentation(pfi_segm_non_eroded, pfi_contour, verbose=1)
 
         cmd = 'seg_maths {} -sub {} {}'.format(pfi_segm_non_eroded, pfi_contour, pfi_segm_eroded)
 

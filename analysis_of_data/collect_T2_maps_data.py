@@ -5,9 +5,9 @@ import nibabel as nib
 import os
 import pickle
 
-from LABelsToolkit.agents.measurer import LABelsToolkitMeasure
+from nilabel.agents.measurer import LabelsMeasure
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
-from LABelsToolkit.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
+from nilabel.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
 from tools.auxiliary.utils import set_new_data_path
 
 
@@ -92,8 +92,8 @@ if __name__ == '__main__':
                           pfi_result=pfi_tmp, new_dtype=np.uint8, remove_nan=True)
         os.system('mv {0} {1}'.format(pfi_tmp, pfi_T2_maps_up_bfc))
 
-        lmm = LABelsToolkitMeasure(return_mm3=True, verbose=1)
-        lmm_original_bfc = LABelsToolkitMeasure(return_mm3=True, verbose=1)
+        lmm = LabelsMeasure(return_mm3=True, verbose=1)
+        lmm_original_bfc = LabelsMeasure(return_mm3=True, verbose=1)
 
         # original:
         lmm.volume(pfi_T2_map_segm_original, labels='all', tot_volume_prior=None,

@@ -8,9 +8,9 @@ import pickle
 import numpy as np
 import nibabel as nib
 
-from LABelsToolkit.tools.aux_methods.sanity_checks import check_path_validity
-from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
-from LABelsToolkit.main import LABelsToolkit
+from nilabel.tools.aux_methods.sanity_checks import check_path_validity
+from nilabel.tools.aux_methods.utils_nib import set_new_data
+from nilabel.main import Nilabel
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
@@ -162,7 +162,7 @@ def process_DWI_per_subject(sj, controller):
             # re-orient the T1 and the T1-mask on the S0 to better initialise the mask propagation.
             angles = sj_parameters['angles'][1]
             angle_parameter = angles[1]
-            lt = LABelsToolkit()
+            lt = Nilabel()
             lt.header.apply_small_rotation(pfi_T1, pfi_T1_hd_oriented,
                                            angle=angle_parameter, principal_axis='pitch')
             lt.header.apply_small_rotation(pfi_T1_roi_mask, pfi_T1_roi_mask_hd_oriented,

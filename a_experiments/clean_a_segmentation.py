@@ -1,11 +1,8 @@
 import os
 from os.path import join as jph
 
-from LABelsToolkit.main import LABelsToolkit as LT
-from LABelsToolkit.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LDM
-
-
-# TODO add to LABelsToolkit examples
+from nilabel.main import Nilabel as NiL
+from nilabel.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LDM
 
 
 # ---- PATH MANAGER ----
@@ -24,7 +21,7 @@ pfi_differece_cleaned_non_cleaned = jph(root, 'difference_half_cleaned_uncleaned
 
 # ---- PROCESS ----
 
-lt = LT()
+nil = NiL()
 ldm = LDM(pfi_labels_descriptor)
 
 print '---------------------------'
@@ -33,8 +30,8 @@ print 'Cleaning segmentation {}'.format(pfi_input_segmentation)
 print '---------------------------\n\n'
 
 # get the report before
-lt.check.number_connected_components_per_label(pfi_input_segmentation,
-                                               where_to_save_the_log_file=log_file_before_cleaning)
+nil.check.number_connected_components_per_label(pfi_input_segmentation,
+                                                where_to_save_the_log_file=log_file_before_cleaning)
 
 # get the labels_correspondences - do not clean the 0, get 2 components for the 201
 labels = ldm.get_dict_itk_snap().keys()
@@ -57,12 +54,12 @@ print('Wanted final number of components per label:')
 print(correspondences_lab_comps)
 
 # get the cleaned segmentation
-lt.manipulate_labels.clean_segmentation(pfi_input_segmentation, pfi_output_cleaned_segmentation,
-                                        labels_to_clean=correspondences_lab_comps)
+nil.manipulate_labels.clean_segmentation(pfi_input_segmentation, pfi_output_cleaned_segmentation,
+                                         labels_to_clean=correspondences_lab_comps)
 
 # get the report of the connected components afterwards
-lt.check.number_connected_components_per_label(pfi_output_cleaned_segmentation,
-                                               where_to_save_the_log_file=log_file_after_cleaning)
+nil.check.number_connected_components_per_label(pfi_output_cleaned_segmentation,
+                                                where_to_save_the_log_file=log_file_after_cleaning)
 
 # get the differences between the non-liceaned and the cleaned:
 

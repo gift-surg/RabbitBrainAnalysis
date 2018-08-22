@@ -30,9 +30,9 @@ from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 
-from LABelsToolkit.tools.aux_methods.utils import print_and_run
-from LABelsToolkit.tools.aux_methods.utils_nib import set_new_data
-from LABelsToolkit.tools.aux_methods.sanity_checks import check_path_validity
+from nilabel.tools.aux_methods.utils import print_and_run
+from nilabel.tools.aux_methods.utils_nib import set_new_data
+from nilabel.tools.aux_methods.sanity_checks import check_path_validity
 from tools.definitions import root_fit_apps
 
 
