@@ -2366,6 +2366,32 @@ def reset_parameters_files(pfo_where_to_save):
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
 
+    sp = SubjectParameters('13111')
+    sp.study                  = 'ACS'
+    sp.category               = 'ex_vivo01'
+    sp.angles                 = [0, np.pi / 8, 0]
+    sp.translation            = [0, 0, 0]
+    sp.threshold              = 18
+    sp.DWI_squashed           = False
+    sp.bias_field_parameters  = bfp_slow
+    sp.MSME_acquisition       = 'high_res'
+    sp.comment                = ''
+    sp.in_atlas               = False
+    sp.b0_level               = 7
+    sp.options_S0             = {'window_percentile'  : (1, 99),
+                                 'mask_dilation'      : 1}
+    sp.options_T1             = {'roi_mask'           : 'Pivotal',
+                                 'pivot'              : '1305',
+                                 'mask_dilation'      : -2,
+                                 'window_percentile'  : (78, 100),
+                                 'crop_roi'           : False,
+                                 'lesion_mask_method' : 0,
+                                 'median_filter'      : False}
+    sp.options_brain_mask     = {'method'             : 'BTMA_MA'}
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
     sp = SubjectParameters('13201')
     sp.study                  = 'ACS'
     sp.category               = 'ex_vivo01'

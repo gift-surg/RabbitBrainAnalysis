@@ -214,7 +214,7 @@ def process_DWI_per_subject(sj, controller):
     if controller['cut_mask_dwi']:
         print('- cut mask dwi {}'.format(sj))
         pfi_dwi = jph(pfo_tmp, '{}_{}_to_std.nii.gz'.format(sj, DWI_suffix))
-        pfi_roi_mask = jph(pfo_mask, '_S0_roi_mask.nii.gz'.format(sj))
+        pfi_roi_mask = jph(pfo_mask, '{}_S0_roi_mask.nii.gz'.format(sj))
         assert check_path_validity(pfi_dwi)
         assert check_path_validity(pfi_roi_mask)
         pfi_dwi_cropped = jph(pfo_tmp, '{}_{}_cropped.nii.gz'.format(sj, DWI_suffix))
@@ -490,7 +490,7 @@ if __name__ == '__main__':
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
 
-    lsm.input_subjects = ['5510']
+    lsm.input_subjects = ['13111']
     # lsm.input_subjects = ['55BW' ]
     # lsm.input_subjects = ['5508', '5302']
 

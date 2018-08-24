@@ -38,14 +38,14 @@ def main_runner(subj_list):
     steps.update({'reset_parameters'   : False  })
     steps.update({'step_A1'            : False  })
     steps.update({'step_A2_T1'         : False  })
-    steps.update({'step_A2_DWI'        : True  })
+    steps.update({'step_A2_DWI'        : False  })
     steps.update({'step_A2_MSME'       : False  })
     steps.update({'step_A2_T2maps'     : False  })
     steps.update({'step_A2_g_ratio'    : False  })
-    steps.update({'step_A3_move'       : True  })
-    steps.update({'step_A3_brain_mask' : True  })
+    steps.update({'step_A3_move'       : False  })
+    steps.update({'step_A3_brain_mask' : False  })
     steps.update({'step_A3_segment'    : True  })
-    steps.update({'step_A3_move_back'  : True  })
+    steps.update({'step_A3_move_back'  : False  })
     steps.update({'step_A4'            : False  })
 
     print('STEPS')
@@ -106,12 +106,12 @@ def main_runner(subj_list):
     ''' Step A2 - DWI '''
     if steps['step_A2_DWI']:
         print('\nStep A2 DWI\n')
-        controller_DWI = {'squeeze'              : False,
-                          'orient_to_standard'   : False,
-                          'create_roi_masks'     : False,
-                          'adjust_mask'          : False,
-                          'cut_mask_dwi'         : False,
-                          'cut_mask_S0'          : False,
+        controller_DWI = {'squeeze'              : True,
+                          'orient_to_standard'   : True,
+                          'create_roi_masks'     : True,
+                          'adjust_mask'          : True,
+                          'cut_mask_dwi'         : True,
+                          'cut_mask_S0'          : True,
                           'correct_slope'        : True,
                           'eddy_current'         : True,
                           'fsl_tensor_fitting'   : True,
@@ -232,7 +232,8 @@ if __name__ == '__main__':
     lsm.execute_ACS_ex_vivo   = False
 
     # lsm.input_subjects = ['12503']
-    lsm.input_subjects = ['5510', ]  # '5302', '5303'] '5302', '5303'
+    lsm.input_subjects = ['55BW',   ]  # '5302', '5303'] '5302', '5303'
+    # lsm.input_subjects = ['13111', ]
     # lsm.input_subjects = ['5302', '5303']
     # lsm.input_subjects = ['5303']
 

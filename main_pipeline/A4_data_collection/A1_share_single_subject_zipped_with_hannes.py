@@ -33,6 +33,8 @@ def zip_a_subject_and_send(sj, pfo_sharing):
 def zip_and_send_list(sj_list, pfo_sharing):
     print('Sharing subjects {} to folder {}'.format(sj_list, pfo_sharing))
     for sj in sj_list:
+        print('You are sharing the subject {} with Hannes. '
+              'This implies that the subject is well segmented'.format(sj))
         zip_a_subject_and_send(sj, pfo_sharing)
 
 
@@ -58,13 +60,13 @@ if __name__ == '__main__':
     #
     # lsm.input_subjects = preterm + term
 
-    lsm.input_subjects = ['5302', '5508', '55BW', '5303']
+    lsm.input_subjects = ['12307', '12308', '12309']
 
     lsm.update_ls()
 
     print lsm.ls
 
-    destination_folder = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/Temporary'
+    destination_folder = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/Processed'
     assert os.path.exists(destination_folder)
 
     zip_and_send_list(lsm.ls, destination_folder)

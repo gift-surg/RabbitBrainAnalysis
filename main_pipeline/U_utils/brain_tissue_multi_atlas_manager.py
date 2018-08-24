@@ -8,7 +8,7 @@ from os.path import join as jph
 
 from tools import definitions as defs
 from nilabel.tools.aux_methods.utils import print_and_run
-from nilabel.main import NiL
+from nilabel.main import Nilabel as NiL
 
 
 def extract_brain_tissue_in_NI_multi_atlas():
