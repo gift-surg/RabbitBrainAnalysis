@@ -4,9 +4,9 @@ import nibabel as nib
 import pickle
 from os.path import join as jph
 
-from nilabel.tools.aux_methods.utils import print_and_run
+from nilabels.tools.aux_methods.utils import print_and_run
 
-from tools.definitions import pfo_subjects_parameters, pfo_atlas, root_study_rabbits
+from tools.definitions import pfo_subjects_parameters, root_study_rabbits
 from apparent_fibre_density_experiments.main import root_tmp, root_intermediate, root_DWIs_original, root_MASKs, root_SEGMs
 from tools.correctors.slope_corrector import slope_corrector_path
 from tools.auxiliary.squeezer import squeeze_image_from_path

@@ -6,9 +6,10 @@ import os
 import pickle
 from os.path import join as jph
 
+import nilabels as nis
+from nilabels.tools.aux_methods.utils import print_and_run
+
 from tools import definitions as defs
-from nilabel.tools.aux_methods.utils import print_and_run
-from nilabel.main import Nilabel as NiL
 
 
 def extract_brain_tissue_in_NI_multi_atlas():
@@ -217,14 +218,14 @@ def extract_brain_tissue_from_multi_atlas_list_stereotaxic(target_name,
 
     if steps['stack']:
         # Create stack of warped brain mask
-        nil = NiL()
-        nil.manipulate_shape.stack_list_pfi_images(list_pfi_brain_mask_registered_on_target, pfi_stack_brain_mask)
-        del nil
+        nis_app = nis.App()
+        nis_app.manipulate_shape.stack_list_pfi_images(list_pfi_brain_mask_registered_on_target, pfi_stack_brain_mask)
+        del nis_app
 
         # Create stack of warped T1
-        nil = NiL()
-        nil.manipulate_shape.stack_list_pfi_images(list_pfi_T1_registered_on_target, pfi_stack_T1)
-        del nil
+        nis_app = nis.App()
+        nis_app.manipulate_shape.stack_list_pfi_images(list_pfi_T1_registered_on_target, pfi_stack_T1)
+        del nis_app
 
     if steps['fuse']:
         print('\n\n-Labels Fusion')

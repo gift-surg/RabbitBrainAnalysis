@@ -2,8 +2,8 @@ import numpy as np
 import nibabel as nib
 import os
 
-from nilabel.tools.aux_methods.utils_nib import set_new_data
-from nilabel.tools.aux_methods.utils import print_and_run
+from nilabels.tools.aux_methods.utils_nib import set_new_data
+from nilabels.tools.aux_methods.utils import print_and_run
 
 
 def generate_multichannel(list_data, channels_axis=3, normalize=True):

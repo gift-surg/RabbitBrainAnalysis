@@ -1,18 +1,17 @@
 import os
+from os.path import join as jph
 import pandas as pa
 import numpy as np
 import nibabel as nib
 from collections import OrderedDict
 from matplotlib import pyplot as plt
 import pickle
-
-from os.path import join as jph
 import cPickle as Pickle
 
-from nilabel.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
-from nilabel.tools.caliber.volumes_and_values import get_total_num_nonzero_voxels, \
-    get_num_voxels_from_labels_list, get_values_below_labels_list
-from nilabel.tools.aux_methods.utils_nib import one_voxel_volume
+from nilabels.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
+from nilabels.tools.caliber.volumes_and_values import get_num_voxels_from_labels_list, get_values_below_labels_list
+from nilabels.tools.aux_methods.utils_nib import one_voxel_volume
+
 from tools.definitions import pfi_labels_descriptor
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 

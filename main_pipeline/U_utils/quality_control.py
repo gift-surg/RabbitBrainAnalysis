@@ -12,9 +12,8 @@ from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor, root_atlas, \
     root_atlas_W8
 
-
-from nilabel.main import Nilabel as NiL
-from nilabel.tools.caliber.distances import global_dice_score
+import nilabels as nis
+from nilabels.tools.caliber.distances import global_dice_score
 
 
 segm_suffix = 'MV_P2'
@@ -105,8 +104,8 @@ def open_subject(sj, coordinates, check_dice_if_in_atlas=True):
             if not os.path.exists(pfi_segm_from_atlas):
                 print('\n\n Not existing {}!!'.format(pfi_segm_from_atlas))
 
-            nil = NiL()
-            glob_dc = nil.measure.global_dist(pfi_segm_strx, pfi_segm_from_atlas, global_metrics=(global_dice_score, ))
+            nis_app = nis.App()
+            glob_dc = nis_app.measure.global_dist(pfi_segm_strx, pfi_segm_from_atlas, global_metrics=(global_dice_score, ))
 
             print('Subject {} in atlas, has a segmentation aligned with the ground truth. Dice as measure of overlap: ')
             print(glob_dc)

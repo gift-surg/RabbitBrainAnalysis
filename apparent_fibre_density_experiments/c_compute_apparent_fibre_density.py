@@ -2,7 +2,7 @@ import os
 import numpy as np
 from os.path import join as jph
 
-from nilabel.tools.aux_methods.utils import print_and_run
+from nilabels.tools.aux_methods.utils import print_and_run
 
 from apparent_fibre_density_experiments.main import root_tmp, root_intermediate, root_DWIs_original, root_MASKs, root_SEGMs
 from tools.correctors.slope_corrector import slope_corrector_path

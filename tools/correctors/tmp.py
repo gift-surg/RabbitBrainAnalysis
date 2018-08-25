@@ -1,7 +1,7 @@
 import nibabel as nib
 import numpy as np
 
-from nilabel.tools.aux_methods.utils import print_and_run
+from nilabels.tools.aux_methods.utils import print_and_run
 
 
 def adjust_affine_header(pfi_input, pfi_output, theta, trasl=np.array([0, 0, 0])):

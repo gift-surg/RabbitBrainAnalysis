@@ -6,7 +6,7 @@ import os
 from os.path import join as jph
 import pickle
 
-from nilabel.main import Nilabel as NiL
+import nilabels as nis
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
@@ -96,9 +96,9 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
             cmd = 'cp {0} {1}'.format(strx, strx_hdo)
             print_and_run(cmd)
             if pitch_theta != 0:
-                lm = NiL()
-                lm.header.apply_small_rotation(strx_hdo, strx_hdo,
-                                               angle=pitch_theta, principal_axis='pitch')
+                nis_app = nis.App()
+                nis_app.header.apply_small_rotation(strx_hdo, strx_hdo,
+                                                    angle=pitch_theta, principal_axis='pitch')
 
     if controller['Rigid_T1strx_to_T1orig']:
         print('-> Align T1strx_hdo (header oriented) to origin')
@@ -162,8 +162,8 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
                 cmd = 'cp {0} {1}'.format(strx, strx_hdo)
                 print_and_run(cmd)
                 if pitch_theta != 0:
-                    lm = NiL()
-                    lm.header.apply_small_rotation(strx_hdo, strx_hdo,
+                    nis_app = nis.App()
+                    nis_app.header.apply_small_rotation(strx_hdo, strx_hdo,
                                                    angle=pitch_theta, principal_axis='pitch')
 
             pfi_transformation = jph(pfo_tmp, 'T1origin_to_S0origin.txt')
@@ -233,9 +233,9 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
                 cmd = 'cp {0} {1}'.format(strx, strx_hdo)
                 print_and_run(cmd)
                 if pitch_theta != 0:
-                    lm = NiL()
-                    lm.header.apply_small_rotation(strx_hdo, strx_hdo,
-                                                   angle=pitch_theta, principal_axis='pitch')
+                    nis_app = nis.App()
+                    nis_app.header.apply_small_rotation(strx_hdo, strx_hdo,
+                                                        angle=pitch_theta, principal_axis='pitch')
 
             pfi_transformation = jph(pfo_tmp, 'MSMEinS0_to_MSME.txt')
             pfi_warped_MSMEinS0_to_MSME_rigid = jph(pfo_tmp, 'MSMEinS0_to_MSME_warped.nii.gz')

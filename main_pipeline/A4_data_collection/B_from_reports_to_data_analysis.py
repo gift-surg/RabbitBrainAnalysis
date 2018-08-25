@@ -7,7 +7,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 
-from nilabel.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
+from nilabels.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
 

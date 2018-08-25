@@ -4,7 +4,7 @@ from collections import OrderedDict
 import time
 import os
 
-from nilabel.tools.aux_methods.utils import print_and_run
+from nilabels.tools.aux_methods.utils import print_and_run
 
 from tools.definitions import root_study_rabbits, root_atlas, pfo_subjects_parameters, bfc_corrector_cmd, \
     num_cores_run, multi_atlas_subjects, multi_atlas_W8_subjects, root_atlas_W8

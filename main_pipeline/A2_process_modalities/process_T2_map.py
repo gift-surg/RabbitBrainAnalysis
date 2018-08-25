@@ -26,14 +26,13 @@ import numpy as np
 import nibabel as nib
 import pickle
 
-from tools.definitions import root_study_rabbits, pfo_subjects_parameters
+from nilabels.tools.aux_methods.utils import print_and_run
+from nilabels.tools.aux_methods.utils_nib import set_new_data
+from nilabels.tools.aux_methods.sanity_checks import check_path_validity
+
+from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_fit_apps
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
-
-from nilabel.tools.aux_methods.utils import print_and_run
-from nilabel.tools.aux_methods.utils_nib import set_new_data
-from nilabel.tools.aux_methods.sanity_checks import check_path_validity
-from tools.definitions import root_fit_apps
 
 
 def process_T2_map_per_subject(sj, controller):

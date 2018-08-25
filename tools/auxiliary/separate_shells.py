@@ -3,7 +3,7 @@ import os
 import nibabel as nib
 from sympy.core.cache import clear_cache
 
-from nilabel.tools.aux_methods.utils_nib import set_new_data
+from nilabels.tools.aux_methods.utils_nib import set_new_data
 
 
 def separate_shells_txt(b_vals, b_vects, num_initial_dir_to_skip=7, num_shells=3):

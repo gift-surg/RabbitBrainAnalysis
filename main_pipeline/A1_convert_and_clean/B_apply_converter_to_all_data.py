@@ -6,7 +6,7 @@ from bruker2nifti.converter import Bruker2Nifti
 from tools.definitions import pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits
-from nilabel.tools.aux_methods.utils import print_and_run
+from nilabels.tools.aux_methods.utils import print_and_run
 
 
 def converter_given_pfo_input_and_pfo_output(pfo_input_sj, pfo_output, sj_name):

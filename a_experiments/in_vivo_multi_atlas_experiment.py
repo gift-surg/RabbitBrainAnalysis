@@ -1,7 +1,7 @@
 import os
 from os.path import join as jph
 
-from nilabel.main import Nilabel as NiL
+import nilabels as nis
 
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 from tools.definitions import root_study_rabbits
@@ -120,9 +120,9 @@ for sj in subjects_list:
     pfi_segm_contour_y_stereotaxic = jph(pfo_root, sj, 'segm', '{}_{}_stereotaxic_CONTY.nii.gz'.format(sj, 'MV_P2'))
 
     if False:
-        nil = NiL()
-        nil.manipulate_intensities.get_contour_from_segmentation(pfi_segm, pfi_segm_contour_y_stereotaxic,
-                                                                 omit_axis='y', verbose=1)
+        nis_app = nis.App()
+        nis_app.manipulate_intensities.get_contour_from_segmentation(pfi_segm, pfi_segm_contour_y_stereotaxic,
+                                                                     omit_axis='y', verbose=1)
 
     # Open
 

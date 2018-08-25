@@ -4,7 +4,7 @@ import os
 import subprocess
 import time
 
-from nilabel.tools.aux_methods.utils_nib import set_new_data
+from nilabels.tools.aux_methods.utils_nib import set_new_data
 
 
 # def set_new_data(image, new_data, new_dtype=None, remove_nan=True):

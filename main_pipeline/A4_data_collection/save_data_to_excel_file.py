@@ -1,10 +1,11 @@
 import os
 from os.path import join as jph
 import pickle
-from tools.definitions import root_study_rabbits, pfi_excel_table_all_data, pfo_subjects_parameters, \
-    multi_atlas_subjects
+
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.auxiliary.parse_excel_tables_and_descriptors import store_a_record_in_excel_table
+from tools.definitions import root_study_rabbits, pfi_excel_table_all_data, pfo_subjects_parameters, \
+    multi_atlas_subjects
 
 
 def save_data_into_excel_file_per_subject(sj):

@@ -6,8 +6,8 @@ from os.path import join as jph
 from apparent_fibre_density_experiments.main import root_DWIs_original, root_MASKs, root_SEGMs, \
     root_DWIs_corrected, root_intermediate, root_tmp
 
-from nilabel.tools.aux_methods.utils import print_and_run
-from nilabel.main import Nilabel as NiL
+from nilabels.tools.aux_methods.utils import print_and_run
+import nilabels as nis
 
 
 def denoise_mif_for_subject(sj, controller):
@@ -59,11 +59,11 @@ def denoise_mif_for_subject(sj, controller):
     if controller['Create_multi_timepoints_mask']:
         im_dwi = nib.load(pfi_DWI)
         pfi_brain_mask_multi_timepoint = jph(root_tmp, '{}_brain_multi_timepoints.nii.gz'.format(sj))
-        nil = NiL()
-        nil.manipulate_shape.extend_slice_new_dimension(pfi_brain_mask, pfi_output=pfi_brain_mask_multi_timepoint,
+        nis_app = nis.App()
+        nis_app.manipulate_shape.extend_slice_new_dimension(pfi_brain_mask, pfi_output=pfi_brain_mask_multi_timepoint,
                                                         new_axis=3, num_slices=im_dwi.shape[-1])
 
-        del im_dwi, nil
+        del im_dwi, nis_app
 
     if controller['Grafting_denoised']:
         print('- grafting')
@@ -75,9 +75,9 @@ def denoise_mif_for_subject(sj, controller):
         assert os.path.exists(pfi_brain_mask_multi_timepoint)
 
         pfi_DWI_denoised_grafted = jph(root_DWIs_corrected, '{}_DWIg.nii.gz'.format(sj))
-        nil = NiL()
-        nil.manipulate_intensities.get_grafting(pfi_residual, pfi_DWI_denoised, pfi_DWI_denoised_grafted,
-                                                pfi_brain_mask_multi_timepoint)
+        nis_app = nis.App()
+        nis_app.manipulate_intensities.get_grafting(pfi_residual, pfi_DWI_denoised, pfi_DWI_denoised_grafted,
+                                                    pfi_brain_mask_multi_timepoint)
 
     if controller['Grafting_denoised_Eddy']:
         print('- grafting eddy')
@@ -88,9 +88,9 @@ def denoise_mif_for_subject(sj, controller):
         assert os.path.exists(pfi_residual)
         assert os.path.exists(pfi_brain_mask_multi_timepoint)
         pfi_DWI_denoised_grafted_eddy = jph(root_DWIs_corrected, '{}_DWIg_eddy.nii.gz'.format(sj))
-        nil = NiL()
-        nil.manipulate_intensities.get_grafting(pfi_residual, pfi_DWI_denoised_eddy, pfi_DWI_denoised_grafted_eddy,
-                                                pfi_brain_mask_multi_timepoint)
+        nis_app = nis.App()
+        nis_app.manipulate_intensities.get_grafting(pfi_residual, pfi_DWI_denoised_eddy, pfi_DWI_denoised_grafted_eddy,
+                                                    pfi_brain_mask_multi_timepoint)
 
 
 def denoise_mif_for_list(sj_list, controller):

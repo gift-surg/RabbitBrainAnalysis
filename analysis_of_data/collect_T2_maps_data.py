@@ -5,9 +5,9 @@ import nibabel as nib
 import os
 import pickle
 
-from nilabel.agents.measurer import LabelsMeasure
+from nilabels.agents.measurer import LabelsMeasure
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
-from nilabel.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
+from nilabels.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
 from tools.auxiliary.utils import set_new_data_path
 
 

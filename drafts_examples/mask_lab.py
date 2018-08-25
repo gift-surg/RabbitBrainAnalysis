@@ -1,7 +1,7 @@
 import os
 import nibabel as nib
 
-from nilabel.tools.aux_methods.utils_nib import set_new_data
+from nilabels.tools.aux_methods.utils_nib import set_new_data
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor_only_from_image
 
 pfi_im_test = '/Users/sebastiano/Desktop/test_im/3405_MSME_bfc_tp0.nii.gz'

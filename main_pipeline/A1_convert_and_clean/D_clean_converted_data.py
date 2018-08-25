@@ -5,7 +5,7 @@ import warnings
 import pickle
 
 # from tools.auxiliary.utils import print_and_run
-from nilabel.tools.aux_methods.utils import print_and_run
+from nilabels.tools.aux_methods.utils import print_and_run
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager

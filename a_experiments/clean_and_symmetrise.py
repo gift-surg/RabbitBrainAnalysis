@@ -3,10 +3,10 @@ from os.path import join as jph
 import nibabel as nib
 import numpy as np
 
-from nilabel.main import Nilabel as LT
-from nilabel.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
-from nilabel.tools.aux_methods.utils import print_and_run
-from nilabel.tools.aux_methods.utils_nib import set_new_data
+from nilabels.main import NiLabels as LT
+from nilabels.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
+from nilabels.tools.aux_methods.utils import print_and_run
+from nilabels.tools.aux_methods.utils_nib import set_new_data
 
 
 # ---- PATH MANAGER ----

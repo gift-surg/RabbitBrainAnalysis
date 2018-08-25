@@ -1,21 +1,17 @@
+"""
+Module to create load and modify paramters manager and related utils functions.
+The actual creation happens in subject_parameters_creator module.
+"""
 import os
 from os.path import join as jph
 import pickle
 from collections import OrderedDict
 
-"""
-To create load and modify paramters manager and related utils functions.
-The actual creation happens in subject_parameters_creator module.
-
-Notes on option_T1:
-    
-
-"""
-
 
 class SubjectParameters(object):
     """
-    Simple class container to provide the parameters required to manipulate each element independently.
+    Core part of the code architecture.
+    Class container to provide the parameters required to manipulate each subject of the study independently.
     """
     def __init__(self, subject_name, study='', category='',
                  merge_with=None, acquisition_selection=None,

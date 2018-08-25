@@ -7,10 +7,11 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 
+from nilabels.tools.aux_methods.utils_nib import set_new_data
+
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 
-from nilabel.tools.aux_methods.utils_nib import set_new_data
 
 root_output = jph(root_study_rabbits, 'B_stats', 'S0Comparison_denoised')
 S0_timepoints = 7

@@ -7,7 +7,7 @@ import matplotlib.mlab as mlab
 from sklearn.mixture import GaussianMixture
 from scipy.signal import medfilt
 
-from nilabel.tools.aux_methods.utils_nib import set_new_data
+from nilabels.tools.aux_methods.utils_nib import set_new_data
 from tools.definitions import root_dir
 from tools.auxiliary.utils import print_and_run
 

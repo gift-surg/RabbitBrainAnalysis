@@ -13,8 +13,8 @@ from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extract
     percentile_lesion_mask_extractor_only_from_image_path
 from tools.auxiliary.reorient_images_header import set_translational_part_to_zero
 from tools.auxiliary.squeezer import squeeze_image_from_path
-from nilabel.tools.aux_methods.utils import print_and_run
-from nilabel.tools.aux_methods.sanity_checks import check_path_validity
+from nilabels.tools.aux_methods.utils import print_and_run
+from nilabels.tools.aux_methods.sanity_checks import check_path_validity
 from tools.correctors.bias_field_corrector4 import bias_field_correction
 
 """

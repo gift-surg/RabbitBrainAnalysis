@@ -5,7 +5,7 @@ import pickle
 
 from tools.definitions import root_study_rabbits, root_fit_apps, pfo_subjects_parameters
 from tools.auxiliary.utils import print_and_run
-from nilabel.tools.aux_methods.sanity_checks import check_path_validity
+from nilabels.tools.aux_methods.sanity_checks import check_path_validity
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 

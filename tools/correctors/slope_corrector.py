@@ -1,8 +1,8 @@
 import numpy as np
 import nibabel as nib
 
-from nilabel.tools.aux_methods.utils import eliminates_consecutive_duplicates
-from nilabel.tools.aux_methods.utils_nib import set_new_data
+from nilabels.tools.aux_methods.utils import eliminates_consecutive_duplicates
+from nilabels.tools.aux_methods.utils_nib import set_new_data
 from bruker2nifti._utils import data_corrector
 
 

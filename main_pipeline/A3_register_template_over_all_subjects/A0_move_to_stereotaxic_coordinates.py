@@ -5,7 +5,7 @@ import os
 from os.path import join as jph
 import pickle
 
-from nilabel.main import Nilabel as NiL
+import nilabels as nis
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_atlas, num_cores_run, root_atlas_W8
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
@@ -92,9 +92,9 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
         print_and_run('cp {} {}'.format(pfi_original_T1, pfi_T1_reoriented))
         if pitch_theta != 0:
-            lm = NiL()
-            lm.header.apply_small_rotation(pfi_T1_reoriented, pfi_T1_reoriented, angle=pitch_theta,
-                                           principal_axis='pitch')
+            nis_app = nis.App()
+            nis_app.header.apply_small_rotation(pfi_T1_reoriented, pfi_T1_reoriented, angle=pitch_theta,
+                                                principal_axis='pitch')
 
         pfi_original_roi_mask_T1 = jph(pfo_sj_masks, '{0}_{1}_{2}.nii.gz'.format(sj, 'T1', 'roi_mask'))
         assert os.path.exists(pfi_original_roi_mask_T1), pfi_original_roi_mask_T1
@@ -102,9 +102,9 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
         print_and_run('cp {} {}'.format(pfi_original_roi_mask_T1, pfi_roi_mask_T1_reoriented))
         if pitch_theta != 0:
-            lm = NiL()
-            lm.header.apply_small_rotation(pfi_roi_mask_T1_reoriented, pfi_roi_mask_T1_reoriented,
-                                           angle=pitch_theta, principal_axis='pitch')
+            nis_app = nis.App()
+            nis_app.header.apply_small_rotation(pfi_roi_mask_T1_reoriented, pfi_roi_mask_T1_reoriented,
+                                                angle=pitch_theta, principal_axis='pitch')
 
         pfi_original_reg_mask_T1 = jph(pfo_sj_masks, '{0}_{1}_{2}.nii.gz'.format(sj, 'T1', 'reg_mask'))
         assert os.path.exists(pfi_original_reg_mask_T1), pfi_original_reg_mask_T1
@@ -112,11 +112,11 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
         print_and_run('cp {} {}'.format(pfi_original_reg_mask_T1, pfi_reg_mask_T1_reoriented))
         if pitch_theta != 0:
-            lm = NiL()
-            lm.header.apply_small_rotation(pfi_reg_mask_T1_reoriented,
-                                           pfi_reg_mask_T1_reoriented,
-                                           angle=pitch_theta, principal_axis='pitch')
-            del lm
+            nis_app = nis.App()
+            nis_app.header.apply_small_rotation(pfi_reg_mask_T1_reoriented,
+                                                pfi_reg_mask_T1_reoriented,
+                                                angle=pitch_theta, principal_axis='pitch')
+            del nis_app
 
         print('Rigid registration T1:')
         pfi_transformation_T1_over_T1 = jph(pfo_tmp, 'trans_{0}_over_{1}_mod_{2}_rigid.txt'.format(
@@ -170,10 +170,10 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
         print_and_run('cp {} {}'.format(pfi_original_S0, pfi_S0_reoriented))
         if pitch_theta != 0:
-            lm = NiL()
-            lm.header.apply_small_rotation(pfi_S0_reoriented,
-                                           pfi_S0_reoriented,
-                                           angle=pitch_theta, principal_axis='pitch')
+            nis_app = nis.App()
+            nis_app.header.apply_small_rotation(pfi_S0_reoriented,
+                                                pfi_S0_reoriented,
+                                                angle=pitch_theta, principal_axis='pitch')
 
         pfi_original_reg_mask_S0 = jph(pfo_sj_masks, '{0}_{1}_{2}.nii.gz'.format(sj, 'S0', 'reg_mask'))
         assert os.path.exists(pfi_original_reg_mask_S0), pfi_original_reg_mask_S0
@@ -181,10 +181,10 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
         print_and_run('cp {} {}'.format(pfi_original_reg_mask_S0, pfi_reg_mask_S0_reoriented))
         if pitch_theta != 0:
-            lm = NiL()
-            lm.header.apply_small_rotation(pfi_reg_mask_S0_reoriented, pfi_reg_mask_S0_reoriented,
-                                           angle=pitch_theta, principal_axis='pitch')
-            del lm
+            nis_app = nis.App()
+            nis_app.header.apply_small_rotation(pfi_reg_mask_S0_reoriented, pfi_reg_mask_S0_reoriented,
+                                                angle=pitch_theta, principal_axis='pitch')
+            del nis_app
 
         print('Rigid registration S0:')
         pfi_transformation_S0_over_T1 = jph(pfo_tmp, 'trans_{0}_over_{1}_mod_{2}_rigid.txt'.format(
@@ -221,10 +221,10 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
             print_and_run('cp {} {}'.format(pfi_original_MOD, pfi_MOD_reoriented))
             if pitch_theta != 0:
-                lt = NiL()
-                lt.header.apply_small_rotation(pfi_MOD_reoriented, pfi_MOD_reoriented,
+                nis_app = nis.App()
+                nis_app.header.apply_small_rotation(pfi_MOD_reoriented, pfi_MOD_reoriented,
                                                angle=pitch_theta, principal_axis='pitch')
-                del lt
+                del nis_app
 
             print('Resampling {}:'.format(mod))
 
