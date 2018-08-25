@@ -3,7 +3,7 @@ from os.path import join as jph
 import nibabel as nib
 import numpy as np
 
-from nilabels.main import NiLabels as LT
+import nilabels as nis
 from nilabels.tools.aux_methods.label_descriptor_manager import LabelsDescriptorManager as LdM
 from nilabels.tools.aux_methods.utils import print_and_run
 from nilabels.tools.aux_methods.utils_nib import set_new_data
@@ -32,7 +32,7 @@ pfi_cleaned_segmentation          = jph(pfo_temporary, '55BW_segm_notyetfinal_HA
 log_file_after_cleaning           = jph(pfo_temporary, 'log_after_cleaning.txt')
 pfi_differece_cleaned_non_cleaned = jph(pfo_temporary, 'difference_half_cleaned_uncleaned.nii.gz')
 
-pfi_symmetrised_segm              = jph(root_sj, 'segm', 'automatic', '55BW_segm_man_sym.nii.gz')
+pfi_symmetrised_segm              = jph(root_sj, 'segm', 'automatic', '55BW_segm_man_SYM.nii.gz')
 
 
 # ---- PARAMETERS ------
@@ -86,7 +86,7 @@ if controller['Morphological']:
 # ---- PROCESS ----
 if controller['Clean_segmentation']:
     print('\n-> Clean segmentation:')
-    lt = LT()
+    nis_app = nis.App()
     ldm = LdM(pfi_labels_descriptor)
 
     print '---------------------------'
@@ -98,8 +98,8 @@ if controller['Clean_segmentation']:
     os.system('cp {} {}'.format(pfi_segmentation_intermediate, pfi_segmentation_before_cleaning))
 
     # get the report before
-    lt.check.number_connected_components_per_label(pfi_segmentation_intermediate,
-                                                   where_to_save_the_log_file=log_file_before_cleaning)
+    nis_app.check.number_connected_components_per_label(pfi_segmentation_intermediate,
+                                                        where_to_save_the_log_file=log_file_before_cleaning)
 
     # get the labels_correspondences - do not clean the 0, get 2 components for the 201
     labels = ldm.get_dict_itk_snap().keys()
@@ -126,11 +126,11 @@ if controller['Clean_segmentation']:
     print(correspondences_lab_comps)
 
     # get the cleaned segmentation
-    lt.manipulate_labels.clean_segmentation(pfi_segmentation_intermediate, pfi_cleaned_segmentation,
+    nis_app.manipulate_labels.clean_segmentation(pfi_segmentation_intermediate, pfi_cleaned_segmentation,
                                             labels_to_clean=correspondences_lab_comps, force_overwriting=True)
 
     # get the report of the connected components afterwards
-    lt.check.number_connected_components_per_label(pfi_cleaned_segmentation,
+    nis_app.check.number_connected_components_per_label(pfi_cleaned_segmentation,
                                                    where_to_save_the_log_file=log_file_after_cleaning)
 
 else:
@@ -160,15 +160,15 @@ if controller['Symmetrize']:
 
     # --- EXECUTE ----
 
-    lt = LT()
-    lt.symmetrize.symmetrise_with_registration(pfi_input_anatomy,
-                                               pfi_cleaned_segmentation,
-                                               labels_sym_left,
-                                               pfi_symmetrised_segm,
-                                               results_folder_path=pfo_temporary,
-                                               list_labels_transformed=labels_sym_right,
-                                               coord='z',
-                                               reuse_registration=False)
+    nis_app = nis.App()
+    nis_app.symmetrize.symmetrise_with_registration(pfi_input_anatomy,
+                                                    pfi_cleaned_segmentation,
+                                                    labels_sym_left,
+                                                    pfi_symmetrised_segm,
+                                                    results_folder_path=pfo_temporary,
+                                                    list_labels_transformed=labels_sym_right,
+                                                    coord='z',
+                                                    reuse_registration=False)
 
 
 

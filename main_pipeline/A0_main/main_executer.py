@@ -36,16 +36,16 @@ def main_runner(subj_list):
     steps = collections.OrderedDict()
 
     steps.update({'reset_parameters'   : False  })
-    steps.update({'step_A1'            : False  })
-    steps.update({'step_A2_T1'         : False  })
-    steps.update({'step_A2_DWI'        : False  })
-    steps.update({'step_A2_MSME'       : False  })
-    steps.update({'step_A2_T2maps'     : False  })
-    steps.update({'step_A2_g_ratio'    : False  })
-    steps.update({'step_A3_move'       : False  })
-    steps.update({'step_A3_brain_mask' : False  })
+    steps.update({'step_A1'            : True  })
+    steps.update({'step_A2_T1'         : True  })
+    steps.update({'step_A2_DWI'        : True  })
+    steps.update({'step_A2_MSME'       : True  })
+    steps.update({'step_A2_T2maps'     : True  })
+    steps.update({'step_A2_g_ratio'    : True  })
+    steps.update({'step_A3_move'       : True  })
+    steps.update({'step_A3_brain_mask' : True  })
     steps.update({'step_A3_segment'    : True  })
-    steps.update({'step_A3_move_back'  : False  })
+    steps.update({'step_A3_move_back'  : True  })
     steps.update({'step_A4'            : False  })
 
     print('STEPS')
@@ -232,7 +232,7 @@ if __name__ == '__main__':
     lsm.execute_ACS_ex_vivo   = False
 
     # lsm.input_subjects = ['12503']
-    lsm.input_subjects = ['55BW',   ]  # '5302', '5303'] '5302', '5303'
+    lsm.input_subjects = ['13111',   ]  # '5302', '5303'] '5302', '5303'
     # lsm.input_subjects = ['13111', ]
     # lsm.input_subjects = ['5302', '5303']
     # lsm.input_subjects = ['5303']
