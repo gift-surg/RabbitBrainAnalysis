@@ -2,10 +2,12 @@ import os
 from os.path import join as jph
 import pickle
 
+from nilabels.tools.aux_methods.utils import print_and_run
+
+from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 from tools.definitions import pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits
-from nilabels.tools.aux_methods.utils import print_and_run
 
 
 def unzipper_given_pfi_input_and_pfo_output(pfi_in, pfo_out, sj_name, controller):
@@ -58,6 +60,9 @@ def unzip_single_sj(sj, controller):
 
     print('- Unzip subject {} '.format(sj))
 
+    if sj not in list_all_subjects(pfo_subjects_parameters):
+        raise IOError('Subject {} does not have a subject parameter ready.'.format(sj))
+
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
     study = sj_parameters['study']
@@ -108,7 +113,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['4303']  # ['4303', '4303']
+    lsm.input_subjects = ['13111']  # ['4303', '4303']
     lsm.update_ls()
 
     print lsm.ls

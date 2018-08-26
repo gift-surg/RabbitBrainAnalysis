@@ -48,6 +48,9 @@ def process_DWI_per_subject(sj, controller):
 
     print('\nProcessing DWI, subject {} started.\n'.format(sj))
 
+    if sj not in list_all_subjects(pfo_subjects_parameters):
+        raise IOError('Subject parameters not known. Subject {}'.format(sj))
+
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
     DWI_suffix = sj_parameters['names_architecture']['DWI']  # default is DWI
@@ -57,10 +60,10 @@ def process_DWI_per_subject(sj, controller):
     pfo_input_sj_DWI = jph(root_study_rabbits, '02_nifti', study, category, sj, '{}_{}'.format(sj, DWI_suffix))
     pfo_output_sj = jph(root_study_rabbits, 'A_data', study, category, sj)
 
-    if sj not in list_all_subjects(pfo_subjects_parameters):
-        raise IOError('Subject parameters not known. Subject {}'.format(sj))
     if not os.path.exists(pfo_input_sj_DWI):
-        raise IOError('Input folder DWI does not exist. Subject {}'.format(sj))
+        print('DWI modality not given in the input folder after Nifti conversion. '
+              'Bypass methods involving DWI for subject {}'.format(sj))
+        return
     if not os.path.exists(pfo_output_sj):
         raise IOError('Output folder DWI does not exist. Subject {}'.format(sj))
 

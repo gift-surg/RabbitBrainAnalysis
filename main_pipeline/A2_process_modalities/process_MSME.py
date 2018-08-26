@@ -52,10 +52,10 @@ segmentatino propagation.
 def process_MSME_per_subject(sj, controller):
     print('\nProcessing MSME, subject {} started.\n'.format(sj))
 
-    sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
-
     if sj not in list_all_subjects(pfo_subjects_parameters):
-        raise IOError('Subject parameters not known')
+        raise IOError('Subject {} does not have a subject parameter ready.'.format(sj))
+
+    sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
     study    = sj_parameters['study']
     category = sj_parameters['category']
@@ -80,9 +80,15 @@ def process_MSME_per_subject(sj, controller):
     print_and_run('mkdir -p {}'.format(pfo_mask))
     print_and_run('mkdir -p {}'.format(pfo_tmp))
 
+    pfi_msme_nifti = jph(pfo_input_sj, sj + '_MSME', sj + '_MSME.nii.gz')
+
+    if not os.path.exists(pfi_msme_nifti):
+        print('MSME modality not given in the input folder after Nifti conversion. Bypass methods involving MSME')
+        return
+
     if controller['squeeze']:
         print('- Processing MSME: squeeze {}'.format(sj))
-        pfi_msme_nifti = jph(pfo_input_sj, sj + '_MSME', sj + '_MSME.nii.gz')
+
         assert os.path.exists(pfi_msme_nifti)
         pfi_msme = jph(pfo_tmp, sj + '_MSME.nii.gz')
         squeeze_image_from_path(pfi_msme_nifti, pfi_msme, copy_anyway=True)
@@ -385,7 +391,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['1201']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['13111']  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

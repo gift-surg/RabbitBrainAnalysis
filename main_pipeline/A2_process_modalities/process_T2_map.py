@@ -39,6 +39,10 @@ def process_T2_map_per_subject(sj, controller):
 
     print('\nProcessing T2 map {} started.\n'.format(sj))
 
+    # parameters file sanity check:
+    if sj not in list_all_subjects(pfo_subjects_parameters):
+        raise IOError('Subject parameters not known. Subject {}'.format(sj))
+
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
     study = sj_parameters['study']
@@ -49,10 +53,9 @@ def process_T2_map_per_subject(sj, controller):
     pfo_mod           = jph(pfo_output_sj, 'mod')
 
     # input sanity check:
-    if sj not in list_all_subjects(pfo_subjects_parameters):
-        raise IOError('Subject parameters not known')
     if not os.path.exists(pfo_input_sj_MSME):
-        raise IOError('Input folder MSME does not exist.')
+        print('MSME modality not given in the input folder after Nifti conversion. Bypass methods involving MSME')
+        return
     if not os.path.exists(pfo_output_sj):
         raise IOError('Output folder MSME does not exist.')
     if not os.path.exists(pfo_mod):

@@ -7,6 +7,7 @@ import pickle
 
 import nilabels as nis
 
+from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_atlas, num_cores_run, root_atlas_W8
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.auxiliary.utils import print_and_run
@@ -15,6 +16,10 @@ from tools.auxiliary.multichannel import stack_a_list_of_images_from_list_pfi
 
 def move_to_stereotaxic_coordinate_per_subject(sj, controller):
     print('\nProcessing T1 {} started.\n'.format(sj))
+
+    # parameters file sanity check:
+    if sj not in list_all_subjects(pfo_subjects_parameters):
+        raise IOError('Subject parameters not known. Subject {}'.format(sj))
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
     study         = sj_parameters['study']

@@ -19,6 +19,9 @@ def process_g_ratio_per_subject(sj, controller):
 
     print('\nProcessing g-ratio {} started.\n'.format(sj))
 
+    if sj not in list_all_subjects(pfo_subjects_parameters):
+        raise IOError('Subject parameters not known. Subject {}'.format(sj))
+
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
     study    = sj_parameters['study']
@@ -31,12 +34,12 @@ def process_g_ratio_per_subject(sj, controller):
     pfo_output_sj     = jph(root_study_rabbits, 'A_data', study, category, sj)
 
     # input sanity check:
-    if sj not in list_all_subjects(pfo_subjects_parameters):
-        raise IOError('Subject parameters folder {} not present.'.format(pfo_subjects_parameters))
     if not os.path.exists(pfo_input_sj_DWI):
-        raise IOError('Input folder DWI {} does not exist.'.format(pfo_input_sj_DWI))
+        print('DWI modality not given in the input folder after Nifti conversion. Bypass methods involving DWI')
+        return
     if not os.path.exists(pfo_input_sj_MSME):
-        raise IOError('Input folder MSME {} does not exist.'.format(pfo_input_sj_MSME))
+        print('MSME modality not given in the input folder after Nifti conversion. Bypass methods involving MSME')
+        return
     if not os.path.exists(pfo_output_sj):
         raise IOError('Output folder subject {} does not exist.'.format(pfo_output_sj))
 

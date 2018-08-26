@@ -4,6 +4,7 @@ import pickle
 
 from nilabels.tools.aux_methods.utils import print_and_run
 
+from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 from tools.definitions import pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits
@@ -22,6 +23,9 @@ def delete_from_path(pfi_file_1, pfi_file_2):
 
 def delete_unzipped_raw_data_single_subject(sj):
     print('- Delete unzipped subject {} '.format(sj))
+
+    if sj not in list_all_subjects(pfo_subjects_parameters):
+        raise IOError('Subject {} does not have a subject parameter ready.'.format(sj))
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 

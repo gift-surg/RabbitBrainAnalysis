@@ -23,6 +23,7 @@ from nilabels.tools.image_colors_manipulations.relabeller import relabeller
 from nilabels.tools.aux_methods.sanity_checks import check_path_validity
 from nilabels.tools.detections.get_segmentation import MoG_array
 
+from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, root_atlas, root_atlas_W8, num_cores_run
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.auxiliary.lesion_mask_extractor import percentile_lesion_mask_extractor
@@ -34,6 +35,9 @@ from tools.correctors.bias_field_corrector4 import bias_field_correction
 def process_T1_per_subject(sj, steps):
 
     print('\nProcessing T1 {} started.\n'.format(sj))
+
+    if sj not in list_all_subjects(pfo_subjects_parameters):
+        raise IOError('Subject parameters not known. Subject {}'.format(sj))
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 

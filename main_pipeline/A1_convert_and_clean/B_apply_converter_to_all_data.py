@@ -3,10 +3,13 @@ from os.path import join as jph
 import pickle
 from bruker2nifti.converter import Bruker2Nifti
 
+from nilabels.tools.aux_methods.utils import print_and_run
+
+from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 from tools.definitions import pfo_subjects_parameters
 from main_pipeline.A0_main.main_controller import ListSubjectsManager
 from tools.definitions import root_study_rabbits
-from nilabels.tools.aux_methods.utils import print_and_run
+
 
 
 def converter_given_pfo_input_and_pfo_output(pfo_input_sj, pfo_output, sj_name):
@@ -35,6 +38,9 @@ def converter_given_pfo_input_and_pfo_output(pfo_input_sj, pfo_output, sj_name):
 def convert_single_subject(sj):
 
     print '\n\nSubj {} conversion!\n'.format(sj)
+
+    if sj not in list_all_subjects(pfo_subjects_parameters):
+        raise IOError('Subject {} does not have a subject parameter ready.'.format(sj))
 
     sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
 
@@ -79,7 +85,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['4303', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
+    lsm.input_subjects = ['13111', ]  # [ '2502bt1', '2503t1', '2605t1' , '2702t1', '2202t1',
     # '2205t1', '2206t1', '2502bt1']
     #  '3307', '3404']  # '2202t1', '2205t1', '2206t1' -- '2503', '2608', '2702',
     lsm.update_ls()

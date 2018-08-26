@@ -2375,7 +2375,7 @@ def reset_parameters_files(pfo_where_to_save):
     sp.DWI_squashed           = False
     sp.bias_field_parameters  = bfp_slow
     sp.MSME_acquisition       = 'high_res'
-    sp.comment                = ''
+    sp.comment                = 'No MSME'
     sp.in_atlas               = False
     sp.b0_level               = 7
     sp.options_S0             = {'window_percentile'  : (1, 99),
