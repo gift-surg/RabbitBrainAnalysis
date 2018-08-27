@@ -36,7 +36,7 @@ def main_runner(subj_list):
     steps = collections.OrderedDict()
 
     steps.update({'reset_parameters'   : False  })
-    steps.update({'step_A1'            : False  })
+    steps.update({'step_A1'            : True  })
     steps.update({'step_A2_T1'         : False  })
     steps.update({'step_A2_DWI'        : False  })
     steps.update({'step_A2_MSME'       : False  })
