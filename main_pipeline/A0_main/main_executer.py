@@ -28,25 +28,9 @@ from main_pipeline.A3_register_template_over_all_subjects.C_bring_segmentation_b
 from main_pipeline.A4_data_collection.A0_generate_reports import generate_reports_from_list
 
 
-def main_runner(subj_list):
+def main_runner(subj_list, steps):
 
     check_libraries()
-
-    # Set steps
-    steps = collections.OrderedDict()
-
-    steps.update({'reset_parameters'   : False  })
-    steps.update({'step_A1'            : True  })
-    steps.update({'step_A2_T1'         : False  })
-    steps.update({'step_A2_DWI'        : False  })
-    steps.update({'step_A2_MSME'       : False  })
-    steps.update({'step_A2_T2maps'     : False  })
-    steps.update({'step_A2_g_ratio'    : False  })
-    steps.update({'step_A3_move'       : True  })
-    steps.update({'step_A3_brain_mask' : True  })
-    steps.update({'step_A3_segment'    : True  })
-    steps.update({'step_A3_move_back'  : True  })
-    steps.update({'step_A4'            : False  })
 
     print('STEPS')
     for k in sorted(steps.keys()):
@@ -219,8 +203,6 @@ def main_runner(subj_list):
 
 if __name__ == '__main__':
 
-    # assert os.path.isdir(root_study_rabbits), 'Connect to cluster / Pantopolio!'
-
     ''' Set parameters per subjects or per group '''
 
     lsm = ListSubjectsManager()
@@ -232,7 +214,7 @@ if __name__ == '__main__':
     lsm.execute_ACS_ex_vivo   = False
 
     # lsm.input_subjects = ['12503']
-    lsm.input_subjects = ['13111',   ]  # '5302', '5303'] '5302', '5303'
+    lsm.input_subjects = ['13111', ]  # '5302', '5303'] '5302', '5303'
     # lsm.input_subjects = ['13111', ]
     # lsm.input_subjects = ['5302', '5303']
     # lsm.input_subjects = ['5303']
@@ -241,8 +223,20 @@ if __name__ == '__main__':
 
     print(lsm.ls)
 
-    # import time
-    # print('on Sleep:')
-    # time.sleep(4 * 3600)
-    # print('Wake up!')
-    main_runner(lsm.ls)
+    # Set steps
+    steps = collections.OrderedDict()
+
+    steps.update({'reset_parameters'   : False  })
+    steps.update({'step_A1'            : False  })
+    steps.update({'step_A2_T1'         : False  })
+    steps.update({'step_A2_DWI'        : False  })
+    steps.update({'step_A2_MSME'       : False  })
+    steps.update({'step_A2_T2maps'     : False  })
+    steps.update({'step_A2_g_ratio'    : False  })
+    steps.update({'step_A3_move'       : True  })
+    steps.update({'step_A3_brain_mask' : True  })
+    steps.update({'step_A3_segment'    : True  })
+    steps.update({'step_A3_move_back'  : True  })
+    steps.update({'step_A4'            : False  })
+
+    main_runner(lsm.ls, steps)
