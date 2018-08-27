@@ -93,7 +93,7 @@ def spot_a_list_of_rabbits(subjects_list):
             spot_sj.propagation_options['Affine_reg_masks']         = ('T1', 'S0')  # if (), there is a single mask for all modalities
             spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
             spot_sj.propagation_options['Affine_slim_reg_mask']     = use_slim_mask
-            spot_sj.propagation_options['N_rigid_modalities']       = ('T1', 'S0')  # if empty, no non-rigid step.
+            spot_sj.propagation_options['N_rigid_modalities']       = ('T1', 'FA')  # if empty, no non-rigid step.
             spot_sj.propagation_options['N_rigid_reg_masks']        = ('T1', 'S0')  # if [], same mask for all modalities
             spot_sj.propagation_options['N_rigid_slim_reg_mask']    = use_slim_mask
             spot_sj.propagation_options['N_rigid_mod_diff_bfc']     = ('T1', )  # empty list no diff bfc. - PUT A COMMA IF ONLY ONE SUBJECT!!
@@ -141,9 +141,9 @@ def spot_a_list_of_rabbits(subjects_list):
         # --- Propagator controller
         spot_sj.propagation_controller['Aff_alignment']          = False
         spot_sj.propagation_controller['Propagate_aff_to_segm']  = False
-        spot_sj.propagation_controller['Propagate_aff_to_mask']  = False
-        spot_sj.propagation_controller['Get_N_rigid_slim_mask']  = False
-        spot_sj.propagation_controller['Get_differential_BFC']   = False
+        spot_sj.propagation_controller['Propagate_aff_to_mask']  = True
+        spot_sj.propagation_controller['Get_N_rigid_slim_mask']  = True
+        spot_sj.propagation_controller['Get_differential_BFC']   = True
         spot_sj.propagation_controller['N_rigid_alignment']      = True
         spot_sj.propagation_controller['Propagate_n_rigid']      = True
         spot_sj.propagation_controller['Smooth_results']         = True
