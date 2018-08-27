@@ -116,7 +116,7 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
         pfi_transformation = jph(pfo_tmp, 'T1_strx_to_origin.txt')
         pfi_warped_T1_rigid = jph(pfo_tmp, 'T1_strx_to_origin_warped.nii.gz')
 
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} '.format(  # -rigOnly
+        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -rigOnly '.format(  #
             pfi_T1_origin, pfi_T1_reg_mask_origin, pfi_T1_strx_hdo, pfi_T1_reg_mask_strx_hdo,
             pfi_transformation, pfi_warped_T1_rigid)
 
@@ -168,7 +168,7 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
 
             pfi_transformation = jph(pfo_tmp, 'T1origin_to_S0origin.txt')
             pfi_warped_T1toS0_rigid = jph(pfo_tmp, 'T1origin_to_S0origin_warped.nii.gz')
-            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -rigOnly'.format(
+            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -'.format(  # rigOnly
                 pfi_S0_origin, pfi_S0_reg_mask_origin, pfi_T1_strx_hdoS0, pfi_T1_reg_mask_strx_hdoS0,
                 pfi_transformation, pfi_warped_T1toS0_rigid, num_cores_run
             )
@@ -184,7 +184,7 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
             # floating not oriented header:
             pfi_transformation = jph(pfo_tmp, 'T1origin_to_S0origin.txt')
             pfi_warped_T1toS0_rigid = jph(pfo_tmp, 'T1origin_to_S0origin_warped.nii.gz')
-            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -rigOnly'.format(
+            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} '.format( # -rigOnly
                 pfi_S0_origin, pfi_S0_reg_mask_origin, pfi_T1_strx, pfi_T1_reg_mask_strx,
                 pfi_transformation, pfi_warped_T1toS0_rigid, num_cores_run
             )
@@ -239,7 +239,7 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
 
             pfi_transformation = jph(pfo_tmp, 'MSMEinS0_to_MSME.txt')
             pfi_warped_MSMEinS0_to_MSME_rigid = jph(pfo_tmp, 'MSMEinS0_to_MSME_warped.nii.gz')
-            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -rigOnly'.format(
+            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} '.format(  # -rigOnly
                 pfi_MSME_origin, pfi_MSME_reg_mask_origin, pfi_MSMEinS0_hdoMSME, pfi_MSMEinS0_reg_mask_hdoMSME,
                 pfi_transformation, pfi_warped_MSMEinS0_to_MSME_rigid, num_cores_run
             )
@@ -254,7 +254,7 @@ def propagate_segmentation_in_original_space_per_subject(sj, controller):
         else:
             pfi_transformation = jph(pfo_tmp, 'MSMEinS0_to_MSME.txt')
             pfi_warped_MSMEinS0_to_MSME_rigid = jph(pfo_tmp, 'MSMEinS0_to_MSME_warped.nii.gz')
-            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -rigOnly'.format(
+            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} '.format(  # -rigOnly
                 pfi_MSME_origin, pfi_MSME_reg_mask_origin, pfi_MSMEinS0, pfi_MSMEinS0_reg_mask,
                 pfi_transformation, pfi_warped_MSMEinS0_to_MSME_rigid, num_cores_run
             )
@@ -276,7 +276,7 @@ if __name__ == '__main__':
     print('Propagate from Stereotaxic orientation to original space, local run. ')
 
     controller_ = {
-        'Header_alignment_T1strx_to_T1orig' : True,
+        'Header_alignment_T1strx_to_T1orig' : False,
         'Rigid_T1strx_to_T1orig'            : True,
         'Propagate_T1_segm'                 : True,
         'Inter_modal_reg_S0'                : True,
@@ -290,7 +290,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['5302', '5508', '55BW', '5303']  # ['13102', '13201', '13202', '13401', '13402', '13403']
+    lsm.input_subjects = ['13111']  # ['13102', '13201', '13202', '13401', '13402', '13403']
     lsm.update_ls()
 
     propagate_segmentation_in_original_space_from_list(lsm.ls, controller_)

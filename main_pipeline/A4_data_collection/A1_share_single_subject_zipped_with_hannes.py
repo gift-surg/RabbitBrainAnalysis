@@ -60,7 +60,7 @@ if __name__ == '__main__':
     #
     # lsm.input_subjects = preterm + term
     #
-    lsm.input_subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610']
+    lsm.input_subjects = ['13111']
 
 
     lsm.update_ls()
