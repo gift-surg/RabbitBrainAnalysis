@@ -25,8 +25,9 @@ def spot_a_list_of_rabbits(subjects_list):
 
         pfo_target = jph(root_study_rabbits, 'A_data', study, category, sj_target, 'stereotaxic')
 
+        # Parameter tag z-SPOT_<TAG>
         if study == 'W8':
-            parameters_tag = 'P1'
+            parameters_tag = 'P3'
             multi_atlas_subjects_list = multi_atlas_W8_subjects
             pfo_sj_atlas = jph(root_study_rabbits, 'A_MultiAtlas_W8', sj_target)
             root_multi_atlas = root_atlas_W8
@@ -72,7 +73,6 @@ def spot_a_list_of_rabbits(subjects_list):
 
         # Architecture names - default 'automatic'.
         spot_sj.arch_automatic_segmentations_name_folder = sj_parameters['names_architecture']['final_segm_strx']
-
 
         # --- target parameters
         spot_sj.target_list_suffix_modalities = ['T1', 'S0', 'V1', 'MD', 'FA']
@@ -125,11 +125,11 @@ def spot_a_list_of_rabbits(subjects_list):
             spot_sj.propagation_options['Affine_reg_masks']         = ('T1', 'S0')  # if (), there is a single mask for all modalities
             spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
             spot_sj.propagation_options['Affine_slim_reg_mask']     = use_slim_mask
-            spot_sj.propagation_options['N_rigid_modalities']       = ('T1', 'FA')  # if empty, no non-rigid step.
-            spot_sj.propagation_options['N_rigid_reg_masks']        = ('T1', 'S0')  # if [], same mask for all modalities
+            spot_sj.propagation_options['N_rigid_modalities']       = ('T1', )  # if empty, no non-rigid step.
+            spot_sj.propagation_options['N_rigid_reg_masks']        = ('T1', )  # if [], same mask for all modalities
             spot_sj.propagation_options['N_rigid_slim_reg_mask']    = use_slim_mask
             spot_sj.propagation_options['N_rigid_mod_diff_bfc']     = ( )  # empty list no diff bfc. - PUT A COMMA EVEN IF ONLY ONE SUBJECT!!
-            spot_sj.propagation_options['N_rigid_parameters']       = ' -be 0.9  -vel -smooR 0.07 -smooF 0.07 '
+            spot_sj.propagation_options['N_rigid_parameters']       = ' -be 0.8 -vel -smooR 0.07 -smooF 0.07 '
             spot_sj.propagation_options['N_rigid_same_mask_moving'] = False
             spot_sj.propagation_options['N_reg_mask_target']        = 0  # 0 roi_mask, 1 reg_mask
             spot_sj.propagation_options['N_reg_mask_moving']        = 1  # 0 roi_mask, 1 reg_mask
@@ -142,15 +142,15 @@ def spot_a_list_of_rabbits(subjects_list):
         spot_sj.propagation_controller['Aff_alignment']          = False
         spot_sj.propagation_controller['Propagate_aff_to_segm']  = False
         spot_sj.propagation_controller['Propagate_aff_to_mask']  = False
-        spot_sj.propagation_controller['Get_N_rigid_slim_mask']  = True
-        spot_sj.propagation_controller['Get_differential_BFC']   = True
-        spot_sj.propagation_controller['N_rigid_alignment']      = True
-        spot_sj.propagation_controller['Propagate_n_rigid']      = True
-        spot_sj.propagation_controller['Smooth_results']         = True
+        spot_sj.propagation_controller['Get_N_rigid_slim_mask']  = False
+        spot_sj.propagation_controller['Get_differential_BFC']   = False
+        spot_sj.propagation_controller['N_rigid_alignment']      = False
+        spot_sj.propagation_controller['Propagate_n_rigid']      = False
+        spot_sj.propagation_controller['Smooth_results']         = False
         spot_sj.propagation_controller['Stack_warps_and_segms']  = True
 
         # --- Fuser option
-        spot_sj.fuser_options['Fusion_methods']  = ['MV', ]  # 'STAPLE', 'STEPS'
+        spot_sj.fuser_options['Fusion_methods']  = ['STAPLE', 'STEPS', ]  # 'STAPLE', 'STEPS'
         spot_sj.fuser_options['STAPLE_params']   = OrderedDict([('pr1', None)])
         spot_sj.fuser_options['STEPS_params']    = OrderedDict([('pr{0}.{1}'.format(k, n), [k, n, 4])
                                                                 for n in [9] for k in [5, 11]])
@@ -162,7 +162,7 @@ def spot_a_list_of_rabbits(subjects_list):
 
         t = time.time()
 
-        spot_sj.propagate()
+        # spot_sj.propagate()
         spot_sj.fuse()
 
         elapsed = time.time() - t
@@ -190,7 +190,7 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['13102', '13201', '13202', '13401', '13402', '13403']
     # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
 
-    lsm.input_subjects = ['13111', ] #'5508', '55BW', '5303']
+    lsm.input_subjects = ['5303', ] #'5508', '55BW', '5303']
 
     lsm.update_ls()
 

@@ -31,7 +31,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
 
     if study == 'W8':
         pfo_atlas = root_atlas_W8
-        options   = {'Template_chart_path' : jph(root_atlas_W8, '12503'),
+        options   = {'Template_chart_path' : jph(root_atlas_W8, '12503'),  # TODO
                      'Template_name'       : '12503'}
     elif study == 'ACS' or study == 'PTB' or study == 'TestStudy':
         pfo_atlas = root_atlas
@@ -57,7 +57,7 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
     pfo_sc_sj_mod   = jph(pfo_sc_sj, 'mod')
     pfo_sc_sj_masks = jph(pfo_sc_sj, 'masks')
 
-    subject_is_in_atlas = False # sj_parameters['in_atlas']  # TODO momentary bypass - correct this part!
+    subject_is_in_atlas = False  # sj_parameters['in_atlas']  # TODO momentary bypass - correct this part!
 
     if subject_is_in_atlas:
         pfo_sj_mod_in_atlas   = jph(pfo_atlas, sj, 'mod')
@@ -128,7 +128,8 @@ def move_to_stereotaxic_coordinate_per_subject(sj, controller):
             sj, options['Template_name'], 'T1'))
         pfi_resampled_T1 = jph(pfo_sc_sj_mod, '{0}_T1.nii.gz'.format(sj))  # RESULT
 
-        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} '.format(  #-rigOnly
+        # THIS MUST BE A RIGID REGISTRATION!
+        cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -aff {4} -res {5} -omp {6} -rigOnly '.format(
             pfi_mod_reference_atlas, pfi_reg_mask_reference_atlas, pfi_T1_reoriented, pfi_reg_mask_T1_reoriented,
             pfi_transformation_T1_over_T1, pfi_resampled_T1, num_cores_run)
         print_and_run(cmd)
@@ -309,7 +310,7 @@ if __name__ == '__main__':
     lsm.execute_ACS_ex_vivo   = False
 
     # lsm.input_subjects = ['4303']  # ['13102', '13201', '13202', '13401', '13402', '13403']
-    lsm.input_subjects = ['5302', '5508']
+    lsm.input_subjects = ['55BW', '5302', '5303', '5508', '5510']
     lsm.update_ls()
 
     move_to_stereotaxic_coordinate_from_list(lsm.ls, controller_)

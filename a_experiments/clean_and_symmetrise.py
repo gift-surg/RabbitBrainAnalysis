@@ -14,7 +14,7 @@ from nilabels.tools.aux_methods.utils_nib import set_new_data
 # Input
 root_sj = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/study/A_MultiAtlas_W8/55BW'
 
-pfi_input_segmentation = jph(root_sj, 'segm', '55BW_segm_man_copy.nii.gz')
+pfi_input_segmentation = jph(root_sj, 'segm', '55BW_segm_man2_copy.nii.gz')
 pfi_input_anatomy      = jph(root_sj, 'mod', '55BW_T1.nii.gz')
 pfi_labels_descriptor  = '/Users/sebastiano/Dropbox/RabbitEOP-MRI/study/A_MultiAtlas_W8/labels_descriptor.txt'
 
@@ -32,7 +32,7 @@ pfi_cleaned_segmentation          = jph(pfo_temporary, '55BW_segm_notyetfinal_HA
 log_file_after_cleaning           = jph(pfo_temporary, 'log_after_cleaning.txt')
 pfi_differece_cleaned_non_cleaned = jph(pfo_temporary, 'difference_half_cleaned_uncleaned.nii.gz')
 
-pfi_symmetrised_segm              = jph(root_sj, 'segm', 'automatic', '55BW_segm_man_SYM.nii.gz')
+pfi_symmetrised_segm              = jph(root_sj, 'segm', 'automatic', '55BW_segm_man_SYM2.nii.gz')
 
 
 # ---- PARAMETERS ------
@@ -41,14 +41,16 @@ mid_sagittal_plane = 185
 
 # ---- PRE-PROCESS ----
 
-controller = {'Create_tmp'                          : False,
-              'Copy_in_intermediate'                : False,
-              'Erase_half'                          : False,
-              'Morphological'                       : False,
-              'Clean_segmentation'                  : False,
-              'Get_cleaned_non_cleaned_differences' : False,
+controller = {'Create_tmp'                          : True,
+              'Copy_in_intermediate'                : True,
+              'Erase_half'                          : True,
+              'Morphological'                       : True,
+              'Clean_segmentation'                  : True,
+              'Get_cleaned_non_cleaned_differences' : True,
               'Symmetrize'                          : True
               }
+
+reuse_registration = True
 
 
 # ---- PRE-PROCESS ----
@@ -127,11 +129,11 @@ if controller['Clean_segmentation']:
 
     # get the cleaned segmentation
     nis_app.manipulate_labels.clean_segmentation(pfi_segmentation_intermediate, pfi_cleaned_segmentation,
-                                            labels_to_clean=correspondences_lab_comps, force_overwriting=True)
+                                                 labels_to_clean=correspondences_lab_comps, force_overwriting=True)
 
     # get the report of the connected components afterwards
     nis_app.check.number_connected_components_per_label(pfi_cleaned_segmentation,
-                                                   where_to_save_the_log_file=log_file_after_cleaning)
+                                                        where_to_save_the_log_file=log_file_after_cleaning)
 
 else:
     os.system('cp {} {}'.format(pfi_segmentation_intermediate, pfi_cleaned_segmentation))
@@ -168,7 +170,7 @@ if controller['Symmetrize']:
                                                     results_folder_path=pfo_temporary,
                                                     list_labels_transformed=labels_sym_right,
                                                     coord='z',
-                                                    reuse_registration=False)
+                                                    reuse_registration=reuse_registration)
 
 
 

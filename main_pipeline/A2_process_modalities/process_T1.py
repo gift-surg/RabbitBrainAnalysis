@@ -278,7 +278,6 @@ def process_T1_per_subject(sj, steps):
             pfi_T1_bfc = nib.load(pfi_3d_bias_field_corrected)
             pfi_roi_mask = nib.load(pfi_roi_mask)
 
-
             im_T1_bfc = nib.load(pfi_T1_bfc)
             im_roi_mask = nib.load(pfi_T1_bfc)
             c_array, p_array = MoG_array(im_T1_bfc.get_data(), K=K, pre_process_median_filter=True,
@@ -351,14 +350,14 @@ def process_T1_from_list(subj_list, controller):
 
 if __name__ == '__main__':
     print('Process T1, local run.')
-    controller_steps = {'orient_to_standard'       : False,
+    controller_steps = {'orient_to_standard'       : True,
                         'create_roi_masks'         : True,
-                        'adjust_mask'              : False,
-                        'cut_masks'                : False,
-                        'step_bfc'                 : False,
-                        'create_lesion_maks'       : False,
-                        'create_reg_mask'          : False,
-                        'save_results'             : False}
+                        'adjust_mask'              : True,
+                        'cut_masks'                : True,
+                        'step_bfc'                 : True,
+                        'create_lesion_maks'       : True,
+                        'create_reg_mask'          : True,
+                        'save_results'             : True}
 
     lsm = ListSubjectsManager()
 
@@ -368,7 +367,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['5302', '5303', '5508', '55BW']
+    lsm.input_subjects = ['55BW', '5302', '5303', '5508', '5510']
     lsm.update_ls()
 
     print lsm.ls
