@@ -3,6 +3,11 @@
 The pipeline to manipulate MRI data from the "Encephalopaty of prematurity" project, in collaboration with KU Leuven.
 
 
+<p align="center"> 
+<img src="https://github.com/gift-surg/RabbitBrainAnalysis/blob/master/notes/hat_logo.jpg" width="500">
+</p>
+
+
 #### Features:
 
 + Private repository: may be too data-specific to be publicly useful.
