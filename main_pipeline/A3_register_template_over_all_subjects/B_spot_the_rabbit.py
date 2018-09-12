@@ -150,7 +150,7 @@ def spot_a_list_of_rabbits(subjects_list):
         spot_sj.propagation_controller['Stack_warps_and_segms']  = True
 
         # --- Fuser option
-        spot_sj.fuser_options['Fusion_methods']  = ['STAPLE', 'STEPS', ]  # 'STAPLE', 'STEPS'
+        spot_sj.fuser_options['Fusion_methods']  = ['MV',]  # ['STAPLE', 'STEPS', ]  # 'STAPLE', 'STEPS'
         spot_sj.fuser_options['STAPLE_params']   = OrderedDict([('pr1', None)])
         spot_sj.fuser_options['STEPS_params']    = OrderedDict([('pr{0}.{1}'.format(k, n), [k, n, 4])
                                                                 for n in [9] for k in [5, 11]])
@@ -190,7 +190,7 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['13102', '13201', '13202', '13401', '13402', '13403']
     # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
 
-    lsm.input_subjects = ['5303', ] #'5508', '55BW', '5303']
+    lsm.input_subjects = ['5508', ] #'5508', '55BW', '5303']
 
     lsm.update_ls()
 
