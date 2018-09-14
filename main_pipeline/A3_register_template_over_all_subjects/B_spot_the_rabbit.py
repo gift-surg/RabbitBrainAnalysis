@@ -139,18 +139,18 @@ def spot_a_list_of_rabbits(subjects_list):
             raise IOError
 
         # --- Propagator controller
-        spot_sj.propagation_controller['Aff_alignment']          = False
-        spot_sj.propagation_controller['Propagate_aff_to_segm']  = False
-        spot_sj.propagation_controller['Propagate_aff_to_mask']  = False
-        spot_sj.propagation_controller['Get_N_rigid_slim_mask']  = False
-        spot_sj.propagation_controller['Get_differential_BFC']   = False
-        spot_sj.propagation_controller['N_rigid_alignment']      = False
-        spot_sj.propagation_controller['Propagate_n_rigid']      = False
-        spot_sj.propagation_controller['Smooth_results']         = False
+        spot_sj.propagation_controller['Aff_alignment']          = True
+        spot_sj.propagation_controller['Propagate_aff_to_segm']  = True
+        spot_sj.propagation_controller['Propagate_aff_to_mask']  = True
+        spot_sj.propagation_controller['Get_N_rigid_slim_mask']  = True
+        spot_sj.propagation_controller['Get_differential_BFC']   = True
+        spot_sj.propagation_controller['N_rigid_alignment']      = True
+        spot_sj.propagation_controller['Propagate_n_rigid']      = True
+        spot_sj.propagation_controller['Smooth_results']         = True
         spot_sj.propagation_controller['Stack_warps_and_segms']  = True
 
         # --- Fuser option
-        spot_sj.fuser_options['Fusion_methods']  = ['MV',]  # ['STAPLE', 'STEPS', ]  # 'STAPLE', 'STEPS'
+        spot_sj.fuser_options['Fusion_methods']  = ['MV', 'STAPLE', 'STEPS',]  # ['STAPLE', 'STEPS', ]  # 'STAPLE', 'STEPS'
         spot_sj.fuser_options['STAPLE_params']   = OrderedDict([('pr1', None)])
         spot_sj.fuser_options['STEPS_params']    = OrderedDict([('pr{0}.{1}'.format(k, n), [k, n, 4])
                                                                 for n in [9] for k in [5, 11]])
@@ -162,7 +162,7 @@ def spot_a_list_of_rabbits(subjects_list):
 
         t = time.time()
 
-        # spot_sj.propagate()
+        spot_sj.propagate()
         spot_sj.fuse()
 
         elapsed = time.time() - t
@@ -190,7 +190,7 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['13102', '13201', '13202', '13401', '13402', '13403']
     # lsm.input_subjects = ['13201', '13202', '13401', '13402', '13403', '13403retest']
 
-    lsm.input_subjects = ['5508', ] #'5508', '55BW', '5303']
+    lsm.input_subjects = ['5510', ] #'5508', '55BW', '5303']
 
     lsm.update_ls()
 
