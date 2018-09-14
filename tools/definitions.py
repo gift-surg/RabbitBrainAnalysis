@@ -27,7 +27,7 @@ if os.path.exists('/cluster/project0'):
 elif os.path.exists('/Volumes/SmartWare/'):
     print('You are on emporium')
     root_main_dropbox   = '/Users/sebastiano/Dropbox/RabbitEOP-MRI'
-    assert os.path.isdir(root_main_dropbox), 'No dropbox available'
+    #assert os.path.isdir(root_main_dropbox), 'No dropbox available'
     root_main_emporium  = '/Volumes/SmartWare/'
     root_study_rabbits  = jph(root_main_emporium, 'rabbit')
     root_atlas          = jph(root_study_rabbits, 'A_MultiAtlas')

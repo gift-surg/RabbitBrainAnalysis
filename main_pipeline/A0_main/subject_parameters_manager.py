@@ -155,16 +155,17 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
     list_subjects = [file_name for file_name in os.listdir(pfo_where_parameter_files_are_stored)
                      if not file_name.endswith(".txt")]
 
-    list_PTB_ex_skull   = []
-    list_PTB_ex_vivo    = []
-    list_PTB_in_vivo    = []
-    list_PTB_op_skull   = []
-    list_ACS_ex_vivo01  = []
-    list_ACS_ex_vivo02  = []
-    list_W8_first_trial = []
-    list_TEST_ex_vivo   = []
-    list_comments       = []
-    list_leftovers      = []
+    list_PTB_ex_skull    = []
+    list_PTB_ex_vivo     = []
+    list_PTB_in_vivo     = []
+    list_PTB_op_skull    = []
+    list_ACS_ex_vivo01   = []
+    list_ACS_ex_vivo02   = []
+    list_W8_first_trial  = []
+    list_W8_second_trial = []
+    list_TEST_ex_vivo    = []
+    list_comments        = []
+    list_leftovers       = []
     for k in list_subjects:
         subj_k_parameters = pickle.load(open(jph(pfo_where_parameter_files_are_stored, k), 'r'))
         if subj_k_parameters['study'] == 'PTB':
@@ -188,6 +189,8 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
         elif subj_k_parameters['study'] == 'W8':
             if subj_k_parameters['category'] == 'first_trial':
                 list_W8_first_trial.append(k)
+            if subj_k_parameters['category'] == 'second_trial':
+                list_W8_second_trial.append(k)
         elif subj_k_parameters['study'] == 'TestStudy':
             if subj_k_parameters['category'] == 'ex_vivo':
                 list_TEST_ex_vivo.append(k)
@@ -228,6 +231,9 @@ def check_subjects_situation(pfo_where_parameter_files_are_stored):
 
     print('\nWeek 8 first trial: ')
     print(list_W8_first_trial, len(list_W8_first_trial))
+
+    print('\nWeek 8 second trial: ')
+    print(list_W8_second_trial, len(list_W8_second_trial))
 
     print('\nTestStudy_ex_vivo: ')
     print(list_TEST_ex_vivo, len(list_TEST_ex_vivo))
