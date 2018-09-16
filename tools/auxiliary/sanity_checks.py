@@ -37,7 +37,7 @@ def check_libraries():
     # aa = 'export PATH=/home/ferraris/software_lib/NiftyFit2/niftyfit-build/fit-apps/:${PATH}'
     # os.system(aa)
 
-    assert cmd_exists(bfc_corrector_cmd, 'No niftk installed')
+    assert cmd_exists(bfc_corrector_cmd, 'No Niftk installed')
     assert cmd_exists('seg_maths', 'No Nifty Seg installed')
     assert cmd_exists('reg_aladin', 'No Nifty Reg installed')
     assert cmd_exists('fslhd', 'No fsl installed')
