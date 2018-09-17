@@ -5,7 +5,7 @@ Volume, Volume/tot_volume, FA_i, MD_i, i in regions.
 Very direct approach to create the intended data structure.
 No ICV or other corrections, no stats, no sigma or outlier removal.
 ONLY getting the row data in the report folder for each subject, both in stereotaxic and in the original orientation.
-The raw data in the A_data/<study>/<cathegory>/<sj> folder for each subject.
+The raw data in the A_data/<study>/<category>/<sj> folder for each subject.
 """
 import os
 import numpy as np
@@ -313,14 +313,14 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = preterm + term
 
-    lsm.input_subjects = ['13102', ] #  '13201', '13202', '13401', '13402', '13403']
+    lsm.input_subjects = ['13201', ] #  '13201', '13202', '13401', '13402', '13403']
 
 
     lsm.update_ls()
 
     print(lsm.ls)
 
-    controller_ = {'Force_reset'                  : False,
+    controller_ = {'Force_reset'                  : True,
                    'Volumes_per_region'           : True,
                    'FA_per_region'                : True,
                    'MD_per_region'                : True,
