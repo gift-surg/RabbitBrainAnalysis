@@ -35,7 +35,7 @@ def unzipper_given_pfi_input_and_pfo_output(pfi_in, pfo_out, sj_name, controller
         file_found = 0
         for p in os.listdir(pfo_out):
 
-            if '_HVDM_{}_'.format(sj_name) in p or '_{}_'.format(sj_name) in p:
+            if '_HVDM_{}_'.format(sj_name) in p or '_{}_'.format(sj_name) in p or '_{}_{}_'.format(sj_name[:3], sj_name[3:]) in p:
                 file_found += 1
                 pfi_unzipped_old_name = jph(pfo_out, p)
                 pfi_unzipped_new_name = jph(pfo_out, sj_name)
@@ -47,9 +47,9 @@ def unzipper_given_pfi_input_and_pfo_output(pfi_in, pfo_out, sj_name, controller
 
         if file_found != 1:
             raise IOError(
-                'Unzipped file was saved with a different naming convention. We found {} with string {} in it. '
-                'Manual work required. (Probably two subjects with the same name? '
-                'Probably different covention to save filenames?)'.format(file_found, '_HVDM_{}_'.format(sj_name)))
+                'Unzipped file was saved with a different naming convention. We found {} with no string {} in it. '
+                'Manual work required. Check under folder {} (Probably two subjects with the same name? '
+                'Probably different covention to save filenames?)'.format(file_found, '_{}_'.format(sj_name)), pfo_out)
 
         pfi_ds_store_mac = jph(pfo_out, sj_name, '.DS_Store')
         if os.path.exists(pfi_ds_store_mac):
@@ -100,8 +100,8 @@ def unzip_subjects_from_list(subj_list, controller):
 
 if __name__ == '__main__':
 
-    controller_ = {'create_tmp_folder_structure' : True,
-                   'unzip'                       : True,
+    controller_ = {'create_tmp_folder_structure' : False,
+                   'unzip'                       : False,
                    'rename'                      : True
                    }
 
@@ -113,7 +113,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
 
-    lsm.input_subjects = ['13111']  # ['4303', '4303']
+    lsm.input_subjects = ['13601']  # ['4303', '4303']
     lsm.update_ls()
 
     print lsm.ls
