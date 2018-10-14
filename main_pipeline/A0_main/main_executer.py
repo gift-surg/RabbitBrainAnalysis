@@ -216,7 +216,7 @@ if __name__ == '__main__':
     lsm.execute_ACS_ex_vivo   = False
 
     # lsm.input_subjects = ['12503']
-    lsm.input_subjects = ['13601', '13604', '13605', '13610', '13701', '13706', '13707']
+    lsm.input_subjects = ['13603']  # ['13601', '13604', '13610', '13706', '13707']  # '13605', '13701',
     # lsm.input_subjects = ['13111', ]
     # lsm.input_subjects = ['5302', '5303']
     # lsm.input_subjects = ['5303']

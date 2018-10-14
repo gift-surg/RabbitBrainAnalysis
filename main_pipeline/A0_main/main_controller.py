@@ -74,6 +74,9 @@ class ListSubjectsManager(object):
                 self.ls.append(self.input_subjects)
             elif isinstance(self.input_subjects, list):
                 self.ls += self.input_subjects
+            else:
+                raise IOError('Input_subject attribute must be a string or a list of strings with the subjects Id. '
+                              'Can not be a {}'.format(type(self.input_subjects)))
         # elim duplicate and reorder:
         if not self.ls == []:
             sorted_ls = list(set(self.ls))
