@@ -68,7 +68,6 @@ def spot_a_list_of_rabbits(subjects_list):
         spot_sj.atlas_list_charts_names       = multi_atlas_subjects_list
         spot_sj.atlas_list_suffix_modalities  = ['T1', 'S0', 'V1', 'MD', 'FA']
         spot_sj.atlas_list_suffix_masks       = ['roi_mask', 'roi_reg_mask', 'brain_mask']
-        spot_sj.atlas_reference_chart_name    = '1305'
         spot_sj.atlas_segmentation_suffix     = 'segm'
 
         # Architecture names - default 'automatic'.
@@ -89,6 +88,8 @@ def spot_a_list_of_rabbits(subjects_list):
 
         if sj_parameters['category'] == 'ex_vivo' or sj_parameters['category'] == 'ex_vivo01' or sj_parameters['category'] == 'ex_vivo02':
             # --- Propagator option
+            spot_sj.atlas_reference_chart_name = '1305'
+
             spot_sj.propagation_options['Affine_modalities']        = ('T1', 'FA')
             spot_sj.propagation_options['Affine_reg_masks']         = ('T1', 'S0')  # if (), there is a single mask for all modalities
             spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
@@ -105,6 +106,8 @@ def spot_a_list_of_rabbits(subjects_list):
 
         elif sj_parameters['category'] == 'in_vivo':
             # --- Propagator option
+            spot_sj.atlas_reference_chart_name = '1305'
+
             spot_sj.propagation_options['Affine_modalities']        = ('T1',)
             spot_sj.propagation_options['Affine_reg_masks']         = ('T1',)  # if (), there is a single mask for all modalities
             spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
@@ -119,8 +122,10 @@ def spot_a_list_of_rabbits(subjects_list):
             spot_sj.propagation_options['N_reg_mask_moving']        = 1  # 0 roi_mask, 1 reg_mask
             spot_sj.propagation_options['Final_smoothing_factor']   = 1
 
-        elif sj_parameters['category'] == 'first_trial' :
+        elif sj_parameters['category'] == 'first_trial' or sj_parameters['category'] == 'second_trial':
             # --- Propagator option
+            spot_sj.atlas_reference_chart_name = '12503'
+
             spot_sj.propagation_options['Affine_modalities']        = ('T1', 'FA')
             spot_sj.propagation_options['Affine_reg_masks']         = ('T1', 'S0')  # if (), there is a single mask for all modalities
             spot_sj.propagation_options['Affine_parameters']        = ' -speeeeed '
