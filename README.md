@@ -14,12 +14,14 @@ The pipeline to manipulate and analyse MRI data from the "Encephalopaty of prema
 + Input of the pipeline is the subject scanned in the native Bruker format. 
 + Output of the pipeline is the subject oriented and segmented provided with subject-wise and comparative data analysis.  
 + **WARNING** the code is developed to be `research code` (read: 80% is an uncommented work in progress, not packaged to be a product. [See research code definition](https://academia.stackexchange.com/questions/21276/best-practice-models-for-research-code))
-+ The code is developed in collaboration with University College London UCL, King's College London (KCL) and Katholische Universitat Leuven (KUL).
++ The code is developed in collaboration with University College London (UCL) and Katholieke Universiteit Leuven (KUL).
 + Pipeline schema can be found under notes folder.
 + Based on libraries in `requriements.txt` (there are non pip-installable dependencies: follow installation instructions directly from the README library repository) other than niftyReg niftySeg and FSL
 + Package `main_pipeline` has the strucure of the pipeline as in the schematic of the documentation.
 + Each module of the pipeline can run independently (for debugging and single step analysis) or as part of
 the whole pipeline, if called by the `main`.
++ The code can be used for any dataset (with the required changes) and the authors intend to make the acquired dataset 
+publicly available at the end of the study.
 
 
 #### How to use - basic run:
