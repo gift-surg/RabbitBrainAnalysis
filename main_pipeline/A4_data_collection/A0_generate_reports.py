@@ -313,7 +313,7 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = preterm + term
 
-    lsm.input_subjects = ['13102', ] #  '13201', '13202', '13401', '13402', '13403']
+    lsm.input_subjects = ['13601', '13603', '13604', '13605', '13610', '13706', '13707']  # ['13102', ] #  '13201', '13202', '13401', '13402', '13403']
 
 
     lsm.update_ls()
@@ -327,7 +327,7 @@ if __name__ == '__main__':
                    'Volumes_per_region_stx'       : True,
                    'FA_per_region_stx'            : True,
                    'MD_per_region_stx'            : True,
-                   'Generate_tag'                 : True}
+                   'Generate_tag'                 : False}
 
     options_ = {'erosion': False}
 

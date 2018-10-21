@@ -57,7 +57,7 @@ def main_runner(subj_list, steps):
         if not os.path.exists(pfi_sj_parameter):
             list_of_not_in_parameters.append(sj)
     if len(list_of_not_in_parameters) > 0:
-        raise IOError('Subjects {} does not have parameters.'.format(list_of_not_in_parameters))
+        raise IOError('Subjects {} does not have parameter file.'.format(list_of_not_in_parameters))
 
     ''' Step A1 - convert, clean and create aliases '''
     if steps['step_A1']:
@@ -198,7 +198,7 @@ def main_runner(subj_list, steps):
                          'Volumes_per_region_stx'       : True,
                          'FA_per_region_stx'            : True,
                          'MD_per_region_stx'            : True,
-                         'Generate_tag'                 : True}
+                         'Generate_tag'                 : False}
         options = {'erosion': False}
 
         generate_reports_from_list(subj_list, controller_A4, options)
@@ -215,11 +215,9 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    # lsm.input_subjects = ['12503']
-    lsm.input_subjects = ['13601', '13603', '13604', '13610', '13706', '13707']
-    # lsm.input_subjects = ['13111', ]
-    # lsm.input_subjects = ['5302', '5303']
-    # lsm.input_subjects = ['5303']
+    # lsm.input_subjects = ['13701', '13709']  # '13605',
+
+    lsm.input_subjects = ['13601', '13603', '13604', '13605', '13610', '13706', '13707']
 
     lsm.update_ls()
 
@@ -236,9 +234,9 @@ if __name__ == '__main__':
     steps.update({'step_A2_T2maps'     : False  })
     steps.update({'step_A2_g_ratio'    : False  })
     steps.update({'step_A3_move'       : False  })
-    steps.update({'step_A3_brain_mask' : True  })
-    steps.update({'step_A3_segment'    : True  })
-    steps.update({'step_A3_move_back'  : True  })
-    steps.update({'step_A4'            : False  })
+    steps.update({'step_A3_brain_mask' : False  })
+    steps.update({'step_A3_segment'    : False  })
+    steps.update({'step_A3_move_back'  : False  })
+    steps.update({'step_A4'            : True  })
 
     main_runner(lsm.ls, steps)
