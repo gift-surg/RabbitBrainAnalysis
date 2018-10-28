@@ -12,7 +12,7 @@ from nilabels.tools.aux_methods.label_descriptor_manager import LabelsDescriptor
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
 
 
-root_output = jph(root_study_rabbits, 'B_stats', 'ACS_01_NewNEW')
+root_output = jph(root_study_rabbits, 'B_stats', 'W8_first_round')
 
 
 def subject_comparison_total_volume(sj_list, controller, subjects_grouping=None, coord_system='original'):
@@ -364,7 +364,9 @@ if __name__ == '__main__':
 
     subjects_not_present = []
 
-    subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610', '13102', '13201', '13202', '13401', '13402', '13403']  # , '13403retest'
+    # subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610', '13102', '13201', '13202', '13401', '13402', '13403']  # , '13403retest'
+
+    subjects = ['13601', '13603', '13604', '13605', '13610', '13706', '13707', '13709', '5302', '12503']
 
     subjects_grouping_ = None
 
