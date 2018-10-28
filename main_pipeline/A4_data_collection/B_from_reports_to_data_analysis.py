@@ -311,7 +311,7 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
             pfi_where_to_save_fig = jph(root_output, '{}region{}_{}{}.pdf'.format(mod, macro_label_name, coord_system, cleaning))
 
         plt.savefig(pfi_where_to_save_fig, format='pdf',
-                    dpi=200)
+                    dpi=100)
         plt.close()
 
     if controller['save_medians']:

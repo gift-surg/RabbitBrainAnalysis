@@ -31,7 +31,7 @@ produce_D = False
 
 # ------------- Parameters ------------- #
 
-pfo_where_to_save = ''  # '/Users/sebastiano/Dropbox/PHD_Thesis/thesis/figures'
+pfo_where_to_save = '/Users/sebastiano/Desktop/'  # '/Users/sebastiano/Dropbox/PHD_Thesis/thesis/figures'
 
 dict_data_group_names  = {1 : 'T', 2 : 'PT', 3 : 'LPT', 4 : 'LPT+'}
 dict_data_group_colors = {1 : 'blue', 2 : 'green', 3 : 'red', 4 : 'magenta'}

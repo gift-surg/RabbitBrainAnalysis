@@ -218,7 +218,12 @@ if __name__ == '__main__':
     # lsm.input_subjects = ['13701', '13709']  # '13605',
 
     # lsm.input_subjects = ['13601', '13603', '13604', '13605', '13610', '13701', '13706', '13707', '13709']
-    lsm.input_subjects = ['14403', '14503', '14504', '14603']
+    # lsm.input_subjects = ['14403', '14503', '14504', '14603']
+
+    # lsm.input_subjects = ['5303', ]
+    # lsm.input_subjects = ['5508', ]
+    lsm.input_subjects = ['5510', ]
+
 
     lsm.update_ls()
 
@@ -228,16 +233,16 @@ if __name__ == '__main__':
     steps = collections.OrderedDict()
 
     steps.update({'reset_parameters'   : False  })
-    steps.update({'step_A1'            : True  })
-    steps.update({'step_A2_T1'         : True  })
-    steps.update({'step_A2_DWI'        : True  })
+    steps.update({'step_A1'            : False  })
+    steps.update({'step_A2_T1'         : False  })
+    steps.update({'step_A2_DWI'        : False  })
     steps.update({'step_A2_MSME'       : False  })
     steps.update({'step_A2_T2maps'     : False  })
     steps.update({'step_A2_g_ratio'    : False  })
-    steps.update({'step_A3_move'       : True  })
-    steps.update({'step_A3_brain_mask' : True  })
-    steps.update({'step_A3_segment'    : True  })
-    steps.update({'step_A3_move_back'  : True  })
+    steps.update({'step_A3_move'       : False  })
+    steps.update({'step_A3_brain_mask' : False  })
+    steps.update({'step_A3_segment'    : False  })
+    steps.update({'step_A3_move_back'  : False  })
     steps.update({'step_A4'            : True  })
 
     main_runner(lsm.ls, steps)
