@@ -12,7 +12,7 @@ from nilabels.tools.aux_methods.label_descriptor_manager import LabelsDescriptor
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
 
 
-root_output = jph(root_study_rabbits, 'B_stats', 'W8_all_rounds_all')  # W8_LACS_Saline
+root_output = jph(root_study_rabbits, 'B_stats', 'W8_LACS_Saline')  # W8_LACS_Saline
 
 
 def subject_comparison_total_volume(sj_list, controller, subjects_grouping=None, legend=None, coord_system='original',
@@ -410,22 +410,22 @@ if __name__ == '__main__':
 
     # --------- BELOW: W8 three trials: ---------
 
-    subjects_A = ['12503', '5302', '5303', '5508', '5510', '55BW']
-    subjects_B = ['13601', '13603', '13604', '13605', '13610', '13701', '13706', '13707', '13709']
-    subjects_C = ['14101', '14402', '14403', '14503', '14504', '14603']
-
-    subjects = subjects_A + subjects_B + subjects_C
-    subjects_grouping_ = [len(subjects_A), len(subjects_B), len(subjects_C)]
-    legend = ['trial1', 'trial2', 'trial3']
+    # subjects_A = ['12503', '5302', '5303', '5508', '5510', '55BW']
+    # subjects_B = ['13601', '13603', '13604', '13605', '13610', '13701', '13706', '13707', '13709']
+    # subjects_C = ['14101', '14402', '14403', '14503', '14504', '14603']
+    #
+    # subjects = subjects_A + subjects_B + subjects_C
+    # subjects_grouping_ = [len(subjects_A), len(subjects_B), len(subjects_C)]
+    # legend = ['trial1', 'trial2', 'trial3']
 
     # ---------- BELOW subjects Saline, ACS: ------------
 
-    # LACS = ['12503', '13701', '13706', '13707', '13709', '14503', '14504', '14603']
-    # saline = ['13601', '13603', '13604', '13605', '14403']  # '13602'
-    #
-    # subjects = LACS + saline
-    # subjects_grouping_ = [len(LACS), len(saline)]
-    # legend = ['LACS', 'Saline']
+    LACS = ['12503', '13701', '13706', '13707', '13709', '14503', '14504', '14603']
+    saline = ['13601', '13603', '13604', '13605', '14403']  # '13602'
+
+    subjects = LACS + saline
+    subjects_grouping_ = [len(LACS), len(saline)]
+    legend = ['LACS', 'Saline']
 
     # -----------------------------------------------------
 
@@ -442,12 +442,12 @@ if __name__ == '__main__':
 
     ldm = LdM(pfi_labels_descriptor)
 
-    if False:
+    if True:
         # total volumes stereotaxic coordinates as histogram:
         subject_comparison_total_volume(subjects, controller=controller_, subjects_grouping=subjects_grouping_,
                                         coord_system='stereotaxic', legend=legend)
 
-    if False:
+    if True:
         # single regions volume across subjects as histogram:
         for reg in ptb_related_regions.keys():
 
@@ -456,10 +456,10 @@ if __name__ == '__main__':
                                                      subjects_grouping_, macro_label_name=reg, coord_system=coordinates,
                                                      cleaning=None)
 
-    if True:
+    if False:
         for reg in ptb_related_regions.keys():
 
-            print('---- REGION {} ----'.format(reg))
+            print('\n\n---- REGION {} ----'.format(reg))
 
             for coordinates in ['stereotaxic']:  # 'original',
 
