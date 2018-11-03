@@ -12,10 +12,13 @@ from nilabels.tools.aux_methods.label_descriptor_manager import LabelsDescriptor
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
 
 
-root_output = jph(root_study_rabbits, 'B_stats', 'W8_first_round')
+sns.set_style('darkgrid', {'legend.frameon': True})
+
+root_output = jph(root_study_rabbits, 'B_stats', 'W8_all_rounds3')
 
 
-def subject_comparison_total_volume(sj_list, controller, subjects_grouping=None, coord_system='original'):
+def subject_comparison_total_volume(sj_list, controller, subjects_grouping=None, legend=None, coord_system='original',
+                                    axis_title='Brain volume per subject'):
     print('subject_comparison_total_volume for subjects {}'.format(sj_list))
 
     if controller['get_data']:
@@ -54,25 +57,42 @@ def subject_comparison_total_volume(sj_list, controller, subjects_grouping=None,
         fig.canvas.set_window_title('Brain volume per subject')
         sns.set(color_codes=True)
 
-        ax.bar(range(len(sj_list)), df_tot_vols_subjects['volume'].as_matrix())
+        barlist = ax.bar(range(len(sj_list)), df_tot_vols_subjects['volume'].as_matrix())
 
         if subjects_grouping is not None:
+
+            if legend is not None:
+                assert len(subjects_grouping) == len(legend)
+
+            colors = ['b', 'g', 'c', 'm', 'y']
+            for nk in range(len(subjects_grouping)):
+                for k in range(subjects_grouping[nk]):
+                    bar_num = sum(subjects_grouping[:nk]) + k
+                    barlist[bar_num].set_color(colors[nk % len(colors)])
+                    if legend is not None and k == 0:
+                        barlist[bar_num].set_label(legend[nk])
+
             assert np.sum(subjects_grouping) == len(subjects)
             vals = df_tot_vols_subjects['volume'].as_matrix()
 
             cumulative_grouping = np.cumsum([0] + subjects_grouping)
-            vals_grouped = [[vals[l] for l in range(cumulative_grouping[k], cumulative_grouping[k + 1])] for k in range(len(cumulative_grouping) - 1)]
+            vals_grouped = [[vals[l] for l in range(cumulative_grouping[k], cumulative_grouping[k + 1])]
+                            for k in range(len(cumulative_grouping) - 1)]
             medians_of_vals_grouped = [np.median(li) for li in vals_grouped]
 
             for i, m in enumerate(medians_of_vals_grouped):
-                ax.hlines(y=m, xmin=cumulative_grouping[i] - 0.3, xmax=cumulative_grouping[i + 1] - 0.7, color='r', alpha=0.5, linestyles='dashed')
+                ax.hlines(y=m, xmin=cumulative_grouping[i] - 0.3, xmax=cumulative_grouping[i + 1] - 0.7,
+                          color='r', alpha=0.5, linestyles='dashed')
 
-        ax.set_title('Brain volume per subject')
+        ax.set_title(axis_title + ' ({})'.format(coord_system))
         ax.set_ylabel('vol (mm^3)')
         ax.set_xlabel('Subject Id')
         ax.set_xticks(range(len(sj_list)))
         ax.set_xticklabels(sj_list, ha='center', rotation=45, fontsize=10)
         ax.xaxis.labelpad = 20
+
+        if legend is not None:
+            ax.legend(loc="lower right", frameon=True)
 
         plt.tight_layout()
 
@@ -82,7 +102,7 @@ def subject_comparison_total_volume(sj_list, controller, subjects_grouping=None,
 
 
 def subject_comparison_volume_per_region(sj_list, ldm, labels_num, controller, subjects_grouping=None, macro_label_name=None,
-                                         coord_system='original', cleaning=None):
+                                         coord_system='original', cleaning=None, axis_title='Brain volume per subject'):
     """
 
     :param sj_list:
@@ -148,9 +168,21 @@ def subject_comparison_volume_per_region(sj_list, ldm, labels_num, controller, s
         fig.canvas.set_window_title('Brain volume per subject')
         sns.set(color_codes=True)
 
-        ax.bar(range(len(sj_list)), df_tot_vols_subjects['Volume'].as_matrix())
+        barlist = ax.bar(range(len(sj_list)), df_tot_vols_subjects['Volume'].as_matrix())
 
         if subjects_grouping is not None:
+
+            if legend is not None:
+                assert len(subjects_grouping) == len(legend)
+
+            colors = ['b', 'g', 'c', 'm', 'y']
+            for nk in range(len(subjects_grouping)):
+                for k in range(subjects_grouping[nk]):
+                    bar_num = sum(subjects_grouping[:nk]) + k
+                    barlist[bar_num].set_color(colors[nk % len(colors)])
+                    if legend is not None and k == 0:
+                        barlist[bar_num].set_label(legend[nk])
+
             assert np.sum(subjects_grouping) == len(subjects)
             vals = df_tot_vols_subjects['Volume'].as_matrix()
 
@@ -161,12 +193,15 @@ def subject_comparison_volume_per_region(sj_list, ldm, labels_num, controller, s
             for i, m in enumerate(medians_of_vals_grouped):
                 ax.hlines(y=m, xmin=cumulative_grouping[i], xmax=cumulative_grouping[i+1] - 1, color='r', alpha=0.5, linestyles='dashed')
 
-        ax.set_title('Region {} volume per subject ({})'.format(macro_label_name, coord_system))
+        ax.set_title(axis_title + ' - region {} ({})'.format(macro_label_name, coord_system))
         ax.set_ylabel('vol (mm^3)')
         ax.set_xlabel('Subject Id')
         ax.set_xticks(range(len(sj_list)))
         ax.set_xticklabels(sj_list, ha='center', rotation=45, fontsize=10)
         ax.xaxis.labelpad = 20
+
+        if legend is not None:
+            ax.legend(loc="lower right", frameon=True)
 
         plt.tight_layout()
 
@@ -177,7 +212,7 @@ def subject_comparison_volume_per_region(sj_list, ldm, labels_num, controller, s
 
 def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, controller, subjects_grouping=None,
                                                       macro_label_name=None, coord_system='original', mod='FA',
-                                                      cleaning='', eroded=False):
+                                                      cleaning='', eroded=False, axis_title='Values '):
     """
     Analyse the data in the report folder, FA or MD per region
     :param sj_list:
@@ -282,9 +317,21 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
         fig.canvas.set_window_title('{} per region {}'.format(mod, macro_label_name))
         sns.set(color_codes=True)
 
-        ax.boxplot([tot_data_distribution[k] for k in sj_list])
+        barlist = ax.boxplot([tot_data_distribution[k] for k in sj_list])
 
         if subjects_grouping is not None:
+
+            if legend is not None:
+                assert len(subjects_grouping) == len(legend)
+
+            colors = ['b', 'g', 'c', 'm', 'y']
+            for nk in range(len(subjects_grouping)):
+                for k in range(subjects_grouping[nk]):
+                    bar_num = sum(subjects_grouping[:nk]) + k
+                    barlist[bar_num].set_color(colors[nk % len(colors)])
+                    if legend is not None and k == 0:
+                        barlist[bar_num].set_label(legend[nk])
+
             assert np.sum(subjects_grouping) == len(subjects)
             medians = [np.median(tot_data_distribution[k]) for k in sj_list]
             cumulative_grouping = np.cumsum([0] + subjects_grouping)
@@ -294,12 +341,15 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
             for i, m in enumerate(medians_of_medians_grouped):
                 ax.hlines(y=m, xmin=cumulative_grouping[i] + 1, xmax=cumulative_grouping[i+1], color='r', alpha=0.5, linestyles='dashed')
 
-        ax.set_title('{} per region {}'.format(mod, macro_label_name))
+        ax.set_title(axis_title + ' {} per region {}'.format(mod, macro_label_name))
         ax.set_ylabel('{}'.format(mod))
         ax.set_xlabel('Subject Id')
         ax.set_xticks(range(1, len(tot_data_distribution.keys())+1))
         ax.set_xticklabels(sj_list, ha='center', rotation=45, fontsize=10)
         ax.xaxis.labelpad = 20
+
+        if legend is not None:
+            ax.legend(loc="lower right", frameon=True)
 
         plt.tight_layout()
 
@@ -366,9 +416,17 @@ if __name__ == '__main__':
 
     # subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610', '13102', '13201', '13202', '13401', '13402', '13403']  # , '13403retest'
 
-    subjects = ['13601', '13603', '13604', '13605', '13610', '13706', '13707', '13709', '5302', '12503']
+    # subjects = ['13601', '13603', '13604', '13605', '13610', '13706', '13707', '13709', '5302', '12503']
 
-    subjects_grouping_ = None
+    subjects_A = ['12503', '5302', '5303', '5508', '5510', '55BW']
+    subjects_B = ['13601', '13603', '13604', '13605', '13610', '13701', '13706', '13707', '13709']
+    subjects_C = ['14101', '14402', '14403', '14503', '14504', '14603']
+
+    legend = ['trial1', 'trial2', 'trial3']
+
+    subjects = subjects_A + subjects_B + subjects_C
+
+    subjects_grouping_ = [len(subjects_A), len(subjects_B), len(subjects_C)]
 
     for sj in subjects:
         sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
@@ -386,9 +444,9 @@ if __name__ == '__main__':
     if True:
         # total volumes stereotaxic coordinates as histogram:
         subject_comparison_total_volume(subjects, controller=controller_, subjects_grouping=subjects_grouping_,
-                                        coord_system='stereotaxic')
+                                        coord_system='stereotaxic', legend=legend)
 
-    if True:
+    if False:
         # single regions volume across subjects as histogram:
         for reg in ptb_related_regions.keys():
 
@@ -397,7 +455,7 @@ if __name__ == '__main__':
                                                      subjects_grouping_, macro_label_name=reg, coord_system=coordinates,
                                                      cleaning=None)
 
-    if True:
+    if False:
         for reg in ptb_related_regions.keys():
 
             for coordinates in ['stereotaxic']:  # 'original',

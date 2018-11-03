@@ -139,18 +139,13 @@ if __name__ == '__main__':
     lsm.execute_PTB_in_vivo   = False
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
-
-    # lsm.input_subjects = ['12307', '12308', '12402', '12504', '12505', '12607', '12608', '12609',
-    #                       '12610']  # ['13103', '13108', '13301', '13307', '13401', '13403', '13404']
-    # lsm.input_subjects = ['13405', '13501', '13505', '13507', '13602', '13604', '13606']
-
-    # lsm.input_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
+    lsm.execute_W8_all_trials = True
     #
-    lsm.input_subjects = ['14603', ]  # ['4406', '4501', '4504', '4507', '4601', '4602', '4603', '4901', '4903', '4905', '5001', '5003', '5007']
+    # lsm.input_subjects = ['14603', ]
     #
     lsm.update_ls()
 
     coordinates_ = 'stereotaxic'
     print('Quality control for subjects \n{}'.format(lsm.ls))
 
-    open_from_list_subject(lsm.ls, coordinates_)
+    # open_from_list_subject(lsm.ls, coordinates_)
