@@ -122,7 +122,7 @@ def spot_a_list_of_rabbits(subjects_list):
             spot_sj.propagation_options['N_reg_mask_moving']        = 1  # 0 roi_mask, 1 reg_mask
             spot_sj.propagation_options['Final_smoothing_factor']   = 1
 
-        elif sj_parameters['category'] == 'first_trial' or sj_parameters['category'] == 'second_trial':
+        elif sj_parameters['category'] == 'first_trial' or sj_parameters['category'] == 'second_trial' or sj_parameters['category'] == 'third_trial':
             # --- Propagator option
             spot_sj.atlas_reference_chart_name = '12503'
 
@@ -141,7 +141,8 @@ def spot_a_list_of_rabbits(subjects_list):
             spot_sj.propagation_options['Final_smoothing_factor']   = 0
 
         else:
-            raise IOError
+            raise IOError('Given subject category not recognised for subject {} and category {}.'.format(
+                sj_target, sj_parameters['category']))
 
         # --- Propagator controller
         spot_sj.propagation_controller['Aff_alignment']          = True

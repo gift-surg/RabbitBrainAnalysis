@@ -81,7 +81,7 @@ class SubjectParameters(object):
         self.names_architecture    = {'T1'              : '3D',
                                       'MSME'            : 'MSME',
                                       'DWI'             : 'DWI',
-                                      'final_segm_strx' : 'automatic', # change here to provide alternative folders output.
+                                      'final_segm_strx' : 'automatic',  # change here to provide alternative folders output.
                                       'suffix_segm'     : 'MV_P2'}
 
     def get_as_dict(self):

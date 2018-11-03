@@ -16,12 +16,7 @@ import nilabels as nis
 from nilabels.tools.caliber.distances import global_dice_score
 
 
-segm_suffix = 'MV_P2'
-
-
 def open_subject(sj, coordinates, check_dice_if_in_atlas=True):
-
-    global segm_suffix
 
     print('Quality control subject {}, coordinates {}'.format(sj, coordinates))
 
@@ -31,6 +26,8 @@ def open_subject(sj, coordinates, check_dice_if_in_atlas=True):
     category = sj_parameters['category']
 
     in_atlas = sj_parameters['in_atlas']
+
+    segm_suffix = sj_parameters['names_architecture']['suffix_segm']
 
     if study == 'W8':
         pfo_atlas = root_atlas_W8
@@ -42,7 +39,6 @@ def open_subject(sj, coordinates, check_dice_if_in_atlas=True):
                      'Template_name'       : '1305'}
     else:
         raise IOError('Study for subject {} not feasible.'.format(sj))
-
 
     root_subject = jph(root_study_rabbits, 'A_data', study, category, sj)
 
@@ -150,7 +146,7 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['1201', '1203', '1305', '1404', '1507', '1510', '1702', '1805', '2002', '2502', '3301', '3404']
     #
-    lsm.input_subjects = ['5302', ]  # ['4406', '4501', '4504', '4507', '4601', '4602', '4603', '4901', '4903', '4905', '5001', '5003', '5007']
+    lsm.input_subjects = ['14603', ]  # ['4406', '4501', '4504', '4507', '4601', '4602', '4603', '4901', '4903', '4905', '5001', '5003', '5007']
     #
     lsm.update_ls()
 

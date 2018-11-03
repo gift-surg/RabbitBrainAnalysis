@@ -191,7 +191,7 @@ def main_runner(subj_list, steps):
 
         print('\nStep A4\n')
 
-        controller_A4 = {'Force_reset'                  : True,
+        controller_A4 = {'Force_reset'                  : True,  # TODO
                          'Volumes_per_region'           : True,
                          'FA_per_region'                : True,
                          'MD_per_region'                : True,
@@ -215,14 +215,11 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    # lsm.input_subjects = ['13701', '13709']  # '13605',
+    lsm.input_subjects = ['5303', '5508', '12503']
 
-    # lsm.input_subjects = ['13601', '13603', '13604', '13605', '13610', '13701', '13706', '13707', '13709']
     # lsm.input_subjects = ['14403', '14503', '14504', '14603']
 
-    # lsm.input_subjects = ['5303', ]
-    # lsm.input_subjects = ['5508', ]
-    lsm.input_subjects = ['5510', ]
+    # lsm.input_subjects = ['14101', '14402']
 
 
     lsm.update_ls()

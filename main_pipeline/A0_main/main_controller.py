@@ -22,7 +22,8 @@ from tools.definitions import pfo_subjects_parameters
 
 class ListSubjectsManager(object):
     def __init__(self, execute_PTB_ex_skull=False, execute_PTB_ex_vivo=False, execute_PTB_in_vivo=False,
-                 execute_PTB_op_skull=False, execute_ACS_ex_vivo01=False, execute_ACS_ex_vivo02=False, input_subjects=None):
+                 execute_PTB_op_skull=False, execute_ACS_ex_vivo01=False, execute_ACS_ex_vivo02=False,
+                 execute_W8_all_trials=False, input_subjects=None):
 
         self.execute_PTB_ex_skull   = execute_PTB_ex_skull
         self.execute_PTB_ex_vivo    = execute_PTB_ex_vivo
@@ -30,6 +31,7 @@ class ListSubjectsManager(object):
         self.execute_PTB_op_skull   = execute_PTB_op_skull
         self.execute_ACS_ex_vivo01  = execute_ACS_ex_vivo01
         self.execute_ACS_ex_vivo02  = execute_ACS_ex_vivo02
+        self.execute_W8_all_trials  = execute_W8_all_trials
 
         self.input_subjects = input_subjects
         # sl: subject list is the most important attirbute of the class
@@ -39,7 +41,8 @@ class ListSubjectsManager(object):
 
         self.ls = []  # re initialise to remove duplicates.
         prod_conditions = self.execute_PTB_ex_skull + self.execute_PTB_ex_vivo + self.execute_PTB_in_vivo + \
-                            self.execute_PTB_op_skull + self.execute_ACS_ex_vivo01 + self.execute_ACS_ex_vivo02
+                            self.execute_PTB_op_skull + self.execute_ACS_ex_vivo01 + self.execute_ACS_ex_vivo02 + \
+                            self.execute_W8_all_trials
         if prod_conditions > 0:
 
             # Get information from subjects parameters
@@ -67,6 +70,9 @@ class ListSubjectsManager(object):
                         self.ls.append(k)
                 if self.execute_ACS_ex_vivo02:
                     if subj_k_parameters['study'] == 'ACS' and subj_k_parameters['category'] == 'ex_vivo02':
+                        self.ls.append(k)
+                if self.execute_W8_all_trials:
+                    if subj_k_parameters['study'] == 'W8':
                         self.ls.append(k)
 
         if self.input_subjects is not None:

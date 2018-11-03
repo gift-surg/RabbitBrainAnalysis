@@ -46,6 +46,7 @@ if __name__ == '__main__':
     lsm.execute_PTB_in_vivo  = False
     lsm.execute_PTB_op_skull = False
     lsm.execute_ACS_ex_vivo  = False
+    lsm.execute_W8_all_trials = True
 
     # preterm = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '2002',
     #            '3301', '3303', '3404', '4302', '4304', '4305', '4901',
@@ -60,9 +61,9 @@ if __name__ == '__main__':
     #
     # lsm.input_subjects = preterm + term
     #
-    lsm.input_subjects = ['13601', '13603', '13604', '13605', '13610', '13701', '13706', '13707', '13709']
-
-
+    # lsm.input_subjects = ['13601', '13603', '13604', '13605', '13610', '13701', '13706', '13707', '13709']
+    #
+    #
     lsm.update_ls()
 
     print lsm.ls
