@@ -12,9 +12,7 @@ from nilabels.tools.aux_methods.label_descriptor_manager import LabelsDescriptor
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters, pfi_labels_descriptor
 
 
-sns.set_style('darkgrid', {'legend.frameon': True})
-
-root_output = jph(root_study_rabbits, 'B_stats', 'W8_all_rounds3')
+root_output = jph(root_study_rabbits, 'B_stats', 'W8_all_rounds_all')  # W8_LACS_Saline
 
 
 def subject_comparison_total_volume(sj_list, controller, subjects_grouping=None, legend=None, coord_system='original',
@@ -212,7 +210,7 @@ def subject_comparison_volume_per_region(sj_list, ldm, labels_num, controller, s
 
 def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, controller, subjects_grouping=None,
                                                       macro_label_name=None, coord_system='original', mod='FA',
-                                                      cleaning='', eroded=False, axis_title='Values '):
+                                                      cleaning='', eroded=False, axis_title='Values ', legend=None):
     """
     Analyse the data in the report folder, FA or MD per region
     :param sj_list:
@@ -317,20 +315,30 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
         fig.canvas.set_window_title('{} per region {}'.format(mod, macro_label_name))
         sns.set(color_codes=True)
 
-        barlist = ax.boxplot([tot_data_distribution[k] for k in sj_list])
+        if subjects_grouping is None:
 
-        if subjects_grouping is not None:
+           ax.boxplot([tot_data_distribution[k] for k in sj_list])
+
+        else:
 
             if legend is not None:
                 assert len(subjects_grouping) == len(legend)
 
             colors = ['b', 'g', 'c', 'm', 'y']
+
+            patch_artist = []
+
             for nk in range(len(subjects_grouping)):
+                bar_pos = []
                 for k in range(subjects_grouping[nk]):
                     bar_num = sum(subjects_grouping[:nk]) + k
-                    barlist[bar_num].set_color(colors[nk % len(colors)])
-                    if legend is not None and k == 0:
-                        barlist[bar_num].set_label(legend[nk])
+                    bar_pos.append(bar_num)
+
+                patch_box = ax.boxplot([tot_data_distribution[k] for k in [sj_list[m] for m in bar_pos]],
+                                       positions=[p + 1 for p in bar_pos], notch=True, patch_artist=True)
+                for bp in patch_box['boxes']:
+                    bp.set_facecolor(colors[nk])
+                patch_artist.append(patch_box['boxes'][0])
 
             assert np.sum(subjects_grouping) == len(subjects)
             medians = [np.median(tot_data_distribution[k]) for k in sj_list]
@@ -348,8 +356,10 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
         ax.set_xticklabels(sj_list, ha='center', rotation=45, fontsize=10)
         ax.xaxis.labelpad = 20
 
+        ax.set_xlim(left=0.5, right=len(sj_list) + 0.5)
+
         if legend is not None:
-            ax.legend(loc="lower right", frameon=True)
+            ax.legend(patch_artist, legend, loc='upper left', frameon=True)
 
         plt.tight_layout()
 
@@ -360,8 +370,7 @@ def subject_comparison_values_below_labels_per_region(sj_list, ldm, labels_num, 
         else:
             pfi_where_to_save_fig = jph(root_output, '{}region{}_{}{}.pdf'.format(mod, macro_label_name, coord_system, cleaning))
 
-        plt.savefig(pfi_where_to_save_fig, format='pdf',
-                    dpi=100)
+        plt.savefig(pfi_where_to_save_fig, format='pdf', dpi=100)
         plt.close()
 
     if controller['save_medians']:
@@ -396,37 +405,29 @@ if __name__ == '__main__':
     controller_ = {'get_data'     : True,
                    'get_graphs'   : True,
                    'save_medians' : True}
-    #
-    # preterm = ['1201', '1203', '1305', '1404', '1505', '1507', '1510', '2002',
-    #            '3301', '3303', '3404', '4302',  '4304', '4305', '4901',
-    #            '4903', '5001']
-    #
-    # # '1501', '1504' '1508', '1509', '1511', '2013', '2202', '2205', '2206' : in vivo and not in subjects parameters.
-    # # '4303','4406', :  rejected.
-    #
-    # term = ['1702', '1805', '2502', '2503', '2608',  '4501', '4504', '4507', '4601',  '4603', '13003', '13004',
-    #         '13005', '13006']
-    # # '2605', '2702', '4602',  Rejected.
-    #
-    # subjects = preterm + term
-    # subjects_grouping_ = [len(preterm), len(term)]
-    #
 
     subjects_not_present = []
 
-    # subjects = ['12307', '12308', '12309', '12402', '12504', '12505', '12607', '12608', '12609', '12610', '13102', '13201', '13202', '13401', '13402', '13403']  # , '13403retest'
-
-    # subjects = ['13601', '13603', '13604', '13605', '13610', '13706', '13707', '13709', '5302', '12503']
+    # --------- BELOW: W8 three trials: ---------
 
     subjects_A = ['12503', '5302', '5303', '5508', '5510', '55BW']
     subjects_B = ['13601', '13603', '13604', '13605', '13610', '13701', '13706', '13707', '13709']
     subjects_C = ['14101', '14402', '14403', '14503', '14504', '14603']
 
+    subjects = subjects_A + subjects_B + subjects_C
+    subjects_grouping_ = [len(subjects_A), len(subjects_B), len(subjects_C)]
     legend = ['trial1', 'trial2', 'trial3']
 
-    subjects = subjects_A + subjects_B + subjects_C
+    # ---------- BELOW subjects Saline, ACS: ------------
 
-    subjects_grouping_ = [len(subjects_A), len(subjects_B), len(subjects_C)]
+    # LACS = ['12503', '13701', '13706', '13707', '13709', '14503', '14504', '14603']
+    # saline = ['13601', '13603', '13604', '13605', '14403']  # '13602'
+    #
+    # subjects = LACS + saline
+    # subjects_grouping_ = [len(LACS), len(saline)]
+    # legend = ['LACS', 'Saline']
+
+    # -----------------------------------------------------
 
     for sj in subjects:
         sj_parameters = pickle.load(open(jph(pfo_subjects_parameters, sj), 'r'))
@@ -441,7 +442,7 @@ if __name__ == '__main__':
 
     ldm = LdM(pfi_labels_descriptor)
 
-    if True:
+    if False:
         # total volumes stereotaxic coordinates as histogram:
         subject_comparison_total_volume(subjects, controller=controller_, subjects_grouping=subjects_grouping_,
                                         coord_system='stereotaxic', legend=legend)
@@ -455,8 +456,10 @@ if __name__ == '__main__':
                                                      subjects_grouping_, macro_label_name=reg, coord_system=coordinates,
                                                      cleaning=None)
 
-    if False:
+    if True:
         for reg in ptb_related_regions.keys():
+
+            print('---- REGION {} ----'.format(reg))
 
             for coordinates in ['stereotaxic']:  # 'original',
 
@@ -466,25 +469,25 @@ if __name__ == '__main__':
                 subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
                                                                   subjects_grouping_, macro_label_name=reg,
                                                                   coord_system=coordinates, mod='FA',
-                                                                  cleaning='', eroded=False)
+                                                                  cleaning='', eroded=False, legend=legend)
 
                 # comparison MD - no erosion, no outliers filter
                 subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
                                                                   subjects_grouping_, macro_label_name=reg,
                                                                       coord_system=coordinates, mod='MD',
-                                                                      cleaning='', eroded=False)
+                                                                      cleaning='', eroded=False, legend=legend)
 
-                # comparison FA - no erosion, outliers filter
-                subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
-                                                                  subjects_grouping_, macro_label_name=reg,
-                                                                  coord_system=coordinates, mod='FA',
-                                                                  cleaning='_no_outliers', eroded=False)
-
-                # comparison MD - no erosion, outliers filter
-                subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
-                                                                  subjects_grouping_, macro_label_name=reg,
-                                                                  coord_system=coordinates, mod='MD',
-                                                                  cleaning='_no_outliers', eroded=False)
+                # # comparison FA - no erosion, outliers filter
+                # subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
+                #                                                   subjects_grouping_, macro_label_name=reg,
+                #                                                   coord_system=coordinates, mod='FA',
+                #                                                   cleaning='_no_outliers', eroded=False)
+                #
+                # # comparison MD - no erosion, outliers filter
+                # subject_comparison_values_below_labels_per_region(subjects, ldm, ptb_related_regions[reg], controller_,
+                #                                                   subjects_grouping_, macro_label_name=reg,
+                #                                                   coord_system=coordinates, mod='MD',
+                #                                                   cleaning='_no_outliers', eroded=False)
 
                 # # ---- With erosion
                 # if coordinates  == 'stereotaxic':
