@@ -191,14 +191,14 @@ def main_runner(subj_list, steps):
 
         print('\nStep A4\n')
 
-        controller_A4 = {'Force_reset'                  : True,  # TODO
+        controller_A4 = {'Force_reset'                  : True,
                          'Volumes_per_region'           : True,
                          'FA_per_region'                : True,
                          'MD_per_region'                : True,
                          'Volumes_per_region_stx'       : True,
                          'FA_per_region_stx'            : True,
                          'MD_per_region_stx'            : True,
-                         'Generate_tag'                 : False}
+                         'Generate_tag'                 : False}  # Keep false, unaddressed bugs.
         options = {'erosion': False}
 
         generate_reports_from_list(subj_list, controller_A4, options)
@@ -215,12 +215,13 @@ if __name__ == '__main__':
     lsm.execute_PTB_op_skull  = False
     lsm.execute_ACS_ex_vivo   = False
 
-    lsm.input_subjects = ['5303', '5508', '12503']
+    # lsm.input_subjects = ['5303', '5508', '12503']
 
     # lsm.input_subjects = ['14403', '14503', '14504', '14603']
 
     # lsm.input_subjects = ['14101', '14402']
 
+    lsm.input_subjects = ['14301', '14302']
 
     lsm.update_ls()
 
@@ -230,16 +231,16 @@ if __name__ == '__main__':
     steps = collections.OrderedDict()
 
     steps.update({'reset_parameters'   : False  })
-    steps.update({'step_A1'            : False  })
-    steps.update({'step_A2_T1'         : False  })
-    steps.update({'step_A2_DWI'        : False  })
+    steps.update({'step_A1'            : True  })
+    steps.update({'step_A2_T1'         : True  })
+    steps.update({'step_A2_DWI'        : True  })
     steps.update({'step_A2_MSME'       : False  })
     steps.update({'step_A2_T2maps'     : False  })
     steps.update({'step_A2_g_ratio'    : False  })
-    steps.update({'step_A3_move'       : False  })
-    steps.update({'step_A3_brain_mask' : False  })
-    steps.update({'step_A3_segment'    : False  })
-    steps.update({'step_A3_move_back'  : False  })
+    steps.update({'step_A3_move'       : True  })
+    steps.update({'step_A3_brain_mask' : True  })
+    steps.update({'step_A3_segment'    : True  })
+    steps.update({'step_A3_move_back'  : True  })
     steps.update({'step_A4'            : True  })
 
     main_runner(lsm.ls, steps)

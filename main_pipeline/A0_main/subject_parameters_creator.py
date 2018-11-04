@@ -3137,6 +3137,126 @@ def reset_parameters_files(pfo_where_to_save):
 
     '''  --------- 8 Weeks old third trial------ '''
 
+    sp = SubjectParameters('14101')
+    sp.study                   = 'W8'
+    sp.category                = 'third_trial'
+    sp.angles                  = [0, np.pi / 12, 0]
+    sp.translation             = [0, 0, 0]
+    sp.threshold               = 18
+    sp.DWI_squashed            = False
+    sp.bias_field_parameters   = bfp_slow
+    sp.MSME_acquisition        = 'high_res'
+    sp.comment                 = ''
+    sp.in_atlas                = False
+    sp.b0_level                = 7
+    sp.options_S0              = {'window_percentile'  : (1, 99),
+                                  'mask_dilation'      : 1}
+    sp.options_T1              = {'roi_mask'           : 'Pivotal',
+                                  'pivot'              : '12503',
+                                  'mask_dilation'      : 0,
+                                  'window_percentile'  : (0, 100),
+                                  'crop_roi'           : False,
+                                  'lesion_mask_method' : 0,
+                                  'median_filter'      : True}
+    sp.names_architecture      = {'T1'               : '3D',
+                                  'MSME'             : 'MSME',
+                                  'DWI'              : 'DWI',
+                                  'final_segm_strx'  : 'automatic',
+                                  'suffix_segm'      : 'MV_P3'}
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('14301')
+    sp.study                   = 'W8'
+    sp.category                = 'third_trial'
+    sp.angles                  = [0, np.pi / 12, 0]
+    sp.translation             = [0, 0, 0]
+    sp.threshold               = 18
+    sp.DWI_squashed            = False
+    sp.bias_field_parameters   = bfp_slow
+    sp.MSME_acquisition        = 'high_res'
+    sp.comment                 = ''
+    sp.in_atlas                = False
+    sp.b0_level                = 7
+    sp.options_S0              = {'window_percentile'  : (1, 99),
+                                  'mask_dilation'      : 1}
+    sp.options_T1              = {'roi_mask'           : 'Pivotal',
+                                  'pivot'              : '12503',
+                                  'mask_dilation'      : 0,
+                                  'window_percentile'  : (0, 100),
+                                  'crop_roi'           : False,
+                                  'lesion_mask_method' : 0,
+                                  'median_filter'      : True}
+    sp.names_architecture      = {'T1'               : '3D',
+                                  'MSME'             : 'MSME',
+                                  'DWI'              : 'DWI',
+                                  'final_segm_strx'  : 'automatic',
+                                  'suffix_segm'      : 'MV_P3'}
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('14302')
+    sp.study                   = 'W8'
+    sp.category                = 'third_trial'
+    sp.angles                  = [0, np.pi / 12, 0]
+    sp.translation             = [0, 0, 0]
+    sp.threshold               = 18
+    sp.DWI_squashed            = False
+    sp.bias_field_parameters   = bfp_slow
+    sp.MSME_acquisition        = 'high_res'
+    sp.comment                 = ''
+    sp.in_atlas                = False
+    sp.b0_level                = 7
+    sp.options_S0              = {'window_percentile'  : (1, 99),
+                                  'mask_dilation'      : 1}
+    sp.options_T1              = {'roi_mask'           : 'Pivotal',
+                                  'pivot'              : '12503',
+                                  'mask_dilation'      : 0,
+                                  'window_percentile'  : (0, 100),
+                                  'crop_roi'           : False,
+                                  'lesion_mask_method' : 0,
+                                  'median_filter'      : True}
+    sp.names_architecture      = {'T1'               : '3D',
+                                  'MSME'             : 'MSME',
+                                  'DWI'              : 'DWI',
+                                  'final_segm_strx'  : 'automatic',
+                                  'suffix_segm'      : 'MV_P3'}
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
+    sp = SubjectParameters('14402')
+    sp.study                   = 'W8'
+    sp.category                = 'third_trial'
+    sp.angles                  = [0, np.pi / 12, 0]
+    sp.translation             = [0, 0, 0]
+    sp.threshold               = 18
+    sp.DWI_squashed            = False
+    sp.bias_field_parameters   = bfp_slow
+    sp.MSME_acquisition        = 'high_res'
+    sp.comment                 = ''
+    sp.in_atlas                = False
+    sp.b0_level                = 7
+    sp.options_S0              = {'window_percentile'  : (1, 99),
+                                  'mask_dilation'      : 1}
+    sp.options_T1              = {'roi_mask'           : 'Pivotal',
+                                  'pivot'              : '12503',
+                                  'mask_dilation'      : 0,
+                                  'window_percentile'  : (0, 100),
+                                  'crop_roi'           : False,
+                                  'lesion_mask_method' : 0,
+                                  'median_filter'      : True}
+    sp.names_architecture      = {'T1'               : '3D',
+                                  'MSME'             : 'MSME',
+                                  'DWI'              : 'DWI',
+                                  'final_segm_strx'  : 'automatic',
+                                  'suffix_segm'      : 'MV_P3'}
+    sp.save_as_txt(pfo_where_to_save)
+    sp.dump_with_pickle(pfo_where_to_save)
+    del sp
+
     sp = SubjectParameters('14403')
     sp.study                   = 'W8'
     sp.category                = 'third_trial'
@@ -3256,67 +3376,6 @@ def reset_parameters_files(pfo_where_to_save):
     sp.save_as_txt(pfo_where_to_save)
     sp.dump_with_pickle(pfo_where_to_save)
     del sp
-
-    sp = SubjectParameters('14101')
-    sp.study                   = 'W8'
-    sp.category                = 'third_trial'
-    sp.angles                  = [0, np.pi / 12, 0]
-    sp.translation             = [0, 0, 0]
-    sp.threshold               = 18
-    sp.DWI_squashed            = False
-    sp.bias_field_parameters   = bfp_slow
-    sp.MSME_acquisition        = 'high_res'
-    sp.comment                 = ''
-    sp.in_atlas                = False
-    sp.b0_level                = 7
-    sp.options_S0              = {'window_percentile'  : (1, 99),
-                                  'mask_dilation'      : 1}
-    sp.options_T1              = {'roi_mask'           : 'Pivotal',
-                                  'pivot'              : '12503',
-                                  'mask_dilation'      : 0,
-                                  'window_percentile'  : (0, 100),
-                                  'crop_roi'           : False,
-                                  'lesion_mask_method' : 0,
-                                  'median_filter'      : True}
-    sp.names_architecture      = {'T1'               : '3D',
-                                  'MSME'             : 'MSME',
-                                  'DWI'              : 'DWI',
-                                  'final_segm_strx'  : 'automatic',
-                                  'suffix_segm'      : 'MV_P3'}
-    sp.save_as_txt(pfo_where_to_save)
-    sp.dump_with_pickle(pfo_where_to_save)
-    del sp
-
-    sp = SubjectParameters('14402')
-    sp.study                   = 'W8'
-    sp.category                = 'third_trial'
-    sp.angles                  = [0, np.pi / 12, 0]
-    sp.translation             = [0, 0, 0]
-    sp.threshold               = 18
-    sp.DWI_squashed            = False
-    sp.bias_field_parameters   = bfp_slow
-    sp.MSME_acquisition        = 'high_res'
-    sp.comment                 = ''
-    sp.in_atlas                = False
-    sp.b0_level                = 7
-    sp.options_S0              = {'window_percentile'  : (1, 99),
-                                  'mask_dilation'      : 1}
-    sp.options_T1              = {'roi_mask'           : 'Pivotal',
-                                  'pivot'              : '12503',
-                                  'mask_dilation'      : 0,
-                                  'window_percentile'  : (0, 100),
-                                  'crop_roi'           : False,
-                                  'lesion_mask_method' : 0,
-                                  'median_filter'      : True}
-    sp.names_architecture      = {'T1'               : '3D',
-                                  'MSME'             : 'MSME',
-                                  'DWI'              : 'DWI',
-                                  'final_segm_strx'  : 'automatic',
-                                  'suffix_segm'      : 'MV_P3'}
-    sp.save_as_txt(pfo_where_to_save)
-    sp.dump_with_pickle(pfo_where_to_save)
-    del sp
-
 
 if __name__ == '__main__':
 
