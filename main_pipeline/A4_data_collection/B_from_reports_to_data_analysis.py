@@ -421,11 +421,13 @@ if __name__ == '__main__':
     # ---------- BELOW subjects Saline, ACS: ------------
 
     LACS = ['12503', '13701', '13706', '13707', '13709', '14503', '14504', '14603']
-    saline = ['13601', '13603', '13604', '13605', '14403']  # '13602'
+    saline = ['13601', '13603', '13604', '13605', '14403', '14402',  '14302', '14301']  # '13602' '14401',
+    T = ['55BW', '13610', '14101', ]  # '14203'
+    PT = ['5302', '5303', '5508', '5510']
 
-    subjects = LACS + saline
-    subjects_grouping_ = [len(LACS), len(saline)]
-    legend = ['LACS', 'Saline']
+    subjects = LACS + saline + T + PT
+    subjects_grouping_ = [len(LACS), len(saline), len(T), len(PT)]
+    legend = ['LACS', 'Saline', 'Term', 'PreTerm']
 
     # -----------------------------------------------------
 
@@ -456,7 +458,7 @@ if __name__ == '__main__':
                                                      subjects_grouping_, macro_label_name=reg, coord_system=coordinates,
                                                      cleaning=None)
 
-    if False:
+    if True:
         for reg in ptb_related_regions.keys():
 
             print('\n\n---- REGION {} ----'.format(reg))
