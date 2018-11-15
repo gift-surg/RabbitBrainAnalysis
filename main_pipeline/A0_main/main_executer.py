@@ -221,7 +221,7 @@ if __name__ == '__main__':
 
     # lsm.input_subjects = ['14101', '14402']
 
-    lsm.input_subjects = ['14203', ]
+    lsm.input_subjects = ['14401']
 
     lsm.update_ls()
 

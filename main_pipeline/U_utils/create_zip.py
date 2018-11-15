@@ -49,4 +49,4 @@ if __name__ == '__main__':
 
     print lsm.ls
 
-    # zipper_from_subject_list(['0213403'])
+    zipper_from_subject_list(['14401', '13602'])
