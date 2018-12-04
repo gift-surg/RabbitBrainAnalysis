@@ -296,20 +296,20 @@ if __name__ == '__main__':
     # lsm.input_subjects = preterm + term
 
     # lsm.input_subjects = ['13709']  # ['13601', '13603', '13604', '13605', '13610', '13706', '13707']  # ['13102', ] #  '13201', '13202', '13401', '13402', '13403']
-    # lsm.input_subjects = ['55BW', '5302', '5303', '5508', '5510']
-    lsm.input_subjects = ['12503']
+    lsm.input_subjects = ['55BW', '5302', '5303', '5508', '5510']
+    # lsm.input_subjects = ['12503']
 
     lsm.update_ls()
 
     print(lsm.ls)
 
     controller_ = {'Force_reset'                  : False,
-                   'Volumes_per_region'           : True,
-                   'FA_per_region'                : True,
-                   'MD_per_region'                : True,
+                   'Volumes_per_region'           : False,
+                   'FA_per_region'                : False,
+                   'MD_per_region'                : False,
                    'Volumes_per_region_stx'       : True,
-                   'FA_per_region_stx'            : True,
-                   'MD_per_region_stx'            : True,
+                   'FA_per_region_stx'            : False,
+                   'MD_per_region_stx'            : False,
                    'Generate_tag'                 : False}
 
     options_ = {'erosion': False}
