@@ -54,11 +54,10 @@ visual intuition.
 + Main work in progress is under `danny_approval`. [Danny](https://github.com/SebastianoF/DummyForMRI) (see crash testing) is a dummy dataset created with the github repository
 DummyForMRI. Under danny approval we intend to develop some automatic testing to automatically perform the 
  pipeline on the Danny, and check possible issues.
- 
-+ An improvement should be made in changing the structure of how the parameter files are defined.
-Currently there is a single file instantiating an element of the class `SubjectParameters`, that is than saved to a single
-file, retrieved in each part of the code. Probably using a single .yaml file, for each subject, with a yaml_parameters_checker method
- and a yaml_parameters_creator, would be a better design.
+
++ Improve parameters files `subject_parameters_creator.py`.
+Currently there is a single file instantiating an element of the class `SubjectParameters`. Re-design with yaml
+ parameter file yaml_parameters_checker method and a yaml_parameters_creator.
 
 #### Memorandum - git usage:
 
