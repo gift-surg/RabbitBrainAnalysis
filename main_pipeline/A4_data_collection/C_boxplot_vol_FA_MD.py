@@ -22,12 +22,14 @@ from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 use_random = False  # for figure benchmarking
 num_subjects_if_random = 40  # update to sum of data_group_subjects_correspondence
 
-compute    = False  # if false, computed dataframe for step C and D will be loaded from external folder
+compute    = False  # if False, computed dataframe for step C and D will be loaded from external folder
 
 produce_A = False
 produce_B = True
 produce_C = False
 produce_D = False
+
+save_external = False
 
 # ------------- Parameters ------------- #
 
@@ -107,6 +109,8 @@ print not_found
 
 if produce_A:
 
+    print('Producing graph A')
+
     # ------------- Collect data: (A) ------------- #
 
     if use_random:
@@ -125,6 +129,7 @@ if produce_A:
                 sj_parameters = pickle.load(open(pfi_sj, 'r'))
                 study = sj_parameters['study']
                 category = sj_parameters['category']
+                # sex = sj_parameters['sex']  TODO
                 pfi_data_csv = jph(root_study_rabbits, 'A_data', study, category, sj, 'stereotaxic', 'report', sj + 'stx_vol_regions.csv')
                 df_input_volumes = pd.read_csv(pfi_data_csv)
                 vol = df_input_volumes.loc[df_input_volumes['Labels'] < 255 ].loc[df_input_volumes['Labels'] > 0]['Volume'].sum(axis=0)
@@ -160,13 +165,18 @@ if produce_A:
     ax.set_ylabel('vol (mm$^3$)')
 
     plt.tight_layout()
-    plt.savefig(jph(pfo_where_to_save, 'da_brain_volume_per_subject.pdf'), format='pdf', dpi=dpi)
 
+    if save_external:
+        plt.savefig(jph(pfo_where_to_save, 'da_brain_volume_per_subject.pdf'), format='pdf', dpi=dpi)
+    else:
+        plt.show()
 # --------------------------------------------- #
 # --------------------------------------------- #
 # --------------------------------------------- #
 
 if produce_B:
+
+    print('Producing graph B')
 
     # ------------- Collect data: (B) ------------- #
 
@@ -233,14 +243,19 @@ if produce_B:
             ax.set_ylabel('vol (mm$^3$)', **axis_font)
 
     plt.tight_layout()
-    plt.savefig(jph(pfo_where_to_save, 'da_brain_volume_per_subject_per_regions.pdf'), format='pdf', dpi=dpi)
 
+    if save_external:
+        plt.savefig(jph(pfo_where_to_save, 'da_brain_volume_per_subject_per_regions.pdf'), format='pdf', dpi=dpi)
+    else:
+        plt.show()
 
 # --------------------------------------------- #
 # --------------------------------------------- #
 # --------------------------------------------- #
 
 if produce_C:
+
+    print('Producing graph C')
 
     # ------------- Collect data: (C) ------------- #
 
@@ -323,14 +338,19 @@ if produce_C:
             ax.set_ylabel('FA', **axis_font)
 
     plt.tight_layout()
-    plt.savefig(jph(pfo_where_to_save, 'da_FA_per_subject_per_regions.pdf'), format='pdf', dpi=dpi)
 
+    if save_external:
+        plt.savefig(jph(pfo_where_to_save, 'da_FA_per_subject_per_regions.pdf'), format='pdf', dpi=dpi)
+    else:
+        plt.show()
 
 # --------------------------------------------- #
 # ------------- Collect data: (D) ------------- #
 # --------------------------------------------- #
 
 if produce_D:
+
+    print('Producing graph D')
 
     # ------------- Collect data: (D) ------------- #
 
@@ -412,6 +432,9 @@ if produce_D:
             ax.set_ylabel('MD', **axis_font)
 
     plt.tight_layout()
-    plt.savefig(jph(pfo_where_to_save, 'da_MD_per_subject_per_regions.pdf'), format='pdf', dpi=dpi)
 
+    if save_external:
+        plt.savefig(jph(pfo_where_to_save, 'da_MD_per_subject_per_regions.pdf'), format='pdf', dpi=dpi)
+    else:
+        plt.show()
 
