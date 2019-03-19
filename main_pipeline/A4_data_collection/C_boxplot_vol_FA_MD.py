@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 from os.path import join as jph
 import pickle
+import seaborn as sns
 
 from tools.definitions import root_study_rabbits, pfo_subjects_parameters
 from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
@@ -23,13 +24,13 @@ num_subjects_if_random = 40  # update to sum of data_group_subjects_corresponden
 
 compute    = True  # if False, computed dataframe for step C and D will be loaded from external folder
 
-produce_A = False
+produce_A = True
 produce_B = False
 produce_C = False
-produce_D = True
+produce_D = False
 
-save_figures_external = False
-save_dataframes_external = True  # if false it will be loaded from the paths below:
+save_figures_external = False  # If false show and block
+save_dataframes_external = False  # if false it will be loaded from the paths below:
 
 # -------------- Paths to output ----------
 pfo_where_to_save = '/Users/sebastiano/Desktop/'  # '/Users/sebastiano/Dropbox/PHD_Thesis/thesis/figures'
@@ -57,6 +58,8 @@ dict_list_regions = {'Hippocampus'      : [31, 32],
                      'Amygdala'         : [55, 56]}
 
 # sns.set_context('paper', font_scale=1.2)
+
+sns.set()
 plt.rc('text', usetex=True)
 title_font = {'family' : 'serif', 'size'   : 12}
 axis_font = {'family' : 'serif', 'size': 10}
@@ -348,8 +351,8 @@ if produce_C:
         for i, (name, subdf) in enumerate(df_FA_per_region_grouped):
 
             names.append(dict_data_group_names[name])
-            vals.append(subdf.loc[subdf['subject'] != '3303']['FA {}'.format(region)].tolist())
-            xs.append(np.random.normal(i+1, 0.04, subdf.loc[subdf['subject'] != '3303'].shape[0]))
+            vals.append(subdf.loc[subdf['subject'] != 3303]['FA {}'.format(region)].tolist())
+            xs.append(np.random.normal(i+1, 0.04, subdf.loc[subdf['subject'] != 3303].shape[0]))
 
         ax.boxplot(vals, boxprops=boxprops, flierprops=flierprops, whiskerprops=whiskerprops, capprops=capsprops, medianprops=medianprops)
 
@@ -450,7 +453,7 @@ if produce_D:
 
         for i, (name, subdf) in enumerate(df_MD_per_region_grouped):
             names.append(dict_data_group_names[name])
-            vals.append(subdf.loc[subdf['subject'] != '3303']['MD {}'.format(region)].tolist())
+            vals.append(subdf.loc[str(subdf['subject']) != '3303']['MD {}'.format(region)].tolist())
             xs.append(np.random.normal(i + 1, 0.04, subdf.loc[subdf['subject'] != '3303'].shape[0]))
 
         ax.boxplot(vals, boxprops=boxprops, flierprops=flierprops, whiskerprops=whiskerprops, capprops=capsprops, medianprops=medianprops)
