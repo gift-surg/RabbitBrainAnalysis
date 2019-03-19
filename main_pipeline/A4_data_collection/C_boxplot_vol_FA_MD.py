@@ -1,15 +1,14 @@
 """
 Plot four graphs.
 A) Single boxplot with 4 boxes (t, pt, lpt, lpt-acs) with full brain volumes of each subject with no normalisation.
-B)
-C)
-D)
+B) all volumes for the selected regions
+C) all FA for the selected regions
+D) all MD for the selected regions
 """
 import os
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-import seaborn as sns
 from os.path import join as jph
 import pickle
 
@@ -19,21 +18,30 @@ from main_pipeline.A0_main.subject_parameters_manager import list_all_subjects
 # ------------- Controller ------------- #
 
 
-use_random = False  # for figure benchmarking
+use_random = False  # for figure creation with dummy data.
 num_subjects_if_random = 40  # update to sum of data_group_subjects_correspondence
 
-compute    = False  # if False, computed dataframe for step C and D will be loaded from external folder
+compute    = True  # if False, computed dataframe for step C and D will be loaded from external folder
 
 produce_A = False
-produce_B = True
+produce_B = False
 produce_C = False
-produce_D = False
+produce_D = True
 
-save_external = False
+save_figures_external = False
+save_dataframes_external = True  # if false it will be loaded from the paths below:
+
+# -------------- Paths to output ----------
+pfo_where_to_save = '/Users/sebastiano/Desktop/'  # '/Users/sebastiano/Dropbox/PHD_Thesis/thesis/figures'
+
+# Dataframes:
+pfi_df_volume_bup            = jph(pfo_where_to_save, 'df_volumes.csv')
+pfi_df_volume_per_region_bup = jph(pfo_where_to_save, 'df_volumes_per_region.csv')
+pfi_df_FA_per_region_bup     = jph(pfo_where_to_save, 'df_FA_per_region.csv')
+pfi_df_MD_per_region_bup     = jph(pfo_where_to_save, 'df_MD_per_region.csv')
 
 # ------------- Parameters ------------- #
 
-pfo_where_to_save = '/Users/sebastiano/Desktop/'  # '/Users/sebastiano/Dropbox/PHD_Thesis/thesis/figures'
 
 dict_data_group_names  = {1 : 'T', 2 : 'PT', 3 : 'LPT', 4 : 'LPT+'}
 dict_data_group_colors = {1 : 'blue', 2 : 'green', 3 : 'red', 4 : 'magenta'}
@@ -101,7 +109,6 @@ print not_found
 # not_in_table.sort()
 # print not_in_table
 
-
 # --------------------------------------------- #
 # --------------------------------------------- #
 # --------------------------------------------- #
@@ -119,23 +126,29 @@ if produce_A:
                                   columns=['group', 'volume'])
 
     else:
-        df_volumes = pd.DataFrame([], columns=['subject', 'group', 'volume'])
-        for i in range(1, 5):
-            print i
-            for sj in data_group_subjects_correspondence[i]:
+        if save_dataframes_external:
+            df_volumes = pd.DataFrame([], columns=['subject', 'group', 'volume'])
+            for i in range(1, 5):
+                print i
+                for sj in data_group_subjects_correspondence[i]:
 
-                # get volumes for each subject:
-                pfi_sj = jph(pfo_subjects_parameters, sj)
-                sj_parameters = pickle.load(open(pfi_sj, 'r'))
-                study = sj_parameters['study']
-                category = sj_parameters['category']
-                # sex = sj_parameters['sex']  TODO
-                pfi_data_csv = jph(root_study_rabbits, 'A_data', study, category, sj, 'stereotaxic', 'report', sj + 'stx_vol_regions.csv')
-                df_input_volumes = pd.read_csv(pfi_data_csv)
-                vol = df_input_volumes.loc[df_input_volumes['Labels'] < 255 ].loc[df_input_volumes['Labels'] > 0]['Volume'].sum(axis=0)
-                dat = {'subject': sj, 'group': i, 'volume': vol}
-                df_volumes = df_volumes.append(dat, ignore_index=True)
+                    # get volumes for each subject:
+                    pfi_sj = jph(pfo_subjects_parameters, sj)
+                    sj_parameters = pickle.load(open(pfi_sj, 'r'))
+                    study = sj_parameters['study']
+                    category = sj_parameters['category']
+                    # sex = sj_parameters['sex']  TODO
+                    pfi_data_csv = jph(root_study_rabbits, 'A_data', study, category, sj, 'stereotaxic', 'report', sj + 'stx_vol_regions.csv')
+                    df_input_volumes = pd.read_csv(pfi_data_csv)
+                    vol = df_input_volumes.loc[df_input_volumes['Labels'] < 255 ].loc[df_input_volumes['Labels'] > 0]['Volume'].sum(axis=0)
+                    dat = {'subject': sj, 'group': i, 'volume': vol}
+                    df_volumes = df_volumes.append(dat, ignore_index=True)
 
+            df_volumes.to_csv(pfi_df_volume_bup)
+            print('Dataframe with volumes saved in {}'.format(pfi_df_volume_bup))
+
+        else:
+            df_volumes = pd.read_csv(pfi_df_volume_bup, index_col=0)
     # ------------- Plot data: (A) ------------- #
 
     df_volumes_grouped = df_volumes.groupby('group', sort=True)
@@ -166,7 +179,7 @@ if produce_A:
 
     plt.tight_layout()
 
-    if save_external:
+    if save_figures_external:
         plt.savefig(jph(pfo_where_to_save, 'da_brain_volume_per_subject.pdf'), format='pdf', dpi=dpi)
     else:
         plt.show()
@@ -190,26 +203,33 @@ if produce_B:
             df_volumes_per_region = df_volumes_per_region.append(dat, ignore_index=True)
 
     else:
-        df_volumes_per_region = pd.DataFrame([], columns=['subject', 'group'] + ['vol {}'.format(r) for r in dict_list_regions.keys()])
-        for i in range(1, 5):
-            for sj in data_group_subjects_correspondence[i]:
-                pfi_sj = jph(pfo_subjects_parameters, sj)
-                sj_parameters = pickle.load(open(pfi_sj, 'r'))
-                study = sj_parameters['study']
-                category = sj_parameters['category']
-                pfi_data_csv = jph(root_study_rabbits, 'A_data', study, category, sj, 'stereotaxic', 'report', sj + 'stx_vol_regions.csv')
-                df_input_volumes = pd.read_csv(pfi_data_csv)
+        if save_dataframes_external:
+            df_volumes_per_region = pd.DataFrame([], columns=['subject', 'group'] + ['vol {}'.format(r) for r in dict_list_regions.keys()])
+            for i in range(1, 5):
+                for sj in data_group_subjects_correspondence[i]:
+                    pfi_sj = jph(pfo_subjects_parameters, sj)
+                    sj_parameters = pickle.load(open(pfi_sj, 'r'))
+                    study = sj_parameters['study']
+                    category = sj_parameters['category']
+                    pfi_data_csv = jph(root_study_rabbits, 'A_data', study, category, sj, 'stereotaxic', 'report', sj + 'stx_vol_regions.csv')
+                    df_input_volumes = pd.read_csv(pfi_data_csv)
 
-                dat = {'subject': sj, 'group': i}
+                    dat = {'subject': sj, 'group': i}
 
-                for reg in dict_list_regions.keys():
-                    vol_per_region = 0
-                    for label in dict_list_regions[reg]:
-                        vol_per_region += df_input_volumes.loc[df_input_volumes['Labels'] == label]['Volume'].tolist()[0]
+                    for reg in dict_list_regions.keys():
+                        vol_per_region = 0
+                        for label in dict_list_regions[reg]:
+                            vol_per_region += df_input_volumes.loc[df_input_volumes['Labels'] == label]['Volume'].tolist()[0]
 
-                    dat.update({'vol {}'.format(reg): vol_per_region})
+                        dat.update({'vol {}'.format(reg): vol_per_region})
 
-                df_volumes_per_region = df_volumes_per_region.append(dat, ignore_index=True)
+                    df_volumes_per_region = df_volumes_per_region.append(dat, ignore_index=True)
+
+            df_volumes_per_region.to_csv(pfi_df_volume_per_region_bup)
+            print('Dataframe with volumes per region saved in {}'.format(pfi_df_volume_per_region_bup))
+
+        else:
+            df_volumes_per_region = pd.read_csv(pfi_df_volume_per_region_bup, index_col=0)
 
     # ------------- Plot data: (B) ------------- #
 
@@ -244,7 +264,7 @@ if produce_B:
 
     plt.tight_layout()
 
-    if save_external:
+    if save_figures_external:
         plt.savefig(jph(pfo_where_to_save, 'da_brain_volume_per_subject_per_regions.pdf'), format='pdf', dpi=dpi)
     else:
         plt.show()
@@ -270,42 +290,50 @@ if produce_C:
 
     else:
 
-        if compute:
+        if save_dataframes_external:
+            if compute:
 
-            df_FA_per_region = pd.DataFrame([], columns=['subject', 'group'] + ['FA {}'.format(r) for r in dict_list_regions.keys()])
-            for i in range(1, 5):
-                for sj in data_group_subjects_correspondence[i]:
-                    print '\n FA {}'.format(sj)
-                    pfi_sj = jph(pfo_subjects_parameters, sj)
-                    sj_parameters = pickle.load(open(pfi_sj, 'r'))
-                    study = sj_parameters['study']
-                    category = sj_parameters['category']
+                df_FA_per_region = pd.DataFrame([], columns=['subject', 'group'] + ['FA {}'.format(r) for r in dict_list_regions.keys()])
+                for i in range(1, 5):
+                    for sj in data_group_subjects_correspondence[i]:
+                        print '\n FA {}'.format(sj)
+                        pfi_sj = jph(pfo_subjects_parameters, sj)
+                        sj_parameters = pickle.load(open(pfi_sj, 'r'))
+                        study = sj_parameters['study']
+                        category = sj_parameters['category']
 
-                    dat = {'subject': sj, 'group': i}
+                        dat = {'subject': sj, 'group': i}
 
-                    for reg in dict_list_regions.keys():
-                        print reg
-                        FA_per_region = []
-                        for label in dict_list_regions[reg]:
-                            pfo_reports_sj = jph(root_study_rabbits, 'A_data', study, category, sj, 'stereotaxic', 'report')
-                            # looks for the report starting with input.
-                            for fin_report in os.listdir(pfo_reports_sj):
-                                if fin_report.startswith('{}stx_FA_{}'.format(sj, label)):
-                                    pfi_FA_data_csv = jph(pfo_reports_sj, fin_report)
-                                    break
-                            FA_per_region += [np.loadtxt(pfi_FA_data_csv)]
-                        FA_per_region_median = np.median(np.hstack(FA_per_region))
-                        dat.update({'FA {}'.format(reg): FA_per_region_median})
+                        for reg in dict_list_regions.keys():
+                            print reg
+                            FA_per_region = []
+                            for label in dict_list_regions[reg]:
+                                pfo_reports_sj = jph(root_study_rabbits, 'A_data', study, category, sj, 'stereotaxic', 'report')
+                                # looks for the report starting with input.
+                                for fin_report in os.listdir(pfo_reports_sj):
+                                    if fin_report.startswith('{}stx_FA_{}'.format(sj, label)):
+                                        pfi_FA_data_csv = jph(pfo_reports_sj, fin_report)
+                                        break
+                                FA_per_region += [np.loadtxt(pfi_FA_data_csv)]
+                            FA_per_region_median = np.median(np.hstack(FA_per_region))
+                            dat.update({'FA {}'.format(reg): FA_per_region_median})
 
-                    df_FA_per_region = df_FA_per_region.append(dat, ignore_index=True)
+                        df_FA_per_region = df_FA_per_region.append(dat, ignore_index=True)
 
-            df_FA_per_region.to_pickle(jph(pfo_where_to_save, 'df_FA_per_region.pickle'))
+                df_FA_per_region.to_pickle(jph(pfo_where_to_save, 'df_FA_per_region.pickle'))
+
+            else:
+                pfi_FA_pickled = jph(pfo_where_to_save, 'df_FA_per_region.pickle')
+                if not os.path.exists(pfi_FA_pickled):
+                    raise IOError('Run again with compute = True in the controller')
+                df_FA_per_region = pd.read_pickle(pfi_FA_pickled)
+
+            df_FA_per_region.to_csv(pfi_df_FA_per_region_bup)
+            print('Dataframe with FA per region saved in {}'.format(pfi_df_FA_per_region_bup))
 
         else:
-            pfi_FA_pickled = jph(pfo_where_to_save, 'df_FA_per_region.pickle')
-            if not os.path.exists(pfi_FA_pickled):
-                raise IOError('Run again with compte flag = True')
-            df_FA_per_region = pd.read_pickle(pfi_FA_pickled)
+            df_FA_per_region = pd.read_csv(pfi_df_FA_per_region_bup, index_col=0)
+
     # ------------- Plot data: (C) ------------- #
 
     df_FA_per_region_grouped = df_FA_per_region.groupby('group', sort=True)
@@ -339,7 +367,7 @@ if produce_C:
 
     plt.tight_layout()
 
-    if save_external:
+    if save_figures_external:
         plt.savefig(jph(pfo_where_to_save, 'da_FA_per_subject_per_regions.pdf'), format='pdf', dpi=dpi)
     else:
         plt.show()
@@ -364,42 +392,50 @@ if produce_D:
             df_MD_per_region = df_MD_per_region.append(dat, ignore_index=True)
 
     else:
-        if compute:
 
-            df_MD_per_region = pd.DataFrame([], columns=['subject', 'group'] + ['FA {}'.format(r) for r in dict_list_regions.keys()])
-            for i in range(1, 5):
-                for sj in data_group_subjects_correspondence[i]:
-                    print '\n MD {}'.format(sj)
-                    pfi_sj = jph(pfo_subjects_parameters, sj)
-                    sj_parameters = pickle.load(open(pfi_sj, 'r'))
-                    study = sj_parameters['study']
-                    category = sj_parameters['category']
+        if save_dataframes_external:
+            if compute:
 
-                    dat = {'subject': sj, 'group': i}
+                df_MD_per_region = pd.DataFrame([], columns=['subject', 'group'] + ['MD {}'.format(r) for r in dict_list_regions.keys()])
+                for i in range(1, 5):
+                    for sj in data_group_subjects_correspondence[i]:
+                        print '\n MD {}'.format(sj)
+                        pfi_sj = jph(pfo_subjects_parameters, sj)
+                        sj_parameters = pickle.load(open(pfi_sj, 'r'))
+                        study = sj_parameters['study']
+                        category = sj_parameters['category']
 
-                    for reg in dict_list_regions.keys():
-                        print reg
-                        MD_per_region = []
-                        for label in dict_list_regions[reg]:
-                            pfo_reports_sj = jph(root_study_rabbits, 'A_data', study, category, sj, 'stereotaxic', 'report')
-                            # looks for the report starting with input.
-                            for fin_report in os.listdir(pfo_reports_sj):
-                                if fin_report.startswith('{}stx_MD_{}'.format(sj, label)):
-                                    pfi_MD_data_csv = jph(pfo_reports_sj, fin_report)
-                                    break
-                        MD_per_region += [np.loadtxt(pfi_MD_data_csv)]
-                        MD_per_region_median = np.median(np.hstack(MD_per_region))
-                        dat.update({'MD {}'.format(reg): MD_per_region_median})
+                        dat = {'subject': sj, 'group': i}
 
-                    df_MD_per_region = df_MD_per_region.append(dat, ignore_index=True)
+                        for reg in dict_list_regions.keys():
+                            print reg
+                            MD_per_region = []
+                            for label in dict_list_regions[reg]:
+                                pfo_reports_sj = jph(root_study_rabbits, 'A_data', study, category, sj, 'stereotaxic', 'report')
+                                # looks for the report starting with input.
+                                for fin_report in os.listdir(pfo_reports_sj):
+                                    if fin_report.startswith('{}stx_MD_{}'.format(sj, label)):
+                                        pfi_MD_data_csv = jph(pfo_reports_sj, fin_report)
+                                        break
+                            MD_per_region += [np.loadtxt(pfi_MD_data_csv)]
+                            MD_per_region_median = np.median(np.hstack(MD_per_region))
+                            dat.update({'MD {}'.format(reg): MD_per_region_median})
 
-            df_MD_per_region.to_pickle(jph(pfo_where_to_save, 'df_MD_per_region.pickle'))
+                        df_MD_per_region = df_MD_per_region.append(dat, ignore_index=True)
+
+                df_MD_per_region.to_pickle(jph(pfo_where_to_save, 'df_MD_per_region.pickle'))
+
+            else:
+                pfi_MD_pickled = jph(pfo_where_to_save, 'df_MD_per_region.pickle')
+                if not os.path.exists(pfi_MD_pickled):
+                    raise IOError('Run again with compte = True in the controller')
+                df_MD_per_region = pd.read_pickle(pfi_MD_pickled)
+
+            df_MD_per_region.to_csv(pfi_df_MD_per_region_bup)
+            print('Dataframe with MD per region saved in {}'.format(pfi_df_MD_per_region_bup))
 
         else:
-            pfi_MD_pickled = jph(pfo_where_to_save, 'df_MD_per_region.pickle')
-            if not os.path.exists(pfi_MD_pickled):
-                raise IOError('Run again with compte flag = True')
-            df_MD_per_region = pd.read_pickle(pfi_MD_pickled)
+            df_MD_per_region = pd.read_csv(pfi_df_MD_per_region_bup, index_col=0)
 
     # ------------- Plot data: (D) ------------- #
 
@@ -433,7 +469,7 @@ if produce_D:
 
     plt.tight_layout()
 
-    if save_external:
+    if save_figures_external:
         plt.savefig(jph(pfo_where_to_save, 'da_MD_per_subject_per_regions.pdf'), format='pdf', dpi=dpi)
     else:
         plt.show()
