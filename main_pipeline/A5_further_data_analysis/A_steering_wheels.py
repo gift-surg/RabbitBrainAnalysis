@@ -6,10 +6,10 @@ from matplotlib import rcParams
 import numpy as np
 
 
-def multiple_testing_axis(ax, vals, cmap=mpl.cm.RdBu, norm= mpl.colors.Normalize(vmin=0, vmax=3), axis_title='axis title'):
+def multiple_testing_axis(ax, vals, cmap=mpl.cm.autumn_r, norm=mpl.colors.Normalize(vmin=0, vmax=3),
+                          axis_title='axis title'):
     """
-        :param vals: All the input values are embedded in a single dictionary.
-        vals = {'Zero' : <label zero>,
+    vals = {'Zero' : <label zero>,
                 'One'  : <label one>,
                 'Two'  : <label two>,
                 'Three': <label three>,
@@ -20,9 +20,14 @@ def multiple_testing_axis(ax, vals, cmap=mpl.cm.RdBu, norm= mpl.colors.Normalize
                 'Two_Three'  : <value from two to three>,
                 'Three_one'  : <value from three to one>,
                 }
-        :param cmap:
-        :return:
-        """
+    :param ax:
+    :param vals:
+    :param cmap:
+    :param norm:
+    :param axis_title:
+    :param pearson:
+    :return:
+    """
 
     # ----- Local parameters  -------------
 
@@ -61,11 +66,11 @@ def multiple_testing_axis(ax, vals, cmap=mpl.cm.RdBu, norm= mpl.colors.Normalize
     # From One to Two
     ax.add_patch(Rectangle((deg2rad(30), 0.75), width=deg2rad(120), height=0.1, color=cmap(norm(vals['One_Two'])),
                            alpha=0.5, linewidth=0))
-    # From Two to Three
-    ax.add_patch(Rectangle((deg2rad(150), 0.75), width=deg2rad(120), height=0.1, color=cmap(norm(vals['Two_Three'])),
+    # From One to Three
+    ax.add_patch(Rectangle((deg2rad(270), 0.75), width=deg2rad(120), height=0.1, color=cmap(norm(vals['One_Three'])),
                            alpha=0.5, linewidth=0))
     # From Two to Three
-    ax.add_patch(Rectangle((deg2rad(270), 0.75), width=deg2rad(120), height=0.1, color=cmap(norm(vals['Two_Three'])),
+    ax.add_patch(Rectangle((deg2rad(150), 0.75), width=deg2rad(120), height=0.1, color=cmap(norm(vals['Two_Three'])),
                            alpha=0.5, linewidth=0))
     # hack for the rectangles in polar coordinates.
     ax.bar(0, 1).remove()
@@ -86,7 +91,7 @@ def multiple_testing_axis(ax, vals, cmap=mpl.cm.RdBu, norm= mpl.colors.Normalize
     # From Two to Three
     ax.text(deg2rad(210), 0.8, vals['Two_Three'], text_style_between.copy())
     # From Three to One
-    ax.text(deg2rad(-30), 0.8, vals['Three_One'], text_style_between.copy())
+    ax.text(deg2rad(-30), 0.8, vals['One_Three'], text_style_between.copy())
 
     # ------- Annotation Radial --------
 
@@ -110,7 +115,7 @@ def multiple_testing_axis(ax, vals, cmap=mpl.cm.RdBu, norm= mpl.colors.Normalize
     ax.set_title(axis_title, **title_font)
 
 
-def visualise_multiple_testing(vals_list, cmap=mpl.cm.RdBu, add_colorbar=True, window_title='Prototype',
+def visualise_multiple_testing(vals_list, cmap=mpl.cm.autumn_r, add_colorbar=True, window_title='Prototype',
                                titles=('title', ), nrows=1, ncols=1, figsize=(3, 3)):
     # ---- Color manager ----
 
@@ -135,12 +140,12 @@ def visualise_multiple_testing(vals_list, cmap=mpl.cm.RdBu, add_colorbar=True, w
     # ----- Fill axis  -------------
 
     if len(vals_list) == 1:
-        multiple_testing_axis(axes, vals_list[0], cmap=mpl.cm.RdBu, axis_title=titles[0], norm=norm)
+        multiple_testing_axis(axes, vals_list[0], cmap=mpl.cm.autumn_r, axis_title=titles[0], norm=norm)
 
     else:
         for c in range(ncols):
             for r in range(nrows):
-                multiple_testing_axis(axes[r][c], vals_list[r][c], cmap=mpl.cm.RdBu, axis_title=titles[r][c], norm=norm)
+                multiple_testing_axis(axes[r][c], vals_list[r][c], cmap=mpl.cm.autumn_r, axis_title=titles[r][c], norm=norm)
 
     # ----- Colorbar ----
 
@@ -162,8 +167,8 @@ if __name__ == '__main__':
             'Zero_Two'   : 0.2,
             'Zero_Three' : 0.3,
             'One_Two'    : 1.2,
+            'One_Three'  : 1.3,
             'Two_Three'  : 2.3,
-            'Three_One'  : 3.1,
             }
 
     # visualise a single graph with the colorbar
