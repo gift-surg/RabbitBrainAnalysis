@@ -26,19 +26,19 @@ def multiple_testing_axis(ax, vals, cmap=mpl.cm.RdBu, norm= mpl.colors.Normalize
 
     # ----- Local parameters  -------------
 
-    text_style_centre = {'color': 'k', 'fontsize': 10, 'ha': 'center', 'va': 'center', 'family' : 'serif',
+    text_style_centre = {'color': 'k', 'fontsize': 9, 'ha': 'center', 'va': 'center', 'family' : 'serif',
                          'bbox': dict(boxstyle="round",
                                       ec=(0, 0, 0, 0.8),
                                       fc=(1, 1, 1))}
 
-    text_style_sides = {'color': 'k', 'fontsize': 8, 'ha': 'center', 'va': 'center', 'family' : 'serif',
+    text_style_sides = {'color': 'k', 'fontsize': 7, 'ha': 'center', 'va': 'center', 'family' : 'serif',
                         'bbox': dict(boxstyle="round",
                                      ec=(0, 0, 0, 0.8),
                                      fc=(1, 1, 1))}
 
-    text_style_between = {'color': 'k', 'fontsize': 7, 'ha': 'center', 'va': 'center', 'family' : 'serif'}
+    text_style_between = {'color': 'k', 'fontsize': 6, 'ha': 'center', 'va': 'center', 'family' : 'serif'}
 
-    title_font = {'family': 'serif', 'size': 7}
+    title_font = {'family': 'serif', 'size': 6}
 
     # ----- auxiliary function --------
 
