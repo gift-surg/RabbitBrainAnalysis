@@ -15,9 +15,9 @@ The pipeline to manipulate and analyse MRI data from the "Encephalopaty of prema
 + Output of the pipeline is the subject oriented and segmented provided with subject-wise and comparative data analysis.  
 + **WARNING** the code is developed to be `research code` (read: 80% is an uncommented work in progress, not packaged to be a product. [See research code definition](https://academia.stackexchange.com/questions/21276/best-practice-models-for-research-code))
 + The code is developed in collaboration with University College London (UCL) and Katholieke Universiteit Leuven (KUL).
-+ Pipeline schema can be found under notes folder.
-+ Based on libraries in `requriements.txt` (there are non pip-installable dependencies: follow installation instructions directly from the README library repository) other than niftyReg niftySeg and FSL
-+ Package `main_pipeline` has the strucure of the pipeline as in the schematic of the documentation.
++ Pipeline schema can be found under `notes` folder.
++ Based on libraries in `requirements.txt` (there are non pip-installable dependencies: follow installation instructions directly from the `README` library repository) other than niftyReg niftySeg and FSL
++ Package `main_pipeline` has the structure of the pipeline as in the schematic of the documentation.
 + Each module of the pipeline can run independently (for debugging and single step analysis) or as part of
 the whole pipeline, if called by the `main`.
 + The code can be used for any dataset (with the required changes) and the authors intend to make the acquired dataset 
@@ -37,8 +37,8 @@ with its chart, containing all the information related to the subject - e.g. stu
 #### How to use - add new scans to the database:
 
 + Update the log of the received files in the root of rabbit analysis in Emporium.
-+ Follow existing folder structure (see under notes) and store the .zip in the appropriate place.
-+ Rename the zip to only the filename (following the exising structure).
++ Follow existing folder structure (see under `notes`) and store the .zip in the appropriate place.
++ Rename the zip to only the filename (following the existing structure).
 
 #### How to use - elaborate the newly acquired subject:
 
